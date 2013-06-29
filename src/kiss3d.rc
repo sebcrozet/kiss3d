@@ -1,0 +1,16 @@
+#[link(name     = "kiss3d"
+       , vers   = "0.0"
+       , author = "Sébastien Crozet"
+       , uuid   = "0914a60f-37cd-40dc-9779-d72f237d99cc")];
+#[crate_type = "lib"];
+#[warn(non_camel_case_types)]
+
+extern mod std;
+extern mod glfw;
+extern mod glcore;
+// extern mod nalgebra;
+
+pub mod window;
+pub mod object;
+pub mod vertices;
+pub mod shaders;
