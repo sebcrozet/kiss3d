@@ -32,17 +32,28 @@ impl Object
     }
   }
 
-  pub fn upload(&self, color_location: i32, transform_location: i32)
+  pub fn upload(&self,
+                color_location:            i32,
+                transform_location:        i32,
+                normal_transform_location: i32)
   {
-    let mut formated_transform: Mat4<GLfloat> = self.transform.to_homogeneous();
+    let mut formated_transform:  Mat4<GLfloat> = self.transform.to_homogeneous();
+    let mut formated_ntransform: Mat3<GLfloat> = self.transform.submat().submat();
 
     formated_transform.transpose();
+    formated_ntransform.transpose();
 
     unsafe {
       glUniformMatrix4fv(transform_location,
                          1,
                          GL_FALSE,
                          ptr::to_unsafe_ptr(&formated_transform.mij[0]));
+
+      glUniformMatrix3fv(normal_transform_location,
+                         1,
+                         GL_FALSE,
+                         ptr::to_unsafe_ptr(&formated_ntransform.mij[0]));
+
       glUniform3f(color_location, self.color[0], self.color[1], self.color[2]);
       glDrawArrays(GL_TRIANGLES, self.vertices[0], self.vertices[1]);
     }
