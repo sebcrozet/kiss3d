@@ -39,7 +39,7 @@ pub static fragment_src: &'static str =
       Idiff = clamp(Idiff, 0.0, 1.0);                                     \n\
                                                                           \n\
       // calculate Specular Term:                                         \n\
-      vec4 Ispec = vec4(0.3, 0.3, 0.3, 1.0)                               \n\
+      vec4 Ispec = vec4(0.1, 0.1, 0.1, 1.0)                               \n\
                    * pow(max(dot(R, E), 0.0), 0.3 * 10.0);                \n\
       Ispec = clamp(Ispec, 0.0, 1.0);                                     \n\
                                                                           \n\
