@@ -4,3 +4,6 @@
 [submodule "glcore-rs"]
 	path = glcore-rs
 	url = git://github.com/bjz/glcore-rs.git
+[submodule "nalgebra"]
+	path = nalgebra
+	url = git://github.com/sebcrozet/nalgebra.git

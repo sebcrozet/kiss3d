@@ -5,6 +5,13 @@ use std::str;
 use std::ptr;
 use std::cast;
 use glcore::*;
+use glcore::consts::GL_VERSION_1_1::*;
+use glcore::consts::GL_VERSION_2_0::*;
+use glcore::functions::GL_VERSION_1_0::*;
+use glcore::functions::GL_VERSION_2_0::*;
+use glcore::types::GL_VERSION_1_5::*;
+use nalgebra::traits::transpose::Transpose;
+use nalgebra::mat::Mat4;
 use object::Object;
 use vertices::*;
 use shaders::*;
@@ -30,7 +37,7 @@ impl Window
   pub fn spawn(callback: ~fn(&mut Window))
   {
     do glfw::spawn {
-      // Choose a GL profile that is compatible with OS X 10.7+
+      // The initialization is not really my code (see README)
       glfw::window_hint::context_version_major(3);
       glfw::window_hint::context_version_minor(2);
       glfw::window_hint::opengl_profile(glfw::OPENGL_CORE_PROFILE);
@@ -91,22 +98,22 @@ impl Window
                               ptr::null());
       }
 
-      /*
-      let col_attrib = unsafe { glGetAttribLocation(shader_program, str::as_c_str("color", |s|s)) } as GLuint;
-      unsafe {
-        glEnableVertexAttribArray(col_attrib);
-        glVertexAttribPointer(col_attrib, 3, GL_FLOAT, GL_FALSE,
-                              5 * sys::size_of::<GLfloat>() as GLsizei,
-                              cast::transmute(2 * sys::size_of::<GLfloat>() as uint));
-      }
-      */
-
       let mut usr_window = Window{ objects: ~[], window: window };
       callback(&mut usr_window);
 
       let color_location = unsafe {
-        glGetUniformLocation(shader_program, str::as_c_str("color", |s|s))
+        glGetUniformLocation(shader_program, str::as_c_str("color", |s| s))
       };
+
+      let transform_location = unsafe {
+        glGetUniformLocation(shader_program, str::as_c_str("transform", |s| s))
+      };
+
+      let proj_location = unsafe {
+        glGetUniformLocation(shader_program, str::as_c_str("projection", |s| s))
+      };
+
+      window.set_size_callback(|win, w, h| { resize_callback(win, w as i32, h as i32, proj_location) });
 
       while !window.should_close() {
         // Poll events
@@ -119,7 +126,7 @@ impl Window
 
           // Draw a triangle from the 3 vertices
           for usr_window.objects.iter().advance |o|
-          { o.draw(color_location) }
+          { o.upload(color_location, transform_location) }
         }
 
         // Swap buffers
@@ -145,6 +152,35 @@ impl Window
     { glfw::poll_events(); }
   }
   */
+}
+
+fn resize_callback(_: &glfw::Window, w: i32, h: i32, proj_location: i32)
+{
+  let fov    = (45.0 as GLfloat).to_radians();
+  let aspect = w as GLfloat / (h as GLfloat);
+  let zfar   = 1024.0;
+  let znear  = 1.0;
+
+  // adjust the viewport to the full window
+  unsafe { glViewport(0, 0, w, h) }
+
+  // adjust the projection transformation
+  let mut proj = Mat4::new::<GLfloat>(
+    [
+      fov / aspect, 0.0,  0.0                            , 0.0,
+      0.0         , fov, 0.0                             , 0.0,
+      0.0         , 0.0,  (zfar + znear) / (znear - zfar), 2.0 * zfar * znear / (znear - zfar),
+      0.0         , 0.0,  -1.0                           , 0.0
+    ]);
+
+  proj.transpose();
+
+  unsafe {
+    glUniformMatrix4fv(proj_location,
+                       1,
+                       GL_FALSE,
+                       ptr::to_unsafe_ptr(&proj.mij[0]));
+  }
 }
 
 fn key_callback(window: &glfw::Window,

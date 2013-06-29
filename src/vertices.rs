@@ -1,4 +1,4 @@
-use glcore::GLfloat;
+use glcore::types::GL_VERSION_1_0::GLfloat;
 
 // Vertex data
 pub static cube_begin: i32 = 0;
