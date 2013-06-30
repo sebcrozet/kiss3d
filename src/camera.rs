@@ -11,7 +11,7 @@ use nalgebra::mat::Mat4;
 pub enum CameraMode
 {
   ArcBall(Vec3<GLfloat>, Vec3<GLfloat>, float), // FIXME: add parameters for sencitivity
-  FPS                                    // FIXME: add parameters for sencitivity
+  FPS                                           // FIXME: add parameters for sencitivity
 }
 
 pub struct Camera
@@ -63,7 +63,7 @@ impl Camera
 
     if self.mouse_pressed
     {
-      let dx = xpos - self.mouse_start.at[0];
+      let dx = -xpos + self.mouse_start.at[0];
       let dy = ypos - self.mouse_start.at[1];
 
       self.yaw   = self.yaw   - dx * yaw_step;
