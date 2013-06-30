@@ -47,48 +47,44 @@ pub struct Window
 
 impl Window
 {
-  pub fn add_cube(&mut self) -> @mut Object
+  pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object
   {
     let res = @mut Object::new(*self.geometries.find(&~"cube").unwrap(),
-                               1.0,
-                               1.0,
-                               1.0);
+                               1.0, 1.0, 1.0,
+                               wx, wy, wz);
 
     self.objects.push(res);
 
     res
   }
 
-  pub fn add_sphere(&mut self) -> @mut Object
+  pub fn add_sphere(&mut self, r: GLfloat) -> @mut Object
   {
     let res = @mut Object::new(*self.geometries.find(&~"sphere").unwrap(),
-                               0.3,
-                               0.3,
-                               0.3);
+                               0.3, 0.3, 0.3,
+                               r / 0.5, r / 0.5, r / 0.5);
 
     self.objects.push(res);
 
     res
   }
 
-  pub fn add_cone(&mut self) -> @mut Object
+  pub fn add_cone(&mut self, h: GLfloat, r: GLfloat) -> @mut Object
   {
     let res = @mut Object::new(*self.geometries.find(&~"cone").unwrap(),
-                               0.3,
-                               0.3,
-                               0.3);
+                               0.3, 0.3, 0.3,
+                               r / 0.5, h, r / 0.5);
 
     self.objects.push(res);
 
     res
   }
 
-  pub fn add_cylinder(&mut self) -> @mut Object
+  pub fn add_cylinder(&mut self, h: GLfloat, r: GLfloat) -> @mut Object
   {
     let res = @mut Object::new(*self.geometries.find(&~"cylinder").unwrap(),
-                               0.3,
-                               0.3,
-                               0.3);
+                               0.3, 0.3, 0.3,
+                               r / 0.5, h, r / 0.5);
 
     self.objects.push(res);
 
@@ -301,6 +297,10 @@ impl Window
         glGetUniformLocation(shader_program, str::as_c_str("transform", |s| s))
       };
 
+      let scale_location = unsafe {
+        glGetUniformLocation(shader_program, str::as_c_str("scale", |s| s))
+      };
+
       let normal_transform_location = unsafe {
         glGetUniformLocation(shader_program, str::as_c_str("ntransform", |s| s))
       };
@@ -344,6 +344,7 @@ impl Window
           {
             o.upload(color_location,
                      transform_location,
+                     scale_location,
                      normal_transform_location)
           }
         }

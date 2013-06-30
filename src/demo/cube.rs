@@ -9,7 +9,7 @@ fn main()
 {
   do window::Window::spawn |window|
   {
-    let c = window.add_cube().set_color(1.0, 0.0, 0.0);
+    let c = window.add_cube(1.0, 1.0, 1.0).set_color(1.0, 0.0, 0.0);
 
     do window.set_loop_callback |_|
     { c.transformation().rotate_by(&Vec3::new::<f32>([0.0, 0.014, 0.0])) }

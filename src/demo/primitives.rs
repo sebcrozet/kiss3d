@@ -10,10 +10,10 @@ use kiss3d::window::{Window, StickToCamera};
 fn main()
 {
   do Window::spawn |w| {
-    let c = w.add_cube().set_color(random(), random(), random());
-    let b = w.add_sphere().set_color(random(), random(), random());
-    let p = w.add_cone().set_color(random(), random(), random());
-    let y = w.add_cylinder().set_color(random(), random(), random());
+    let c = w.add_cube(1.0, 1.0, 1.0).set_color(random(), random(), random());
+    let b = w.add_sphere(0.5).set_color(random(), random(), random());
+    let p = w.add_cone(1.0, 0.5).set_color(random(), random(), random());
+    let y = w.add_cylinder(1.0, 0.5).set_color(random(), random(), random());
 
     c.transformation().translate_by(&Vec3::new::<f32>([0.0, 0.0, 1.0]));
     b.transformation().translate_by(&Vec3::new::<f32>([0.0, 0.0, 3.0]));

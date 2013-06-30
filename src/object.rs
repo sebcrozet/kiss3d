@@ -14,6 +14,7 @@ use nalgebra::mat::{Mat3, Mat4};
 use nalgebra::vec::Vec3;
 
 type Transform3d = Transform<Rotmat<Mat3<GLfloat>>, Vec3<GLfloat>>;
+type Scale3d     = Mat3<GLfloat>;
 
 pub struct GeometryIndices
 {
@@ -34,6 +35,7 @@ impl GeometryIndices
 
 pub struct Object
 {
+  priv scale:     Scale3d,
   priv transform: Transform3d,
   priv color:     Vec3<f32>,
   priv geometry:  GeometryIndices
@@ -41,9 +43,20 @@ pub struct Object
 
 impl Object
 {
-  pub fn new(geometry: GeometryIndices, r: f32, g: f32, b: f32) -> Object
+  pub fn new(geometry: GeometryIndices,
+             r: f32,
+             g: f32,
+             b: f32,
+             sx: GLfloat,
+             sy: GLfloat,
+             sz: GLfloat) -> Object
   {
     Object {
+      scale:     Mat3::new( [
+                              sx, 0.0, 0.0,
+                              0.0, sy, 0.0,
+                              0.0, 0.0, sz,
+                            ] ),
       transform: One::one(),
       geometry:  geometry,
       color:     Vec3::new([r, g, b])
@@ -53,6 +66,7 @@ impl Object
   pub fn upload(&self,
                 color_location:            i32,
                 transform_location:        i32,
+                scale_location:            i32,
                 normal_transform_location: i32)
   {
     let mut formated_transform:  Mat4<GLfloat> = self.transform.to_homogeneous();
@@ -71,6 +85,11 @@ impl Object
                          1,
                          GL_FALSE,
                          ptr::to_unsafe_ptr(&formated_ntransform.mij[0]));
+
+      glUniformMatrix3fv(scale_location,
+                         1,
+                         GL_FALSE,
+                         ptr::to_unsafe_ptr(&self.scale.mij[0]));
 
       glUniform3f(color_location, self.color.at[0], self.color.at[1], self.color.at[2]);
       glDrawElements(GL_TRIANGLES,

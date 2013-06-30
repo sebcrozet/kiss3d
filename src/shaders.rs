@@ -9,13 +9,15 @@ pub static vertex_src: &'static str =
     uniform mat4 projection;                                               \n\
     uniform mat4 view;                                                     \n\
     uniform mat4 transform;                                                \n\
+    uniform mat3 scale;                                                    \n\
     uniform mat3 ntransform;                                               \n\
     void main() {                                                          \n\
         Color       = color;                                               \n\
-        vec4 pos4   = transform * vec4(position, 1.0);                     \n\
+        mat4 scale4 = mat4(scale);                                         \n\
+        vec4 pos4   = transform * scale4 * vec4(position, 1.0);            \n\
         ws_position = pos4.xyz;                                            \n\
-        gl_Position = projection * view * transform * vec4(position, 1.0); \n\
-        ws_normal   = normalize(ntransform * normal);                      \n\
+        gl_Position = projection * view * transform * scale4 * vec4(position, 1.0); \n\
+        ws_normal   = normalize(ntransform * scale * normal);              \n\
     }";
 
 // phong lighting (heavily) inspired

@@ -17,7 +17,7 @@ with one-liners.
 ## Features
 All features are one-liners.
   - open a window with a default arc-ball camera and a point light.
-  - display a unit box, sphere, cone or cylinder (they will be resizable soon).
+  - display boxes, spheres, cones or cylinders.
   - change an object's color.
   - change an object's transform (we use the **nalgebra** library to do that).
     An object cannot be scaled though.
