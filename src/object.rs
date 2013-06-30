@@ -96,15 +96,15 @@ impl Object
     ]);
 
     let ntransform_glf = Mat3::new ([
-      formated_transform.at((0, 0)) as GLfloat,
-      formated_transform.at((1, 0)) as GLfloat,
-      formated_transform.at((2, 0)) as GLfloat,
-      formated_transform.at((0, 1)) as GLfloat,
-      formated_transform.at((1, 1)) as GLfloat,
-      formated_transform.at((2, 1)) as GLfloat,
-      formated_transform.at((0, 2)) as GLfloat,
-      formated_transform.at((1, 2)) as GLfloat,
-      formated_transform.at((2, 2)) as GLfloat,
+      formated_ntransform.at((0, 0)) as GLfloat,
+      formated_ntransform.at((1, 0)) as GLfloat,
+      formated_ntransform.at((2, 0)) as GLfloat,
+      formated_ntransform.at((0, 1)) as GLfloat,
+      formated_ntransform.at((1, 1)) as GLfloat,
+      formated_ntransform.at((2, 1)) as GLfloat,
+      formated_ntransform.at((0, 2)) as GLfloat,
+      formated_ntransform.at((1, 2)) as GLfloat,
+      formated_ntransform.at((2, 2)) as GLfloat,
     ]);
 
     unsafe {

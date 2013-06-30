@@ -393,7 +393,7 @@ impl Window
 
 fn resize_callback(_: &glfw::Window, w: i32, h: i32, proj_location: i32)
 {
-  let fov    = (45.0 as GLfloat).to_radians();
+  let fov    = (90.0 as GLfloat).to_radians();
   let aspect = w as GLfloat / (h as GLfloat);
   let zfar   = 1024.0;
   let znear  = 0.1;
