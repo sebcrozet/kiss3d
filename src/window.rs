@@ -93,6 +93,8 @@ impl Window
       window.make_context_current();
 
       unsafe {
+        glFrontFace(GL_CCW);
+        glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
       }
