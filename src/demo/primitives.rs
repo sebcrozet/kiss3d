@@ -20,12 +20,13 @@ fn main()
     p.transformation().translate_by(&Vec3::new::<f32>([0.0, 0.0, -1.0]));
     y.transformation().translate_by(&Vec3::new::<f32>([0.0, 0.0, -3.0]));
 
-    w.set_loop_callback(|_| {
+    do w.set_loop_callback |_|
+    {
       rotate_wrt_center(c.transformation(), &Vec3::new::<f32>([0.0, 0.014, 0.0]));
       rotate_wrt_center(b.transformation(), &Vec3::new::<f32>([0.0, 0.014, 0.0]));
       rotate_wrt_center(p.transformation(), &Vec3::new::<f32>([0.0, 0.014, 0.0]));
       rotate_wrt_center(y.transformation(), &Vec3::new::<f32>([0.0, 0.014, 0.0]));
-    });
+    };
 
     w.set_light(StickToCamera);
   };
