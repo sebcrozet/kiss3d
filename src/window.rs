@@ -35,7 +35,7 @@ pub struct Window
   priv light_mode:    Light,
   priv window:        @mut glfw::Window,
   priv camera:        Camera,
-  priv loop_callback: ~fn(&mut Window)
+  priv loop_callback: @fn(&mut Window)
 }
 
 impl Window
@@ -55,7 +55,7 @@ impl Window
   pub fn exec_callback(&mut self)
   { (self.loop_callback)(self) }
 
-  pub fn set_loop_callback(&mut self, callback: ~fn(&mut Window))
+  pub fn set_loop_callback(&mut self, callback: @fn(&mut Window))
   { self.loop_callback = callback }
 
   pub fn set_light(&mut self, pos: Light)
