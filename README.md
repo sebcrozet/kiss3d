@@ -1,5 +1,4 @@
-kiss3d
-======
+# kiss3d
 
 Keep It Simple, Stupid 3d graphics engine.
 
@@ -23,7 +22,28 @@ All features are one-liners.
   - change an object's transform (we use the **nalgebra** library to do that).
     An object cannot be scaled though.
 
-That’s all.
+As an exemple, having a red, rotating cube with the light attached to the camera is as simple as:
+```rust
+extern mod kiss3d;
+extern mod nalgebra;
+
+use nalgebra::traits::rotation::Rotation;
+use nalgebra::vec::Vec3;
+use kiss3d::window;
+
+fn main()
+{
+  do window::Window::spawn |window|
+  {
+    let c = window.add_cube().set_color(1.0, 0.0, 0.0);
+    
+    do window.set_loop_callback |_|
+    { c.transformation().rotate_by(&Vec3::new::<f32>([0.0, 0.014, 0.0])) }
+    
+    window.set_light(window::StickToCamera);
+  }
+}
+```
 
 ## Won’t
 Anything not in the previous list is _not_ supported.
