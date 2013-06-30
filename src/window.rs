@@ -6,28 +6,36 @@ use std::ptr;
 use std::cast;
 use glcore::*;
 // use glcore::consts::GL_VERSION_1_1::*;
-use glcore::consts::GL_VERSION_1_5::*;
+// use glcore::consts::GL_VERSION_1_5::*;
 use glcore::consts::GL_VERSION_2_0::*;
 // use glcore::functions::GL_VERSION_1_0::*;
-use glcore::functions::GL_VERSION_1_5::*;
+// use glcore::functions::GL_VERSION_1_5::*;
 use glcore::functions::GL_VERSION_2_0::*;
 // use glcore::functions::GL_VERSION_3_0::*;
 // use glcore::types::GL_VERSION_1_5::*;
-use glcore::types::GL_VERSION_1_0::*;
+// use glcore::types::GL_VERSION_1_0::*;
 use nalgebra::traits::transpose::Transpose;
 use nalgebra::mat::Mat4;
 use nalgebra::vec::Vec3;
+use camera::{Camera, ArcBall};
 use object::Object;
 use vertices::*;
 use shaders::*;
 
+pub enum Light
+{
+  Absolute(Vec3<GLfloat>),
+  StickToCamera
+}
 
 pub struct Window
 {
-  objects:       ~[@mut Object],
-  light:         i32,
-  window:        @mut glfw::Window,
-  loop_callback: ~fn(&mut Window)
+  priv objects:       ~[@mut Object],
+  priv light:         i32,
+  priv light_mode:    Light,
+  priv window:        @mut glfw::Window,
+  priv camera:        Camera,
+  priv loop_callback: ~fn(&mut Window)
 }
 
 impl Window
@@ -41,19 +49,38 @@ impl Window
     res
   }
 
+  pub fn objects<'r>(&'r self) -> &'r ~[@mut Object]
+  { &self.objects }
+
   pub fn exec_callback(&mut self)
   { (self.loop_callback)(self) }
 
   pub fn set_loop_callback(&mut self, callback: ~fn(&mut Window))
   { self.loop_callback = callback }
 
-  pub fn set_light(&mut self, pos: Vec3<GLfloat>)
+  pub fn set_light(&mut self, pos: Light)
   {
-    unsafe { glUniform3f(self.light, pos.at[0], pos.at[1], pos.at[2]) }
+    let camera_pos = self.camera.position();
+    match pos
+    {
+      Absolute(p)   => self.set_light_pos(&p),
+      StickToCamera => self.set_light_pos(&camera_pos)
+    }
+
+    self.light_mode = pos;
   }
+
+  fn set_light_pos(&mut self, pos: &Vec3<GLfloat>)
+  { unsafe { glUniform3f(self.light, pos.at[0], pos.at[1], pos.at[2]) } }
+
+  // FIXME: this is not very well supported yet
+  // FIXME: pub fn set_camera(&mut self, mode: CameraMode)
+  // FIXME: { self.camera.set_mode(mode) }
 
   pub fn spawn(callback: ~fn(&mut Window))
   {
+    glfw::set_error_callback(error_callback);
+
     do glfw::spawn {
       // The initialization is not really my code (see README)
       glfw::window_hint::context_version_major(3);
@@ -152,13 +179,20 @@ impl Window
         glGetUniformLocation(shader_program, str::as_c_str("light_position", |s| s))
       };
 
-      let mut usr_window = Window{ objects:       ~[],
-                                   window:        window,
-                                   loop_callback: |_| {},
-                                   light:         light_location };
-      callback(&mut usr_window);
+      let usr_window = @mut Window{ objects:       ~[],
+                                    window:        window,
+                                    camera:        Camera::new(
+                                                     ArcBall(Vec3::new([2.0, 2.0, 2.0]),
+                                                             Vec3::new([0.0, 0.0, 0.0]),
+                                                             40.0)
+                                                   ),
+                                    loop_callback: |_| {},
+                                    light:         light_location,
+                                    light_mode:    Absolute(Vec3::new([0.0, 10.0, 0.0])) };
 
-      usr_window.set_light(Vec3::new([0.0, 0.0, 0.0]));
+      callback(usr_window);
+
+      usr_window.set_light(usr_window.light_mode);
 
       let color_location = unsafe {
         glGetUniformLocation(shader_program, str::as_c_str("color", |s| s))
@@ -176,13 +210,30 @@ impl Window
         glGetUniformLocation(shader_program, str::as_c_str("projection", |s| s))
       };
 
-      window.set_size_callback(|win, w, h| { resize_callback(win, w as i32, h as i32, proj_location) });
+      let view_location = unsafe {
+        glGetUniformLocation(shader_program, str::as_c_str("view", |s| s))
+      };
 
+      // setup callbacks
+      window.set_size_callback(|win, w, h| { resize_callback(win, w as i32, h as i32, proj_location) });
+      window.set_key_callback(|_, a, b, c, d| usr_window.key_callback(a, b, c, d));
+      window.set_mouse_button_callback(|_, b, a, m| usr_window.mouse_button_callback(b, a, m));
+      window.set_cursor_pos_callback(|_, xpos, ypos| usr_window.cursor_pos_callback(xpos, ypos));
+      window.set_scroll_callback(|_, xoff, yoff| usr_window.scroll_callback(xoff, yoff));  
+
+      // unsafe { glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); }
       while !window.should_close() {
         // Poll events
         glfw::poll_events();
 
         usr_window.exec_callback();
+        usr_window.camera.upload(view_location);
+
+        match usr_window.light_mode
+        {
+          StickToCamera => usr_window.set_light(StickToCamera),
+          _             => { }
+        }
 
         // Clear the screen to black
         unsafe {
@@ -191,9 +242,11 @@ impl Window
           glClear(GL_DEPTH_BUFFER_BIT);
 
           for usr_window.objects.iter().advance |o|
-          { o.upload(color_location,
+          {
+            o.upload(color_location,
                      transform_location,
-                     normal_transform_location) }
+                     normal_transform_location)
+          }
         }
 
         // Swap buffers
@@ -213,13 +266,29 @@ impl Window
     }
   }
 
-  /*
-  pub fn loop()
+  fn key_callback(&mut self,
+                  key:    libc::c_int,
+                  _:      libc::c_int,
+                  action: libc::c_int,
+                  _:      libc::c_int)
   {
-    while !window.should_close()
-    { glfw::poll_events(); }
+      if action == glfw::PRESS && key == glfw::KEY_ESCAPE
+      { self.window.set_should_close(true); }
+
+      self.camera.handle_keyboard(key as int, action as int);
   }
-  */
+
+  fn cursor_pos_callback(&mut self, xpos: float, ypos: float)
+  { self.camera.handle_cursor_pos(xpos, ypos); }
+
+  fn scroll_callback(&mut self, xoff: float, yoff: float)
+  { self.camera.handle_scroll(xoff, yoff); }
+
+  fn mouse_button_callback(&mut self,
+                           button: libc::c_int,
+                           action: libc::c_int,
+                           mods:   libc::c_int)
+  { self.camera.handle_mouse_button(button as int, action as int, mods as int); }
 }
 
 fn resize_callback(_: &glfw::Window, w: i32, h: i32, proj_location: i32)
@@ -227,7 +296,7 @@ fn resize_callback(_: &glfw::Window, w: i32, h: i32, proj_location: i32)
   let fov    = (45.0 as GLfloat).to_radians();
   let aspect = w as GLfloat / (h as GLfloat);
   let zfar   = 1024.0;
-  let znear  = 1.0;
+  let znear  = 0.001;
 
   // adjust the viewport to the full window
   unsafe { glViewport(0, 0, w, h) }
@@ -249,16 +318,6 @@ fn resize_callback(_: &glfw::Window, w: i32, h: i32, proj_location: i32)
                        GL_FALSE,
                        ptr::to_unsafe_ptr(&proj.mij[0]));
   }
-}
-
-fn key_callback(window: &glfw::Window,
-                key:    libc::c_int,
-                _:      libc::c_int,
-                action: libc::c_int,
-                _:      libc::c_int)
-{
-    if action == glfw::PRESS && key == glfw::KEY_ESCAPE
-    { window.set_should_close(true); }
 }
 
 fn error_callback(_: libc::c_int, description: ~str)

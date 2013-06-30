@@ -1,20 +1,21 @@
 pub static vertex_src: &'static str =
-   "#version 150                                                    \n\
-    in vec3 position;                                               \n\
-    in vec3 normal;                                                 \n\
-    in vec3 color;                                                  \n\
-    out vec3 Color;                                                 \n\
-    out vec3 ws_normal;                                             \n\
-    out vec3 ws_position;                                           \n\
-    uniform mat4 projection;                                        \n\
-    uniform mat4 transform;                                         \n\
-    uniform mat3 ntransform;                                        \n\
-    void main() {                                                   \n\
-        Color       = color;                                        \n\
-        vec4 pos4   = transform * vec4(position, 1.0);              \n\
-        ws_position = pos4.xyz;                                     \n\
-        gl_Position = projection * transform * vec4(position, 1.0); \n\
-        ws_normal   = normalize(ntransform * normal);               \n\
+   "#version 150                                                           \n\
+    in vec3 position;                                                      \n\
+    in vec3 normal;                                                        \n\
+    in vec3 color;                                                         \n\
+    out vec3 Color;                                                        \n\
+    out vec3 ws_normal;                                                    \n\
+    out vec3 ws_position;                                                  \n\
+    uniform mat4 projection;                                               \n\
+    uniform mat4 view;                                                     \n\
+    uniform mat4 transform;                                                \n\
+    uniform mat3 ntransform;                                               \n\
+    void main() {                                                          \n\
+        Color       = color;                                               \n\
+        vec4 pos4   = transform * vec4(position, 1.0);                     \n\
+        ws_position = pos4.xyz;                                            \n\
+        gl_Position = projection * view * transform * vec4(position, 1.0); \n\
+        ws_normal   = normalize(ntransform * normal);                      \n\
     }";
 
 // phong lighting (heavily) inspired
