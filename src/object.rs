@@ -1,3 +1,5 @@
+use std::sys;
+use std::libc;
 use std::num::One;
 use std::ptr;
 use glcore::types::GL_VERSION_1_0::*;
@@ -13,22 +15,38 @@ use nalgebra::vec::Vec3;
 
 type Transform3d = Transform<Rotmat<Mat3<GLfloat>>, Vec3<GLfloat>>;
 
+pub struct GeometryIndices
+{
+  priv offset: uint,
+  priv size:   i32
+}
+
+impl GeometryIndices
+{
+  pub fn new(offset: uint, size: i32) -> GeometryIndices
+  {
+    GeometryIndices {
+      offset: offset,
+      size:   size
+    }
+  }
+}
+
 pub struct Object
 {
   priv transform: Transform3d,
-  priv vertices: [i32, ..2],
-  priv color:    [f32, ..3],
-
+  priv color:     Vec3<f32>,
+  priv geometry:  GeometryIndices
 }
 
 impl Object
 {
-  pub fn new(v1: i32, v2: i32, r: f32, g: f32, b: f32) -> Object
+  pub fn new(geometry: GeometryIndices, r: f32, g: f32, b: f32) -> Object
   {
     Object {
       transform: One::one(),
-      vertices: [v1, v2],
-      color:    [r, g, b]
+      geometry:  geometry,
+      color:     Vec3::new([r, g, b])
     }
   }
 
@@ -54,8 +72,11 @@ impl Object
                          GL_FALSE,
                          ptr::to_unsafe_ptr(&formated_ntransform.mij[0]));
 
-      glUniform3f(color_location, self.color[0], self.color[1], self.color[2]);
-      glDrawArrays(GL_TRIANGLES, self.vertices[0], self.vertices[1]);
+      glUniform3f(color_location, self.color.at[0], self.color.at[1], self.color.at[2]);
+      glDrawElements(GL_TRIANGLES,
+                     self.geometry.size,
+                     GL_UNSIGNED_INT,
+                     self.geometry.offset * sys::size_of::<GLuint>() as *libc::c_void);
     }
   }
 
@@ -64,9 +85,9 @@ impl Object
 
   pub fn set_color(@mut self, r: f32, g: f32, b: f32) -> @mut Object
   {
-    self.color[0] = r;
-    self.color[1] = g;
-    self.color[2] = b;
+    self.color.at[0] = r;
+    self.color.at[1] = g;
+    self.color.at[2] = b;
 
     self
   }

@@ -17,22 +17,19 @@ with one-liners.
 
 ## Features
 All features are one-liners.
-  - open a window.
-  - display a box.
+  - open a window with a default arc-ball camera and a point light.
+  - display a unit box, sphere, cone or cylinder (they will be resizable soon).
   - change an object's color.
   - change an object's transform (we use the **nalgebra** library to do that).
     An object cannot be scaled though.
 
 That’s all.
-Other geometric primitive (ball, cone, cylinder), and camera (fps, arc-ball)
-will be added soon.
-One light (yes, only one!) will be added soon.
 
 ## Won’t
 Anything not in the previous list is _not_ supported.
-In particular common features like texturing, mesh loading, and coffee making
-are not supported and wont be unless someone manages to write them in one line.
-Don’t hesitate to contribute =)
+In particular common features like texturing, custom shader loading, and coffee
+making are not supported and wont be unless someone manages to write them in
+one line. Don’t hesitate to contribute =)
 
 
 ## Contributions

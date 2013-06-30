@@ -12,6 +12,14 @@ extern mod nalgebra;
 
 pub mod window;
 pub mod object;
-pub mod vertices;
 pub mod shaders;
 pub mod camera;
+pub mod obj;
+
+pub mod builtins
+{
+  pub mod sphere_obj;
+  pub mod cube_obj;
+  pub mod cone_obj;
+  pub mod cylinder_obj;
+}

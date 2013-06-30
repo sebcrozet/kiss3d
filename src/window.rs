@@ -4,22 +4,28 @@ use std::sys;
 use std::str;
 use std::ptr;
 use std::cast;
+use std::hashmap::HashMap;
 use glcore::*;
-// use glcore::consts::GL_VERSION_1_1::*;
-// use glcore::consts::GL_VERSION_1_5::*;
-use glcore::consts::GL_VERSION_2_0::*;
-// use glcore::functions::GL_VERSION_1_0::*;
-// use glcore::functions::GL_VERSION_1_5::*;
+use glcore::consts::GL_VERSION_1_1::*;
+use glcore::consts::GL_VERSION_1_5::*;
+// use glcore::consts::GL_VERSION_2_0::*;
+use glcore::functions::GL_VERSION_1_0::*;
+use glcore::functions::GL_VERSION_1_5::*;
 use glcore::functions::GL_VERSION_2_0::*;
 // use glcore::functions::GL_VERSION_3_0::*;
+use glcore::functions::GL_ARB_vertex_array_object::*;
 // use glcore::types::GL_VERSION_1_5::*;
 // use glcore::types::GL_VERSION_1_0::*;
 use nalgebra::traits::transpose::Transpose;
 use nalgebra::mat::Mat4;
 use nalgebra::vec::Vec3;
 use camera::{Camera, ArcBall};
-use object::Object;
-use vertices::*;
+use object::{GeometryIndices, Object};
+use builtins::sphere_obj;
+use builtins::cube_obj;
+use builtins::cone_obj;
+use builtins::cylinder_obj;
+use obj;
 use shaders::*;
 
 pub enum Light
@@ -35,6 +41,7 @@ pub struct Window
   priv light_mode:    Light,
   priv window:        @mut glfw::Window,
   priv camera:        Camera,
+  priv geometries:    HashMap<~str, GeometryIndices>,
   priv loop_callback: @fn(&mut Window)
 }
 
@@ -42,7 +49,46 @@ impl Window
 {
   pub fn add_cube(&mut self) -> @mut Object
   {
-    let res = @mut Object::new(cube_begin, cube_end, 1.0, 1.0, 1.0);
+    let res = @mut Object::new(*self.geometries.find(&~"cube").unwrap(),
+                               1.0,
+                               1.0,
+                               1.0);
+
+    self.objects.push(res);
+
+    res
+  }
+
+  pub fn add_sphere(&mut self) -> @mut Object
+  {
+    let res = @mut Object::new(*self.geometries.find(&~"sphere").unwrap(),
+                               0.3,
+                               0.3,
+                               0.3);
+
+    self.objects.push(res);
+
+    res
+  }
+
+  pub fn add_cone(&mut self) -> @mut Object
+  {
+    let res = @mut Object::new(*self.geometries.find(&~"cone").unwrap(),
+                               0.3,
+                               0.3,
+                               0.3);
+
+    self.objects.push(res);
+
+    res
+  }
+
+  pub fn add_cylinder(&mut self) -> @mut Object
+  {
+    let res = @mut Object::new(*self.geometries.find(&~"cylinder").unwrap(),
+                               0.3,
+                               0.3,
+                               0.3);
 
     self.objects.push(res);
 
@@ -77,6 +123,41 @@ impl Window
   // FIXME: pub fn set_camera(&mut self, mode: CameraMode)
   // FIXME: { self.camera.set_mode(mode) }
 
+  fn parse_builtins() -> (HashMap<~str, GeometryIndices>,
+                          ~[GLfloat],
+                          ~[GLfloat],
+                          ~[GLuint])
+  {
+    // FIXME: this function is _really_ uggly.
+
+    // load
+    let (cv, cn, icv) = obj::parse(cube_obj::cube_obj);
+    let (sv, sn, isv) = obj::parse(sphere_obj::sphere_obj);
+    let (pv, pn, ipv) = obj::parse(cone_obj::cone_obj);
+    let (yv, yn, iyv) = obj::parse(cylinder_obj::cylinder_obj);
+
+    let shift_isv = isv.map(|i| i + cv.len() / 3 as GLuint);
+    let shift_ipv = ipv.map(|i| i + (sv.len() + cv.len()) / 3 as GLuint);
+    let shift_iyv = iyv.map(|i| i + (sv.len() + cv.len() + pv.len()) / 3 as GLuint);
+
+    // register draw informations
+    let mut hmap = HashMap::new();
+
+    hmap.insert(~"cube",   GeometryIndices::new(0, icv.len() as i32));
+    hmap.insert(~"sphere", GeometryIndices::new(icv.len(), isv.len() as i32));
+    hmap.insert(~"cone",   GeometryIndices::new(icv.len() + isv.len(), ipv.len() as i32));
+    hmap.insert(~"cylinder", GeometryIndices::new(
+        icv.len() + isv.len() + ipv.len(),
+        iyv.len() as i32)
+    );
+
+    // concatenate everything
+    (hmap,
+     cv + sv + pv + yv,
+     cn + sn + pn + yn,
+     icv + shift_isv + shift_ipv + shift_iyv)
+  }
+
   pub fn spawn(callback: ~fn(&mut Window))
   {
     glfw::set_error_callback(error_callback);
@@ -91,7 +172,7 @@ impl Window
       let window = @mut glfw::Window::create(800, 600, "kiss3d", glfw::Windowed).unwrap();
 
       window.make_context_current();
-
+ // FIXME
       unsafe {
         glFrontFace(GL_CCW);
         glEnable(GL_CULL_FACE);
@@ -106,14 +187,26 @@ impl Window
         glBindVertexArray(vao);
       }
 
+      let (builtins, vbuf, nbuf, vibuf) = Window::parse_builtins(); 
+
       // Create a Vertex Buffer Object and copy the vertex data to it
       let vertices_buf: GLuint = 0;
       unsafe {
         glGenBuffers(1, &vertices_buf);
         glBindBuffer(GL_ARRAY_BUFFER, vertices_buf);
         glBufferData(GL_ARRAY_BUFFER,
-                     (vertices.len() * sys::size_of::<GLfloat>()) as GLsizeiptr,
-                     cast::transmute(&vertices[0]),
+                     (vbuf.len() * sys::size_of::<GLfloat>()) as GLsizeiptr,
+                     cast::transmute(&vbuf[0]),
+                     GL_STATIC_DRAW);
+      }
+
+      let vertices_index_buf: GLuint = 0;
+      unsafe {
+        glGenBuffers(1, &vertices_index_buf);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertices_index_buf);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     (vibuf.len() * sys::size_of::<GLuint>()) as GLsizeiptr,
+                     cast::transmute(&vibuf[0]),
                      GL_STATIC_DRAW);
       }
 
@@ -123,8 +216,8 @@ impl Window
         glGenBuffers(1, &normals_buf);
         glBindBuffer(GL_ARRAY_BUFFER, normals_buf);
         glBufferData(GL_ARRAY_BUFFER,
-                     (normals.len() * sys::size_of::<GLfloat>()) as GLsizeiptr,
-                     cast::transmute(&normals[0]),
+                     (nbuf.len() * sys::size_of::<GLfloat>()) as GLsizeiptr,
+                     cast::transmute(&nbuf[0]),
                      GL_STATIC_DRAW);
       }
 
@@ -157,6 +250,7 @@ impl Window
       unsafe {
         glEnableVertexAttribArray(pos_attrib);
         glBindBuffer(GL_ARRAY_BUFFER, vertices_buf);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertices_index_buf);
         glVertexAttribPointer(pos_attrib,
                               3,
                               GL_FLOAT,
@@ -181,16 +275,19 @@ impl Window
         glGetUniformLocation(shader_program, str::as_c_str("light_position", |s| s))
       };
 
-      let usr_window = @mut Window{ objects:       ~[],
-                                    window:        window,
-                                    camera:        Camera::new(
-                                                     ArcBall(Vec3::new([2.0, 2.0, 2.0]),
-                                                             Vec3::new([0.0, 0.0, 0.0]),
-                                                             40.0)
-                                                   ),
-                                    loop_callback: |_| {},
-                                    light:         light_location,
-                                    light_mode:    Absolute(Vec3::new([0.0, 10.0, 0.0])) };
+      let usr_window = @mut Window {
+        objects:       ~[],
+        window:        window,
+        camera:        Camera::new(
+                          ArcBall(Vec3::new([2.0, 2.0, 2.0]),
+                                  Vec3::new([0.0, 0.0, 0.0]),
+                                  40.0)
+                       ),
+        loop_callback: |_| {},
+        light:         light_location,
+        light_mode:    Absolute(Vec3::new([0.0, 10.0, 0.0])),
+        geometries:    builtins
+      };
 
       callback(usr_window);
 
@@ -298,7 +395,7 @@ fn resize_callback(_: &glfw::Window, w: i32, h: i32, proj_location: i32)
   let fov    = (45.0 as GLfloat).to_radians();
   let aspect = w as GLfloat / (h as GLfloat);
   let zfar   = 1024.0;
-  let znear  = 0.001;
+  let znear  = 0.1;
 
   // adjust the viewport to the full window
   unsafe { glViewport(0, 0, w, h) }

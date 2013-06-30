@@ -12,7 +12,7 @@ all:
 test:
 	mkdir -p $(kiss3d_bin_path)
 	$(build_cmd) src/demo/window.rs 
-	$(build_cmd) src/demo/cube.rs 
+	$(build_cmd) src/demo/primitives.rs 
 
 deps:
 	make -C glfw-rs
