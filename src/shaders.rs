@@ -35,16 +35,16 @@ pub static fragment_src: &'static str =
       vec3 R = normalize(-reflect(L, ws_normal));         \n\
                                                           \n\
       //calculate Ambient Term:                           \n\
-      vec4 Iamb = vec4(0.1, 0.1, 0.1, 1.0);               \n\
+      vec4 Iamb = vec4(1.0, 1.0, 1.0, 1.0);               \n\
                                                           \n\
       //calculate Diffuse Term:                           \n\
-      vec4 Idiff = vec4(0.5, 0.5, 0.5, 1.0) * max(dot(ws_normal,L), 0.0); \n\
+      vec4 Idiff = vec4(1.0, 1.0, 1.0, 1.0) * max(dot(ws_normal,L), 0.0); \n\
       Idiff = clamp(Idiff, 0.0, 1.0);                                     \n\
                                                                           \n\
       // calculate Specular Term:                                         \n\
-      vec4 Ispec = vec4(0.1, 0.1, 0.1, 1.0)                               \n\
-                   * pow(max(dot(R, E), 0.0), 0.3 * 10.0);                \n\
-      Ispec = clamp(Ispec, 0.0, 1.0);                                     \n\
+      // vec4 Ispec = vec4(0.6, 0.6, 0.6, 1.0)                            \n\
+      //              * pow(max(dot(R, E), 0.0), 35.0);                   \n\
+      // Ispec = clamp(Ispec, 0.0, 1.0);                                  \n\
                                                                           \n\
-      outColor = vec4(color, 1.0) + Iamb + Idiff + Ispec;                 \n\
+      outColor = (vec4(color, 1.0) + Iamb + Idiff) / 3;                   \n\
     }";
