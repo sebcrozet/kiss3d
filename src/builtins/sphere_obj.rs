@@ -1,4 +1,4 @@
-pub static sphere_obj: &'static str =
+pub static SPHERE_OBJ: &'static str =
 "
 # Blender v2.67 (sub 1) OBJ File: ''\n\
 # www.blender.org\n\

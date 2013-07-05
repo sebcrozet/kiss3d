@@ -127,10 +127,10 @@ impl Window
     // FIXME: this function is _really_ uggly.
 
     // load
-    let (cv, cn, icv) = obj::parse(cube_obj::cube_obj);
-    let (sv, sn, isv) = obj::parse(sphere_obj::sphere_obj);
-    let (pv, pn, ipv) = obj::parse(cone_obj::cone_obj);
-    let (yv, yn, iyv) = obj::parse(cylinder_obj::cylinder_obj);
+    let (cv, cn, icv) = obj::parse(cube_obj::CUBE_OBJ);
+    let (sv, sn, isv) = obj::parse(sphere_obj::SPHERE_OBJ);
+    let (pv, pn, ipv) = obj::parse(cone_obj::CONE_OBJ);
+    let (yv, yn, iyv) = obj::parse(cylinder_obj::CYLINDER_OBJ);
 
     let shift_isv = isv.map(|i| i + cv.len() / 3 as GLuint);
     let shift_ipv = ipv.map(|i| i + (sv.len() + cv.len()) / 3 as GLuint);
@@ -220,14 +220,14 @@ impl Window
       // Create and compile the vertex shader
       let vertex_shader = unsafe { glCreateShader(GL_VERTEX_SHADER) };
       unsafe {
-        glShaderSource(vertex_shader, 1, &str::as_c_str(vertex_src, |s|s), ptr::null());
+        glShaderSource(vertex_shader, 1, &str::as_c_str(VERTEX_SRC, |s|s), ptr::null());
         glCompileShader(vertex_shader);
       }
 
       // Create and compile the fragment shader
       let fragment_shader = unsafe { glCreateShader(GL_FRAGMENT_SHADER) };
       unsafe {
-        glShaderSource(fragment_shader, 1, &str::as_c_str(fragment_src, |s|s), ptr::null());
+        glShaderSource(fragment_shader, 1, &str::as_c_str(FRAGMENT_SRC, |s|s), ptr::null());
         glCompileShader(fragment_shader);
       }
 

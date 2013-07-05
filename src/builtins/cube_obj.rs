@@ -1,4 +1,4 @@
-pub static cube_obj: &'static str =
+pub static CUBE_OBJ: &'static str =
 "
 v  -0.5  -0.5  -0.5\n\
 v  -0.5  -0.5  0.5\n\

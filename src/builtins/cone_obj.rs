@@ -1,4 +1,4 @@
-pub static cone_obj: &'static str =
+pub static CONE_OBJ: &'static str =
 "
 # Blender v2.67 (sub 1) OBJ File: ''\n\
 # www.blender.org\n\

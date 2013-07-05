@@ -1,4 +1,4 @@
-pub static vertex_src: &'static str =
+pub static VERTEX_SRC: &'static str =
    "#version 150                                                           \n\
     in vec3 position;                                                      \n\
     in vec3 normal;                                                        \n\
@@ -22,7 +22,7 @@ pub static vertex_src: &'static str =
 
 // phong lighting (heavily) inspired
 // by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
-pub static fragment_src: &'static str =
+pub static FRAGMENT_SRC: &'static str =
    "#version 150                     \n\
     uniform vec3 color;              \n\
     uniform vec3 light_position;     \n\

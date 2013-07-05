@@ -1,4 +1,4 @@
-pub static cylinder_obj: &'static str =
+pub static CYLINDER_OBJ: &'static str =
 "
 # Blender v2.67 (sub 1) OBJ File: ''\n\
 # www.blender.org\n\
