@@ -1,11 +1,11 @@
 pub static VERTEX_SRC: &'static str =
-   "#version 150                                                           \n\
-    in vec3 position;                                                      \n\
-    in vec3 normal;                                                        \n\
-    in vec3 color;                                                         \n\
-    out vec3 Color;                                                        \n\
-    out vec3 ws_normal;                                                    \n\
-    out vec3 ws_position;                                                  \n\
+   "#version 130                                                           \n\
+    attribute vec3 position;                                                      \n\
+    attribute vec3 normal;                                                        \n\
+    attribute vec3 color;                                                         \n\
+    varying vec3 Color;                                                        \n\
+    varying vec3 ws_normal;                                                    \n\
+    varying vec3 ws_position;                                                  \n\
     uniform mat4 projection;                                               \n\
     uniform mat4 view;                                                     \n\
     uniform mat4 transform;                                                \n\
@@ -23,7 +23,7 @@ pub static VERTEX_SRC: &'static str =
 // phong lighting (heavily) inspired
 // by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
 pub static FRAGMENT_SRC: &'static str =
-   "#version 150                     \n\
+   "#version 130                     \n\
     uniform vec3 color;              \n\
     uniform vec3 light_position;     \n\
     in  vec3 ws_normal;              \n\

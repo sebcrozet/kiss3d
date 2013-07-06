@@ -5,7 +5,7 @@ use std::str;
 use std::ptr;
 use std::cast;
 use std::hashmap::HashMap;
-use glcore::*;
+// use glcore::*;
 use glcore::consts::GL_VERSION_1_1::*;
 use glcore::consts::GL_VERSION_1_5::*;
 use glcore::consts::GL_VERSION_2_0::*;
@@ -160,15 +160,10 @@ impl Window
 
     do glfw::spawn {
       // The initialization is not really my code (see README)
-      glfw::window_hint::context_version_major(3);
-      glfw::window_hint::context_version_minor(2);
-      glfw::window_hint::opengl_profile(glfw::OPENGL_CORE_PROFILE);
-      glfw::window_hint::opengl_forward_compat(true);
-
       let window = @mut glfw::Window::create(800, 600, "kiss3d", glfw::Windowed).unwrap();
 
       window.make_context_current();
- // FIXME
+
       unsafe {
         glFrontFace(GL_CCW);
         glEnable(GL_CULL_FACE);
