@@ -1,11 +1,11 @@
 pub static VERTEX_SRC: &'static str =
-   "#version 130                                                           \n\
-    attribute vec3 position;                                                      \n\
-    attribute vec3 normal;                                                        \n\
-    attribute vec3 color;                                                         \n\
-    varying vec3 Color;                                                        \n\
-    varying vec3 ws_normal;                                                    \n\
-    varying vec3 ws_position;                                                  \n\
+   "#version 120                                                           \n\
+    attribute vec3 position;                                               \n\
+    attribute vec3 normal;                                                 \n\
+    attribute vec3 color;                                                  \n\
+    varying vec3 Color;                                                    \n\
+    varying vec3 ws_normal;                                                \n\
+    varying vec3 ws_position;                                              \n\
     uniform mat4 projection;                                               \n\
     uniform mat4 view;                                                     \n\
     uniform mat4 transform;                                                \n\
@@ -23,12 +23,12 @@ pub static VERTEX_SRC: &'static str =
 // phong lighting (heavily) inspired
 // by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
 pub static FRAGMENT_SRC: &'static str =
-   "#version 130                     \n\
+   "#version 120                     \n\
     uniform vec3 color;              \n\
     uniform vec3 light_position;     \n\
-    in  vec3 ws_normal;              \n\
-    in  vec3 ws_position;            \n\
-    out vec4 outColor;               \n\
+    varying vec3 ws_normal;          \n\
+    varying vec3 ws_position;        \n\
+    varying vec4 outColor;           \n\
     void main() {                    \n\
       vec3 L = normalize(light_position - ws_position);   \n\
       vec3 E = normalize(-ws_position);                   \n\
@@ -46,5 +46,5 @@ pub static FRAGMENT_SRC: &'static str =
       //              * pow(max(dot(R, E), 0.0), 35.0);                   \n\
       // Ispec = clamp(Ispec, 0.0, 1.0);                                  \n\
                                                                           \n\
-      outColor = (vec4(color, 1.0) + Iamb + Idiff) / 3;                   \n\
+      gl_FragColor = (vec4(color, 1.0) + Iamb + Idiff) / 3;               \n\
     }";

@@ -224,6 +224,34 @@ impl Window
       unsafe {
         glShaderSource(fragment_shader, 1, &str::as_c_str(FRAGMENT_SRC, |s|s), ptr::null());
         glCompileShader(fragment_shader);
+
+        let compiled: i32 = 0;
+
+        glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &compiled);
+
+        if(compiled == 0)
+        {
+           println("Vertex shader not compiled.");
+           // printShaderInfoLog(fragmentShader);
+           let info_log_len = 0;
+
+           glGetShaderiv(fragment_shader, GL_INFO_LOG_LENGTH, &info_log_len);
+
+           if (info_log_len > 0)
+           {
+              // error check for fail to allocate memory omitted
+              let chars_written = 0;
+              let mut info_log = ~"";
+
+              str::raw::set_len(&mut info_log, 1000);
+
+              do info_log.as_c_str |c_str|
+              {
+                glGetShaderInfoLog(fragment_shader, info_log_len, &chars_written, c_str);
+              }
+              println("InfoLog : " + info_log);
+           }
+        }
       }
 
       // Link the vertex and fragment shader into a shader program
