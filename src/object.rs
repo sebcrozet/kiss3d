@@ -174,6 +174,12 @@ impl Object
   pub fn transformation<'r>(&'r mut self) -> &'r mut Transform3d
   { &mut self.transform }
 
+  pub fn geometry<'r>(&'r self) -> &'r Option<Geometry>
+  { &'r self.geometry }
+
+  pub fn geometry_mut<'r>(&'r mut self) -> &'r mut Option<Geometry>
+  { &'r mut self.geometry }
+
   pub fn set_color(@mut self, r: f32, g: f32, b: f32) -> @mut Object
   {
     self.color.at[0] = r;
