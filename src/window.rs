@@ -315,6 +315,8 @@ impl Window
       window.set_cursor_pos_callback(|_, xpos, ypos| usr_window.cursor_pos_callback(xpos, ypos));
       window.set_scroll_callback(|_, xoff, yoff| usr_window.scroll_callback(xoff, yoff));  
 
+      resize_callback(window, 800, 600, proj_location);
+
       // unsafe { glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); }
       while !window.should_close() {
         // Poll events
