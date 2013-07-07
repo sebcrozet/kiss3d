@@ -309,9 +309,6 @@ impl Window
       // The initialization is not really my code (see README)
       let window = @mut glfw::Window::create(800, 600, title, glfw::Windowed).unwrap();
 
-      if hide
-      { window.hide() }
-
       window.make_context_current();
 
       unsafe {
@@ -473,6 +470,9 @@ impl Window
 
       resize_callback(window, 800, 600, proj_location);
 
+      if hide
+      { window.hide() }
+
       // unsafe { glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); }
       while !window.should_close() {
         // Poll events
@@ -555,7 +555,6 @@ fn resize_callback(_: &glfw::Window, w: i32, h: i32, proj_location: i32)
 
   // adjust the viewport to the full window
   unsafe { glViewport(0, 0, w, h) }
-  println(w.to_str() + " " + h.to_str());
 
   // adjust the projection transformation
   let mut proj = Mat4::new::<GLfloat>(
