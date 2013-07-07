@@ -48,6 +48,12 @@ pub struct Window
 
 impl Window
 {
+  pub fn close(&mut self)
+  { self.window.set_should_close(true) }
+
+  pub fn hide(&mut self)
+  { self.hide() }
+
   pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object
   {
     let res = @mut Object::new(*self.geometries.find(&~"cube").unwrap(),
@@ -286,13 +292,22 @@ impl Window
      icv + shift_isv + shift_ipv + shift_iyv)
   }
 
+  pub fn spawn_hidden(title: ~str, callback: ~fn(&mut Window))
+  { Window::do_spawn(title, true, callback) }
+
   pub fn spawn(title: ~str, callback: ~fn(&mut Window))
+  { Window::do_spawn(title, false, callback) }
+
+  fn do_spawn(title: ~str, hide: bool, callback: ~fn(&mut Window))
   {
     glfw::set_error_callback(error_callback);
 
     do glfw::spawn {
       // The initialization is not really my code (see README)
       let window = @mut glfw::Window::create(800, 600, title, glfw::Windowed).unwrap();
+
+      if hide
+      { window.hide() }
 
       window.make_context_current();
 
