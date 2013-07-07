@@ -1,5 +1,6 @@
 use std::num::Zero;
 use std::ptr;
+use glcore::*;
 use glcore::types::GL_VERSION_1_0::*;
 use glcore::consts::GL_VERSION_1_1::*;
 use glcore::functions::GL_VERSION_2_0::*;

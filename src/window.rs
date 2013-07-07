@@ -7,6 +7,16 @@ use std::ptr;
 use std::cast;
 use std::hashmap::HashMap;
 use glcore::*;
+use glcore::consts::GL_VERSION_1_1::*;
+use glcore::consts::GL_VERSION_1_5::*;
+use glcore::consts::GL_VERSION_2_0::*;
+use glcore::functions::GL_VERSION_1_0::*;
+use glcore::functions::GL_VERSION_1_5::*;
+use glcore::functions::GL_VERSION_2_0::*;
+use glcore::functions::GL_VERSION_3_0::*;
+use glcore::functions::GL_ARB_vertex_array_object::*;
+use glcore::types::GL_VERSION_1_5::*;
+use glcore::types::GL_VERSION_1_0::*;
 use nalgebra::traits::transpose::Transpose;
 use nalgebra::mat::Mat4;
 use nalgebra::vec::Vec3;
@@ -527,6 +537,7 @@ fn resize_callback(_: &glfw::Window, w: i32, h: i32, proj_location: i32)
 
   // adjust the viewport to the full window
   unsafe { glViewport(0, 0, w, h) }
+  println(w.to_str() + " " + h.to_str());
 
   // adjust the projection transformation
   let mut proj = Mat4::new::<GLfloat>(
