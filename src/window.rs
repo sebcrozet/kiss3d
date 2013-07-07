@@ -57,6 +57,14 @@ impl Window
   pub fn show(&mut self)
   { self.window.show() }
 
+  pub fn set_wireframe_mode(&mut self, mode: bool)
+  {
+    if mode
+    { unsafe { glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ) } }
+    else
+    { unsafe { glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ) } }
+  }
+
   pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object
   {
     let res = @mut Object::new(*self.geometries.find(&~"cube").unwrap(),
@@ -462,7 +470,6 @@ impl Window
       if hide
       { window.hide() }
 
-      // unsafe { glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); }
       while !window.should_close() {
         // Poll events
         glfw::poll_events();
