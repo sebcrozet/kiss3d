@@ -52,10 +52,10 @@ impl Window
   { self.window.set_should_close(true) }
 
   pub fn hide(&mut self)
-  { self.hide() }
+  { self.window.hide() }
 
   pub fn show(&mut self)
-  { self.show() }
+  { self.window.show() }
 
   pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object
   {
