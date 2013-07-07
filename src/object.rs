@@ -2,10 +2,7 @@ use std::sys;
 use std::libc;
 use std::num::One;
 use std::ptr;
-use glcore::types::GL_VERSION_1_0::*;
-use glcore::functions::GL_VERSION_1_1::*;
-use glcore::functions::GL_VERSION_2_0::*;
-use glcore::consts::GL_VERSION_1_1::*;
+use glcore::*;
 use nalgebra::traits::homogeneous::ToHomogeneous;
 use nalgebra::traits::indexable::Indexable;
 use nalgebra::adaptors::transform::Transform;
@@ -16,19 +13,32 @@ use nalgebra::vec::Vec3;
 type Transform3d = Transform<Rotmat<Mat3<f64>>, Vec3<f64>>;
 type Scale3d     = Mat3<GLfloat>;
 
+pub enum Geometry
+{ VerticesTriangles(~[Vec3<f32>], ~[(GLuint, GLuint, GLuint)]) }
+
 pub struct GeometryIndices
 {
-  priv offset: uint,
-  priv size:   i32
+  priv offset:         uint,
+  priv size:           i32,
+  priv element_buffer: GLuint,
+  priv normal_buffer:  GLuint,
+  priv vertex_buffer:  GLuint
 }
 
 impl GeometryIndices
 {
-  pub fn new(offset: uint, size: i32) -> GeometryIndices
+  pub fn new(offset:         uint,
+             size:           i32,
+             element_buffer: GLuint,
+             normal_buffer:  GLuint,
+             vertex_buffer:  GLuint) -> GeometryIndices
   {
     GeometryIndices {
-      offset: offset,
-      size:   size
+      offset:         offset,
+      size:           size,
+      element_buffer: element_buffer,
+      normal_buffer:  normal_buffer,
+      vertex_buffer:  vertex_buffer
     }
   }
 }
@@ -38,18 +48,20 @@ pub struct Object
   priv scale:     Scale3d,
   priv transform: Transform3d,
   priv color:     Vec3<f32>,
-  priv geometry:  GeometryIndices
+  priv igeometry: GeometryIndices,
+  priv geometry:  Option<Geometry>
 }
 
 impl Object
 {
-  pub fn new(geometry: GeometryIndices,
-             r: f32,
-             g: f32,
-             b: f32,
-             sx: GLfloat,
-             sy: GLfloat,
-             sz: GLfloat) -> Object
+  pub fn new(igeometry: GeometryIndices,
+             r:    f32,
+             g:    f32,
+             b:    f32,
+             sx:   GLfloat,
+             sy:   GLfloat,
+             sz:   GLfloat,
+             geometry: Option<Geometry>) -> Object
   {
     Object {
       scale:     Mat3::new( [
@@ -58,12 +70,15 @@ impl Object
                               0.0, 0.0, sz,
                             ] ),
       transform: One::one(),
+      igeometry: igeometry,
       geometry:  geometry,
       color:     Vec3::new([r, g, b])
     }
   }
 
   pub fn upload(&self,
+                pos_attrib:                u32,
+                normal_attrib:             u32,
                 color_location:            i32,
                 transform_location:        i32,
                 scale_location:            i32,
@@ -124,10 +139,29 @@ impl Object
                          ptr::to_unsafe_ptr(&self.scale.mij[0]));
 
       glUniform3f(color_location, self.color.at[0], self.color.at[1], self.color.at[2]);
+
+      // FIXME: we should not switch the buffers if the last drawn shape uses the same.
+      glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.vertex_buffer);
+      glVertexAttribPointer(pos_attrib,
+                            3,
+                            GL_FLOAT,
+                            GL_FALSE,
+                            3 * sys::size_of::<GLfloat>() as GLsizei,
+                            ptr::null());
+
+      glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.normal_buffer);
+      glVertexAttribPointer(normal_attrib,
+                            3,
+                            GL_FLOAT,
+                            GL_FALSE,
+                            3 * sys::size_of::<GLfloat>() as GLsizei,
+                            ptr::null());
+
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.igeometry.element_buffer);
       glDrawElements(GL_TRIANGLES,
-                     self.geometry.size,
+                     self.igeometry.size,
                      GL_UNSIGNED_INT,
-                     self.geometry.offset * sys::size_of::<GLuint>() as *libc::c_void);
+                     self.igeometry.offset * sys::size_of::<GLuint>() as *libc::c_void);
     }
   }
 
