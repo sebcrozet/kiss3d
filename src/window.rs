@@ -54,6 +54,9 @@ impl Window
   pub fn hide(&mut self)
   { self.hide() }
 
+  pub fn show(&mut self)
+  { self.show() }
+
   pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object
   {
     let res = @mut Object::new(*self.geometries.find(&~"cube").unwrap(),
