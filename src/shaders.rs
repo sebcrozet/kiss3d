@@ -17,7 +17,7 @@ pub static VERTEX_SRC: &'static str =
         vec4 pos4   = transform * scale4 * vec4(position, 1.0);            \n\
         ws_position = pos4.xyz;                                            \n\
         gl_Position = projection * view * transform * scale4 * vec4(position, 1.0); \n\
-        ws_normal   = normalize(ntransform * scale * normal);              \n\
+        ws_normal   = normalize(ntransform * scale * normal);                       \n\
     }";
 
 // phong lighting (heavily) inspired
@@ -32,19 +32,17 @@ pub static FRAGMENT_SRC: &'static str =
     void main() {                    \n\
       vec3 L = normalize(light_position - ws_position);   \n\
       vec3 E = normalize(-ws_position);                   \n\
-      vec3 R = normalize(-reflect(L, ws_normal));         \n\
                                                           \n\
       //calculate Ambient Term:                           \n\
       vec4 Iamb = vec4(1.0, 1.0, 1.0, 1.0);               \n\
                                                           \n\
       //calculate Diffuse Term:                           \n\
-      vec4 Idiff = vec4(1.0, 1.0, 1.0, 1.0) * max(dot(ws_normal,L), 0.0); \n\
-      Idiff = clamp(Idiff, 0.0, 1.0);                                     \n\
-                                                                          \n\
-      // calculate Specular Term:                                         \n\
-      // vec4 Ispec = vec4(0.6, 0.6, 0.6, 1.0)                            \n\
-      //              * pow(max(dot(R, E), 0.0), 35.0);                   \n\
-      // Ispec = clamp(Ispec, 0.0, 1.0);                                  \n\
-                                                                          \n\
-      gl_FragColor = (vec4(color, 1.0) + Iamb + Idiff) / 3;               \n\
+      vec4 Idiff1 = vec4(1.0, 1.0, 1.0, 1.0) * max(dot(ws_normal,L), 0.0);  \n\
+      Idiff1 = clamp(Idiff1, 0.0, 1.0);                                     \n\
+                                                                            \n\
+      // double sided lighting:                                             \n\
+      vec4 Idiff2 = vec4(1.0, 1.0, 1.0, 1.0) * max(dot(-ws_normal,L), 0.0); \n\
+      Idiff2 = clamp(Idiff2, 0.0, 1.0);                                     \n\
+                                                                            \n\
+      gl_FragColor = (vec4(color, 1.0) + Iamb + (Idiff1 + Idiff2) / 2) / 3; \n\
     }";

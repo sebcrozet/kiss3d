@@ -1,7 +1,9 @@
 use std::sys;
 use std::libc;
-use std::num::One;
+use std::num::{One, Zero};
 use std::ptr;
+use std::cast;
+use std::vec;
 use glcore::*;
 use glcore::types::GL_VERSION_1_0::*;
 use glcore::functions::GL_VERSION_1_1::*;
@@ -9,8 +11,11 @@ use glcore::functions::GL_VERSION_1_5::*;
 use glcore::functions::GL_VERSION_2_0::*;
 use glcore::consts::GL_VERSION_1_1::*;
 use glcore::consts::GL_VERSION_1_5::*;
+use nalgebra::traits::scalar_op::ScalarDiv;
 use nalgebra::traits::homogeneous::ToHomogeneous;
 use nalgebra::traits::indexable::Indexable;
+use nalgebra::traits::cross::Cross;
+use nalgebra::traits::norm::Norm;
 use nalgebra::adaptors::transform::Transform;
 use nalgebra::adaptors::rotmat::Rotmat;
 use nalgebra::mat::{Mat3, Mat4};
@@ -20,7 +25,10 @@ type Transform3d = Transform<Rotmat<Mat3<f64>>, Vec3<f64>>;
 type Scale3d     = Mat3<GLfloat>;
 
 pub enum Geometry
-{ VerticesTriangles(~[Vec3<f32>], ~[(GLuint, GLuint, GLuint)]) }
+{
+  VerticesNormalsTriangles(~[Vec3<f32>], ~[Vec3<f32>], ~[(GLuint, GLuint, GLuint)]),
+  Deleted
+}
 
 pub struct GeometryIndices
 {
@@ -55,7 +63,7 @@ pub struct Object
   priv transform: Transform3d,
   priv color:     Vec3<f32>,
   priv igeometry: GeometryIndices,
-  priv geometry:  Option<Geometry>
+  priv geometry:  Geometry
 }
 
 impl Object
@@ -67,7 +75,7 @@ impl Object
              sx:   GLfloat,
              sy:   GLfloat,
              sz:   GLfloat,
-             geometry: Option<Geometry>) -> Object
+             geometry: Geometry) -> Object
   {
     Object {
       scale:     Mat3::new( [
@@ -79,6 +87,28 @@ impl Object
       igeometry: igeometry,
       geometry:  geometry,
       color:     Vec3::new([r, g, b])
+    }
+  }
+
+  pub fn upload_geometry(&mut self)
+  {
+    match self.geometry
+    {
+      VerticesNormalsTriangles(ref v, ref n, _) =>
+      unsafe {
+        glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.vertex_buffer);
+        glBufferSubData(GL_ARRAY_BUFFER,
+                        0,
+                        (v.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
+                        cast::transmute(&v[0]));
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.normal_buffer);
+        glBufferSubData(GL_ARRAY_BUFFER,
+                        0,
+                        (n.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
+                        cast::transmute(&n[0]));
+      },
+      Deleted => { }
     }
   }
 
@@ -174,10 +204,73 @@ impl Object
   pub fn transformation<'r>(&'r mut self) -> &'r mut Transform3d
   { &mut self.transform }
 
-  pub fn geometry<'r>(&'r self) -> &'r Option<Geometry>
+  pub fn modify_geometry(&mut self,
+                         f: &fn(&mut ~[Vec3<f32>],
+                                &mut ~[Vec3<f32>],
+                                &mut ~[(GLuint, GLuint, GLuint)]) -> bool)
+  {
+    if match self.geometry
+    {
+      VerticesNormalsTriangles(ref mut v, ref mut n, ref mut t) => f(v, n, t),
+      Deleted => false
+    }
+    { self.upload_geometry() }
+  }
+
+  // FIXME: replace that by an iterator on vertices?
+  pub fn modify_vertices(&mut self, f: &fn(&mut ~[Vec3<f32>]) -> bool)
+  {
+    if match self.geometry
+    {
+      VerticesNormalsTriangles(ref mut v, _, _) => f(v),
+      Deleted => false
+    }
+    {
+      self.recompute_normals();
+      self.upload_geometry()
+    }
+  }
+
+  pub fn recompute_normals(&mut self)
+  {
+    match self.geometry
+    {
+      VerticesNormalsTriangles(ref vs, ref mut ns, ref ts) =>
+      {
+        let mut divisor = vec::from_elem(vs.len(), 0f32);
+
+        // ... and compute the mean
+        for ns.mut_iter().advance |n|
+        { *n = Zero::zero() }
+
+        // accumulate normals...
+        for ts.iter().advance |&(v1, v2, v3)|
+        {
+          let edge1 = vs[v2] - vs[v1];
+          let edge2 = vs[v3] - vs[v1];
+          let normal = edge1.cross(&edge2).normalized();
+
+          ns[v1] = ns[v1] + normal;
+          ns[v2] = ns[v2] + normal;
+          ns[v3] = ns[v3] + normal;
+
+          divisor[v1] = divisor[v1] + 1.0;
+          divisor[v2] = divisor[v2] + 1.0;
+          divisor[v3] = divisor[v3] + 1.0;
+        }
+
+        // ... and compute the mean
+        for ns.mut_iter().zip(divisor.iter()).advance |(n, divisor)|
+        { n.scalar_div_inplace(divisor) }
+      },
+      Deleted => { }
+    }
+  }
+
+  pub fn geometry<'r>(&'r self) -> &'r Geometry
   { &'r self.geometry }
 
-  pub fn geometry_mut<'r>(&'r mut self) -> &'r mut Option<Geometry>
+  pub fn geometry_mut<'r>(&'r mut self) -> &'r mut Geometry
   { &'r mut self.geometry }
 
   pub fn set_color(@mut self, r: f32, g: f32, b: f32) -> @mut Object

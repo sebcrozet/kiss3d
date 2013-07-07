@@ -21,7 +21,7 @@ use nalgebra::traits::transpose::Transpose;
 use nalgebra::mat::Mat4;
 use nalgebra::vec::Vec3;
 use camera::{Camera, ArcBall};
-use object::{GeometryIndices, Object, VerticesTriangles};
+use object::{GeometryIndices, Object, VerticesNormalsTriangles, Deleted};
 use builtins::sphere_obj;
 use builtins::cube_obj;
 use builtins::cone_obj;
@@ -61,7 +61,7 @@ impl Window
   {
     let res = @mut Object::new(*self.geometries.find(&~"cube").unwrap(),
                                1.0, 1.0, 1.0,
-                               wx, wy, wz, None);
+                               wx, wy, wz, Deleted);
     // FIXME: get the geometry
 
     self.objects.push(res);
@@ -74,7 +74,7 @@ impl Window
     let res = @mut Object::new(*self.geometries.find(&~"sphere").unwrap(),
                                0.3, 0.3, 0.3,
                                r / 0.5, r / 0.5, r / 0.5,
-                               None);
+                               Deleted);
     // FIXME: get the geometry
 
     self.objects.push(res);
@@ -87,7 +87,7 @@ impl Window
     let res = @mut Object::new(*self.geometries.find(&~"cone").unwrap(),
                                0.3, 0.3, 0.3,
                                r / 0.5, h, r / 0.5,
-                               None);
+                               Deleted);
     // FIXME: get the geometry
 
     self.objects.push(res);
@@ -100,7 +100,7 @@ impl Window
     let res = @mut Object::new(*self.geometries.find(&~"cylinder").unwrap(),
                                0.3, 0.3, 0.3,
                                r / 0.5, h, r / 0.5,
-                               None);
+                               Deleted);
     // FIXME: get the geometry
 
     self.objects.push(res);
@@ -112,8 +112,7 @@ impl Window
                   w:            f64,
                   h:            f64,
                   wsubdivs:     uint,
-                  hsubdivs:     uint,
-                  double_sided: bool) -> @mut Object
+                  hsubdivs:     uint) -> @mut Object
   {
     assert!(wsubdivs > 0 && hsubdivs > 0,
             "The number of subdivisions cannot be zero");
@@ -165,16 +164,6 @@ impl Window
         triangles.push(ur_triangle(i as GLuint,
                                    j as GLuint,
                                    (wsubdivs + 1) as GLuint));
-        // ... or four if we are double sided
-        if double_sided
-        {
-          triangles.push(inv_wind(dl_triangle(i as GLuint,
-                                              j as GLuint,
-                                              (wsubdivs + 1) as GLuint)));
-          triangles.push(inv_wind(ur_triangle(i as GLuint,
-                                              j as GLuint,
-                                              (wsubdivs + 1) as GLuint)));
-        }
       }
     }
 
@@ -224,7 +213,7 @@ impl Window
                            element_buf, normal_buf, vertex_buf),
       0.3, 0.3, 0.3,
       1.0, 1.0, 1.0,
-      Some(VerticesTriangles(vertices, triangles))
+      VerticesNormalsTriangles(vertices, normals, triangles)
     );
 
     self.objects.push(res);
@@ -313,7 +302,7 @@ impl Window
 
       unsafe {
         glFrontFace(GL_CCW);
-        glEnable(GL_CULL_FACE);
+        // glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
       }
