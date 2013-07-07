@@ -9,7 +9,7 @@ use kiss3d::window::{Window, StickToCamera};
 
 fn main()
 {
-  do Window::spawn |w| {
+  do Window::spawn(~"Kiss3d: primitives") |w| {
     let c = w.add_cube(1.0, 1.0, 1.0).set_color(random(), random(), random());
     let b = w.add_sphere(0.5).set_color(random(), random(), random());
     let p = w.add_cone(1.0, 0.5).set_color(random(), random(), random());

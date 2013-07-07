@@ -154,13 +154,13 @@ impl Window
      icv + shift_isv + shift_ipv + shift_iyv)
   }
 
-  pub fn spawn(callback: ~fn(&mut Window))
+  pub fn spawn(title: ~str, callback: ~fn(&mut Window))
   {
     glfw::set_error_callback(error_callback);
 
     do glfw::spawn {
       // The initialization is not really my code (see README)
-      let window = @mut glfw::Window::create(800, 600, "kiss3d", glfw::Windowed).unwrap();
+      let window = @mut glfw::Window::create(800, 600, title, glfw::Windowed).unwrap();
 
       window.make_context_current();
 

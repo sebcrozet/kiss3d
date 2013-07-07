@@ -10,7 +10,7 @@ use kiss3d::window::{Window, StickToCamera};
 
 fn main()
 {
-  do Window::spawn |w| {
+  do Window::spawn(~"Kiss3d: scaled primitives") |w| {
     // NOTE: scaling is not possible.
     for uint::iterate(0, 11) |i|
     {
