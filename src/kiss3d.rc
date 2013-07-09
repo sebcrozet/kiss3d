@@ -10,6 +10,7 @@ extern mod std;
 extern mod glfw;
 extern mod glcore;
 extern mod nalgebra;
+extern mod stb_image;
 
 pub mod window;
 pub mod object;
@@ -24,8 +25,3 @@ pub mod builtins
   pub mod cone_obj;
   pub mod cylinder_obj;
 }
-
-#[nolink]
-#[link_args="-lGL"]
-#[cfg(target_os = "linux")]
-extern { }

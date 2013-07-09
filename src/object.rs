@@ -20,6 +20,7 @@ use nalgebra::adaptors::transform::Transform;
 use nalgebra::adaptors::rotmat::Rotmat;
 use nalgebra::mat::{Mat3, Mat4};
 use nalgebra::vec::Vec3;
+use window::Window;
 
 type Transform3d = Transform<Rotmat<Mat3<f64>>, Vec3<f64>>;
 type Scale3d     = Mat3<GLfloat>;
@@ -36,7 +37,8 @@ pub struct GeometryIndices
   priv size:           i32,
   priv element_buffer: GLuint,
   priv normal_buffer:  GLuint,
-  priv vertex_buffer:  GLuint
+  priv vertex_buffer:  GLuint,
+  priv texture_buffer: GLuint
 }
 
 impl GeometryIndices
@@ -45,48 +47,56 @@ impl GeometryIndices
              size:           i32,
              element_buffer: GLuint,
              normal_buffer:  GLuint,
-             vertex_buffer:  GLuint) -> GeometryIndices
+             vertex_buffer:  GLuint,
+             texture_buffer: GLuint) -> GeometryIndices
   {
     GeometryIndices {
       offset:         offset,
       size:           size,
       element_buffer: element_buffer,
       normal_buffer:  normal_buffer,
-      vertex_buffer:  vertex_buffer
+      vertex_buffer:  vertex_buffer,
+      texture_buffer: texture_buffer
     }
   }
 }
 
 pub struct Object
 {
-  priv scale:     Scale3d,
-  priv transform: Transform3d,
-  priv color:     Vec3<f32>,
-  priv igeometry: GeometryIndices,
-  priv geometry:  Geometry
+  priv parent:      @mut Window,
+  priv texture:     GLuint,
+  priv scale:       Scale3d,
+  priv transform:   Transform3d,
+  priv color:       Vec3<f32>,
+  priv igeometry:   GeometryIndices,
+  priv geometry:    Geometry
 }
 
 impl Object
 {
-  pub fn new(igeometry: GeometryIndices,
-             r:    f32,
-             g:    f32,
-             b:    f32,
-             sx:   GLfloat,
-             sy:   GLfloat,
-             sz:   GLfloat,
-             geometry: Geometry) -> Object
+  pub fn new(parent:      @mut Window,
+             igeometry:   GeometryIndices,
+             r:           f32,
+             g:           f32,
+             b:           f32,
+             texture:     GLuint,
+             sx:          GLfloat,
+             sy:          GLfloat,
+             sz:          GLfloat,
+             geometry:    Geometry) -> Object
   {
     Object {
+      parent:    parent,
       scale:     Mat3::new( [
                               sx, 0.0, 0.0,
                               0.0, sy, 0.0,
                               0.0, 0.0, sz,
                             ] ),
-      transform: One::one(),
-      igeometry: igeometry,
-      geometry:  geometry,
-      color:     Vec3::new([r, g, b])
+      transform:   One::one(),
+      igeometry:   igeometry,
+      geometry:    geometry,
+      color:       Vec3::new([r, g, b]),
+      texture:     texture
     }
   }
 
@@ -115,6 +125,7 @@ impl Object
   pub fn upload(&self,
                 pos_attrib:                u32,
                 normal_attrib:             u32,
+                texture_attrib:            u32,
                 color_location:            i32,
                 transform_location:        i32,
                 scale_location:            i32,
@@ -194,6 +205,17 @@ impl Object
                             ptr::null());
 
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.igeometry.element_buffer);
+
+      glBindTexture(GL_TEXTURE_2D, self.texture);
+
+      glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.texture_buffer);
+      glVertexAttribPointer(texture_attrib,
+                            2,
+                            GL_FLOAT,
+                            GL_FALSE,
+                            2 * sys::size_of::<GLfloat>() as GLsizei,
+                            ptr::null());
+
       glDrawElements(GL_TRIANGLES,
                      self.igeometry.size,
                      GL_UNSIGNED_INT,
@@ -278,6 +300,13 @@ impl Object
     self.color.at[0] = r;
     self.color.at[1] = g;
     self.color.at[2] = b;
+
+    self
+  }
+
+  pub fn set_texture(@mut self, path: ~str) -> @mut Object
+  {
+    self.texture = self.parent.add_texture(path);
 
     self
   }

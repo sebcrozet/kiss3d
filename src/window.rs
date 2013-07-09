@@ -17,9 +17,10 @@ use glcore::functions::GL_VERSION_3_0::*;
 use glcore::functions::GL_ARB_vertex_array_object::*;
 use glcore::types::GL_VERSION_1_5::*;
 use glcore::types::GL_VERSION_1_0::*;
+use stb_image::image::*;
 use nalgebra::traits::transpose::Transpose;
 use nalgebra::mat::Mat4;
-use nalgebra::vec::Vec3;
+use nalgebra::vec::{Vec2, Vec3};
 use camera::{Camera, ArcBall};
 use object::{GeometryIndices, Object, VerticesNormalsTriangles, Deleted};
 use builtins::sphere_obj;
@@ -42,6 +43,7 @@ pub struct Window
   priv light_mode:    Light,
   priv window:        @mut glfw::Window,
   priv camera:        Camera,
+  priv textures:      HashMap<~str, GLuint>,
   priv geometries:    HashMap<~str, GeometryIndices>,
   priv loop_callback: @fn(&mut Window)
 }
@@ -65,10 +67,12 @@ impl Window
     { unsafe { glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ) } }
   }
 
-  pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object
+  pub fn add_cube(@mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object
   {
-    let res = @mut Object::new(*self.geometries.find(&~"cube").unwrap(),
+    let res = @mut Object::new(self,
+                               *self.geometries.find(&~"cube").unwrap(),
                                1.0, 1.0, 1.0,
+                               *self.textures.find(&~"default").unwrap(),
                                wx, wy, wz, Deleted);
     // FIXME: get the geometry
 
@@ -77,10 +81,12 @@ impl Window
     res
   }
 
-  pub fn add_sphere(&mut self, r: GLfloat) -> @mut Object
+  pub fn add_sphere(@mut self, r: GLfloat) -> @mut Object
   {
-    let res = @mut Object::new(*self.geometries.find(&~"sphere").unwrap(),
-                               0.3, 0.3, 0.3,
+    let res = @mut Object::new(self,
+                               *self.geometries.find(&~"sphere").unwrap(),
+                               1.0, 1.0, 1.0,
+                               *self.textures.find(&~"default").unwrap(),
                                r / 0.5, r / 0.5, r / 0.5,
                                Deleted);
     // FIXME: get the geometry
@@ -90,10 +96,12 @@ impl Window
     res
   }
 
-  pub fn add_cone(&mut self, h: GLfloat, r: GLfloat) -> @mut Object
+  pub fn add_cone(@mut self, h: GLfloat, r: GLfloat) -> @mut Object
   {
-    let res = @mut Object::new(*self.geometries.find(&~"cone").unwrap(),
-                               0.3, 0.3, 0.3,
+    let res = @mut Object::new(self,
+                               *self.geometries.find(&~"cone").unwrap(),
+                               1.0, 1.0, 1.0,
+                               *self.textures.find(&~"default").unwrap(),
                                r / 0.5, h, r / 0.5,
                                Deleted);
     // FIXME: get the geometry
@@ -103,10 +111,12 @@ impl Window
     res
   }
 
-  pub fn add_cylinder(&mut self, h: GLfloat, r: GLfloat) -> @mut Object
+  pub fn add_cylinder(@mut self, h: GLfloat, r: GLfloat) -> @mut Object
   {
-    let res = @mut Object::new(*self.geometries.find(&~"cylinder").unwrap(),
-                               0.3, 0.3, 0.3,
+    let res = @mut Object::new(self,
+                               *self.geometries.find(&~"cylinder").unwrap(),
+                               1.0, 1.0, 1.0,
+                               *self.textures.find(&~"default").unwrap(),
                                r / 0.5, h, r / 0.5,
                                Deleted);
     // FIXME: get the geometry
@@ -116,7 +126,7 @@ impl Window
     res
   }
 
-  pub fn add_quad(&mut self,
+  pub fn add_quad(@mut self,
                   w:            f64,
                   h:            f64,
                   wsubdivs:     uint,
@@ -125,14 +135,17 @@ impl Window
     assert!(wsubdivs > 0 && hsubdivs > 0,
             "The number of subdivisions cannot be zero");
 
-    let wstep = (w as GLfloat) / (wsubdivs as GLfloat);
-    let hstep = (h as GLfloat) / (hsubdivs as GLfloat);
-    let cw    = w as GLfloat / 2.0;
-    let ch    = h as GLfloat / 2.0;
+    let wstep    = (w as GLfloat) / (wsubdivs as GLfloat);
+    let hstep    = (h as GLfloat) / (hsubdivs as GLfloat);
+    let wtexstep = 1.0 / (wsubdivs as GLfloat);
+    let htexstep = 1.0 / (hsubdivs as GLfloat);
+    let cw       = w as GLfloat / 2.0;
+    let ch       = h as GLfloat / 2.0;
 
-    let mut vertices = ~[];
-    let mut normals  = ~[];
-    let mut triangles: ~[(GLuint, GLuint, GLuint)] = ~[];
+    let mut vertices   = ~[];
+    let mut normals    = ~[];
+    let mut triangles  = ~[];
+    let mut tex_coords = ~[];
 
     // create the vertices
     for uint::iterate(0u, hsubdivs + 1) |i|
@@ -141,7 +154,8 @@ impl Window
       {
         vertices.push(Vec3::new([ j as GLfloat * wstep - cw,
                                   i as GLfloat * hstep - ch,
-                                  0.0]))
+                                  0.0]));
+        tex_coords.push(Vec2::new([ 1.0 - j as GLfloat * wtexstep, 1.0 - i as GLfloat * htexstep ]))
       }
     }
 
@@ -177,15 +191,17 @@ impl Window
 
     // FIXME: refactor that to allow custom obj loading
     // create gpu buffers
-    let vertex_buf:  GLuint = 0;
-    let element_buf: GLuint = 0;
-    let normal_buf:  GLuint = 0;
+    let vertex_buf:   GLuint = 0;
+    let element_buf:  GLuint = 0;
+    let normal_buf:   GLuint = 0;
+    let texture_buf:  GLuint = 0;
 
     unsafe {
       // FIXME: use glGenBuffers(3, ...) ?
       glGenBuffers(1, &vertex_buf);
       glGenBuffers(1, &element_buf);
       glGenBuffers(1, &normal_buf);
+      glGenBuffers(1, &texture_buf);
     }
 
     // copy vertices
@@ -215,11 +231,22 @@ impl Window
                    GL_DYNAMIC_DRAW);
     }
 
+    // copy texture coordinates
+    unsafe {
+      glBindBuffer(GL_ARRAY_BUFFER, texture_buf);
+      glBufferData(GL_ARRAY_BUFFER,
+                   (tex_coords.len() * 2 * sys::size_of::<GLfloat>()) as GLsizeiptr,
+                   cast::transmute(&tex_coords[0]),
+                   GL_STATIC_DRAW);
+    }
+
 
     let res = @mut Object::new(
+      self,
       GeometryIndices::new(0, triangles.len() * 3 as i32,
-                           element_buf, normal_buf, vertex_buf),
-      0.3, 0.3, 0.3,
+                           element_buf, normal_buf, vertex_buf, texture_buf),
+      1.0, 1.0, 1.0,
+      *self.textures.find(&~"default").unwrap(),
       1.0, 1.0, 1.0,
       VerticesNormalsTriangles(vertices, normals, triangles)
     );
@@ -227,6 +254,50 @@ impl Window
     self.objects.push(res);
 
     res
+  }
+
+  pub fn add_texture(&mut self, path: ~str) -> GLuint
+  {
+    let tex: Option<GLuint> = self.textures.find(&path).map(|e| **e);
+
+    match tex
+    {
+      Some(id) => id,
+      None => {
+        let texture: GLuint = 0;
+
+        unsafe {
+          glGenTextures(1, &texture);
+
+          match load_with_depth(path.clone(), 3, false)
+          {
+            ImageU8(image) => {
+              glActiveTexture(GL_TEXTURE0);
+              glBindTexture(GL_TEXTURE_2D, texture);
+
+              glTexImage2D(
+                GL_TEXTURE_2D, 0,
+                GL_RGB as GLint,
+                image.width as GLsizei,
+                image.height as GLsizei,
+                0, GL_RGB, GL_UNSIGNED_BYTE,
+                cast::transmute(&image.data[0])
+                );
+
+              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE as GLint);
+              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE as GLint);
+              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR as GLint);
+              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR as GLint);
+            }
+            _ => { fail!("Failed to load texture " + path); }
+          }
+        }
+
+        self.textures.insert(path.clone(), texture);
+
+        texture
+      }
+    }
   }
 
   pub fn objects<'r>(&'r self) -> &'r ~[@mut Object]
@@ -257,16 +328,16 @@ impl Window
   // FIXME: pub fn set_camera(&mut self, mode: CameraMode)
   // FIXME: { self.camera.set_mode(mode) }
 
-  fn parse_builtins(ebuf: GLuint, nbuf: GLuint, vbuf: GLuint)
-    -> (HashMap<~str, GeometryIndices>, ~[GLfloat], ~[GLfloat], ~[GLuint])
+  fn parse_builtins(ebuf: GLuint, nbuf: GLuint, vbuf: GLuint, tbuf: GLuint)
+    -> (HashMap<~str, GeometryIndices>, ~[GLfloat], ~[GLfloat], ~[GLfloat], ~[GLuint])
   {
     // FIXME: this function is _really_ uggly.
 
     // load
-    let (cv, cn, icv) = obj::parse(cube_obj::CUBE_OBJ);
-    let (sv, sn, isv) = obj::parse(sphere_obj::SPHERE_OBJ);
-    let (pv, pn, ipv) = obj::parse(cone_obj::CONE_OBJ);
-    let (yv, yn, iyv) = obj::parse(cylinder_obj::CYLINDER_OBJ);
+    let (cv, cn, ct, icv) = obj::parse(cube_obj::CUBE_OBJ);
+    let (sv, sn, st, isv) = obj::parse(sphere_obj::SPHERE_OBJ);
+    let (pv, pn, pt, ipv) = obj::parse(cone_obj::CONE_OBJ);
+    let (yv, yn, yt, iyv) = obj::parse(cylinder_obj::CYLINDER_OBJ);
 
     let shift_isv = isv.map(|i| i + cv.len() / 3 as GLuint);
     let shift_ipv = ipv.map(|i| i + (sv.len() + cv.len()) / 3 as GLuint);
@@ -275,30 +346,31 @@ impl Window
     // register draw informations
     let mut hmap = HashMap::new();
 
-    hmap.insert(~"cube",     GeometryIndices::new(0, icv.len() as i32, ebuf, nbuf, vbuf));
-    hmap.insert(~"sphere",   GeometryIndices::new(icv.len(), isv.len() as i32, ebuf, nbuf, vbuf));
-    hmap.insert(~"cone",     GeometryIndices::new(icv.len() + isv.len(), ipv.len() as i32, ebuf,
-                                                  nbuf, vbuf));
+    hmap.insert(~"cube",     GeometryIndices::new(0, icv.len() as i32, ebuf, nbuf, vbuf, tbuf));
+    hmap.insert(~"sphere",   GeometryIndices::new(icv.len(), isv.len() as i32, ebuf, nbuf, vbuf, tbuf));
+    hmap.insert(~"cone",     GeometryIndices::new(icv.len() + isv.len(), ipv.len() as i32,
+                                                  ebuf, nbuf, vbuf, tbuf));
     hmap.insert(~"cylinder", GeometryIndices::new(
         icv.len() + isv.len() + ipv.len(),
         iyv.len() as i32,
-        ebuf, nbuf, vbuf)
+        ebuf, nbuf, vbuf, tbuf)
     );
 
     // concatenate everything
     (hmap,
      cv + sv + pv + yv,
      cn + sn + pn + yn,
+     ct + st + pt + yt,
      icv + shift_isv + shift_ipv + shift_iyv)
   }
 
-  pub fn spawn_hidden(title: ~str, callback: ~fn(&mut Window))
+  pub fn spawn_hidden(title: ~str, callback: ~fn(@mut Window))
   { Window::do_spawn(title, true, callback) }
 
-  pub fn spawn(title: ~str, callback: ~fn(&mut Window))
+  pub fn spawn(title: ~str, callback: ~fn(@mut Window))
   { Window::do_spawn(title, false, callback) }
 
-  fn do_spawn(title: ~str, hide: bool, callback: ~fn(&mut Window))
+  fn do_spawn(title: ~str, hide: bool, callback: ~fn(@mut Window))
   {
     glfw::set_error_callback(error_callback);
 
@@ -322,21 +394,32 @@ impl Window
         glBindVertexArray(vao);
       }
 
-      let vertex_buf: GLuint = 0;
-      let element_buf:  GLuint = 0;
-      let normals_buf:  GLuint = 0;
+      let vertex_buf:  GLuint = 0;
+      let element_buf: GLuint = 0;
+      let normals_buf: GLuint = 0;
+      let texture_buf: GLuint = 0;
+      let default_tex: GLuint = 0;
 
       unsafe {
         // FIXME: use glGenBuffers(3, ...) ?
         glGenBuffers(1, &vertex_buf);
         glGenBuffers(1, &element_buf);
         glGenBuffers(1, &normals_buf);
+        glGenBuffers(1, &texture_buf);
+        glGenTextures(1, &default_tex);
       }
 
-      let (builtins, vbuf, nbuf, vibuf) = Window::parse_builtins(element_buf, normals_buf,
-                                                                 vertex_buf); 
+      let mut hash_textures = HashMap::new();
 
-      // Create a Vertex Buffer Object and copy the vertex data to it
+      hash_textures.insert(~"default", default_tex);
+
+
+      let (builtins, vbuf, nbuf, tbuf, vibuf) = Window::parse_builtins(element_buf,
+                                                                       normals_buf,
+                                                                       vertex_buf,
+                                                                       texture_buf); 
+
+      // Upload values of vertices
       unsafe {
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buf);
         glBufferData(GL_ARRAY_BUFFER,
@@ -345,6 +428,7 @@ impl Window
                      GL_STATIC_DRAW);
       }
 
+      // Upload values of indices
       unsafe {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buf);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,
@@ -353,12 +437,21 @@ impl Window
                      GL_STATIC_DRAW);
       }
 
-      // Create a Vertex Buffer Object and copy the vertex data to it
+      // Upload values of normals
       unsafe {
         glBindBuffer(GL_ARRAY_BUFFER, normals_buf);
         glBufferData(GL_ARRAY_BUFFER,
                      (nbuf.len() * sys::size_of::<GLfloat>()) as GLsizeiptr,
                      cast::transmute(&nbuf[0]),
+                     GL_STATIC_DRAW);
+      }
+
+      // Upload values of texture coordinates
+      unsafe {
+        glBindBuffer(GL_ARRAY_BUFFER, texture_buf);
+        glBufferData(GL_ARRAY_BUFFER,
+                     (tbuf.len() * sys::size_of::<GLfloat>()) as GLsizeiptr,
+                     cast::transmute(&tbuf[0]),
                      GL_STATIC_DRAW);
       }
 
@@ -369,12 +462,16 @@ impl Window
         glCompileShader(vertex_shader);
       }
 
+      check_shader_error(vertex_shader);
+
       // Create and compile the fragment shader
       let fragment_shader = unsafe { glCreateShader(GL_FRAGMENT_SHADER) };
       unsafe {
         glShaderSource(fragment_shader, 1, &str::as_c_str(FRAGMENT_SRC, |s|s), ptr::null());
         glCompileShader(fragment_shader);
       }
+
+      check_shader_error(fragment_shader);
 
       // Link the vertex and fragment shader into a shader program
       let shader_program = unsafe { glCreateProgram() };
@@ -400,6 +497,7 @@ impl Window
                               ptr::null());
       }
 
+      // Specify the layout of the normals data
       let normal_attrib = unsafe { glGetAttribLocation(shader_program, str::as_c_str("normal", |s| s)) } as GLuint;
       unsafe {
         glEnableVertexAttribArray(normal_attrib);
@@ -410,6 +508,37 @@ impl Window
                               GL_FALSE,
                               3 * sys::size_of::<GLfloat>() as GLsizei,
                               ptr::null());
+      }
+      let texture_attrib = unsafe { glGetAttribLocation(shader_program, str::as_c_str("tex_coord_v", |s| s)) } as GLuint;
+      unsafe {
+        glEnableVertexAttribArray(texture_attrib);
+        glBindBuffer(GL_ARRAY_BUFFER, texture_buf);
+        glVertexAttribPointer(texture_attrib,
+                              2,
+                              GL_FLOAT,
+                              GL_FALSE,
+                              2 * sys::size_of::<GLfloat>() as GLsizei,
+                              ptr::null());
+      }
+
+      // create white texture
+      // Black/white checkerboard
+
+      let default_tex_pixels: [ GLfloat, ..3 ] = [
+        1.0, 1.0, 1.0
+      ];
+
+      unsafe {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, default_tex);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT as i32);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT as i32);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR as i32);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR as i32);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB as i32, 1, 1, 0, GL_RGB, GL_FLOAT,
+                     cast::transmute(&default_tex_pixels[0]));
       }
 
       let light_location = unsafe {
@@ -425,6 +554,7 @@ impl Window
                                   40.0)
                        ),
         loop_callback: |_| {},
+        textures:      hash_textures,   
         light:         light_location,
         light_mode:    Absolute(Vec3::new([0.0, 10.0, 0.0])),
         geometries:    builtins
@@ -456,6 +586,10 @@ impl Window
 
       let view_location = unsafe {
         glGetUniformLocation(shader_program, str::as_c_str("view", |s| s))
+      };
+
+      unsafe {
+        glUniform1i(glGetUniformLocation(shader_program, str::as_c_str("tex", |s| s)), 0);
       };
 
       // setup callbacks
@@ -493,6 +627,7 @@ impl Window
           {
             o.upload(pos_attrib,
                      normal_attrib,
+                     texture_attrib,
                      color_location,
                      transform_location,
                      scale_location,
@@ -510,7 +645,9 @@ impl Window
         glDeleteShader(vertex_shader);
 
         glDeleteBuffers(1, &vertex_buf);
+        glDeleteBuffers(1, &texture_buf);
         glDeleteBuffers(1, &normals_buf);
+        glDeleteBuffers(1, &element_buf);
 
         glDeleteVertexArrays(1, &vao);
       }
@@ -540,6 +677,34 @@ impl Window
                            action: libc::c_int,
                            mods:   libc::c_int)
   { self.camera.handle_mouse_button(button as int, action as int, mods as int); }
+}
+
+fn check_shader_error(shader: GLuint)
+{
+  let compiles: i32 = 0;
+  unsafe{
+      glGetShaderiv(shader, GL_COMPILE_STATUS, &compiles);
+
+      if(compiles == 0)
+      {
+        let info_log_len = 0;
+
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_log_len);
+
+        if (info_log_len > 0)
+        {
+          // error check for fail to allocate memory omitted
+          let chars_written = 0;
+          let mut info_log = ~"";
+
+          str::raw::set_len(&mut info_log, (info_log_len + 1) as uint);
+
+          do info_log.as_c_str |c_str|
+          { glGetShaderInfoLog(shader, info_log_len, &chars_written, c_str) }
+          fail!("Shader compilation failed: " + info_log);
+        }
+      }
+  }
 }
 
 fn resize_callback(_: &glfw::Window, w: i32, h: i32, proj_location: i32)

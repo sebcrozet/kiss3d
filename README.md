@@ -18,7 +18,7 @@ with one-liners.
 All features are one-liners.
   - open a window with a default arc-ball camera and a point light.
   - display boxes, spheres, cones or cylinders.
-  - change an object's color.
+  - change an object's color or texture.
   - change an object's transform (we use the **nalgebra** library to do that).
     An object cannot be scaled though.
 
@@ -47,7 +47,7 @@ fn main()
 
 ## Won’t
 Anything not in the previous list is _not_ supported.
-In particular common features like texturing, custom shader loading, and coffee
+In particular common features like multitexturing, custom shader loading, and coffee
 making are not supported and wont be unless someone manages to write them in
 one line. Don’t hesitate to contribute =)
 

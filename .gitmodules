@@ -7,3 +7,6 @@
 [submodule "nalgebra"]
 	path = nalgebra
 	url = git://github.com/sebcrozet/nalgebra.git
+[submodule "rust-stb-image"]
+	path = rust-stb-image
+	url = https://github.com/mozilla-servo/rust-stb-image.git
