@@ -45,7 +45,8 @@ pub struct Window
   priv camera:        Camera,
   priv textures:      HashMap<~str, GLuint>,
   priv geometries:    HashMap<~str, GeometryIndices>,
-  priv loop_callback: @fn(&mut Window)
+  priv loop_callback: @fn(&mut Window),
+  priv background:    Vec3<GLfloat>
 }
 
 impl Window
@@ -62,9 +63,16 @@ impl Window
   pub fn set_wireframe_mode(&mut self, mode: bool)
   {
     if mode
-    { unsafe { glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ) } }
+    { unsafe { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) } }
     else
-    { unsafe { glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ) } }
+    { unsafe { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) } }
+  }
+
+  pub fn set_background_color(&mut self, r: GLfloat, g: GLfloat, b: GLfloat)
+  {
+    self.background.at[0] = r;
+    self.background.at[1] = g;
+    self.background.at[2] = b;
   }
 
   pub fn add_cube(@mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object
@@ -557,7 +565,8 @@ impl Window
         textures:      hash_textures,   
         light:         light_location,
         light_mode:    Absolute(Vec3::new([0.0, 10.0, 0.0])),
-        geometries:    builtins
+        geometries:    builtins,
+        background:    Vec3::new([0.0, 0.0, 0.0])
       };
 
       callback(usr_window);
@@ -619,7 +628,11 @@ impl Window
 
         // Clear the screen to black
         unsafe {
-          glClearColor(0.0, 0.0, 0.0, 1.0);
+          glClearColor(
+            usr_window.background.at[0],
+            usr_window.background.at[1],
+            usr_window.background.at[2],
+            1.0);
           glClear(GL_COLOR_BUFFER_BIT);
           glClear(GL_DEPTH_BUFFER_BIT);
 
