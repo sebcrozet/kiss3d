@@ -51,6 +51,23 @@ In particular common features like multitexturing, custom shader loading, and co
 making are not supported and wont be unless someone manages to write them in
 one line. Don’t hesitate to contribute =)
 
+## Compilation
+You will need the last rust compiler from the master branch.
+I pull the compiler and fix my code almost every day. If you encounter
+problems, make sure you have the last version.
+
+The simplest way to build **kiss3d** and all its dependencies is to do a
+recursive clone:
+
+
+    git clone --recursive git://github.com/sebcrozet/kiss3d.git
+    cd kiss3d
+    make deps
+    make
+    make test
+
+
+The last command will compile demos on the `bin` folder.
 
 ## Contributions
 I intend to work on this library to suit my needs only (to write demo for my
