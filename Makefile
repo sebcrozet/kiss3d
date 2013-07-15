@@ -23,4 +23,5 @@ deps:
 	make -C glfw-rs
 	make -C glcore-rs
 	make -C nalgebra
+	cd rust-stb-image; ./configure
 	make -C rust-stb-image
