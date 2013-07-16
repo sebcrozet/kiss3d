@@ -31,6 +31,7 @@ use builtins::cube_obj;
 use builtins::cone_obj;
 use builtins::cylinder_obj;
 use obj;
+use event;
 use shaders::*;
 
 pub enum Light
@@ -41,15 +42,17 @@ pub enum Light
 
 pub struct Window
 {
-  priv objects:       ~[@mut Object],
-  priv light:         i32,
-  priv light_mode:    Light,
-  priv window:        @mut glfw::Window,
-  priv camera:        Camera,
-  priv textures:      HashMap<~str, GLuint>,
-  priv geometries:    HashMap<~str, GeometryIndices>,
-  priv loop_callback: @fn(&mut Window),
-  priv background:    Vec3<GLfloat>
+  priv objects:            ~[@mut Object],
+  priv light:              i32,
+  priv light_mode:         Light,
+  priv window:             @mut glfw::Window,
+  priv camera:             Camera,
+  priv textures:           HashMap<~str, GLuint>,
+  priv geometries:         HashMap<~str, GeometryIndices>,
+  priv usr_loop_callback:  @fn(&mut Window),
+  priv usr_keyboard_callback: @fn(&mut Window, event::KeyboardEvent) -> bool,
+  priv usr_mouse_callback: @fn(&mut Window, event::MouseEvent) -> bool,
+  priv background:         Vec3<GLfloat>
 }
 
 impl Window
@@ -315,10 +318,16 @@ impl Window
   { &self.objects }
 
   pub fn exec_callback(&mut self)
-  { (self.loop_callback)(self) }
+  { (self.usr_loop_callback)(self) }
 
   pub fn set_loop_callback(&mut self, callback: @fn(&mut Window))
-  { self.loop_callback = callback }
+  { self.usr_loop_callback = callback }
+
+  pub fn set_keyboard_callback(&mut self, callback: @fn(&mut Window, event::KeyboardEvent) -> bool)
+  { self.usr_keyboard_callback = callback }
+
+  pub fn set_mouse_callback(&mut self, callback: @fn(&mut Window, event::MouseEvent) -> bool)
+  { self.usr_mouse_callback = callback }
 
   pub fn set_light(&mut self, pos: Light)
   {
@@ -564,12 +573,14 @@ impl Window
                                   Vec3::new([0.0, 0.0, 0.0]),
                                   40.0)
                        ),
-        loop_callback: |_| {},
-        textures:      hash_textures,   
-        light:         light_location,
-        light_mode:    Absolute(Vec3::new([0.0, 10.0, 0.0])),
-        geometries:    builtins,
-        background:    Vec3::new([0.0, 0.0, 0.0])
+        usr_loop_callback:  |_| {},
+        usr_keyboard_callback: |_, _| { true },
+        usr_mouse_callback: |_, _| { true },
+        textures:           hash_textures,   
+        light:              light_location,
+        light_mode:         Absolute(Vec3::new([0.0, 10.0, 0.0])),
+        geometries:         builtins,
+        background:         Vec3::new([0.0, 0.0, 0.0])
       };
 
       callback(usr_window);
@@ -676,23 +687,54 @@ impl Window
                   action: libc::c_int,
                   _:      libc::c_int)
   {
-      if action == glfw::PRESS && key == glfw::KEY_ESCAPE
-      { self.window.set_should_close(true); }
+    if action == glfw::PRESS
+    {
+      if !(self.usr_keyboard_callback)(self, event::KeyPressed(key))
+      { return }
+    }
+    else if action == glfw::RELEASE
+    {
+      if !(self.usr_keyboard_callback)(self, event::KeyReleased(key))
+      { return }
+    }
 
-      self.camera.handle_keyboard(key as int, action as int);
+    if action == glfw::PRESS && key == glfw::KEY_ESCAPE
+    { self.window.set_should_close(true); }
+
+    self.camera.handle_keyboard(key as int, action as int);
   }
 
   fn cursor_pos_callback(&mut self, xpos: float, ypos: float)
-  { self.camera.handle_cursor_pos(xpos, ypos); }
+  {
+    if (self.usr_mouse_callback)(self, event::CursorPos(xpos, ypos))
+    { self.camera.handle_cursor_pos(xpos, ypos) }
+  }
 
   fn scroll_callback(&mut self, xoff: float, yoff: float)
-  { self.camera.handle_scroll(xoff, yoff); }
+  {
+    if (self.usr_mouse_callback)(self, event::Scroll(xoff, yoff))
+    { self.camera.handle_scroll(xoff, yoff) }
+  }
 
   fn mouse_button_callback(&mut self,
                            button: libc::c_int,
                            action: libc::c_int,
                            mods:   libc::c_int)
-  { self.camera.handle_mouse_button(button as int, action as int, mods as int); }
+  {
+    if action == 1
+    {
+      if !(self.usr_mouse_callback)(self, event::ButtonPressed(button, mods))
+      { return }
+    }
+    else
+    {
+      if !(self.usr_mouse_callback)(self, event::ButtonReleased(button, mods))
+      { return }
+    }
+
+
+    self.camera.handle_mouse_button(button as int, action as int, mods as int)
+  }
 }
 
 fn check_shader_error(shader: GLuint)

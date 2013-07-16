@@ -13,6 +13,7 @@ extern mod nalgebra;
 extern mod stb_image;
 
 pub mod window;
+pub mod event;
 pub mod object;
 pub mod shaders;
 pub mod camera;
