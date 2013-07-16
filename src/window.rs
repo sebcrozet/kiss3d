@@ -42,17 +42,18 @@ pub enum Light
 
 pub struct Window
 {
-  priv objects:            ~[@mut Object],
-  priv light:              i32,
-  priv light_mode:         Light,
-  priv window:             @mut glfw::Window,
-  priv camera:             Camera,
-  priv textures:           HashMap<~str, GLuint>,
-  priv geometries:         HashMap<~str, GeometryIndices>,
-  priv usr_loop_callback:  @fn(&mut Window),
+  priv objects:               ~[@mut Object],
+  priv light:                 i32,
+  priv light_mode:            Light,
+  priv window:                @mut glfw::Window,
+  priv camera:                Camera,
+  priv textures:              HashMap<~str, GLuint>,
+  priv geometries:            HashMap<~str, GeometryIndices>,
+  priv usr_loop_callback:     @fn(&mut Window),
   priv usr_keyboard_callback: @fn(&mut Window, event::KeyboardEvent) -> bool,
-  priv usr_mouse_callback: @fn(&mut Window, event::MouseEvent) -> bool,
-  priv background:         Vec3<GLfloat>
+  priv usr_mouse_callback:    @fn(&mut Window, event::MouseEvent) -> bool,
+  priv curr_wireframe_mode:   bool,
+  priv background:            Vec3<GLfloat>
 }
 
 impl Window
@@ -72,6 +73,8 @@ impl Window
     { unsafe { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) } }
     else
     { unsafe { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) } }
+
+    self.curr_wireframe_mode = mode;
   }
 
   pub fn set_background_color(&mut self, r: GLfloat, g: GLfloat, b: GLfloat)
@@ -573,14 +576,15 @@ impl Window
                                   Vec3::new([0.0, 0.0, 0.0]),
                                   40.0)
                        ),
-        usr_loop_callback:  |_| {},
+        usr_loop_callback:     |_| {},
         usr_keyboard_callback: |_, _| { true },
-        usr_mouse_callback: |_, _| { true },
-        textures:           hash_textures,   
-        light:              light_location,
-        light_mode:         Absolute(Vec3::new([0.0, 10.0, 0.0])),
-        geometries:         builtins,
-        background:         Vec3::new([0.0, 0.0, 0.0])
+        usr_mouse_callback:    |_, _| { true },
+        textures:              hash_textures,   
+        light:                 light_location,
+        light_mode:            Absolute(Vec3::new([0.0, 10.0, 0.0])),
+        geometries:            builtins,
+        curr_wireframe_mode:   false,
+        background:            Vec3::new([0.0, 0.0, 0.0])
       };
 
       callback(usr_window);
@@ -700,6 +704,9 @@ impl Window
 
     if action == glfw::PRESS && key == glfw::KEY_ESCAPE
     { self.window.set_should_close(true); }
+
+    if action == glfw::PRESS && key == glfw::KEY_SPACE
+    { self.set_wireframe_mode(!self.curr_wireframe_mode); }
 
     self.camera.handle_keyboard(key as int, action as int);
   }
