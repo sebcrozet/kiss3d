@@ -351,6 +351,9 @@ impl Window
   // FIXME: pub fn set_camera(&mut self, mode: CameraMode)
   // FIXME: { self.camera.set_mode(mode) }
 
+  pub fn camera<'r>(&'r self) -> &'r Camera
+  { &'r self.camera }
+
   fn parse_builtins(ebuf: GLuint, nbuf: GLuint, vbuf: GLuint, tbuf: GLuint)
     -> (HashMap<~str, GeometryIndices>, ~[GLfloat], ~[GLfloat], ~[GLfloat], ~[GLuint])
   {
