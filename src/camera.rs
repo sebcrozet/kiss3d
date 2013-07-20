@@ -1,5 +1,5 @@
+use std::cast;
 use std::num::Zero;
-use std::ptr;
 use glcore::types::GL_VERSION_1_0::*;
 use glcore::consts::GL_VERSION_1_1::*;
 use glcore::functions::GL_VERSION_2_0::*;
@@ -64,8 +64,8 @@ impl Camera
 
     if self.mouse_pressed
     {
-      let dx = -xpos + self.mouse_start.at[0];
-      let dy = ypos - self.mouse_start.at[1];
+      let dx = -xpos + self.mouse_start.x;
+      let dy = ypos - self.mouse_start.y;
 
       self.yaw   = self.yaw   - dx * yaw_step;
       self.pitch = self.pitch - dy * pitch_step;
@@ -73,8 +73,8 @@ impl Camera
       self.changed = true
     }
 
-    self.mouse_start.at[0] = xpos;
-    self.mouse_start.at[1] = ypos;
+    self.mouse_start.x = xpos;
+    self.mouse_start.y = ypos;
   }
 
   pub fn handle_mouse_button(&mut self, _: int, action: int, _: int)
@@ -118,11 +118,11 @@ impl Camera
         if (self.pitch > Real::pi::<float>() - 0.0001)
         { self.pitch = Real::pi::<float>() - 0.0001 }
 
-        let px = at.at[0] as float + self.distance * self.yaw.cos() * self.pitch.sin();
-        let py = at.at[1] as float + self.distance * self.pitch.cos();
-        let pz = at.at[2] as float + self.distance * self.yaw.sin() * self.pitch.sin();
+        let px = at.x as float + self.distance * self.yaw.cos() * self.pitch.sin();
+        let py = at.y as float + self.distance * self.pitch.cos();
+        let pz = at.z as float + self.distance * self.yaw.sin() * self.pitch.sin();
 
-        self.mode = ArcBall(Vec3::new([px as GLfloat, py as GLfloat, pz as GLfloat]), *at, *_1);
+        self.mode = ArcBall(Vec3::new(px as GLfloat, py as GLfloat, pz as GLfloat), *at, *_1);
       }
       FPS => { }
     }
@@ -141,23 +141,21 @@ impl Camera
       };
 
       let zaxis = (eye - *at).normalized();
-      let xaxis = Vec3::new([0.0, 1.0, 0.0]).cross(&zaxis).normalized();
+      let xaxis = Vec3::new(0.0, 1.0, 0.0).cross(&zaxis).normalized();
       let yaxis = zaxis.cross(&xaxis);
 
       let look_at= Mat4::new::<GLfloat>(
-        [
-          xaxis.at[0], yaxis.at[0], zaxis.at[0], 0.0,
-          xaxis.at[1], yaxis.at[1], zaxis.at[1], 0.0,
-          xaxis.at[2], yaxis.at[2], zaxis.at[2], 0.0,
-          -xaxis.dot(eye), -yaxis.dot(eye), -zaxis.dot(eye), 1.0
-        ]
+        xaxis.x, yaxis.x, zaxis.x, 0.0,
+        xaxis.y, yaxis.y, zaxis.y, 0.0,
+        xaxis.z, yaxis.z, zaxis.z, 0.0,
+        -xaxis.dot(eye), -yaxis.dot(eye), -zaxis.dot(eye), 1.0
       );
 
       unsafe {
         glUniformMatrix4fv(view_location,
                            1,
                            GL_FALSE,
-                           ptr::to_unsafe_ptr(&look_at.mij[0]));
+                           cast::transmute(&look_at));
       }
 
       self.changed = false;

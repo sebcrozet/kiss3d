@@ -79,9 +79,9 @@ impl Window
 
   pub fn set_background_color(&mut self, r: GLfloat, g: GLfloat, b: GLfloat)
   {
-    self.background.at[0] = r;
-    self.background.at[1] = g;
-    self.background.at[2] = b;
+    self.background.x = r;
+    self.background.y = g;
+    self.background.z = b;
   }
 
   pub fn add_cube(@mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object
@@ -169,17 +169,15 @@ impl Window
     {
       for uint::iterate(0u, wsubdivs + 1) |j|
       {
-        vertices.push(Vec3::new([ j as GLfloat * wstep - cw,
-                                  i as GLfloat * hstep - ch,
-                                  0.0]));
-        tex_coords.push(Vec2::new([ 1.0 - j as GLfloat * wtexstep, 1.0 - i as GLfloat * htexstep ]))
+        vertices.push(Vec3::new(j as GLfloat * wstep - cw, i as GLfloat * hstep - ch, 0.0));
+        tex_coords.push(Vec2::new(1.0 - j as GLfloat * wtexstep, 1.0 - i as GLfloat * htexstep))
       }
     }
 
     // create the normals
     for ((hsubdivs + 1) * (wsubdivs + 1)).times
     {
-      { normals.push(Vec3::new([ 1.0 as GLfloat, 0.0, 0.0])) }
+      { normals.push(Vec3::new(1.0 as GLfloat, 0.0, 0.0)) }
     }
 
     // create triangles
@@ -345,7 +343,7 @@ impl Window
   }
 
   fn set_light_pos(&mut self, pos: &Vec3<GLfloat>)
-  { unsafe { glUniform3f(self.light, pos.at[0], pos.at[1], pos.at[2]) } }
+  { unsafe { glUniform3f(self.light, pos.x, pos.y, pos.z) } }
 
   // FIXME: this is not very well supported yet
   // FIXME: pub fn set_camera(&mut self, mode: CameraMode)
@@ -575,8 +573,8 @@ impl Window
         objects:       ~[],
         window:        window,
         camera:        Camera::new(
-                          ArcBall(Vec3::new([2.0, 2.0, 2.0]),
-                                  Vec3::new([0.0, 0.0, 0.0]),
+                          ArcBall(Vec3::new(2.0, 2.0, 2.0),
+                                  Vec3::new(0.0, 0.0, 0.0),
                                   40.0)
                        ),
         usr_loop_callback:     |_| {},
@@ -584,10 +582,10 @@ impl Window
         usr_mouse_callback:    |_, _| { true },
         textures:              hash_textures,   
         light:                 light_location,
-        light_mode:            Absolute(Vec3::new([0.0, 10.0, 0.0])),
+        light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
         geometries:            builtins,
         curr_wireframe_mode:   false,
-        background:            Vec3::new([0.0, 0.0, 0.0])
+        background:            Vec3::new(0.0, 0.0, 0.0)
       };
 
       callback(usr_window);
@@ -650,9 +648,9 @@ impl Window
         // Clear the screen to black
         unsafe {
           glClearColor(
-            usr_window.background.at[0],
-            usr_window.background.at[1],
-            usr_window.background.at[2],
+            usr_window.background.x,
+            usr_window.background.y,
+            usr_window.background.z,
             1.0);
           glClear(GL_COLOR_BUFFER_BIT);
           glClear(GL_DEPTH_BUFFER_BIT);
@@ -787,12 +785,11 @@ fn resize_callback(_: &glfw::Window, w: i32, h: i32, proj_location: i32)
 
   // adjust the projection transformation
   let mut proj = Mat4::new::<GLfloat>(
-    [
       fov / aspect, 0.0,  0.0                            , 0.0,
       0.0         , fov, 0.0                             , 0.0,
       0.0         , 0.0,  (zfar + znear) / (znear - zfar), 2.0 * zfar * znear / (znear - zfar),
       0.0         , 0.0,  -1.0                           , 0.0
-    ]);
+  );
 
   proj.transpose();
 
@@ -800,7 +797,7 @@ fn resize_callback(_: &glfw::Window, w: i32, h: i32, proj_location: i32)
     glUniformMatrix4fv(proj_location,
                        1,
                        GL_FALSE,
-                       ptr::to_unsafe_ptr(&proj.mij[0]));
+                       cast::transmute(&proj));
   }
 }
 

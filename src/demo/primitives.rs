@@ -15,17 +15,17 @@ fn main()
     let p = w.add_cone(1.0, 0.5).set_color(random(), random(), random());
     let y = w.add_cylinder(1.0, 0.5).set_color(random(), random(), random());
 
-    c.transformation().translate_by(&Vec3::new([0.0, 0.0, 1.0]));
-    b.transformation().translate_by(&Vec3::new([0.0, 0.0, 3.0]));
-    p.transformation().translate_by(&Vec3::new([0.0, 0.0, -1.0]));
-    y.transformation().translate_by(&Vec3::new([0.0, 0.0, -3.0]));
+    c.transformation().translate_by(&Vec3::new(0.0, 0.0, 1.0));
+    b.transformation().translate_by(&Vec3::new(0.0, 0.0, 3.0));
+    p.transformation().translate_by(&Vec3::new(0.0, 0.0, -1.0));
+    y.transformation().translate_by(&Vec3::new(0.0, 0.0, -3.0));
 
     do w.set_loop_callback |_|
     {
-      rotate_wrt_center(c.transformation(), &Vec3::new([0.0f64, 0.014, 0.0]));
-      rotate_wrt_center(b.transformation(), &Vec3::new([0.0f64, 0.014, 0.0]));
-      rotate_wrt_center(p.transformation(), &Vec3::new([0.0f64, 0.014, 0.0]));
-      rotate_wrt_center(y.transformation(), &Vec3::new([0.0f64, 0.014, 0.0]));
+      rotate_wrt_center(c.transformation(), &Vec3::new(0.0f64, 0.014, 0.0));
+      rotate_wrt_center(b.transformation(), &Vec3::new(0.0f64, 0.014, 0.0));
+      rotate_wrt_center(p.transformation(), &Vec3::new(0.0f64, 0.014, 0.0));
+      rotate_wrt_center(y.transformation(), &Vec3::new(0.0f64, 0.014, 0.0));
     };
 
     w.set_light(StickToCamera);

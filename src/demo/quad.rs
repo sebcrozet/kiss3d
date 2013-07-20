@@ -17,8 +17,8 @@ fn main()
       {
         for vs.mut_iter().advance |v|
         {
-          v.at[2] = time.sin() * (((v.at[0] + *time) * 4.0).cos() +
-                    time.sin() * ((v.at[1] + *time) * 4.0 + *time).cos()) / 2.0
+          v.z = time.sin() * (((v.x + *time) * 4.0).cos() +
+                time.sin() * ((v.y + *time) * 4.0 + *time).cos()) / 2.0
         }
 
         true

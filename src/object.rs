@@ -87,15 +87,13 @@ impl Object
   {
     Object {
       parent:    parent,
-      scale:     Mat3::new( [
-                              sx, 0.0, 0.0,
-                              0.0, sy, 0.0,
-                              0.0, 0.0, sz,
-                            ] ),
+      scale:     Mat3::new(sx, 0.0, 0.0,
+                           0.0, sy, 0.0,
+                           0.0, 0.0, sz),
       transform:   One::one(),
       igeometry:   igeometry,
       geometry:    geometry,
-      color:       Vec3::new([r, g, b]),
+      color:       Vec3::new(r, g, b),
       texture:     texture
     }
   }
@@ -135,7 +133,7 @@ impl Object
     let formated_ntransform: Mat3<f64> = self.transform.submat().submat();
 
     // we convert the matrix elements and do the transposition at the same time
-    let transform_glf = Mat4::new ([
+    let transform_glf = Mat4::new(
       formated_transform.at((0, 0)) as GLfloat,
       formated_transform.at((1, 0)) as GLfloat,
       formated_transform.at((2, 0)) as GLfloat,
@@ -154,10 +152,10 @@ impl Object
       formated_transform.at((0, 3)) as GLfloat,
       formated_transform.at((1, 3)) as GLfloat,
       formated_transform.at((2, 3)) as GLfloat,
-      formated_transform.at((3, 3)) as GLfloat,
-    ]);
+      formated_transform.at((3, 3)) as GLfloat
+    );
 
-    let ntransform_glf = Mat3::new ([
+    let ntransform_glf = Mat3::new(
       formated_ntransform.at((0, 0)) as GLfloat,
       formated_ntransform.at((1, 0)) as GLfloat,
       formated_ntransform.at((2, 0)) as GLfloat,
@@ -166,26 +164,26 @@ impl Object
       formated_ntransform.at((2, 1)) as GLfloat,
       formated_ntransform.at((0, 2)) as GLfloat,
       formated_ntransform.at((1, 2)) as GLfloat,
-      formated_ntransform.at((2, 2)) as GLfloat,
-    ]);
+      formated_ntransform.at((2, 2)) as GLfloat
+    );
 
     unsafe {
       glUniformMatrix4fv(transform_location,
                          1,
                          GL_FALSE,
-                         ptr::to_unsafe_ptr(&transform_glf.mij[0]));
+                         cast::transmute(&transform_glf));
 
       glUniformMatrix3fv(normal_transform_location,
                          1,
                          GL_FALSE,
-                         ptr::to_unsafe_ptr(&ntransform_glf.mij[0]));
+                         cast::transmute(&ntransform_glf));
 
       glUniformMatrix3fv(scale_location,
                          1,
                          GL_FALSE,
-                         ptr::to_unsafe_ptr(&self.scale.mij[0]));
+                         cast::transmute(&self.scale));
 
-      glUniform3f(color_location, self.color.at[0], self.color.at[1], self.color.at[2]);
+      glUniform3f(color_location, self.color.x, self.color.y, self.color.z);
 
       // FIXME: we should not switch the buffers if the last drawn shape uses the same.
       glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.vertex_buffer);
@@ -297,9 +295,9 @@ impl Object
 
   pub fn set_color(@mut self, r: f32, g: f32, b: f32) -> @mut Object
   {
-    self.color.at[0] = r;
-    self.color.at[1] = g;
-    self.color.at[2] = b;
+    self.color.x = r;
+    self.color.y = g;
+    self.color.z = b;
 
     self
   }

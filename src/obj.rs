@@ -3,6 +3,7 @@ use std::num::Zero;
 use std::from_str::FromStr;
 use std::hashmap::HashMap;
 use glcore::types::GL_VERSION_1_0::*;
+use nalgebra::traits::indexable::Indexable;
 use nalgebra::vec::{Vec3, Vec2};
 
 enum Mode {
@@ -55,17 +56,17 @@ pub fn parse(string: &str) -> (~[GLfloat], ~[GLfloat], ~[GLfloat], ~[GLuint])
         {
           V  => match FromStr::from_str::<GLfloat>(word)
                 {
-                  Some(v) => curr_vertex.at[i - 1] = v,
+                  Some(v) => curr_vertex.set(i - 1, v),
                   None    => error(l, "failed to parse `" + word + "' as a GLfloat.")
                 },
           VN => match FromStr::from_str::<GLfloat>(word)
                 {
-                  Some(n) => curr_normal.at[i - 1] = n,
+                  Some(n) => curr_normal.set(i - 1, n),
                   None    => error(l, "failed to parse `" + word + "' as a GLfloat.")
                 },
           VT => match FromStr::from_str::<GLfloat>(word)
                 {
-                  Some(t) => curr_tex.at[i - 1] = t,
+                  Some(t) => curr_tex.set(i - 1, t),
                   None    => error(l, "failed to parse `" + word + "' as a GLfloat.")
                 },
           F  => {
@@ -92,7 +93,7 @@ pub fn parse(string: &str) -> (~[GLfloat], ~[GLfloat], ~[GLfloat], ~[GLuint])
             {
               match FromStr::from_str::<GLuint>(words[i])
               {
-                Some(id) => curr_face.at[i] = id - 1,
+                Some(id) => curr_face.set(i, id - 1),
                 None     => error(l, "failed to parse `" + words[i] + "' as a GLuint.")
               }
             }
@@ -144,27 +145,27 @@ fn reformat(vertices: &[Vertex],
 
   for faces.iter().advance |face|
   {
-    let key = (face.at[0], face.at[1], face.at[2]);
+    let key = (face.x, face.y, face.z);
 
     let idx = match map.find(&key)
     {
       Some(i) => { resi.push(*i); None },
       None    => {
         let idx = resv.len() / 3 as GLuint;
-        let v   = vertices[face.at[0]];
-        let t   = textures[face.at[1]];
-        let n   = normals[face.at[2]];
+        let v   = vertices[face.x];
+        let t   = textures[face.y];
+        let n   = normals[face.z];
 
-        resv.push(v.at[0]);
-        resv.push(v.at[1]);
-        resv.push(v.at[2]);
+        resv.push(v.x);
+        resv.push(v.y);
+        resv.push(v.z);
 
-        resn.push(n.at[0]);
-        resn.push(n.at[1]);
-        resn.push(n.at[2]);
+        resn.push(n.x);
+        resn.push(n.y);
+        resn.push(n.z);
 
-        rest.push(t.at[0]);
-        rest.push(t.at[1]);
+        rest.push(t.x);
+        rest.push(t.y);
 
         resi.push(idx);
 

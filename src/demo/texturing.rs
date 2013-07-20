@@ -13,7 +13,7 @@ fn main()
                                           .set_texture(~"media/kitten.png");
 
     do window.set_loop_callback |_|
-    { c.transformation().rotate_by(&Vec3::new([0.0f64, 0.014, 0.0])) }
+    { c.transformation().rotate_by(&Vec3::new(0.0f64, 0.014, 0.0)) }
 
     window.set_light(window::StickToCamera);
   }
