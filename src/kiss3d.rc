@@ -18,6 +18,7 @@ pub mod object;
 pub mod shaders;
 pub mod camera;
 pub mod obj;
+pub mod arc_ball;
 
 pub mod builtins
 {

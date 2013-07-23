@@ -21,6 +21,8 @@ use glcore::functions::GL_ARB_vertex_array_object::*;
 use glcore::types::GL_VERSION_1_5::*;
 use glcore::types::GL_VERSION_1_0::*;
 use stb_image::image::*;
+use nalgebra::traits::vec_cast::VecCast;
+use nalgebra::traits::translation::Translation;
 use nalgebra::traits::transpose::Transpose;
 use nalgebra::mat::Mat4;
 use nalgebra::vec::{Vec2, Vec3};
@@ -33,6 +35,7 @@ use builtins::cylinder_obj;
 use obj;
 use event;
 use shaders::*;
+use arc_ball;
 
 pub enum Light
 {
@@ -46,7 +49,7 @@ pub struct Window
   priv light:                 i32,
   priv light_mode:            Light,
   priv window:                @mut glfw::Window,
-  priv camera:                Camera,
+  priv camera:                @mut Camera,
   priv textures:              HashMap<~str, GLuint>,
   priv geometries:            HashMap<~str, GeometryIndices>,
   priv usr_loop_callback:     @fn(&mut Window),
@@ -332,11 +335,13 @@ impl Window
 
   pub fn set_light(&mut self, pos: Light)
   {
-    let camera_pos = self.camera.position();
     match pos
     {
       Absolute(p)   => self.set_light_pos(&p),
-      StickToCamera => self.set_light_pos(&camera_pos)
+      StickToCamera => {
+        let camera_pos = self.camera.transformation().translation();
+        self.set_light_pos(&VecCast::from(camera_pos))
+      }
     }
 
     self.light_mode = pos;
@@ -345,12 +350,8 @@ impl Window
   fn set_light_pos(&mut self, pos: &Vec3<GLfloat>)
   { unsafe { glUniform3f(self.light, pos.x, pos.y, pos.z) } }
 
-  // FIXME: this is not very well supported yet
-  // FIXME: pub fn set_camera(&mut self, mode: CameraMode)
-  // FIXME: { self.camera.set_mode(mode) }
-
-  pub fn camera<'r>(&'r self) -> &'r Camera
-  { &'r self.camera }
+  pub fn camera(@mut self) -> @mut Camera
+  { self.camera }
 
   fn parse_builtins(ebuf: GLuint, nbuf: GLuint, vbuf: GLuint, tbuf: GLuint)
     -> (HashMap<~str, GeometryIndices>, ~[GLfloat], ~[GLfloat], ~[GLfloat], ~[GLuint])
@@ -572,11 +573,7 @@ impl Window
       let usr_window = @mut Window {
         objects:       ~[],
         window:        window,
-        camera:        Camera::new(
-                          ArcBall(Vec3::new(2.0, 2.0, 2.0),
-                                  Vec3::new(0.0, 0.0, 0.0),
-                                  40.0)
-                       ),
+        camera:        @mut Camera::new(ArcBall(arc_ball::ArcBall::new())),
         usr_loop_callback:     |_| {},
         usr_keyboard_callback: |_, _| { true },
         usr_mouse_callback:    |_, _| { true },
@@ -785,10 +782,10 @@ fn resize_callback(_: &glfw::Window, w: i32, h: i32, proj_location: i32)
 
   // adjust the projection transformation
   let mut proj = Mat4::new::<GLfloat>(
-      fov / aspect, 0.0,  0.0                            , 0.0,
-      0.0         , fov, 0.0                             , 0.0,
-      0.0         , 0.0,  (zfar + znear) / (znear - zfar), 2.0 * zfar * znear / (znear - zfar),
-      0.0         , 0.0,  -1.0                           , 0.0
+      -fov / aspect, 0.0,  0.0                            , 0.0,
+      0.0         , fov, 0.0                              , 0.0,
+      0.0         , 0.0,  -(zfar + znear) / (znear - zfar), 2.0 * zfar * znear / (znear - zfar),
+      0.0         , 0.0,  1.0                             , 0.0
   );
 
   proj.transpose();

@@ -12,12 +12,13 @@ all:
 
 test:
 	mkdir -p $(kiss3d_bin_path)
+	$(build_cmd) src/demo/cube.rs 
+	$(build_cmd) src/demo/camera.rs 
 	$(build_cmd) src/demo/window.rs 
 	$(build_cmd) src/demo/event.rs 
 	$(build_cmd) src/demo/quad.rs 
 	$(build_cmd) src/demo/primitives.rs 
 	$(build_cmd) src/demo/primitives_scale.rs 
-	$(build_cmd) src/demo/cube.rs 
 	$(build_cmd) src/demo/texturing.rs 
 
 deps:
@@ -25,4 +26,5 @@ deps:
 	make -C glcore-rs
 	make -C nalgebra
 	cd rust-stb-image; ./configure
+	make clean -C rust-stb-image
 	make -C rust-stb-image

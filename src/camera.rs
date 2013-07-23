@@ -3,27 +3,27 @@ use std::num::Zero;
 use glcore::types::GL_VERSION_1_0::*;
 use glcore::consts::GL_VERSION_1_1::*;
 use glcore::functions::GL_VERSION_2_0::*;
-use nalgebra::traits::norm::Norm;
-use nalgebra::traits::cross::Cross;
-use nalgebra::traits::dot::Dot;
-use nalgebra::vec::{Vec2, Vec3};
+use nalgebra::types::Iso3f64;
+use nalgebra::traits::inv::Inv;
+use nalgebra::traits::mat_cast::MatCast;
+use nalgebra::traits::transpose::Transpose;
+use nalgebra::traits::homogeneous::ToHomogeneous;
+use nalgebra::vec::Vec2;
 use nalgebra::mat::Mat4;
+use arc_ball;
 
 pub enum CameraMode
 {
-  ArcBall(Vec3<GLfloat>, Vec3<GLfloat>, float), // FIXME: add parameters for sencitivity
-  FPS                                           // FIXME: add parameters for sencitivity
+  ArcBall(arc_ball::ArcBall),
+  FPS
 }
 
 pub struct Camera
 {
   priv changed:       bool,
   priv mode:          CameraMode,
-  priv distance:      float,
-  priv pitch:         float,
-  priv yaw:           float,
   priv mouse_pressed: bool,
-  priv mouse_start:   Vec2<float>
+  priv mouse_start:   Vec2<float>,
 }
 
 impl Camera
@@ -33,44 +33,37 @@ impl Camera
     Camera {
       changed:       true,
       mode:          mode,
-      distance:      3.0,
-      pitch:         Real::pi::<float>() / 2.0,
-      yaw:           0.0,
       mouse_pressed: false,
-      mouse_start: Zero::zero()
+      mouse_start:   Zero::zero(),
     }
   }
 
-  pub fn position(&mut self) -> Vec3<GLfloat>
+  pub fn change_mode<'r>(&'r mut self, f: &fn(&'r mut CameraMode))
   {
-    match self.mode
-    {
-      ArcBall(ref pos, _, _) => *pos,
-      FPS                    => fail!("FPS camera not yet implemented.")
-    }
-  }
+    f(&'r mut self.mode);
 
-  pub fn set_mode(&mut self, mode: CameraMode)
-  {
-    self.mode    = mode;
     self.changed = true;
-    // FIXME: update internal datas
   }
+
+  pub fn mode(&self) -> CameraMode
+  { self.mode }
 
   pub fn handle_cursor_pos(&mut self, xpos: float, ypos: float)
   {
-    let yaw_step   = 0.005; // FIXME: should be a parameter of the camera
-    let pitch_step = 0.005; // FIXME: should be a parameter of the camera
+    let dx = xpos - self.mouse_start.x;
+    let dy = ypos - self.mouse_start.y;
 
-    if self.mouse_pressed
+    match self.mode
     {
-      let dx = -xpos + self.mouse_start.x;
-      let dy = ypos - self.mouse_start.y;
-
-      self.yaw   = self.yaw   - dx * yaw_step;
-      self.pitch = self.pitch - dy * pitch_step;
-
-      self.changed = true
+      ArcBall(ref mut arcball) =>
+      {
+        if self.mouse_pressed
+        {
+          arcball.handle_left_button_displacement(dx, dy);
+          self.changed = true
+        }
+      },
+      FPS => fail!("Not yet implemented.")
     }
 
     self.mouse_start.x = xpos;
@@ -89,42 +82,24 @@ impl Camera
   {
     match self.mode
     {
-      ArcBall(_, _, zoom_factor) => self.distance += zoom_factor * yoff / 120.0,
-      FPS                        => fail!("FPS mode not yet implemented.")
+      ArcBall(ref mut ab) => ab.handle_scroll(yoff),
+      FPS => fail!("FPS mode not yet implemented.")
     }
 
     self.changed = true;
   }
 
-  pub fn handle_keyboard(&mut self,
-                         _: int,
-                         _: int)
+  pub fn handle_keyboard(&mut self, _: int, _: int)
   {
     // FIXME: useful for FPS mode
   }
 
-  fn update(&mut self)
+  pub fn transformation(&self) -> Iso3f64
   {
-    let curr_mode = self.mode;
-    match curr_mode
+    match self.mode
     {
-      ArcBall(ref _0, ref at, ref _1) => {
-        if (self.distance < 0.00001)
-        { self.distance = 0.00001 }
-
-        if (self.pitch <= 0.0001)
-        { self.pitch = 0.0001 }
-
-        if (self.pitch > Real::pi::<float>() - 0.0001)
-        { self.pitch = Real::pi::<float>() - 0.0001 }
-
-        let px = at.x as float + self.distance * self.yaw.cos() * self.pitch.sin();
-        let py = at.y as float + self.distance * self.pitch.cos();
-        let pz = at.z as float + self.distance * self.yaw.sin() * self.pitch.sin();
-
-        self.mode = ArcBall(Vec3::new(px as GLfloat, py as GLfloat, pz as GLfloat), *at, *_1);
-      }
-      FPS => { }
+      ArcBall(ref ab) => ab.transformation(),
+      FPS             => fail!("Not yet implemented.")
     }
   }
 
@@ -132,30 +107,18 @@ impl Camera
   {
     if self.changed // do not reupload if nothing changed
     {
-      self.update();
+      // FIXME: its a bit weird that we have to type everything exlicitly…
+      let mut homo: Mat4<f64> = self.transformation().inverse().unwrap().to_homogeneous();
 
-      let (eye, at) = match self.mode
-      {
-        ArcBall(ref e, ref a, _) => (e, a),
-        FPS                      => fail!("FPS camera not yet implemented.")
-      };
+      homo.transpose();
 
-      let zaxis = (eye - *at).normalized();
-      let xaxis = Vec3::new(0.0, 1.0, 0.0).cross(&zaxis).normalized();
-      let yaxis = zaxis.cross(&xaxis);
-
-      let look_at= Mat4::new::<GLfloat>(
-        xaxis.x, yaxis.x, zaxis.x, 0.0,
-        xaxis.y, yaxis.y, zaxis.y, 0.0,
-        xaxis.z, yaxis.z, zaxis.z, 0.0,
-        -xaxis.dot(eye), -yaxis.dot(eye), -zaxis.dot(eye), 1.0
-      );
+      let homo32: Mat4<GLfloat> = MatCast::from(homo);
 
       unsafe {
         glUniformMatrix4fv(view_location,
                            1,
                            GL_FALSE,
-                           cast::transmute(&look_at));
+                           cast::transmute(&homo32));
       }
 
       self.changed = false;
