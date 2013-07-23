@@ -36,7 +36,7 @@ fn main()
                                .translate_by(&Vec3::new(offset, -1.5, 0.0));
     }
 
-    do w.set_loop_callback |w|
+    do w.set_loop_callback
     {
       for w.objects().iter().advance |o|
       { rotate_wrt_center(o.transformation(), &Vec3::new(0.0f64, 0.014, 0.0)); }

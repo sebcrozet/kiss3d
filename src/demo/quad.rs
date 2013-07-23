@@ -11,7 +11,7 @@ fn main()
     let c    = window.add_quad(5.0, 4.0, 500, 400).set_color(random(), random(), random());
     let time = @mut 0.016f32;
 
-    do window.set_loop_callback |_|
+    do window.set_loop_callback
     {
       do c.modify_vertices |vs|
       {

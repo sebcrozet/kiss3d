@@ -22,16 +22,16 @@ fn main()
                                .transformation()
                                .translate_by(&Vec3::new(0.0, 0.0, 0.505));
 
-    do w.set_loop_callback |_|
+    do w.set_loop_callback
     {
-      // do w.camera().change_mode |mode|
-      // {
-      //   match *mode
-      //   {
-      //     camera::ArcBall(ref mut ab) => ab.yaw = ab.yaw + 0.05,
-      //     _                           => { }
-      //   }
-      // }
+      do w.camera().change_mode |mode|
+      {
+        match *mode
+        {
+          camera::ArcBall(ref mut ab) => ab.yaw = ab.yaw + 0.05,
+          _                           => { }
+        }
+      }
     }
 
     w.set_light(window::StickToCamera);

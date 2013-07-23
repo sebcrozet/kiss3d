@@ -20,7 +20,7 @@ fn main()
     p.transformation().translate_by(&Vec3::new(-1.0, 0.0, 0.0));
     y.transformation().translate_by(&Vec3::new(-3.0, 0.0, 0.0));
 
-    do w.set_loop_callback |_|
+    do w.set_loop_callback
     {
       rotate_wrt_center(c.transformation(), &Vec3::new(0.0f64, 0.014, 0.0));
       rotate_wrt_center(b.transformation(), &Vec3::new(0.0f64, 0.014, 0.0));

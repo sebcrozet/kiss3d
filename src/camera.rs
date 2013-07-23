@@ -10,7 +10,6 @@ use nalgebra::traits::transpose::Transpose;
 use nalgebra::traits::homogeneous::ToHomogeneous;
 use nalgebra::vec::Vec2;
 use nalgebra::mat::Mat4;
-use window::Window;
 use arc_ball;
 
 enum Button
@@ -56,7 +55,7 @@ impl Camera
   pub fn mode(&self) -> CameraMode
   { self.mode }
 
-  pub fn handle_cursor_pos(&mut self, w: &Window, xpos: float, ypos: float)
+  pub fn handle_cursor_pos(&mut self, xpos: float, ypos: float)
   {
     let dx = xpos - self.mouse_start.x;
     let dy = ypos - self.mouse_start.y;
@@ -68,11 +67,11 @@ impl Camera
         match self.mouse_pressed
         {
           RightButton => {
-            arcball.handle_right_button_displacement(w, dx, dy);
+            arcball.handle_right_button_displacement(dx, dy);
             self.changed = true
           },
           LeftButton => {
-            arcball.handle_left_button_displacement(w, dx, dy);
+            arcball.handle_left_button_displacement(dx, dy);
             self.changed = true
           },
           ReleasedButton => { }
@@ -85,7 +84,7 @@ impl Camera
     self.mouse_start.y = ypos;
   }
 
-  pub fn handle_mouse_button(&mut self, _: &mut Window, button: int, action: int, _: int)
+  pub fn handle_mouse_button(&mut self, button: int, action: int, _: int)
   {
     if action == 1
     { self.mouse_pressed = if button == 0 { LeftButton } else { RightButton } }
@@ -93,7 +92,7 @@ impl Camera
     { self.mouse_pressed = ReleasedButton }
   }
 
-  pub fn handle_scroll(&mut self, _: &mut Window, _: float, yoff: float)
+  pub fn handle_scroll(&mut self, _: float, yoff: float)
   {
     match self.mode
     {
@@ -104,7 +103,7 @@ impl Camera
     self.changed = true;
   }
 
-  pub fn handle_keyboard(&mut self, _: &mut Window, _: int, _: int)
+  pub fn handle_keyboard(&mut self, _: int, _: int)
   {
     // FIXME: useful for FPS mode
   }

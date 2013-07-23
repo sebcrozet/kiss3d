@@ -4,7 +4,6 @@ use nalgebra::traits::cross::Cross;
 use nalgebra::traits::scalar_op::ScalarMul;
 use nalgebra::types::Iso3f64;
 use nalgebra::vec::Vec3;
-use window::Window;
 
 #[deriving(Clone, ToStr)]
 pub struct ArcBall
@@ -69,7 +68,7 @@ impl ArcBall
     { self.pitch = Real::pi::<f64>() - 0.0001 }
   }
 
-  pub fn handle_left_button_displacement(&mut self, _: &Window, dx: float, dy: float)
+  pub fn handle_left_button_displacement(&mut self, dx: float, dy: float)
   {
     self.yaw   = self.yaw   + dx as f64 * self.yaw_step;
     self.pitch = self.pitch - dy as f64 * self.pitch_step;
@@ -77,7 +76,7 @@ impl ArcBall
     self.update_restrictions();
   }
 
-  pub fn handle_right_button_displacement(&mut self, _: &Window, dx: float, dy: float)
+  pub fn handle_right_button_displacement(&mut self, dx: float, dy: float)
   {
     let eye       = self.eye();
     let dir       = (self.at - eye).normalized();

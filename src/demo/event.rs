@@ -8,7 +8,7 @@ fn main()
 {
   do window::Window::spawn(~"Kiss3d: events") |window|
   {
-    do window.set_keyboard_callback |_, event|
+    do window.set_keyboard_callback |event|
     {
       match event
       {
@@ -25,7 +25,7 @@ fn main()
       false // override the default keyboard handling
     }
 
-    do window.set_mouse_callback |_, event|
+    do window.set_mouse_callback |event|
     {
       match event
       {

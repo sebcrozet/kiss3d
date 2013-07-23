@@ -55,14 +55,14 @@ pub struct Window
   priv light:                 i32,
   priv light_mode:            Light,
   priv window:                @mut glfw::Window,
-  priv camera:                @mut Camera,
+  priv camera:                Camera,
   priv znear:                 f64,
   priv zfar:                  f64,
   priv textures:              HashMap<~str, GLuint>,
   priv geometries:            HashMap<~str, GeometryIndices>,
-  priv usr_loop_callback:     @fn(&mut Window),
-  priv usr_keyboard_callback: @fn(&mut Window, event::KeyboardEvent) -> bool,
-  priv usr_mouse_callback:    @fn(&mut Window, event::MouseEvent) -> bool,
+  priv usr_loop_callback:     @fn(),
+  priv usr_keyboard_callback: @fn(event::KeyboardEvent) -> bool,
+  priv usr_mouse_callback:    @fn(event::MouseEvent) -> bool,
   priv curr_wireframe_mode:   bool,
   priv background:            Vec3<GLfloat>,
   priv m_2d_to_3d:            Mat4<f64>
@@ -90,16 +90,16 @@ impl Window
     h as f64
   }
 
-  pub fn close(&mut self)
+  pub fn close(@mut self)
   { self.window.set_should_close(true) }
 
-  pub fn hide(&mut self)
+  pub fn hide(@mut self)
   { self.window.hide() }
 
-  pub fn show(&mut self)
+  pub fn show(@mut self)
   { self.window.show() }
 
-  pub fn set_wireframe_mode(&mut self, mode: bool)
+  pub fn set_wireframe_mode(@mut self, mode: bool)
   {
     if mode
     { unsafe { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) } }
@@ -109,7 +109,7 @@ impl Window
     self.curr_wireframe_mode = mode;
   }
 
-  pub fn set_background_color(&mut self, r: GLfloat, g: GLfloat, b: GLfloat)
+  pub fn set_background_color(@mut self, r: GLfloat, g: GLfloat, b: GLfloat)
   {
     self.background.x = r;
     self.background.y = g;
@@ -327,7 +327,7 @@ impl Window
     res
   }
 
-  pub fn add_texture(&mut self, path: ~str) -> GLuint
+  pub fn add_texture(@mut self, path: ~str) -> GLuint
   {
     let tex: Option<GLuint> = self.textures.find(&path).map(|e| **e);
 
@@ -384,19 +384,19 @@ impl Window
   pub fn objects<'r>(&'r self) -> &'r ~[@mut Object]
   { &self.objects }
 
-  pub fn exec_callback(&mut self)
-  { (self.usr_loop_callback)(self) }
+  fn exec_callback(@mut self)
+  { (self.usr_loop_callback)() }
 
-  pub fn set_loop_callback(&mut self, callback: @fn(&mut Window))
+  pub fn set_loop_callback(@mut self, callback: @fn())
   { self.usr_loop_callback = callback }
 
-  pub fn set_keyboard_callback(&mut self, callback: @fn(&mut Window, event::KeyboardEvent) -> bool)
+  pub fn set_keyboard_callback(@mut self, callback: @fn(event::KeyboardEvent) -> bool)
   { self.usr_keyboard_callback = callback }
 
-  pub fn set_mouse_callback(&mut self, callback: @fn(&mut Window, event::MouseEvent) -> bool)
+  pub fn set_mouse_callback(@mut self, callback: @fn(event::MouseEvent) -> bool)
   { self.usr_mouse_callback = callback }
 
-  pub fn set_light(&mut self, pos: Light)
+  pub fn set_light(@mut self, pos: Light)
   {
     match pos
     {
@@ -410,11 +410,11 @@ impl Window
     self.light_mode = pos;
   }
 
-  fn set_light_pos(&mut self, pos: &Vec3<GLfloat>)
+  fn set_light_pos(@mut self, pos: &Vec3<GLfloat>)
   { unsafe { glUniform3f(self.light, pos.x, pos.y, pos.z) } }
 
-  pub fn camera(&mut self) -> @mut Camera
-  { self.camera }
+  pub fn camera<'r>(&'r mut self) -> &'r mut Camera
+  { &'r mut self.camera }
 
   fn parse_builtins(ebuf: GLuint, nbuf: GLuint, vbuf: GLuint, tbuf: GLuint)
     -> (HashMap<~str, GeometryIndices>, ~[GLfloat], ~[GLfloat], ~[GLfloat], ~[GLuint])
@@ -638,10 +638,10 @@ impl Window
         window:        window,
         zfar:          1024.0,
         znear:         0.1,
-        camera:        @mut Camera::new(ArcBall(arc_ball::ArcBall::new())),
-        usr_loop_callback:     |_| {},
-        usr_keyboard_callback: |_, _| { true },
-        usr_mouse_callback:    |_, _| { true },
+        camera:        Camera::new(ArcBall(arc_ball::ArcBall::new())),
+        usr_loop_callback:     || {},
+        usr_keyboard_callback: |_| { true },
+        usr_mouse_callback:    |_| { true },
         textures:              hash_textures,   
         light:                 light_location,
         light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
@@ -763,7 +763,7 @@ impl Window
     }
   }
 
-  fn key_callback(&mut self,
+  fn key_callback(@mut self,
                   key:    libc::c_int,
                   _:      libc::c_int,
                   action: libc::c_int,
@@ -771,12 +771,12 @@ impl Window
   {
     if action == glfw::PRESS
     {
-      if !(self.usr_keyboard_callback)(self, event::KeyPressed(key))
+      if !(self.usr_keyboard_callback)(event::KeyPressed(key))
       { return }
     }
     else if action == glfw::RELEASE
     {
-      if !(self.usr_keyboard_callback)(self, event::KeyReleased(key))
+      if !(self.usr_keyboard_callback)(event::KeyReleased(key))
       { return }
     }
 
@@ -786,39 +786,39 @@ impl Window
     if action == glfw::PRESS && key == glfw::KEY_SPACE
     { self.set_wireframe_mode(!self.curr_wireframe_mode); }
 
-    self.camera.handle_keyboard(self, key as int, action as int);
+    self.camera.handle_keyboard(key as int, action as int);
   }
 
-  fn cursor_pos_callback(&mut self, xpos: float, ypos: float)
+  fn cursor_pos_callback(@mut self, xpos: float, ypos: float)
   {
-    if (self.usr_mouse_callback)(self, event::CursorPos(xpos, ypos))
-    { self.camera.handle_cursor_pos(self, xpos, ypos) }
+    if (self.usr_mouse_callback)(event::CursorPos(xpos, ypos))
+    { self.camera.handle_cursor_pos(xpos, ypos) }
   }
 
-  fn scroll_callback(&mut self, xoff: float, yoff: float)
+  fn scroll_callback(@mut self, xoff: float, yoff: float)
   {
-    if (self.usr_mouse_callback)(self, event::Scroll(xoff, yoff))
-    { self.camera.handle_scroll(self, xoff, yoff) }
+    if (self.usr_mouse_callback)(event::Scroll(xoff, yoff))
+    { self.camera.handle_scroll(xoff, yoff) }
   }
 
-  fn mouse_button_callback(&mut self,
+  fn mouse_button_callback(@mut self,
                            button: libc::c_int,
                            action: libc::c_int,
                            mods:   libc::c_int)
   {
     if action == 1
     {
-      if !(self.usr_mouse_callback)(self, event::ButtonPressed(button, mods))
+      if !(self.usr_mouse_callback)(event::ButtonPressed(button, mods))
       { return }
     }
     else
     {
-      if !(self.usr_mouse_callback)(self, event::ButtonReleased(button, mods))
+      if !(self.usr_mouse_callback)(event::ButtonReleased(button, mods))
       { return }
     }
 
 
-    self.camera.handle_mouse_button(self, button as int, action as int, mods as int)
+    self.camera.handle_mouse_button(button as int, action as int, mods as int)
   }
 
   pub fn frustrum(&self) -> Mat4<f64>
