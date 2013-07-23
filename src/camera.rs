@@ -10,7 +10,15 @@ use nalgebra::traits::transpose::Transpose;
 use nalgebra::traits::homogeneous::ToHomogeneous;
 use nalgebra::vec::Vec2;
 use nalgebra::mat::Mat4;
+use window::Window;
 use arc_ball;
+
+enum Button
+{
+  RightButton,
+  LeftButton,
+  ReleasedButton
+}
 
 pub enum CameraMode
 {
@@ -22,7 +30,7 @@ pub struct Camera
 {
   priv changed:       bool,
   priv mode:          CameraMode,
-  priv mouse_pressed: bool,
+  priv mouse_pressed: Button,
   priv mouse_start:   Vec2<float>,
 }
 
@@ -33,7 +41,7 @@ impl Camera
     Camera {
       changed:       true,
       mode:          mode,
-      mouse_pressed: false,
+      mouse_pressed: ReleasedButton,
       mouse_start:   Zero::zero(),
     }
   }
@@ -48,7 +56,7 @@ impl Camera
   pub fn mode(&self) -> CameraMode
   { self.mode }
 
-  pub fn handle_cursor_pos(&mut self, xpos: float, ypos: float)
+  pub fn handle_cursor_pos(&mut self, w: &Window, xpos: float, ypos: float)
   {
     let dx = xpos - self.mouse_start.x;
     let dy = ypos - self.mouse_start.y;
@@ -57,10 +65,17 @@ impl Camera
     {
       ArcBall(ref mut arcball) =>
       {
-        if self.mouse_pressed
+        match self.mouse_pressed
         {
-          arcball.handle_left_button_displacement(dx, dy);
-          self.changed = true
+          RightButton => {
+            arcball.handle_right_button_displacement(w, dx, dy);
+            self.changed = true
+          },
+          LeftButton => {
+            arcball.handle_left_button_displacement(w, dx, dy);
+            self.changed = true
+          },
+          ReleasedButton => { }
         }
       },
       FPS => fail!("Not yet implemented.")
@@ -70,15 +85,15 @@ impl Camera
     self.mouse_start.y = ypos;
   }
 
-  pub fn handle_mouse_button(&mut self, _: int, action: int, _: int)
+  pub fn handle_mouse_button(&mut self, _: &mut Window, button: int, action: int, _: int)
   {
     if action == 1
-    { self.mouse_pressed = true }
+    { self.mouse_pressed = if button == 0 { LeftButton } else { RightButton } }
     else
-    { self.mouse_pressed = false }
+    { self.mouse_pressed = ReleasedButton }
   }
 
-  pub fn handle_scroll(&mut self, _: float, yoff: float)
+  pub fn handle_scroll(&mut self, _: &mut Window, _: float, yoff: float)
   {
     match self.mode
     {
@@ -89,7 +104,7 @@ impl Camera
     self.changed = true;
   }
 
-  pub fn handle_keyboard(&mut self, _: int, _: int)
+  pub fn handle_keyboard(&mut self, _: &mut Window, _: int, _: int)
   {
     // FIXME: useful for FPS mode
   }

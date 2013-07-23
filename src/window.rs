@@ -1,4 +1,5 @@
 use glfw;
+use std::num::One;
 use std::uint;
 use std::libc;
 use std::sys;
@@ -21,7 +22,10 @@ use glcore::functions::GL_ARB_vertex_array_object::*;
 use glcore::types::GL_VERSION_1_5::*;
 use glcore::types::GL_VERSION_1_0::*;
 use stb_image::image::*;
+use nalgebra::traits::inv::Inv;
+use nalgebra::traits::homogeneous::ToHomogeneous;
 use nalgebra::traits::vec_cast::VecCast;
+use nalgebra::traits::mat_cast::MatCast;
 use nalgebra::traits::translation::Translation;
 use nalgebra::traits::transpose::Transpose;
 use nalgebra::mat::Mat4;
@@ -43,6 +47,8 @@ pub enum Light
   StickToCamera
 }
 
+// XXX This file is too big. Refactoring is needed.
+
 pub struct Window
 {
   priv objects:               ~[@mut Object],
@@ -50,17 +56,40 @@ pub struct Window
   priv light_mode:            Light,
   priv window:                @mut glfw::Window,
   priv camera:                @mut Camera,
+  priv znear:                 f64,
+  priv zfar:                  f64,
   priv textures:              HashMap<~str, GLuint>,
   priv geometries:            HashMap<~str, GeometryIndices>,
   priv usr_loop_callback:     @fn(&mut Window),
   priv usr_keyboard_callback: @fn(&mut Window, event::KeyboardEvent) -> bool,
   priv usr_mouse_callback:    @fn(&mut Window, event::MouseEvent) -> bool,
   priv curr_wireframe_mode:   bool,
-  priv background:            Vec3<GLfloat>
+  priv background:            Vec3<GLfloat>,
+  priv m_2d_to_3d:            Mat4<f64>
 }
 
 impl Window
 {
+  pub fn znear(&self) -> f64
+  { self.znear }
+
+  pub fn zfar(&self) -> f64
+  { self.zfar }
+
+  pub fn width(&self) -> f64
+  {
+    let (w, _) = self.window.get_size();
+
+    w as f64
+  }
+
+  pub fn height(&self) -> f64
+  {
+    let (_, h) = self.window.get_size();
+
+    h as f64
+  }
+
   pub fn close(&mut self)
   { self.window.set_should_close(true) }
 
@@ -89,11 +118,16 @@ impl Window
 
   pub fn add_cube(@mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object
   {
-    let res = @mut Object::new(self,
-                               *self.geometries.find(&~"cube").unwrap(),
-                               1.0, 1.0, 1.0,
-                               *self.textures.find(&~"default").unwrap(),
-                               wx, wy, wz, Deleted);
+    // FIXME: this weird block indirection are here because of Rust issue #6248
+    let res = {
+      let geom = self.geometries.find(&~"cube").unwrap();
+      let tex  = self.textures.find(&~"default").unwrap();
+      @mut Object::new(self,
+                       *geom,
+                       1.0, 1.0, 1.0,
+                       *tex,
+                       wx, wy, wz, Deleted)
+    };
     // FIXME: get the geometry
 
     self.objects.push(res);
@@ -103,12 +137,17 @@ impl Window
 
   pub fn add_sphere(@mut self, r: GLfloat) -> @mut Object
   {
-    let res = @mut Object::new(self,
-                               *self.geometries.find(&~"sphere").unwrap(),
-                               1.0, 1.0, 1.0,
-                               *self.textures.find(&~"default").unwrap(),
-                               r / 0.5, r / 0.5, r / 0.5,
-                               Deleted);
+    // FIXME: this weird block indirection are here because of Rust issue #6248
+    let res = {
+      let geom = self.geometries.find(&~"sphere").unwrap();
+      let tex  = self.textures.find(&~"default").unwrap();
+      @mut Object::new(self,
+                       *geom,
+                       1.0, 1.0, 1.0,
+                       *tex,
+                       r / 0.5, r / 0.5, r / 0.5,
+                       Deleted)
+    };
     // FIXME: get the geometry
 
     self.objects.push(res);
@@ -118,12 +157,17 @@ impl Window
 
   pub fn add_cone(@mut self, h: GLfloat, r: GLfloat) -> @mut Object
   {
-    let res = @mut Object::new(self,
-                               *self.geometries.find(&~"cone").unwrap(),
-                               1.0, 1.0, 1.0,
-                               *self.textures.find(&~"default").unwrap(),
-                               r / 0.5, h, r / 0.5,
-                               Deleted);
+    // FIXME: this weird block indirection are here because of Rust issue #6248
+    let res = {
+      let geom = self.geometries.find(&~"cone").unwrap();
+      let tex  = self.textures.find(&~"default").unwrap();
+      @mut Object::new(self,
+                       *geom,
+                       1.0, 1.0, 1.0,
+                       *tex,
+                       r / 0.5, h, r / 0.5,
+                       Deleted)
+    };
     // FIXME: get the geometry
 
     self.objects.push(res);
@@ -133,12 +177,17 @@ impl Window
 
   pub fn add_cylinder(@mut self, h: GLfloat, r: GLfloat) -> @mut Object
   {
-    let res = @mut Object::new(self,
-                               *self.geometries.find(&~"cylinder").unwrap(),
-                               1.0, 1.0, 1.0,
-                               *self.textures.find(&~"default").unwrap(),
-                               r / 0.5, h, r / 0.5,
-                               Deleted);
+    // FIXME: this weird block indirection are here because of Rust issue #6248
+    let res = {
+      let geom = self.geometries.find(&~"cylinder").unwrap();
+      let tex  = self.textures.find(&~"default").unwrap();
+      @mut Object::new(self,
+                       *geom,
+                       1.0, 1.0, 1.0,
+                       *tex,
+                       r / 0.5, h, r / 0.5,
+                       Deleted)
+    };
     // FIXME: get the geometry
 
     self.objects.push(res);
@@ -259,15 +308,19 @@ impl Window
     }
 
 
-    let res = @mut Object::new(
-      self,
-      GeometryIndices::new(0, triangles.len() * 3 as i32,
-                           element_buf, normal_buf, vertex_buf, texture_buf),
-      1.0, 1.0, 1.0,
-      *self.textures.find(&~"default").unwrap(),
-      1.0, 1.0, 1.0,
-      VerticesNormalsTriangles(vertices, normals, triangles)
-    );
+    // FIXME: this weird block indirection are here because of Rust issue #6248
+    let res = {
+    let tex = self.textures.find(&~"default").unwrap();
+      @mut Object::new(
+        self,
+        GeometryIndices::new(0, triangles.len() * 3 as i32,
+                             element_buf, normal_buf, vertex_buf, texture_buf),
+        1.0, 1.0, 1.0,
+        *tex,
+        1.0, 1.0, 1.0,
+        VerticesNormalsTriangles(vertices, normals, triangles)
+      )
+    };
 
     self.objects.push(res);
 
@@ -318,6 +371,16 @@ impl Window
     }
   }
 
+  pub fn space3d_to_space2d_matrix(&self) -> Mat4<f64>
+  {
+    // XXX: this is clearly not the best way to do that...
+    self.m_2d_to_3d
+    // XXX: ... in fact, it is better to recompute the value here (instead of recomputing it at
+    // each frame). But doing so lead to a 'borrowed' dynamic task failure (and I do not know how
+    // to fix this yet).
+    // self.frustrum() * self.camera.transformation().inverse().unwrap().to_homogeneous()
+  }
+
   pub fn objects<'r>(&'r self) -> &'r ~[@mut Object]
   { &self.objects }
 
@@ -350,7 +413,7 @@ impl Window
   fn set_light_pos(&mut self, pos: &Vec3<GLfloat>)
   { unsafe { glUniform3f(self.light, pos.x, pos.y, pos.z) } }
 
-  pub fn camera(@mut self) -> @mut Camera
+  pub fn camera(&mut self) -> @mut Camera
   { self.camera }
 
   fn parse_builtins(ebuf: GLuint, nbuf: GLuint, vbuf: GLuint, tbuf: GLuint)
@@ -573,6 +636,8 @@ impl Window
       let usr_window = @mut Window {
         objects:       ~[],
         window:        window,
+        zfar:          1024.0,
+        znear:         0.1,
         camera:        @mut Camera::new(ArcBall(arc_ball::ArcBall::new())),
         usr_loop_callback:     |_| {},
         usr_keyboard_callback: |_, _| { true },
@@ -582,7 +647,8 @@ impl Window
         light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
         geometries:            builtins,
         curr_wireframe_mode:   false,
-        background:            Vec3::new(0.0, 0.0, 0.0)
+        background:            Vec3::new(0.0, 0.0, 0.0),
+        m_2d_to_3d:            One::one()
       };
 
       callback(usr_window);
@@ -618,13 +684,26 @@ impl Window
       };
 
       // setup callbacks
-      window.set_size_callback(|win, w, h| resize_callback(win, w as i32, h as i32, proj_location));
       window.set_key_callback(|_, a, b, c, d| usr_window.key_callback(a, b, c, d));
       window.set_mouse_button_callback(|_, b, a, m| usr_window.mouse_button_callback(b, a, m));
-      window.set_cursor_pos_callback(|_, xpos, ypos| usr_window.cursor_pos_callback(xpos, ypos));
       window.set_scroll_callback(|_, xoff, yoff| usr_window.scroll_callback(xoff, yoff));  
 
-      resize_callback(window, 800, 600, proj_location);
+      window.set_cursor_pos_callback(|_, xpos, ypos| usr_window.cursor_pos_callback(xpos, ypos));
+
+      window.set_size_callback(|_, w, h| {
+        unsafe { glViewport(0, 0, w as i32, h as i32) }
+
+        let frustrum: Mat4<GLfloat> = MatCast::from(usr_window.frustrum().transposed());
+
+        unsafe {
+          glUniformMatrix4fv(proj_location,
+          1,
+          GL_FALSE,
+          cast::transmute(&frustrum));
+        }
+      });
+
+      window.set_size(800, 600);
 
       if hide
       { window.hide() }
@@ -635,6 +714,7 @@ impl Window
 
         usr_window.exec_callback();
         usr_window.camera.upload(view_location);
+        usr_window.m_2d_to_3d = usr_window.camera.transformation().inverse().unwrap().to_homogeneous();
 
         match usr_window.light_mode
         {
@@ -706,19 +786,19 @@ impl Window
     if action == glfw::PRESS && key == glfw::KEY_SPACE
     { self.set_wireframe_mode(!self.curr_wireframe_mode); }
 
-    self.camera.handle_keyboard(key as int, action as int);
+    self.camera.handle_keyboard(self, key as int, action as int);
   }
 
   fn cursor_pos_callback(&mut self, xpos: float, ypos: float)
   {
     if (self.usr_mouse_callback)(self, event::CursorPos(xpos, ypos))
-    { self.camera.handle_cursor_pos(xpos, ypos) }
+    { self.camera.handle_cursor_pos(self, xpos, ypos) }
   }
 
   fn scroll_callback(&mut self, xoff: float, yoff: float)
   {
     if (self.usr_mouse_callback)(self, event::Scroll(xoff, yoff))
-    { self.camera.handle_scroll(xoff, yoff) }
+    { self.camera.handle_scroll(self, xoff, yoff) }
   }
 
   fn mouse_button_callback(&mut self,
@@ -738,7 +818,26 @@ impl Window
     }
 
 
-    self.camera.handle_mouse_button(button as int, action as int, mods as int)
+    self.camera.handle_mouse_button(self, button as int, action as int, mods as int)
+  }
+
+  pub fn frustrum(&self) -> Mat4<f64>
+  {
+    let (w, h) = self.window.get_size();
+    let fov    = (45.0 as f64).to_radians();
+    let aspect = w as f64 / (h as f64);
+
+    let sy = 1.0 / (fov * 0.5).tan();
+    let sx = -sy / aspect;
+    let sz = -(self.zfar + self.znear) / (self.znear - self.zfar);
+    let tz = 2.0 * self.zfar * self.znear / (self.znear - self.zfar);
+
+    Mat4::new(
+      sx , 0.0, 0.0, 0.0,
+      0.0, sy , 0.0, 0.0,
+      0.0, 0.0, sz , tz,
+      0.0, 0.0, 1.0, 0.0
+    )
   }
 }
 
@@ -767,34 +866,6 @@ fn check_shader_error(shader: GLuint)
           fail!("Shader compilation failed: " + info_log);
         }
       }
-  }
-}
-
-fn resize_callback(_: &glfw::Window, w: i32, h: i32, proj_location: i32)
-{
-  let fov    = (90.0 as GLfloat).to_radians();
-  let aspect = w as GLfloat / (h as GLfloat);
-  let zfar   = 1024.0;
-  let znear  = 0.1;
-
-  // adjust the viewport to the full window
-  unsafe { glViewport(0, 0, w, h) }
-
-  // adjust the projection transformation
-  let mut proj = Mat4::new::<GLfloat>(
-      -fov / aspect, 0.0,  0.0                            , 0.0,
-      0.0         , fov, 0.0                              , 0.0,
-      0.0         , 0.0,  -(zfar + znear) / (znear - zfar), 2.0 * zfar * znear / (znear - zfar),
-      0.0         , 0.0,  1.0                             , 0.0
-  );
-
-  proj.transpose();
-
-  unsafe {
-    glUniformMatrix4fv(proj_location,
-                       1,
-                       GL_FALSE,
-                       cast::transmute(&proj));
   }
 }
 
