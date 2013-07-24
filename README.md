@@ -15,14 +15,14 @@ It is designed to be able to draw simple geometric figures and play with them
 with one-liners.
 
 ## Features
-All features are one-liners.
+Most features are one-liners.
   - open a window with a default arc-ball camera and a point light.
   - display boxes, spheres, cones or cylinders.
   - change an object color or texture.
   - change an object transform (we use the **nalgebra** library to do that).
     An object cannot be scaled though.
 
-As an exemple, having a red, rotating cube with the light attached to the camera is as simple as:
+As an example, having a red, rotating cube with the light attached to the camera is as simple as:
 ```rust
 extern mod kiss3d;
 extern mod nalgebra;
@@ -68,8 +68,7 @@ physics engine **nphysics**).  Therefore, I’d love to see people improving thi
 library for their own needs.
 
 However, keep in mind that kiss3d is KISS.
-Only one-liner features (from the user point of view) are accepted (there might
-be exceptions).
+One-liner features (from the user point of view) are preferred.
 
 ## Acknowledgements
 
