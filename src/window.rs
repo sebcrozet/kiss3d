@@ -49,6 +49,7 @@ pub enum Light
 
 // XXX This file is too big. Refactoring is needed.
 
+/// Structure representing a window and a 3D scene. It is the main interface with the 3d engine.
 pub struct Window
 {
   priv objects:               ~[@mut Object],
@@ -70,12 +71,15 @@ pub struct Window
 
 impl Window
 {
+  /// The `znear` value used by the perspective projection.
   pub fn znear(&self) -> f64
   { self.znear }
 
+  /// The `zfar` value used by the perspective projection.
   pub fn zfar(&self) -> f64
   { self.zfar }
 
+  /// The width of the window.
   pub fn width(&self) -> f64
   {
     let (w, _) = self.window.get_size();
@@ -83,6 +87,7 @@ impl Window
     w as f64
   }
 
+  /// The height of the window.
   pub fn height(&self) -> f64
   {
     let (_, h) = self.window.get_size();
@@ -90,15 +95,20 @@ impl Window
     h as f64
   }
 
+  /// Closes the window.
   pub fn close(@mut self)
   { self.window.set_should_close(true) }
 
+  /// Hides the window, without closing it. Use `show` to make it visible again.
   pub fn hide(@mut self)
   { self.window.hide() }
 
+  /// Makes the window visible. Use `hide` to hide it.
   pub fn show(@mut self)
   { self.window.show() }
 
+  /// Switch on or off wireframe rendering mode. When set to `true`, everything in the scene will
+  /// be drawn using wireframes. Wireframe rendering mode cannot be enabled on a per-object basis.
   pub fn set_wireframe_mode(@mut self, mode: bool)
   {
     if mode
@@ -109,13 +119,20 @@ impl Window
     self.curr_wireframe_mode = mode;
   }
 
-  pub fn set_background_color(@mut self, r: GLfloat, g: GLfloat, b: GLfloat)
+  /// Sets the background color.
+  pub fn set_background_color(@mut self, r: f64, g: GLfloat, b: f64)
   {
-    self.background.x = r;
-    self.background.y = g;
-    self.background.z = b;
+    self.background.x = r as GLfloat;
+    self.background.y = g as GLfloat;
+    self.background.z = b as GLfloat;
   }
 
+  /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
+  ///
+  /// # Arguments
+  ///   * `wx` - the cube extent along z axis
+  ///   * `wy` - the cube extent along the y axis
+  ///   * `wz` - the cube length along the z axis
   pub fn add_cube(@mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object
   {
     // FIXME: this weird block indirection are here because of Rust issue #6248
@@ -135,6 +152,10 @@ impl Window
     res
   }
 
+  /// Adds a sphere to the scene. The sphere is initially centered at (0, 0, 0).
+  ///
+  /// # Arguments
+  ///   * `r` - the sphere radius
   pub fn add_sphere(@mut self, r: GLfloat) -> @mut Object
   {
     // FIXME: this weird block indirection are here because of Rust issue #6248
@@ -155,6 +176,12 @@ impl Window
     res
   }
 
+  /// Adds a cone to the scene. The cone is initially centered at (0, 0, 0) and points toward the
+  /// positive `y` axis.
+  ///
+  /// # Arguments
+  ///   * `h` - the cone height
+  ///   * `r` - the cone base radius
   pub fn add_cone(@mut self, h: GLfloat, r: GLfloat) -> @mut Object
   {
     // FIXME: this weird block indirection are here because of Rust issue #6248
@@ -175,6 +202,12 @@ impl Window
     res
   }
 
+  /// Adds a cylinder to the scene. The cylinder is initially centered at (0, 0, 0) and has its
+  /// principal axis aligned with the `y` axis.
+  ///
+  /// # Arguments
+  ///   * `h` - the cylinder height
+  ///   * `r` - the cylinder base radius
   pub fn add_cylinder(@mut self, h: GLfloat, r: GLfloat) -> @mut Object
   {
     // FIXME: this weird block indirection are here because of Rust issue #6248
@@ -195,6 +228,17 @@ impl Window
     res
   }
 
+  /// Adds a double-sided quad to the scene. The cylinder is initially centered at (0, 0, 0). The
+  /// quad itself is composed of a user-defined number of triangles regularly spaced on a grid.
+  /// This is the main way to draw height maps.
+  ///
+  /// # Arguments
+  ///   * `w` - the quad width
+  ///   * `h` - the quad height
+  ///   * `wsubdivs` - number of horizontal subdivisions. This correspond to the number of squares
+  ///   which will be placed horizontally on each line. Must not be `0`
+  ///   * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
+  ///   which will be placed vertically on each line. Must not be `0`
   pub fn add_quad(@mut self,
                   w:            f64,
                   h:            f64,
@@ -327,6 +371,7 @@ impl Window
     res
   }
 
+  #[doc(hidden)]
   pub fn add_texture(@mut self, path: ~str) -> GLuint
   {
     let tex: Option<GLuint> = self.textures.find(&path).map(|e| **e);
@@ -371,6 +416,8 @@ impl Window
     }
   }
 
+  /// Retrieves the matrix which transforms a point from the 3d space to the normalized device
+  /// coordinate space.
   pub fn space3d_to_space2d_matrix(&self) -> Mat4<f64>
   {
     // XXX: this is clearly not the best way to do that...
@@ -378,24 +425,41 @@ impl Window
     // XXX: ... in fact, it is better to recompute the value here (instead of recomputing it at
     // each frame). But doing so lead to a 'borrowed' dynamic task failure (and I do not know how
     // to fix this yet).
-    // self.frustrum() * self.camera.transformation().inverse().unwrap().to_homogeneous()
+    // self.projection() * self.camera.transformation().inverse().unwrap().to_homogeneous()
   }
 
+  /// The list of objects on the scene.
   pub fn objects<'r>(&'r self) -> &'r ~[@mut Object]
   { &self.objects }
 
   fn exec_callback(@mut self)
   { (self.usr_loop_callback)() }
 
+  /// Sets the user-defined callback called at each event-pooling iteration of the engine.
   pub fn set_loop_callback(@mut self, callback: @fn())
   { self.usr_loop_callback = callback }
 
+  /// Sets the user-defined callback called whenever a keyboard event is triggered. It is called
+  /// before any specific event handling from the engine (e.g. for the camera).
+  ///
+  /// # Arguments
+  ///   * callback - the user-defined keyboard event handler. If it returns `false`, the event will
+  ///   not be further handled by the engine. Handlers overriding some of the default behaviour of
+  ///   the engine typically return `false`.
   pub fn set_keyboard_callback(@mut self, callback: @fn(&event::KeyboardEvent) -> bool)
   { self.usr_keyboard_callback = callback }
 
+  /// Sets the user-defined callback called whenever a mouse event is triggered. It is called
+  /// before any specific event handling from the engine (e.g. for the camera).
+  ///
+  /// # Arguments
+  ///   * callback - the user-defined mouse event handler. If it returns `false`, the event will
+  ///   not be further handled by the engine. Handlers overriding some of the default behaviour of
+  ///   the engine typically return `false`.
   pub fn set_mouse_callback(@mut self, callback: @fn(&event::MouseEvent) -> bool)
   { self.usr_mouse_callback = callback }
 
+  /// Sets the light mode. Only one light is supported.
   pub fn set_light(@mut self, pos: Light)
   {
     match pos
@@ -413,6 +477,7 @@ impl Window
   fn set_light_pos(@mut self, pos: &Vec3<GLfloat>)
   { unsafe { glUniform3f(self.light, pos.x, pos.y, pos.z) } }
 
+  /// The camera used to render the scene. Only one camera is supported.
   pub fn camera<'r>(&'r mut self) -> &'r mut Camera
   { &'r mut self.camera }
 
@@ -452,9 +517,25 @@ impl Window
      icv + shift_isv + shift_ipv + shift_iyv)
   }
 
+  /// Opens a window and hide it. Once the window is created and before any event pooling, a
+  /// user-defined callback is called once.
+  ///
+  /// This method contains an infinite loop and returns when the window is closed.
+  ///
+  /// # Arguments
+  ///   * `title` - the window title
+  ///   * `callback` - a callback called once the window has been created
   pub fn spawn_hidden(title: ~str, callback: ~fn(@mut Window))
   { Window::do_spawn(title, true, callback) }
 
+  /// Opens a window. Once the window is created and before any event pooling, a user-defined
+  /// callback is called once.
+  ///
+  /// This method contains an infinite loop and returns when the window is closed.
+  ///
+  /// # Arguments
+  ///   * `title` - the window title
+  ///   * `callback` - a callback called once the window has been created
   pub fn spawn(title: ~str, callback: ~fn(@mut Window))
   { Window::do_spawn(title, false, callback) }
 
@@ -693,13 +774,13 @@ impl Window
       window.set_size_callback(|_, w, h| {
         unsafe { glViewport(0, 0, w as i32, h as i32) }
 
-        let frustrum: Mat4<GLfloat> = MatCast::from(usr_window.frustrum().transposed());
+        let projection: Mat4<GLfloat> = MatCast::from(usr_window.projection().transposed());
 
         unsafe {
           glUniformMatrix4fv(proj_location,
           1,
           GL_FALSE,
-          cast::transmute(&frustrum));
+          cast::transmute(&projection));
         }
       });
 
@@ -819,7 +900,8 @@ impl Window
     self.camera.handle_mouse(&event)
   }
 
-  pub fn frustrum(&self) -> Mat4<f64>
+  /// The projection matrix used by the window.
+  pub fn projection(&self) -> Mat4<f64>
   {
     let (w, h) = self.window.get_size();
     let fov    = (45.0 as f64).to_radians();

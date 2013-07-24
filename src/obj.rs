@@ -22,6 +22,14 @@ type Texture = Vec2<GLfloat>;
 fn error(line: uint, err: &str) -> !
 { fail!("At line " + line.to_str() + ": " + err) }
 
+/// Parses a string representing an obj file and returns (vertices, normals, texture coordinates, indices)
+/// This is a very simple parser which only extracts vertices, normals, texture coordinates and
+/// indices. There are a lot of restriction on the format:
+///   * faces must have exactly three vertices (i-e faces must be triangulated by the exporter)
+///   * vertices informations on face declaration must have informations about the vertex, the
+///   normal and the texture coordinates (eg. `f 1/3/5 1/5/6 4/6/2`). If at least one is missing, the
+///   parsing will fail (eg. `f 1//0 2 3/5` will fail).
+/// Any line other than `f`, `v`, `vn`, `vt` is ignored by the parser.
 pub fn parse(string: &str) -> (~[GLfloat], ~[GLfloat], ~[GLfloat], ~[GLuint])
 {
   let mut vertices: ~[Vertex]  = ~[];

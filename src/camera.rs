@@ -27,6 +27,7 @@ pub enum CameraMode
   FPS
 }
 
+/// Structure representing the camera.
 pub struct Camera
 {
   priv changed:       bool,
@@ -37,6 +38,7 @@ pub struct Camera
 
 impl Camera
 {
+  #[doc(hidden)]
   pub fn new(mode: CameraMode) -> Camera
   {
     Camera {
@@ -47,6 +49,8 @@ impl Camera
     }
   }
 
+  /// Modify the camera mode. Any modifications will be taken in account during the nexit display
+  /// loop.
   pub fn change_mode<'r>(&'r mut self, f: &fn(&'r mut CameraMode))
   {
     f(&'r mut self.mode);
@@ -54,9 +58,11 @@ impl Camera
     self.changed = true;
   }
 
+  /// The current camera mode.
   pub fn mode(&self) -> CameraMode
   { self.mode }
 
+  #[doc(hidden)]
   pub fn handle_mouse(&mut self, event: &event::MouseEvent)
   {
     match *event
@@ -112,6 +118,7 @@ impl Camera
     self.changed = true;
   }
 
+  #[doc(hidden)]
   pub fn handle_keyboard(&mut self, event: &event::KeyboardEvent)
   {
     match self.mode
@@ -120,10 +127,13 @@ impl Camera
         ab.handle_keyboard(event);
         self.changed = true;
       },
-      FPS                 => fail!("FPS mode not yet implemented.")
+      FPS => fail!("FPS mode not yet implemented.")
     }
   }
 
+  /// The transformation of the camera. This corresponds to the position and orientation of the
+  /// camera. Note that this is not the projection used as the view matrix. The view matrix is the
+  /// inverse of this matrix.
   pub fn transformation(&self) -> Iso3f64
   {
     match self.mode
@@ -133,6 +143,7 @@ impl Camera
     }
   }
 
+  #[doc(hidden)]
   pub fn upload(&mut self, view_location: i32)
   {
     if self.changed // do not reupload if nothing changed

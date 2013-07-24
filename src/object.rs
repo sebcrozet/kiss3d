@@ -31,6 +31,7 @@ pub enum Geometry
   Deleted
 }
 
+#[doc(hidden)]
 pub struct GeometryIndices
 {
   priv offset:         uint,
@@ -43,6 +44,7 @@ pub struct GeometryIndices
 
 impl GeometryIndices
 {
+  #[doc(hidden)]
   pub fn new(offset:         uint,
              size:           i32,
              element_buffer: GLuint,
@@ -61,6 +63,8 @@ impl GeometryIndices
   }
 }
 
+/// Structure of all 3d objects on the scene. This is the only interface to manipulate the object
+/// position, color, vertices and texture.
 pub struct Object
 {
   priv parent:      @mut Window,
@@ -74,6 +78,7 @@ pub struct Object
 
 impl Object
 {
+  #[doc(hidden)]
   pub fn new(parent:      @mut Window,
              igeometry:   GeometryIndices,
              r:           f32,
@@ -98,6 +103,7 @@ impl Object
     }
   }
 
+  #[doc(hidden)]
   pub fn upload_geometry(&mut self)
   {
     match self.geometry
@@ -120,6 +126,7 @@ impl Object
     }
   }
 
+  #[doc(hidden)]
   pub fn upload(&self,
                 pos_attrib:                u32,
                 normal_attrib:             u32,
@@ -221,13 +228,21 @@ impl Object
     }
   }
 
+  /// The 3d transformation of the object. This is an isometric transformation (i-e no scaling).
   pub fn transformation<'r>(&'r mut self) -> &'r mut Transform3d
   { &mut self.transform }
 
+  /// Applies a user-defined callback on the object geometry. Some geometries might not be
+  /// available (because they are only loaded on graphics memory); in this case this is a no-op.
+  ///
+  /// # Arguments
+  ///   * `f` - A user-defined callback called on the object geometry. If it returns `true`, the
+  ///   geometry will be updated on graphics memory too. Otherwise, the modification will not have
+  ///   any effect on the 3d display.
   pub fn modify_geometry(&mut self,
-                         f: &fn(&mut ~[Vec3<f32>],
-                                &mut ~[Vec3<f32>],
-                                &mut ~[(GLuint, GLuint, GLuint)]) -> bool)
+                         f: &fn(vertices:  &mut ~[Vec3<f32>],
+                                normals:   &mut ~[Vec3<f32>],
+                                triangles: &mut ~[(GLuint, GLuint, GLuint)]) -> bool)
   {
     if match self.geometry
     {
@@ -237,21 +252,29 @@ impl Object
     { self.upload_geometry() }
   }
 
-  // FIXME: replace that by an iterator on vertices?
+  /// Applies a user-defined callback on the object vertices. Some geometries might not be
+  /// available (because they are only loaded on graphics memory); in this case this is a no-op.
+  ///
+  /// # Arguments
+  ///   * `f` - A user-defined callback called on the object vertice. The normals are automatically
+  ///   recomputed. If it returns `true`, the the geometry will be updated on graphics memory too.
+  ///   Otherwise, the modifications will not have any effect on the 3d display.
   pub fn modify_vertices(&mut self, f: &fn(&mut ~[Vec3<f32>]) -> bool)
   {
-    if match self.geometry
+    let (update, normals) = match self.geometry
     {
-      VerticesNormalsTriangles(ref mut v, _, _) => f(v),
-      Deleted => false
-    }
-    {
-      self.recompute_normals();
-      self.upload_geometry()
-    }
+      VerticesNormalsTriangles(ref mut v, _, _) => (f(v), true),
+      Deleted => (false, false)
+    };
+
+    if normals
+    { self.recompute_normals() }
+
+    if update
+    { self.upload_geometry() }
   }
 
-  pub fn recompute_normals(&mut self)
+  fn recompute_normals(&mut self)
   {
     match self.geometry
     {
@@ -287,12 +310,10 @@ impl Object
     }
   }
 
-  pub fn geometry<'r>(&'r self) -> &'r Geometry
+  fn geometry<'r>(&'r self) -> &'r Geometry
   { &'r self.geometry }
 
-  pub fn geometry_mut<'r>(&'r mut self) -> &'r mut Geometry
-  { &'r mut self.geometry }
-
+  /// Sets the color of the object. Colors components must be on the range `[0.0, 1.0]`.
   pub fn set_color(@mut self, r: f32, g: f32, b: f32) -> @mut Object
   {
     self.color.x = r;
@@ -302,6 +323,10 @@ impl Object
     self
   }
 
+  /// Sets the texture of the object.
+  ///
+  /// # Arguments
+  ///   * `path` - relative path of the texture on the disk
   pub fn set_texture(@mut self, path: ~str) -> @mut Object
   {
     self.texture = self.parent.add_texture(path);

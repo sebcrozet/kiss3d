@@ -1,5 +1,6 @@
 kiss3d_lib_path=lib
 kiss3d_bin_path=bin
+kiss3d_doc_path=doc
 glfw_lib_path=glfw-rs/lib
 glcore_lib_path=glcore-rs/lib
 nalgebra_lib_path=nalgebra/lib
@@ -21,6 +22,10 @@ test:
 	$(build_cmd) src/demo/primitives_scale.rs 
 	$(build_cmd) src/demo/texturing.rs 
 
+doc:
+	mkdir -p $(kiss3d_doc_path)
+	rust doc src/kiss3d.rc --output-dir $(kiss3d_doc_path)
+
 deps:
 	make -C glfw-rs
 	make -C glcore-rs
@@ -28,3 +33,5 @@ deps:
 	cd rust-stb-image; ./configure
 	make clean -C rust-stb-image
 	make -C rust-stb-image
+
+.PHONY:doc
