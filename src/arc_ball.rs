@@ -1,9 +1,11 @@
-use std::num::One;
+use std::num::{Zero, One};
 use nalgebra::traits::norm::Norm;
 use nalgebra::traits::cross::Cross;
 use nalgebra::traits::scalar_op::ScalarMul;
 use nalgebra::types::Iso3f64;
 use nalgebra::vec::Vec3;
+use glfw::consts::*;
+use event;
 
 #[deriving(Clone, ToStr)]
 pub struct ArcBall
@@ -89,10 +91,18 @@ impl ArcBall
                       + bitangent.scalar_mul(&(dy as f64 * mult))
   }
 
-
   pub fn handle_scroll(&mut self, yoff: float)
   {
     self.dist = self.dist + self.dist_step * (yoff as f64) / 120.0;
     self.update_restrictions();
+  }
+
+  pub fn handle_keyboard(&mut self, event: &event::KeyboardEvent)
+  {
+    match *event
+    {
+      event::KeyReleased(button) => if button == KEY_ENTER { self.at = Zero::zero() },
+      _ => { }
+    }
   }
 }

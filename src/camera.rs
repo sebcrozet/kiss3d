@@ -112,9 +112,16 @@ impl Camera
     self.changed = true;
   }
 
-  pub fn handle_keyboard(&mut self, _: &event::KeyboardEvent)
+  pub fn handle_keyboard(&mut self, event: &event::KeyboardEvent)
   {
-
+    match self.mode
+    {
+      ArcBall(ref mut ab) => {
+        ab.handle_keyboard(event);
+        self.changed = true;
+      },
+      FPS                 => fail!("FPS mode not yet implemented.")
+    }
   }
 
   pub fn transformation(&self) -> Iso3f64
