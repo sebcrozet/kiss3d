@@ -18,8 +18,8 @@ with one-liners.
 All features are one-liners.
   - open a window with a default arc-ball camera and a point light.
   - display boxes, spheres, cones or cylinders.
-  - change an object's color or texture.
-  - change an object's transform (we use the **nalgebra** library to do that).
+  - change an object color or texture.
+  - change an object transform (we use the **nalgebra** library to do that).
     An object cannot be scaled though.
 
 As an exemple, having a red, rotating cube with the light attached to the camera is as simple as:
@@ -33,28 +33,20 @@ use kiss3d::window;
 
 fn main()
 {
-  do window::Window::spawn |window|
+  do window::Window::spawn(~"Kiss3d: cube") |window|
   {
-    let c = window.add_cube().set_color(1.0, 0.0, 0.0);
-    
-    do window.set_loop_callback |_|
-    { c.transformation().rotate_by(&Vec3::new::<f32>([0.0, 0.014, 0.0])) }
-    
+    let c = window.add_cube(1.0, 1.0, 1.0).set_color(1.0, 0.0, 0.0);
+
+    do window.set_loop_callback
+    { c.transformation().rotate_by(&Vec3::new(0.0f64, 0.014, 0.0)) }
+
     window.set_light(window::StickToCamera);
   }
 }
 ```
-
-## Won’t
-Anything not in the previous list is _not_ supported.
-In particular common features like multitexturing, custom shader loading, and coffee
-making are not supported and wont be unless someone manages to write them in
-one line. Don’t hesitate to contribute =)
-
 ## Compilation
-You will need the last rust compiler from the master branch.
-I pull the compiler and fix my code almost every day. If you encounter
-problems, make sure you have the last version.
+You will need the last rust compiler from the `master` branch.
+If you encounter problems, make sure you have the last compiler version before creating an issue.
 
 The simplest way to build **kiss3d** and all its dependencies is to do a
 recursive clone:
@@ -68,6 +60,7 @@ recursive clone:
 
 
 The last command will compile demos on the `bin` folder.
+Use `make doc` to compile the documentation on the `doc` folder.
 
 ## Contributions
 I intend to work on this library to suit my needs only (to write demo for my
