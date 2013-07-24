@@ -10,7 +10,7 @@ fn main()
   {
     do window.set_keyboard_callback |event|
     {
-      match event
+      match *event
       {
         event::KeyPressed(code) => {
           println("You pressed the key with code: " + code.to_str());
@@ -27,7 +27,7 @@ fn main()
 
     do window.set_mouse_callback |event|
     {
-      match event
+      match *event
       {
         event::ButtonPressed(button, mods) => {
           println("You pressed the mouse button with code: "      + button.to_str());

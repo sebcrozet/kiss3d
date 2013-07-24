@@ -3,6 +3,7 @@ use std::num::Zero;
 use glcore::types::GL_VERSION_1_0::*;
 use glcore::consts::GL_VERSION_1_1::*;
 use glcore::functions::GL_VERSION_2_0::*;
+use glfw::consts::*;
 use nalgebra::types::Iso3f64;
 use nalgebra::traits::inv::Inv;
 use nalgebra::traits::mat_cast::MatCast;
@@ -10,6 +11,7 @@ use nalgebra::traits::transpose::Transpose;
 use nalgebra::traits::homogeneous::ToHomogeneous;
 use nalgebra::vec::Vec2;
 use nalgebra::mat::Mat4;
+use event;
 use arc_ball;
 
 enum Button
@@ -55,7 +57,22 @@ impl Camera
   pub fn mode(&self) -> CameraMode
   { self.mode }
 
-  pub fn handle_cursor_pos(&mut self, xpos: float, ypos: float)
+  pub fn handle_mouse(&mut self, event: &event::MouseEvent)
+  {
+    match *event
+    {
+      event::ButtonPressed(button, _)  => {
+        self.mouse_pressed = if button == MOUSE_BUTTON_1 { LeftButton } else { RightButton }
+      },
+      event::ButtonReleased(_, _) => {
+        self.mouse_pressed = ReleasedButton
+      },
+      event::CursorPos(x, y) => self.handle_cursor_pos(x, y),
+      event::Scroll(_, off)  => self.handle_scroll(off)
+    }
+  }
+
+  fn handle_cursor_pos(&mut self, xpos: float, ypos: float)
   {
     let dx = xpos - self.mouse_start.x;
     let dy = ypos - self.mouse_start.y;
@@ -84,28 +101,20 @@ impl Camera
     self.mouse_start.y = ypos;
   }
 
-  pub fn handle_mouse_button(&mut self, button: int, action: int, _: int)
-  {
-    if action == 1
-    { self.mouse_pressed = if button == 0 { LeftButton } else { RightButton } }
-    else
-    { self.mouse_pressed = ReleasedButton }
-  }
-
-  pub fn handle_scroll(&mut self, _: float, yoff: float)
+  fn handle_scroll(&mut self, off: float)
   {
     match self.mode
     {
-      ArcBall(ref mut ab) => ab.handle_scroll(yoff),
-      FPS => fail!("FPS mode not yet implemented.")
+      ArcBall(ref mut ab) => ab.handle_scroll(off),
+      FPS                 => fail!("FPS mode not yet implemented.")
     }
 
     self.changed = true;
   }
 
-  pub fn handle_keyboard(&mut self, _: int, _: int)
+  pub fn handle_keyboard(&mut self, _: &event::KeyboardEvent)
   {
-    // FIXME: useful for FPS mode
+
   }
 
   pub fn transformation(&self) -> Iso3f64

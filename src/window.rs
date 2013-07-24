@@ -61,8 +61,8 @@ pub struct Window
   priv textures:              HashMap<~str, GLuint>,
   priv geometries:            HashMap<~str, GeometryIndices>,
   priv usr_loop_callback:     @fn(),
-  priv usr_keyboard_callback: @fn(event::KeyboardEvent) -> bool,
-  priv usr_mouse_callback:    @fn(event::MouseEvent) -> bool,
+  priv usr_keyboard_callback: @fn(&event::KeyboardEvent) -> bool,
+  priv usr_mouse_callback:    @fn(&event::MouseEvent) -> bool,
   priv curr_wireframe_mode:   bool,
   priv background:            Vec3<GLfloat>,
   priv m_2d_to_3d:            Mat4<f64>
@@ -390,10 +390,10 @@ impl Window
   pub fn set_loop_callback(@mut self, callback: @fn())
   { self.usr_loop_callback = callback }
 
-  pub fn set_keyboard_callback(@mut self, callback: @fn(event::KeyboardEvent) -> bool)
+  pub fn set_keyboard_callback(@mut self, callback: @fn(&event::KeyboardEvent) -> bool)
   { self.usr_keyboard_callback = callback }
 
-  pub fn set_mouse_callback(@mut self, callback: @fn(event::MouseEvent) -> bool)
+  pub fn set_mouse_callback(@mut self, callback: @fn(&event::MouseEvent) -> bool)
   { self.usr_mouse_callback = callback }
 
   pub fn set_light(@mut self, pos: Light)
@@ -769,16 +769,13 @@ impl Window
                   action: libc::c_int,
                   _:      libc::c_int)
   {
-    if action == glfw::PRESS
-    {
-      if !(self.usr_keyboard_callback)(event::KeyPressed(key))
-      { return }
-    }
-    else if action == glfw::RELEASE
-    {
-      if !(self.usr_keyboard_callback)(event::KeyReleased(key))
-      { return }
-    }
+    let event = if action == glfw::PRESS
+                { event::KeyPressed(key) }
+                else // if action == glfw::RELEASE
+                { event::KeyReleased(key) };
+
+    if !(self.usr_keyboard_callback)(&event)
+    { return }
 
     if action == glfw::PRESS && key == glfw::KEY_ESCAPE
     { self.window.set_should_close(true); }
@@ -786,19 +783,23 @@ impl Window
     if action == glfw::PRESS && key == glfw::KEY_SPACE
     { self.set_wireframe_mode(!self.curr_wireframe_mode); }
 
-    self.camera.handle_keyboard(key as int, action as int);
+    self.camera.handle_keyboard(&event);
   }
 
   fn cursor_pos_callback(@mut self, xpos: float, ypos: float)
   {
-    if (self.usr_mouse_callback)(event::CursorPos(xpos, ypos))
-    { self.camera.handle_cursor_pos(xpos, ypos) }
+    let event = event::CursorPos(xpos, ypos);
+
+    if (self.usr_mouse_callback)(&event)
+    { self.camera.handle_mouse(&event) }
   }
 
   fn scroll_callback(@mut self, xoff: float, yoff: float)
   {
-    if (self.usr_mouse_callback)(event::Scroll(xoff, yoff))
-    { self.camera.handle_scroll(xoff, yoff) }
+    let event = event::Scroll(xoff, yoff);
+
+    if (self.usr_mouse_callback)(&event)
+    { self.camera.handle_mouse(&event) }
   }
 
   fn mouse_button_callback(@mut self,
@@ -806,19 +807,16 @@ impl Window
                            action: libc::c_int,
                            mods:   libc::c_int)
   {
-    if action == 1
-    {
-      if !(self.usr_mouse_callback)(event::ButtonPressed(button, mods))
-      { return }
-    }
-    else
-    {
-      if !(self.usr_mouse_callback)(event::ButtonReleased(button, mods))
-      { return }
-    }
+    let event = if action == 1
+                { event::ButtonPressed(button, mods) }
+                else
+                { event::ButtonReleased(button, mods) };
+
+    if !(self.usr_mouse_callback)(&event)
+    { return }
 
 
-    self.camera.handle_mouse_button(button as int, action as int, mods as int)
+    self.camera.handle_mouse(&event)
   }
 
   pub fn frustrum(&self) -> Mat4<f64>
