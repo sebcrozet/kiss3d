@@ -232,6 +232,11 @@ impl Object
   pub fn transformation<'r>(&'r mut self) -> &'r mut Transform3d
   { &mut self.transform }
 
+  /// The object geometry. Some geometries might not be
+  /// available (because they are only loaded on graphics memory); in this case this is a no-op.
+  pub fn geometry<'r>(&'r self) -> &'r Geometry
+  { &'r self.geometry }
+
   /// Applies a user-defined callback on the object geometry. Some geometries might not be
   /// available (because they are only loaded on graphics memory); in this case this is a no-op.
   ///
@@ -309,9 +314,6 @@ impl Object
       Deleted => { }
     }
   }
-
-  fn geometry<'r>(&'r self) -> &'r Geometry
-  { &'r self.geometry }
 
   /// Sets the color of the object. Colors components must be on the range `[0.0, 1.0]`.
   pub fn set_color(@mut self, r: f32, g: f32, b: f32) -> @mut Object
