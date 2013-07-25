@@ -627,7 +627,7 @@ impl Window
       // Create and compile the vertex shader
       let vertex_shader = unsafe { glCreateShader(GL_VERTEX_SHADER) };
       unsafe {
-        glShaderSource(vertex_shader, 1, &str::as_c_str(VERTEX_SRC, |s|s), ptr::null());
+        glShaderSource(vertex_shader, 1, &VERTEX_SRC.as_c_str(|s| s), ptr::null());
         glCompileShader(vertex_shader);
       }
 
@@ -636,7 +636,7 @@ impl Window
       // Create and compile the fragment shader
       let fragment_shader = unsafe { glCreateShader(GL_FRAGMENT_SHADER) };
       unsafe {
-        glShaderSource(fragment_shader, 1, &str::as_c_str(FRAGMENT_SRC, |s|s), ptr::null());
+        glShaderSource(fragment_shader, 1, &FRAGMENT_SRC.as_c_str(|s| s), ptr::null());
         glCompileShader(fragment_shader);
       }
 
@@ -647,13 +647,13 @@ impl Window
       unsafe {
         glAttachShader(shader_program, vertex_shader);
         glAttachShader(shader_program, fragment_shader);
-        glBindFragDataLocation(shader_program, 0, str::as_c_str("outColor", |s|s));
+        glBindFragDataLocation(shader_program, 0, "outColor".as_c_str(|s| s));
         glLinkProgram(shader_program);
         glUseProgram(shader_program);
       }
 
       // Specify the layout of the vertex data
-      let pos_attrib = unsafe { glGetAttribLocation(shader_program, str::as_c_str("position", |s| s)) } as GLuint;
+      let pos_attrib = unsafe { glGetAttribLocation(shader_program, "position".as_c_str(|s| s)) } as GLuint;
       unsafe {
         glEnableVertexAttribArray(pos_attrib);
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buf);
@@ -667,7 +667,7 @@ impl Window
       }
 
       // Specify the layout of the normals data
-      let normal_attrib = unsafe { glGetAttribLocation(shader_program, str::as_c_str("normal", |s| s)) } as GLuint;
+      let normal_attrib = unsafe { glGetAttribLocation(shader_program, "normal".as_c_str(|s| s)) } as GLuint;
       unsafe {
         glEnableVertexAttribArray(normal_attrib);
         glBindBuffer(GL_ARRAY_BUFFER, normals_buf);
@@ -678,7 +678,7 @@ impl Window
                               3 * sys::size_of::<GLfloat>() as GLsizei,
                               ptr::null());
       }
-      let texture_attrib = unsafe { glGetAttribLocation(shader_program, str::as_c_str("tex_coord_v", |s| s)) } as GLuint;
+      let texture_attrib = unsafe { glGetAttribLocation(shader_program, "tex_coord_v".as_c_str(|s| s)) } as GLuint;
       unsafe {
         glEnableVertexAttribArray(texture_attrib);
         glBindBuffer(GL_ARRAY_BUFFER, texture_buf);
@@ -711,7 +711,7 @@ impl Window
       }
 
       let light_location = unsafe {
-        glGetUniformLocation(shader_program, str::as_c_str("light_position", |s| s))
+        glGetUniformLocation(shader_program, "light_position".as_c_str(|s| s))
       };
 
       let usr_window = @mut Window {
@@ -737,31 +737,31 @@ impl Window
       usr_window.set_light(usr_window.light_mode);
 
       let color_location = unsafe {
-        glGetUniformLocation(shader_program, str::as_c_str("color", |s| s))
+        glGetUniformLocation(shader_program, "color".as_c_str(|s| s))
       };
 
       let transform_location = unsafe {
-        glGetUniformLocation(shader_program, str::as_c_str("transform", |s| s))
+        glGetUniformLocation(shader_program, "transform".as_c_str(|s| s))
       };
 
       let scale_location = unsafe {
-        glGetUniformLocation(shader_program, str::as_c_str("scale", |s| s))
+        glGetUniformLocation(shader_program, "scale".as_c_str(|s| s))
       };
 
       let normal_transform_location = unsafe {
-        glGetUniformLocation(shader_program, str::as_c_str("ntransform", |s| s))
+        glGetUniformLocation(shader_program, "ntransform".as_c_str(|s| s))
       };
 
       let proj_location = unsafe {
-        glGetUniformLocation(shader_program, str::as_c_str("projection", |s| s))
+        glGetUniformLocation(shader_program, "projection".as_c_str(|s| s))
       };
 
       let view_location = unsafe {
-        glGetUniformLocation(shader_program, str::as_c_str("view", |s| s))
+        glGetUniformLocation(shader_program, "view".as_c_str(|s| s))
       };
 
       unsafe {
-        glUniform1i(glGetUniformLocation(shader_program, str::as_c_str("tex", |s| s)), 0);
+        glUniform1i(glGetUniformLocation(shader_program, "tex".as_c_str(|s| s)), 0);
       };
 
       // setup callbacks
