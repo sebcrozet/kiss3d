@@ -1,5 +1,5 @@
 use glfw;
-use std::num::One;
+use std::num::{Zero, One};
 use std::uint;
 use std::libc;
 use std::sys;
@@ -719,7 +719,7 @@ impl Window
         window:        window,
         zfar:          1024.0,
         znear:         0.1,
-        camera:        Camera::new(ArcBall(arc_ball::ArcBall::new())),
+        camera:        Camera::new(ArcBall(arc_ball::ArcBall::new(-Vec3::z(), Zero::zero()))),
         usr_loop_callback:     || {},
         usr_keyboard_callback: |_| { true },
         usr_mouse_callback:    |_| { true },
@@ -794,6 +794,7 @@ impl Window
         glfw::poll_events();
 
         usr_window.exec_callback();
+        usr_window.camera.update();
         usr_window.camera.upload(view_location);
         usr_window.m_2d_to_3d = usr_window.camera.transformation().inverse().unwrap().to_homogeneous();
 

@@ -7,7 +7,6 @@
 #[deny(non_uppercase_statics)];
 #[deny(unnecessary_qualification)];
 #[deny(missing_doc)];
-#[deny(warnings)];
 
 
 extern mod std;
@@ -23,6 +22,7 @@ pub mod shaders;
 pub mod camera;
 pub mod obj;
 pub mod arc_ball;
+pub mod first_person;
 
 pub mod builtins
 {

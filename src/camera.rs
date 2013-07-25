@@ -13,6 +13,7 @@ use nalgebra::vec::Vec2;
 use nalgebra::mat::Mat4;
 use event;
 use arc_ball;
+use first_person;
 
 enum Button
 {
@@ -24,7 +25,7 @@ enum Button
 pub enum CameraMode
 {
   ArcBall(arc_ball::ArcBall),
-  FPS
+  FirstPerson(first_person::FirstPerson)
 }
 
 /// Structure representing the camera.
@@ -100,7 +101,21 @@ impl Camera
           ReleasedButton => { }
         }
       },
-      FPS => fail!("Not yet implemented.")
+      FirstPerson(ref mut fp) =>
+      {
+        match self.mouse_pressed
+        {
+          RightButton => {
+            fp.handle_right_button_displacement(dx, dy);
+            self.changed = true
+          },
+          LeftButton => {
+            fp.handle_left_button_displacement(dx, dy);
+            self.changed = true
+          },
+          _ => { }
+        }
+      },
     }
 
     self.mouse_start.x = xpos;
@@ -111,24 +126,50 @@ impl Camera
   {
     match self.mode
     {
-      ArcBall(ref mut ab) => ab.handle_scroll(off),
-      FPS                 => fail!("FPS mode not yet implemented.")
+      ArcBall(ref mut ab)     => ab.handle_scroll(off),
+      FirstPerson(ref mut fp) => fp.handle_scroll(off)
     }
 
     self.changed = true;
   }
 
   #[doc(hidden)]
-  pub fn handle_keyboard(&mut self, event: &event::KeyboardEvent)
+  pub fn update(&mut self)
   {
     match self.mode
     {
-      ArcBall(ref mut ab) => {
-        ab.handle_keyboard(event);
-        self.changed = true;
-      },
-      FPS => fail!("FPS mode not yet implemented.")
+      ArcBall(_)              => { },
+      FirstPerson(ref mut fp) => self.changed =  fp.update() || self.changed
+    };
+  }
+
+  /// Switches the current camera mode between `FirstPerson` and `ArcBall`.
+  pub fn switch_mode(&mut self)
+  {
+    self.mode = match self.mode
+                {
+                  ArcBall(ref ab)     => FirstPerson(first_person::FirstPerson::new(ab.eye(), ab.at)),
+                  FirstPerson(ref fp) => ArcBall(arc_ball::ArcBall::new(fp.eye, fp.at()))
+                };
+    self.changed = true;
+  }
+
+  #[doc(hidden)]
+  pub fn handle_keyboard(&mut self, event: &event::KeyboardEvent)
+  {
+    match *event
+    {
+      event::KeyReleased(k) => if k == KEY_TAB { self.switch_mode() },
+      _ => { }
     }
+
+    match self.mode
+    {
+      ArcBall(ref mut ab)     => ab.handle_keyboard(event),
+      FirstPerson(ref mut fp) => fp.handle_keyboard(event)
+    }
+
+    self.changed = true;
   }
 
   /// The transformation of the camera. This corresponds to the position and orientation of the
@@ -138,8 +179,8 @@ impl Camera
   {
     match self.mode
     {
-      ArcBall(ref ab) => ab.transformation(),
-      FPS             => fail!("Not yet implemented.")
+      ArcBall(ref ab)     => ab.transformation(),
+      FirstPerson(ref fp) => fp.transformation()
     }
   }
 

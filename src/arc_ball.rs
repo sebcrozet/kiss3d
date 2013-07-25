@@ -1,4 +1,4 @@
-use std::num::{Zero, One};
+use std::num::{Zero, One, atan2};
 use nalgebra::traits::norm::Norm;
 use nalgebra::traits::cross::Cross;
 use nalgebra::traits::scalar_op::ScalarMul;
@@ -38,31 +38,41 @@ pub struct ArcBall
 impl ArcBall
 {
   /// Creates a new arc ball camera with default sensitivity values.
-  pub fn new() -> ArcBall
+  pub fn new(eye: Vec3<f64>, at: Vec3<f64>) -> ArcBall
   {
-    ArcBall {
+    let mut res = ArcBall {
       at:         Vec3::new(0.0, 0.0, 0.0),
-      yaw:        -Real::pi::<f64>() / 2.0,
-      pitch:      Real::pi::<f64>() / 2.0,
-      dist:       3.0,
+      yaw:        0.0,
+      pitch:      0.0,
+      dist:       0.0,
       yaw_step:   0.005,
       pitch_step: 0.005,
       dist_step:  40.0
-    }
+    };
+
+    res.look_at_z(eye, at);
+
+    res
   }
 
   /// Changes the orientation and position of the arc-ball to look at the specified point.
-  pub fn look_at(&mut self, _: Vec3<f64>, at: Vec3<f64>)
+  pub fn look_at_z(&mut self, eye: Vec3<f64>, at: Vec3<f64>)
   {
-    self.at = at;
-    fail!("Not yet implemented.");
+    let dist  = (eye - at).norm();
+    let pitch = ((eye.y - at.y) / dist).acos();
+    let yaw   = atan2(eye.z - at.z, eye.x - at.x);
+
+    self.at    = at;
+    self.dist  = dist;
+    self.yaw   = yaw;
+    self.pitch = pitch;
   }
 
   /// The camera actual transformation.
   pub fn transformation(&self) -> Iso3f64
   {
     let mut id = One::one::<Iso3f64>();
-    id.look_at_z(&self.eye(), &self.at, &Vec3::new(0.0, 1.0, 0.0));
+    id.look_at_z(&self.eye(), &self.at, &Vec3::y());
 
     id
   }
@@ -103,7 +113,7 @@ impl ArcBall
   {
     let eye       = self.eye();
     let dir       = (self.at - eye).normalized();
-    let tangent   = Vec3::new(0.0, 1.0, 0.0).cross(&dir).normalized();
+    let tangent   = Vec3::y().cross(&dir).normalized();
     let bitangent = dir.cross(&tangent);
 
     let mult = self.dist / 1000.0;
