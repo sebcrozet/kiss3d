@@ -288,11 +288,11 @@ impl Object
         let mut divisor = vec::from_elem(vs.len(), 0f32);
 
         // ... and compute the mean
-        for ns.mut_iter().advance |n|
+        foreach n in ns.mut_iter()
         { *n = Zero::zero() }
 
         // accumulate normals...
-        for ts.iter().advance |&(v1, v2, v3)|
+        foreach &(v1, v2, v3) in ts.iter()
         {
           let edge1 = vs[v2] - vs[v1];
           let edge2 = vs[v3] - vs[v1];
@@ -308,7 +308,7 @@ impl Object
         }
 
         // ... and compute the mean
-        for ns.mut_iter().zip(divisor.iter()).advance |(n, divisor)|
+        foreach (n, divisor) in ns.mut_iter().zip(divisor.iter())
         { n.scalar_div_inplace(divisor) }
       },
       Deleted => { }

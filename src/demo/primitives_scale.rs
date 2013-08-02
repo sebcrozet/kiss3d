@@ -38,7 +38,7 @@ fn main()
 
     do w.set_loop_callback
     {
-      for w.objects().iter().advance |o|
+      foreach o in w.objects().iter()
       { rotate_wrt_center(o.transformation(), &Vec3::new(0.0f64, 0.014, 0.0)); }
     };
 

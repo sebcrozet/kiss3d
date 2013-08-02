@@ -271,7 +271,7 @@ impl Window
     }
 
     // create the normals
-    for ((hsubdivs + 1) * (wsubdivs + 1)).times
+    do ((hsubdivs + 1) * (wsubdivs + 1)).times
     {
       { normals.push(Vec3::new(1.0 as GLfloat, 0.0, 0.0)) }
     }
@@ -814,7 +814,7 @@ impl Window
           glClear(GL_COLOR_BUFFER_BIT);
           glClear(GL_DEPTH_BUFFER_BIT);
 
-          for usr_window.objects.iter().advance |o|
+          foreach o in usr_window.objects.iter()
           {
             o.upload(pos_attrib,
                      normal_attrib,

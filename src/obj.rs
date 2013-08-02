@@ -37,7 +37,7 @@ pub fn parse(string: &str) -> (~[GLfloat], ~[GLfloat], ~[GLfloat], ~[GLuint])
   let mut faces:    ~[Face]    = ~[];
   let mut textures: ~[Texture] = ~[];
 
-  for string.any_line_iter().enumerate().advance |(l, line)|
+  foreach (l, line) in string.any_line_iter().enumerate()
   {
     let mut mode       = Unknown;
     let mut num_parsed = 0;
@@ -45,7 +45,7 @@ pub fn parse(string: &str) -> (~[GLfloat], ~[GLfloat], ~[GLfloat], ~[GLuint])
     let mut curr_normal: Normal  = Zero::zero();
     let mut curr_tex:    Texture = Zero::zero();
 
-    for line.word_iter().enumerate().advance |(i, word)|
+    foreach (i, word) in line.word_iter().enumerate()
     {
       if i == 0
       {
@@ -151,7 +151,7 @@ fn reformat(vertices: &[Vertex],
   let mut rest: ~[GLfloat] = ~[];
   let mut resi: ~[GLuint]  = ~[];
 
-  for faces.iter().advance |face|
+  foreach face in faces.iter()
   {
     let key = (face.x, face.y, face.z);
 
