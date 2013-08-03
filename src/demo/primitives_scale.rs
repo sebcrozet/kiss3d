@@ -1,7 +1,6 @@
 extern mod kiss3d;
 extern mod nalgebra;
 
-use std::uint;
 use std::rand::random;
 use nalgebra::traits::rotation::rotate_wrt_center;
 use nalgebra::traits::translation::Translation;
@@ -12,7 +11,7 @@ fn main()
 {
   do Window::spawn(~"Kiss3d: scaled primitives") |w| {
     // NOTE: scaling is not possible.
-    for uint::iterate(0, 11) |i|
+    for i in range(0u, 11)
     {
       let dim: f32 = random();
       let dim2 = dim / 2.0;
@@ -38,7 +37,7 @@ fn main()
 
     do w.set_loop_callback
     {
-      foreach o in w.objects().iter()
+      for o in w.objects().iter()
       { rotate_wrt_center(o.transformation(), &Vec3::new(0.0f64, 0.014, 0.0)); }
     };
 

@@ -2,3 +2,11 @@
 *.swo
 *.html
 lib
+bin/camera
+bin/cube
+bin/event
+bin/primitives
+bin/primitives_scale
+bin/quad
+bin/texturing
+bin/window

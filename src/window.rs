@@ -1,6 +1,5 @@
 use glfw;
 use std::num::{Zero, One};
-use std::uint;
 use std::libc;
 use std::sys;
 use std::str;
@@ -261,9 +260,9 @@ impl Window
     let mut tex_coords = ~[];
 
     // create the vertices
-    for uint::iterate(0u, hsubdivs + 1) |i|
+    for i in range(0u, hsubdivs + 1)
     {
-      for uint::iterate(0u, wsubdivs + 1) |j|
+      for j in range(0u, wsubdivs + 1)
       {
         vertices.push(Vec3::new(j as GLfloat * wstep - cw, i as GLfloat * hstep - ch, 0.0));
         tex_coords.push(Vec2::new(1.0 - j as GLfloat * wtexstep, 1.0 - i as GLfloat * htexstep))
@@ -286,9 +285,9 @@ impl Window
     fn inv_wind((a, b, c): (u32, u32, u32)) -> (u32, u32, u32)
     { (b, a, c) }
 
-    for uint::iterate(0u, hsubdivs) |i|
+    for i in range(0u, hsubdivs)
     {
-      for uint::iterate(0u, wsubdivs) |j|
+      for j in range(0u, wsubdivs)
       {
         // build two triangles...
         triangles.push(dl_triangle(i as GLuint,
@@ -357,7 +356,7 @@ impl Window
     let tex = self.textures.find(&~"default").unwrap();
       @mut Object::new(
         self,
-        GeometryIndices::new(0, triangles.len() * 3 as i32,
+        GeometryIndices::new(0, (triangles.len() * 3) as i32,
                              element_buf, normal_buf, vertex_buf, texture_buf),
         1.0, 1.0, 1.0,
         *tex,
@@ -492,9 +491,9 @@ impl Window
     let (pv, pn, pt, ipv) = obj::parse(cone_obj::CONE_OBJ);
     let (yv, yn, yt, iyv) = obj::parse(cylinder_obj::CYLINDER_OBJ);
 
-    let shift_isv = isv.map(|i| i + cv.len() / 3 as GLuint);
-    let shift_ipv = ipv.map(|i| i + (sv.len() + cv.len()) / 3 as GLuint);
-    let shift_iyv = iyv.map(|i| i + (sv.len() + cv.len() + pv.len()) / 3 as GLuint);
+    let shift_isv = isv.map(|i| i + (cv.len() / 3) as GLuint);
+    let shift_ipv = ipv.map(|i| i + ((sv.len() + cv.len()) / 3) as GLuint);
+    let shift_iyv = iyv.map(|i| i + ((sv.len() + cv.len() + pv.len()) / 3) as GLuint);
 
     // register draw informations
     let mut hmap = HashMap::new();
@@ -814,7 +813,7 @@ impl Window
           glClear(GL_COLOR_BUFFER_BIT);
           glClear(GL_DEPTH_BUFFER_BIT);
 
-          foreach o in usr_window.objects.iter()
+          for o in usr_window.objects.iter()
           {
             o.upload(pos_attrib,
                      normal_attrib,

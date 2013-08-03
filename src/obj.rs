@@ -1,4 +1,3 @@
-use std::uint;
 use std::num::Zero;
 use std::from_str::FromStr;
 use std::hashmap::HashMap;
@@ -37,7 +36,7 @@ pub fn parse(string: &str) -> (~[GLfloat], ~[GLfloat], ~[GLfloat], ~[GLuint])
   let mut faces:    ~[Face]    = ~[];
   let mut textures: ~[Texture] = ~[];
 
-  foreach (l, line) in string.any_line_iter().enumerate()
+  for (l, line) in string.any_line_iter().enumerate()
   {
     let mut mode       = Unknown;
     let mut num_parsed = 0;
@@ -45,7 +44,7 @@ pub fn parse(string: &str) -> (~[GLfloat], ~[GLfloat], ~[GLfloat], ~[GLuint])
     let mut curr_normal: Normal  = Zero::zero();
     let mut curr_tex:    Texture = Zero::zero();
 
-    foreach (i, word) in line.word_iter().enumerate()
+    for (i, word) in line.word_iter().enumerate()
     {
       if i == 0
       {
@@ -97,7 +96,7 @@ pub fn parse(string: &str) -> (~[GLfloat], ~[GLfloat], ~[GLfloat], ~[GLuint])
 
             let mut curr_face: Face = Zero::zero();
 
-            for uint::iterate(0u, 3) |i|
+            for i in range(0u, 3)
             {
               match FromStr::from_str::<GLuint>(words[i])
               {
@@ -151,7 +150,7 @@ fn reformat(vertices: &[Vertex],
   let mut rest: ~[GLfloat] = ~[];
   let mut resi: ~[GLuint]  = ~[];
 
-  foreach face in faces.iter()
+  for face in faces.iter()
   {
     let key = (face.x, face.y, face.z);
 
@@ -159,7 +158,7 @@ fn reformat(vertices: &[Vertex],
     {
       Some(i) => { resi.push(*i); None },
       None    => {
-        let idx = resv.len() / 3 as GLuint;
+        let idx = (resv.len() / 3) as GLuint;
         let v   = vertices[face.x];
         let t   = textures[face.y];
         let n   = normals[face.z];

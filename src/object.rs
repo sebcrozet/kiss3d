@@ -224,7 +224,7 @@ impl Object
       glDrawElements(GL_TRIANGLES,
                      self.igeometry.size,
                      GL_UNSIGNED_INT,
-                     self.igeometry.offset * sys::size_of::<GLuint>() as *libc::c_void);
+                     (self.igeometry.offset * sys::size_of::<GLuint>()) as *libc::c_void);
     }
   }
 
@@ -288,11 +288,11 @@ impl Object
         let mut divisor = vec::from_elem(vs.len(), 0f32);
 
         // ... and compute the mean
-        foreach n in ns.mut_iter()
+        for n in ns.mut_iter()
         { *n = Zero::zero() }
 
         // accumulate normals...
-        foreach &(v1, v2, v3) in ts.iter()
+        for &(v1, v2, v3) in ts.iter()
         {
           let edge1 = vs[v2] - vs[v1];
           let edge2 = vs[v3] - vs[v1];
@@ -308,7 +308,7 @@ impl Object
         }
 
         // ... and compute the mean
-        foreach (n, divisor) in ns.mut_iter().zip(divisor.iter())
+        for (n, divisor) in ns.mut_iter().zip(divisor.iter())
         { n.scalar_div_inplace(divisor) }
       },
       Deleted => { }

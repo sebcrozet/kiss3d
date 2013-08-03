@@ -15,7 +15,7 @@ fn main()
     {
       do c.modify_vertices |vs|
       {
-        foreach v in vs.mut_iter()
+        for v in vs.mut_iter()
         {
           v.z = time.sin() * (((v.x + *time) * 4.0).cos() +
                 time.sin() * ((v.y + *time) * 4.0 + *time).cos()) / 2.0
