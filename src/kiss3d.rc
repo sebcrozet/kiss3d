@@ -23,7 +23,9 @@ pub mod obj;
 pub mod arc_ball;
 pub mod first_person;
 
-// the user should not see/use those modules
+/*
+ * the user should not see/use the following modules
+ */
 #[doc(hidden)]
 pub mod shaders;
 
