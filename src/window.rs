@@ -109,13 +109,6 @@ impl Window {
     /// Switch on or off wireframe rendering mode. When set to `true`, everything in the scene will
     /// be drawn using wireframes. Wireframe rendering mode cannot be enabled on a per-object basis.
     pub fn set_wireframe_mode(@mut self, mode: bool) {
-        if mode {
-            unsafe { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) }
-        }
-        else {
-            unsafe { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) }
-        }
-
         self.curr_wireframe_mode = mode;
     }
 
@@ -544,9 +537,10 @@ impl Window {
 
             unsafe {
                 glFrontFace(GL_CCW);
-                // glEnable(GL_CULL_FACE);
                 glEnable(GL_DEPTH_TEST);
                 glDepthFunc(GL_LEQUAL);
+                glEnable(GL_POLYGON_OFFSET_FILL);
+                glPolygonOffset(1.0, 1.0);
             }
 
             // Create Vertex Array Object
@@ -753,7 +747,12 @@ impl Window {
                 glGetUniformLocation(shader_program, "view".as_c_str(|s| s))
             };
 
+            let use_light_location = unsafe {
+                glGetUniformLocation(shader_program, "use_light".as_c_str(|s| s))
+            };
+
             unsafe {
+                glUniform1i(use_light_location, GL_TRUE as i32);
                 glUniform1i(glGetUniformLocation(shader_program, "tex".as_c_str(|s| s)), 0);
             };
 
@@ -807,8 +806,28 @@ impl Window {
                     glClear(GL_COLOR_BUFFER_BIT);
                     glClear(GL_DEPTH_BUFFER_BIT);
 
+                    if usr_window.curr_wireframe_mode {
+                        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                        glUniform1i(use_light_location, GL_FALSE as i32);
+
+                        for o in usr_window.objects.iter() {
+                            o.upload(true,
+                            pos_attrib,
+                            normal_attrib,
+                            texture_attrib,
+                            color_location,
+                            transform_location,
+                            scale_location,
+                            normal_transform_location)
+                        }
+
+                        glUniform1i(use_light_location, GL_TRUE as i32);
+                        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                    }
+
                     for o in usr_window.objects.iter() {
-                        o.upload(pos_attrib,
+                        o.upload(false,
+                        pos_attrib,
                         normal_attrib,
                         texture_attrib,
                         color_location,

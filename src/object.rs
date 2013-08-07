@@ -119,6 +119,7 @@ impl Object {
 
     #[doc(hidden)]
     pub fn upload(&self,
+                  black_only:                bool,
                   pos_attrib:                u32,
                   normal_attrib:             u32,
                   texture_attrib:            u32,
@@ -178,7 +179,12 @@ impl Object {
 
             glUniformMatrix3fv(scale_location, 1, GL_FALSE, cast::transmute(&self.scale));
 
-            glUniform3f(color_location, self.color.x, self.color.y, self.color.z);
+            if black_only {
+                glUniform3f(color_location, 0.0, 0.0, 0.0);
+            }
+            else {
+                glUniform3f(color_location, self.color.x, self.color.y, self.color.z);
+            }
 
             // FIXME: we should not switch the buffers if the last drawn shape uses the same.
             glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.vertex_buffer);
