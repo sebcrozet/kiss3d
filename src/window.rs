@@ -747,12 +747,7 @@ impl Window {
                 glGetUniformLocation(shader_program, "view".as_c_str(|s| s))
             };
 
-            let use_light_location = unsafe {
-                glGetUniformLocation(shader_program, "use_light".as_c_str(|s| s))
-            };
-
             unsafe {
-                glUniform1i(use_light_location, GL_TRUE as i32);
                 glUniform1i(glGetUniformLocation(shader_program, "tex".as_c_str(|s| s)), 0);
             };
 
@@ -806,10 +801,10 @@ impl Window {
                     glClear(GL_COLOR_BUFFER_BIT);
                     glClear(GL_DEPTH_BUFFER_BIT);
 
-                    if usr_window.curr_wireframe_mode {
-                        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                        glUniform1i(use_light_location, GL_FALSE as i32);
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+                    if usr_window.curr_wireframe_mode {
+                        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
                         for o in usr_window.objects.iter() {
                             o.upload(true,
                             pos_attrib,
@@ -820,8 +815,8 @@ impl Window {
                             scale_location,
                             normal_transform_location)
                         }
+                        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-                        glUniform1i(use_light_location, GL_TRUE as i32);
                         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
                     }
 
