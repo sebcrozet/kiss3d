@@ -53,6 +53,11 @@ impl Camera {
         self.changed = true;
     }
 
+    /// Indicates whether this camera has changed since the last update.
+    pub fn needs_rendering(&self) -> bool {
+        self.changed
+    }
+
     /// The current camera mode.
     pub fn mode(&self) -> CameraMode {
         self.mode
@@ -166,22 +171,20 @@ impl Camera {
 
     #[doc(hidden)]
     pub fn upload(&mut self, view_location: i32) {
-        if self.changed { // do not reupload if nothing changed
-            // FIXME: its a bit weird that we have to type everything exlicitly…
-            let mut homo: Mat4<f64> = self.transformation().inverse().unwrap().to_homogeneous();
+        let mut homo = self.transformation().inverse().unwrap().to_homogeneous();
 
-            homo.transpose();
+        homo.transpose();
 
-            let homo32: Mat4<GLfloat> = MatCast::from(homo);
+        let homo32: Mat4<GLfloat> = MatCast::from(homo);
 
-            unsafe {
-                glUniformMatrix4fv(view_location,
+        unsafe {
+            glUniformMatrix4fv(
+                view_location,
                 1,
                 GL_FALSE,
                 cast::transmute(&homo32));
-            }
-
-            self.changed = false;
         }
+
+        self.changed = false;
     }
 }

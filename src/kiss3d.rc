@@ -18,16 +18,27 @@ extern mod stb_image;
 pub mod window;
 pub mod event;
 pub mod object;
-pub mod shaders;
 pub mod camera;
 pub mod obj;
 pub mod arc_ball;
 pub mod first_person;
 
+// the user should not see/use those modules
+#[doc(hidden)]
+pub mod shaders;
+
+#[doc(hidden)]
+pub mod lines_manager;
+
+#[doc(hidden)]
+pub mod shaders_manager;
+
+#[doc(hidden)]
 pub mod builtins
 {
-  pub mod sphere_obj;
-  pub mod cube_obj;
-  pub mod cone_obj;
-  pub mod cylinder_obj;
+    pub mod loader;
+    pub mod sphere_obj;
+    pub mod cube_obj;
+    pub mod cone_obj;
+    pub mod cylinder_obj;
 }

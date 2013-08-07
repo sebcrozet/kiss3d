@@ -10,3 +10,4 @@ bin/primitives_scale
 bin/quad
 bin/texturing
 bin/window
+bin/lines

@@ -21,6 +21,7 @@ use nalgebra::adaptors::rotmat::Rotmat;
 use nalgebra::mat::{Mat3, Mat4};
 use nalgebra::vec::Vec3;
 use window::Window;
+use shaders_manager::ObjectShaderContext;
 
 type Transform3d = Transform<Rotmat<Mat3<f64>>, Vec3<f64>>;
 type Scale3d     = Mat3<GLfloat>;
@@ -102,31 +103,27 @@ impl Object {
             VerticesNormalsTriangles(ref v, ref n, _) =>
                 unsafe {
                     glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.vertex_buffer);
-                    glBufferSubData(GL_ARRAY_BUFFER,
-                                    0,
-                                    (v.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
-                                    cast::transmute(&v[0]));
+                    glBufferSubData(
+                        GL_ARRAY_BUFFER,
+                        0,
+                        (v.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
+                        cast::transmute(&v[0])
+                    );
 
                     glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.normal_buffer);
-                    glBufferSubData(GL_ARRAY_BUFFER,
-                                    0,
-                                    (n.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
-                                    cast::transmute(&n[0]));
+                    glBufferSubData(
+                        GL_ARRAY_BUFFER,
+                        0,
+                        (n.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
+                        cast::transmute(&n[0])
+                    );
                 },
                 Deleted => { }
         }
     }
 
     #[doc(hidden)]
-    pub fn upload(&self,
-                  black_only:                bool,
-                  pos_attrib:                u32,
-                  normal_attrib:             u32,
-                  texture_attrib:            u32,
-                  color_location:            i32,
-                  transform_location:        i32,
-                  scale_location:            i32,
-                  normal_transform_location: i32) {
+    pub fn upload(&self, context: &ObjectShaderContext) {
 
         let formated_transform:  Mat4<f64> = self.transform.to_homogeneous();
         let formated_ntransform: Mat3<f64> = self.transform.submat().submat();
@@ -167,54 +164,29 @@ impl Object {
             );
 
         unsafe {
-            glUniformMatrix4fv(transform_location,
+            glUniformMatrix4fv(context.transform,
                                1,
                                GL_FALSE,
                                cast::transmute(&transform_glf));
 
-            glUniformMatrix3fv(normal_transform_location,
+            glUniformMatrix3fv(context.ntransform,
                                1,
                                GL_FALSE,
                                cast::transmute(&ntransform_glf));
 
-            glUniformMatrix3fv(scale_location, 1, GL_FALSE, cast::transmute(&self.scale));
+            glUniformMatrix3fv(context.scale, 1, GL_FALSE, cast::transmute(&self.scale));
 
-            if black_only {
-                glUniform3f(color_location, 0.0, 0.0, 0.0);
-            }
-            else {
-                glUniform3f(color_location, self.color.x, self.color.y, self.color.z);
-            }
+            glUniform3f(context.color, self.color.x, self.color.y, self.color.z);
 
             // FIXME: we should not switch the buffers if the last drawn shape uses the same.
             glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.vertex_buffer);
-            glVertexAttribPointer(pos_attrib,
-                                  3,
-                                  GL_FLOAT,
-                                  GL_FALSE,
-                                  3 * sys::size_of::<GLfloat>() as GLsizei,
-                                  ptr::null());
-
+            glVertexAttribPointer(context.pos, 3, GL_FLOAT, GL_FALSE, 0, ptr::null());
             glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.normal_buffer);
-            glVertexAttribPointer(normal_attrib,
-                                  3,
-                                  GL_FLOAT,
-                                  GL_FALSE,
-                                  3 * sys::size_of::<GLfloat>() as GLsizei,
-                                  ptr::null());
-
+            glVertexAttribPointer(context.normal, 3, GL_FLOAT, GL_FALSE, 0, ptr::null());
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.igeometry.element_buffer);
-
             glBindTexture(GL_TEXTURE_2D, self.texture);
-
             glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.texture_buffer);
-
-            glVertexAttribPointer(texture_attrib,
-                                  2,
-                                  GL_FLOAT,
-                                  GL_FALSE,
-                                  2 * sys::size_of::<GLfloat>() as GLsizei,
-                                  ptr::null());
+            glVertexAttribPointer(context.tex_coord, 2, GL_FLOAT, GL_FALSE, 0, ptr::null());
 
             glDrawElements(GL_TRIANGLES,
                            self.igeometry.size,

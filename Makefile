@@ -13,6 +13,7 @@ all:
 
 test:
 	mkdir -p $(kiss3d_bin_path)
+	$(build_cmd) src/demo/lines.rs 
 	$(build_cmd) src/demo/cube.rs 
 	$(build_cmd) src/demo/camera.rs 
 	$(build_cmd) src/demo/window.rs 
