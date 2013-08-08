@@ -8,7 +8,7 @@ use nalgebra::vec::Vec3;
 use kiss3d::window::{Window, StickToCamera};
 
 fn main() {
-    do Window::spawn(~"Kiss3d: scaled primitives") |w| {
+    do Window::spawn("Kiss3d: scaled primitives") |w| {
         // NOTE: scaling is not possible.
         for i in range(0u, 11) {
             let dim: f32 = random();

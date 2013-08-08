@@ -481,8 +481,8 @@ impl Window {
     /// # Arguments
     ///   * `title` - the window title
     ///   * `callback` - a callback called once the window has been created
-    pub fn spawn_hidden(title: ~str, callback: ~fn(@mut Window)) {
-        Window::do_spawn(title, true, callback)
+    pub fn spawn_hidden(title: &str, callback: ~fn(@mut Window)) {
+        Window::do_spawn(title.to_owned(), true, callback)
     }
 
     /// Opens a window. Once the window is created and before any event pooling, a user-defined
@@ -493,8 +493,8 @@ impl Window {
     /// # Arguments
     ///   * `title` - the window title
     ///   * `callback` - a callback called once the window has been created
-    pub fn spawn(title: ~str, callback: ~fn(@mut Window)) {
-        Window::do_spawn(title, false, callback)
+    pub fn spawn(title: &str, callback: ~fn(@mut Window)) {
+        Window::do_spawn(title.to_owned(), false, callback)
     }
 
     fn do_spawn(title: ~str, hide: bool, callback: ~fn(@mut Window)) {

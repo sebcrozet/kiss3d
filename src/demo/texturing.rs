@@ -6,7 +6,7 @@ use nalgebra::vec::Vec3;
 use kiss3d::window;
 
 fn main() {
-    do window::Window::spawn(~"Kiss3d: cube") |window| {
+    do window::Window::spawn("Kiss3d: texturing") |window| {
         let c = window.add_cube(1.0, 1.0, 1.0).set_color(1.0, 0.0, 0.0)
             .set_texture(~"media/kitten.png");
 

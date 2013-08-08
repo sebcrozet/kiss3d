@@ -5,7 +5,7 @@ use std::rand::random;
 use kiss3d::window;
 
 fn main() {
-    do window::Window::spawn(~"Kiss3d: quad waves") |window| {
+    do window::Window::spawn("Kiss3d: quad waves") |window| {
         let c    = window.add_quad(5.0, 4.0, 500, 400).set_color(random(), random(), random());
         let time = @mut 0.016f32;
 

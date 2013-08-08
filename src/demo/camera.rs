@@ -8,7 +8,7 @@ use kiss3d::camera;
 
 fn main()
 {
-    do window::Window::spawn(~"Kiss3d: cube") |w|
+    do window::Window::spawn("Kiss3d: camera") |w|
     {
         do w.set_loop_callback
         {
