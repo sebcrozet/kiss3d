@@ -617,24 +617,17 @@ impl Window {
                     glClear(GL_COLOR_BUFFER_BIT);
                     glClear(GL_DEPTH_BUFFER_BIT);
 
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-                    if usr_window.wireframe_mode {
-                        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-
-                        for o in usr_window.objects.iter() {
-                            o.upload(usr_window.shaders_manager.object_context())
-                        }
-
-                        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-
-                        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                    }
-
                     if usr_window.lines_manager.needs_rendering() {
                         usr_window.shaders_manager.select(LinesShader);
                         usr_window.lines_manager.upload(usr_window.shaders_manager.lines_context());
                         usr_window.shaders_manager.select(ObjectShader);
+                    }
+
+                    if usr_window.wireframe_mode {
+                        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                    }
+                    else {
+                        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                     }
 
                     for o in usr_window.objects.iter() {
