@@ -1,7 +1,7 @@
 extern mod kiss3d;
 extern mod nalgebra;
 
-use nalgebra::traits::translation::Translation;
+use std::num::Zero;
 use nalgebra::vec::Vec3;
 use kiss3d::window;
 use kiss3d::camera;
@@ -10,20 +10,12 @@ fn main()
 {
     do window::Window::spawn(~"Kiss3d: cube") |w|
     {
-        w.add_cube(1.0, 0.01, 0.01).set_color(1.0, 0.0, 0.0)
-                                   .transformation()
-                                   .translate_by(&Vec3::new(0.505, 0.0, 0.0));
-
-        w.add_cube(0.01, 1.0, 0.01).set_color(0.0, 1.0, 0.0)
-                                   .transformation()
-                                   .translate_by(&Vec3::new(0.0, 0.505, 0.0));
-
-        w.add_cube(0.01, 0.01, 1.0).set_color(0.0, 0.0, 1.0)
-                                   .transformation()
-                                   .translate_by(&Vec3::new(0.0, 0.0, 0.505));
-
         do w.set_loop_callback
         {
+            w.draw_line(&Zero::zero(), &Vec3::x(), &Vec3::x());
+            w.draw_line(&Zero::zero(), &Vec3::y(), &Vec3::y());
+            w.draw_line(&Zero::zero(), &Vec3::z(), &Vec3::z());
+
             do w.camera().change_mode |mode|
             {
                 match *mode
