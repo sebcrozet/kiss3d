@@ -5,7 +5,7 @@ glfw_lib_path=glfw-rs/lib
 glcore_lib_path=glcore-rs/lib
 nalgebra_lib_path=nalgebra/lib
 stb_image_lib_path=rust-stb-image/
-build_cmd= rust build --opt-level 3 --out-dir $(kiss3d_bin_path) -L$(kiss3d_lib_path) -L$(glfw_lib_path) -L$(glcore_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
+build_cmd= rust build --opt-level 3 --out-dir $(kiss3d_bin_path) -L$(glfw_lib_path) -L$(glcore_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
 
 all:
 	mkdir -p $(kiss3d_lib_path)

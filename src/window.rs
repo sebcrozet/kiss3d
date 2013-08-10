@@ -121,9 +121,9 @@ impl Window {
     /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
     ///
     /// # Arguments
-    ///   * `wx` - the cube extent along z axis
+    ///   * `wx` - the cube extent along the z axis
     ///   * `wy` - the cube extent along the y axis
-    ///   * `wz` - the cube length along the z axis
+    ///   * `wz` - the cube extent along the z axis
     pub fn add_cube(@mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {

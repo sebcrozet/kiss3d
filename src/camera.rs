@@ -9,7 +9,7 @@ use nalgebra::traits::inv::Inv;
 use nalgebra::traits::mat_cast::MatCast;
 use nalgebra::traits::transpose::Transpose;
 use nalgebra::traits::homogeneous::ToHomogeneous;
-use nalgebra::vec::Vec2;
+use nalgebra::vec::{Vec2, Vec3};
 use nalgebra::mat::Mat4;
 use event;
 use arc_ball;
@@ -49,6 +49,16 @@ impl Camera {
     /// loop.
     pub fn change_mode<'r>(&'r mut self, f: &fn(&'r mut CameraMode)) {
         f(&'r mut self.mode);
+
+        self.changed = true;
+    }
+
+    /// Changes the orientation and position of the camera to look at the specified point.
+    pub fn look_at_z(&mut self, eye: Vec3<f64>, at: Vec3<f64>) {
+        match self.mode {
+            ArcBall(ref mut ab)     => ab.look_at_z(eye, at),
+            FirstPerson(ref mut fp) => fp.look_at_z(eye, at),
+        }
 
         self.changed = true;
     }
