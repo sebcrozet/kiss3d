@@ -7,8 +7,9 @@ use kiss3d::window;
 
 fn main() {
     do window::Window::spawn("Kiss3d: texturing") |window| {
-        let c = window.add_cube(1.0, 1.0, 1.0).set_color(1.0, 0.0, 0.0)
-            .set_texture(~"media/kitten.png");
+        let c = window.add_cube(1.0, 1.0, 1.0)
+                      .set_color(1.0, 0.0, 0.0)
+                      .set_texture(~"media/kitten.png");
 
         do window.set_loop_callback {
             c.transformation().rotate_by(&Vec3::new(0.0f64, 0.014, 0.0))

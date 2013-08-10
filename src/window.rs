@@ -129,11 +129,12 @@ impl Window {
         let res = {
             let geom = self.geometries.find(&~"cube").unwrap();
             let tex  = self.textures.find(&~"default").unwrap();
-            @mut Object::new(self,
-            *geom,
-            1.0, 1.0, 1.0,
-            *tex,
-            wx, wy, wz, Deleted)
+            @mut Object::new(
+                self,
+                *geom,
+                1.0, 1.0, 1.0,
+                *tex,
+                wx, wy, wz, Deleted)
         };
         // FIXME: get the geometry
 
@@ -151,12 +152,13 @@ impl Window {
         let res = {
             let geom = self.geometries.find(&~"sphere").unwrap();
             let tex  = self.textures.find(&~"default").unwrap();
-            @mut Object::new(self,
-            *geom,
-            1.0, 1.0, 1.0,
-            *tex,
-            r / 0.5, r / 0.5, r / 0.5,
-            Deleted)
+            @mut Object::new(
+                self,
+                *geom,
+                1.0, 1.0, 1.0,
+                *tex,
+                r / 0.5, r / 0.5, r / 0.5,
+                Deleted)
         };
         // FIXME: get the geometry
 
@@ -176,12 +178,13 @@ impl Window {
         let res = {
             let geom = self.geometries.find(&~"cone").unwrap();
             let tex  = self.textures.find(&~"default").unwrap();
-            @mut Object::new(self,
-            *geom,
-            1.0, 1.0, 1.0,
-            *tex,
-            r / 0.5, h, r / 0.5,
-            Deleted)
+            @mut Object::new(
+                self,
+                *geom,
+                1.0, 1.0, 1.0,
+                *tex,
+                r / 0.5, h, r / 0.5,
+                Deleted)
         };
         // FIXME: get the geometry
 
@@ -201,12 +204,13 @@ impl Window {
         let res = {
             let geom = self.geometries.find(&~"cylinder").unwrap();
             let tex  = self.textures.find(&~"default").unwrap();
-            @mut Object::new(self,
-            *geom,
-            1.0, 1.0, 1.0,
-            *tex,
-            r / 0.5, h, r / 0.5,
-            Deleted)
+            @mut Object::new(
+                self,
+                *geom,
+                1.0, 1.0, 1.0,
+                *tex,
+                r / 0.5, h, r / 0.5,
+                Deleted)
         };
         // FIXME: get the geometry
 
@@ -498,9 +502,10 @@ impl Window {
     }
 
     fn do_spawn(title: ~str, hide: bool, callback: ~fn(@mut Window)) {
+
         glfw::set_error_callback(error_callback);
 
-        do glfw::spawn {
+        do glfw::start {
             let window = @mut glfw::Window::create(800, 600, title, glfw::Windowed).unwrap();
 
             window.make_context_current();

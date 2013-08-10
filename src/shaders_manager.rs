@@ -92,17 +92,17 @@ impl ShadersManager {
                 program:    program,
                 vshader:    vshader,
                 fshader:    fshader,
-                pos:        glGetAttribLocation(program, "position".as_c_str(|s| s)) as GLuint,
-                normal:     glGetAttribLocation(program, "normal".as_c_str(|s| s)) as GLuint,
-                tex_coord:  glGetAttribLocation(program, "tex_coord_v".as_c_str(|s| s)) as GLuint,
-                light:      glGetUniformLocation(program, "light_position".as_c_str(|s| s)),
-                color:      glGetUniformLocation(program, "color".as_c_str(|s| s)),
-                transform:  glGetUniformLocation(program, "transform".as_c_str(|s| s)),
-                scale:      glGetUniformLocation(program, "scale".as_c_str(|s| s)),
-                ntransform: glGetUniformLocation(program, "ntransform".as_c_str(|s| s)),
-                proj:       glGetUniformLocation(program, "projection".as_c_str(|s| s)),
-                view:       glGetUniformLocation(program, "view".as_c_str(|s| s)),
-                tex:        glGetUniformLocation(program, "tex".as_c_str(|s| s))
+                pos:        glGetAttribLocation(program, "position".to_c_str().unwrap()) as GLuint,
+                normal:     glGetAttribLocation(program, "normal".to_c_str().unwrap()) as GLuint,
+                tex_coord:  glGetAttribLocation(program, "tex_coord_v".to_c_str().unwrap()) as GLuint,
+                light:      glGetUniformLocation(program, "light_position".to_c_str().unwrap()),
+                color:      glGetUniformLocation(program, "color".to_c_str().unwrap()),
+                transform:  glGetUniformLocation(program, "transform".to_c_str().unwrap()),
+                scale:      glGetUniformLocation(program, "scale".to_c_str().unwrap()),
+                ntransform: glGetUniformLocation(program, "ntransform".to_c_str().unwrap()),
+                proj:       glGetUniformLocation(program, "projection".to_c_str().unwrap()),
+                view:       glGetUniformLocation(program, "view".to_c_str().unwrap()),
+                tex:        glGetUniformLocation(program, "tex".to_c_str().unwrap())
             }
         }
     }
@@ -119,10 +119,10 @@ impl ShadersManager {
                 program: program,
                 vshader: vshader,
                 fshader: fshader,
-                pos:     glGetAttribLocation(program,  "position".as_c_str(|s| s)) as GLuint,
-                color:   glGetAttribLocation(program, "color".as_c_str(|s| s)) as GLuint,
-                proj:    glGetUniformLocation(program, "projection".as_c_str(|s| s)),
-                view:    glGetUniformLocation(program, "view".as_c_str(|s| s)),
+                pos:     glGetAttribLocation(program,  "position".to_c_str().unwrap()) as GLuint,
+                color:   glGetAttribLocation(program, "color".to_c_str().unwrap()) as GLuint,
+                proj:    glGetUniformLocation(program, "projection".to_c_str().unwrap()),
+                view:    glGetUniformLocation(program, "view".to_c_str().unwrap()),
             };
 
             glEnableVertexAttribArray(res.pos);
@@ -138,16 +138,15 @@ impl ShadersManager {
         // Create and compile the vertex shader
         let vshader = unsafe { glCreateShader(GL_VERTEX_SHADER) };
         unsafe {
-            glShaderSource(vshader, 1, &vertex_shader.as_c_str(|s| s), ptr::null());
+            glShaderSource(vshader, 1, &vertex_shader.to_c_str().unwrap(), ptr::null());
             glCompileShader(vshader);
         }
-
         check_shader_error(vshader);
 
         // Create and compile the fragment shader
         let fshader = unsafe { glCreateShader(GL_FRAGMENT_SHADER) };
         unsafe {
-            glShaderSource(fshader, 1, &fragment_shader.as_c_str(|s| s), ptr::null());
+            glShaderSource(fshader, 1, &fragment_shader.to_c_str().unwrap(), ptr::null());
             glCompileShader(fshader);
         }
 
@@ -178,14 +177,15 @@ fn check_shader_error(shader: GLuint) {
             if (info_log_len > 0) {
                 // error check for fail to allocate memory omitted
                 let chars_written = 0;
-                let mut info_log = ~"";
+                let info_log = " ".repeat((info_log_len + 1) as uint);
 
-                str::raw::set_len(&mut info_log, (info_log_len + 1) as uint);
+                let c_str = info_log.to_c_str();
 
-                do info_log.as_c_str |c_str| {
+                do c_str.with_ref |c_str| {
                     glGetShaderInfoLog(shader, info_log_len, &chars_written, c_str)
                 }
-                fail!("Shader compilation failed: " + info_log);
+
+                fail!("Shader compilation failed: " + str::from_bytes(c_str.as_bytes()));
             }
         }
     }
