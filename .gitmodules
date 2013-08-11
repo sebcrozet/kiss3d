@@ -1,12 +1,12 @@
-[submodule "glfw-rs"]
-	path = glfw-rs
-	url = git://github.com/sebcrozet/glfw-rs.git
-[submodule "glcore-rs"]
-	path = glcore-rs
-	url = git://github.com/sebcrozet/glcore-rs.git
-[submodule "nalgebra"]
-	path = nalgebra
-	url = git://github.com/sebcrozet/nalgebra.git
-[submodule "rust-stb-image"]
-	path = rust-stb-image
-	url = git://github.com/sebcrozet/rust-stb-image.git
+[submodule "lib/glcore-rs"]
+	path = lib/glcore-rs
+	url = https://github.com/sebcrozet/glcore-rs.git
+[submodule "lib/glfw-rs"]
+	path = lib/glfw-rs
+	url = https://github.com/sebcrozet/glfw-rs.git
+[submodule "lib/rust-stb-image"]
+	path = lib/rust-stb-image
+	url = https://github.com/sebcrozet/rust-stb-image.git
+[submodule "lib/nalgebra"]
+	path = lib/nalgebra
+	url = https://github.com/sebcrozet/nalgebra.git

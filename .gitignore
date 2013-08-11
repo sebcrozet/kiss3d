@@ -1,7 +1,6 @@
 *.swp
 *.swo
 *.html
-lib
 bin/camera
 bin/cube
 bin/event

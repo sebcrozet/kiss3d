@@ -2,10 +2,10 @@ tmp=_git_distcheck
 kiss3d_lib_path=lib
 kiss3d_bin_path=bin
 kiss3d_doc_path=doc
-glfw_lib_path=glfw-rs/lib
-glcore_lib_path=glcore-rs/lib
-nalgebra_lib_path=nalgebra/lib
-stb_image_lib_path=rust-stb-image/
+glfw_lib_path=lib/glfw-rs/lib
+glcore_lib_path=lib/glcore-rs/lib
+nalgebra_lib_path=lib/nalgebra/lib
+stb_image_lib_path=lib/rust-stb-image/
 build_cmd= rust build --opt-level 3 --out-dir $(kiss3d_bin_path) -L$(glfw_lib_path) -L$(glcore_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
 
 all:
@@ -37,11 +37,11 @@ distcheck:
 	rm -rf $(tmp)
 
 deps:
-	make -C glfw-rs
-	make -C glcore-rs
-	make -C nalgebra
-	cd rust-stb-image; ./configure
-	make clean -C rust-stb-image
-	make -C rust-stb-image
+	make -C lib/glfw-rs
+	make -C lib/glcore-rs
+	make -C lib/nalgebra
+	cd lib/rust-stb-image; ./configure
+	make clean -C lib/rust-stb-image
+	make -C lib/rust-stb-image
 
 .PHONY:doc
