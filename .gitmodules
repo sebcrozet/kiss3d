@@ -1,12 +1,12 @@
 [submodule "glfw-rs"]
 	path = glfw-rs
-	url = git://github.com/bjz/glfw-rs.git
+	url = git://github.com/sebcrozet/glfw-rs.git
 [submodule "glcore-rs"]
 	path = glcore-rs
-	url = git://github.com/bjz/glcore-rs.git
+	url = git://github.com/sebcrozet/glcore-rs.git
 [submodule "nalgebra"]
 	path = nalgebra
 	url = git://github.com/sebcrozet/nalgebra.git
 [submodule "rust-stb-image"]
 	path = rust-stb-image
-	url = https://github.com/mozilla-servo/rust-stb-image.git
+	url = git://github.com/sebcrozet/rust-stb-image.git

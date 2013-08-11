@@ -1,3 +1,4 @@
+tmp=_git_distcheck
 kiss3d_lib_path=lib
 kiss3d_bin_path=bin
 kiss3d_doc_path=doc
@@ -26,6 +27,14 @@ test:
 doc:
 	mkdir -p $(kiss3d_doc_path)
 	rust doc src/kiss3d.rc --output-dir $(kiss3d_doc_path)
+
+distcheck:
+	rm -rf $(tmp)
+	git clone --recursive . $(tmp)
+	make -C $(tmp) deps
+	make -C $(tmp)
+	make -C $(tmp) test
+	rm -rf $(tmp)
 
 deps:
 	make -C glfw-rs
