@@ -593,7 +593,7 @@ impl Window {
                 glfw::poll_events();
 
                 usr_window.exec_callback();
-                usr_window.camera.update();
+                usr_window.camera.update(window);
 
                 if usr_window.camera.needs_rendering() {
                     usr_window.shaders_manager.select(LinesShader);

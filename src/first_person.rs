@@ -1,4 +1,4 @@
-use std::num::{Zero, One, atan2};
+use std::num::{One, atan2};
 use nalgebra::traits::norm::Norm;
 use nalgebra::traits::cross::Cross;
 use nalgebra::traits::scalar_op::ScalarMul;
@@ -6,14 +6,8 @@ use nalgebra::traits::rotation::Rotate;
 use nalgebra::types::Iso3f64;
 use nalgebra::vec::Vec3;
 use glfw::consts::*;
+use glfw;
 use event;
-
-#[deriving(Eq, ToStr)]
-enum KeyState {
-    True,
-    False,
-    Impulse
-}
 
 /// First-person camera mode.
 ///
@@ -24,10 +18,6 @@ enum KeyState {
 ///   * Enter key - look at the origin
 #[deriving(ToStr)]
 pub struct FirstPerson {
-    priv up_pressed:    KeyState,
-    priv down_pressed:  KeyState,
-    priv right_pressed: KeyState,
-    priv left_pressed:  KeyState,
     /// The camera position
     eye:   Vec3<f64>,
     /// Yaw of the camera (rotation along the y axis).
@@ -47,16 +37,12 @@ impl FirstPerson {
     /// Creates a new arc ball camera with default sensitivity values.
     pub fn new(eye: Vec3<f64>, at: Vec3<f64>) -> FirstPerson {
         let mut res = FirstPerson {
-            up_pressed:    False,
-            down_pressed:  False,
-            right_pressed: False,
-            left_pressed:  False,
             eye:           Vec3::new(0.0, 0.0, 0.0),
             yaw:           0.0,
             pitch:         0.0,
             yaw_step:      0.005,
             pitch_step:    0.005,
-            move_step:     0.1
+            move_step:     0.5
         };
 
         res.look_at_z(eye, at);
@@ -131,74 +117,37 @@ impl FirstPerson {
     }
 
     #[doc(hidden)]
-    pub fn update(&mut self) -> bool {
+    pub fn update(&mut self, window: &glfw::Window) -> bool {
         let t                = self.transformation();
         let front: Vec3<f64> = t.rotate(&Vec3::z());
         let right: Vec3<f64> = t.rotate(&Vec3::x());
 
-        if self.up_pressed == True || self.up_pressed == Impulse {
+        let mut changed = false;
+
+        if window.get_key(KEY_UP) == TRUE {
+            changed = true;
             self.eye = self.eye + front.scalar_mul(&self.move_step)
         }
 
-        if self.down_pressed == True || self.down_pressed == Impulse {
+        if window.get_key(KEY_DOWN) == TRUE {
+            changed = true;
             self.eye = self.eye + front.scalar_mul(&-self.move_step)
         }
 
-        if self.right_pressed == True || self.right_pressed == Impulse {
+        if window.get_key(KEY_RIGHT) == TRUE {
+            changed = true;
             self.eye = self.eye + right.scalar_mul(&-self.move_step)
         }
 
-        if self.left_pressed == True || self.left_pressed == Impulse {
+        if window.get_key(KEY_LEFT) == TRUE {
+            changed = true;
             self.eye = self.eye + right.scalar_mul(&self.move_step)
         }
-
-        let changed = self.up_pressed    == True || self.up_pressed    == Impulse ||
-            self.down_pressed  == True || self.down_pressed  == Impulse ||
-            self.right_pressed == True || self.right_pressed == Impulse ||
-            self.left_pressed  == True || self.left_pressed  == Impulse;
-
-        if self.up_pressed == Impulse {
-            self.up_pressed = False
-        }
-
-        if self.down_pressed == Impulse {
-            self.down_pressed = False
-        }
-
-        if self.right_pressed == Impulse {
-            self.right_pressed = False
-        }
-
-        if self.left_pressed == Impulse {
-            self.left_pressed = False
-        }
-
 
         changed
     }
 
     #[doc(hidden)]
-    pub fn handle_keyboard(&mut self, event: &event::KeyboardEvent) {
-        match *event {
-            event::KeyPressed(button)  => self.set_key_state(button, True),
-            event::KeyReleased(button) => {
-                if button == KEY_ENTER && !self.eye.is_zero() {
-                    self.look_at_z(self.eye, Zero::zero())
-                }
-                else {
-                    self.set_key_state(button, Impulse)
-                }
-            },
-        }
-    }
-
-    fn set_key_state(&mut self, button: event::MouseButton, state: KeyState) {
-        match button {
-            KEY_RIGHT => self.right_pressed = state,
-            KEY_LEFT  => self.left_pressed  = state,
-            KEY_DOWN  => self.down_pressed  = state,
-            KEY_UP    => self.up_pressed    = state,
-            _         => { }
-        }
+    pub fn handle_keyboard(&mut self, _: &event::KeyboardEvent) {
     }
 }

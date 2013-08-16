@@ -4,6 +4,7 @@ use glcore::types::GL_VERSION_1_0::*;
 use glcore::consts::GL_VERSION_1_1::*;
 use glcore::functions::GL_VERSION_2_0::*;
 use glfw::consts::*;
+use glfw;
 use nalgebra::types::Iso3f64;
 use nalgebra::traits::inv::Inv;
 use nalgebra::traits::mat_cast::MatCast;
@@ -138,10 +139,10 @@ impl Camera {
     }
 
     #[doc(hidden)]
-    pub fn update(&mut self) {
+    pub fn update(&mut self, window: &glfw::Window) {
         match self.mode {
             ArcBall(_)              => { },
-            FirstPerson(ref mut fp) => self.changed =  fp.update() || self.changed
+            FirstPerson(ref mut fp) => self.changed = fp.update(window) || self.changed
         };
     }
 
