@@ -10,6 +10,7 @@
 
 
 extern mod std;
+extern mod extra;
 extern mod glfw;
 extern mod glcore;
 extern mod nalgebra;

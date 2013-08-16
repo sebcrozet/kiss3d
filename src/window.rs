@@ -1,9 +1,12 @@
 use glfw;
+use std::rt::io::timer::Timer;
+use std::rt::rtio::RtioTimer;
 use std::num::{Zero, One};
 use std::libc;
 use std::sys;
 use std::cast;
 use std::hashmap::HashMap;
+use extra::time;
 use glcore::consts::GL_VERSION_1_1::*;
 use glcore::consts::GL_VERSION_1_2::*;
 use glcore::consts::GL_VERSION_1_3::*;
@@ -41,6 +44,7 @@ pub enum Light {
 /// Structure representing a window and a 3D scene. It is the main interface with the 3d engine.
 pub struct Window {
     priv window:                @mut glfw::Window,
+    priv max_ms_per_frame:      Option<u64>,
     priv objects:               ~[@mut Object],
     priv camera:                Camera,
     priv znear:                 f64,
@@ -55,10 +59,15 @@ pub struct Window {
     priv shaders_manager:       ShadersManager,
     priv usr_loop_callback:     @fn(),
     priv usr_keyboard_callback: @fn(&event::KeyboardEvent) -> bool,
-    priv usr_mouse_callback:    @fn(&event::MouseEvent) -> bool
+    priv usr_mouse_callback:    @fn(&event::MouseEvent) -> bool,
 }
 
 impl Window {
+    /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
+    pub fn set_framerate_limit(&mut self, fps: Option<u64>) {
+        self.max_ms_per_frame = do fps.map |f| { assert!(*f != 0); 1000 / *f }
+    }
+
     /// The `znear` value used by the perspective projection.
     pub fn znear(&self) -> f64 {
         self.znear
@@ -530,6 +539,7 @@ impl Window {
             let builtins     = loader::load(shaders.object_context(), &mut textures);
 
             let usr_window = @mut Window {
+                max_ms_per_frame:      None,
                 window:                window,
                 objects:               ~[],
                 camera:                Camera::new(ArcBall(arc_ball::ArcBall::new(-Vec3::z(), Zero::zero()))),
@@ -588,6 +598,10 @@ impl Window {
                 window.hide()
             }
 
+            let timer = Timer::new().unwrap();
+
+            let mut curr = time::precise_time_ns();
+
             while !window.should_close() {
                 // Poll events
                 glfw::poll_events();
@@ -642,6 +656,18 @@ impl Window {
 
                 // Swap buffers
                 window.swap_buffers();
+
+                match usr_window.max_ms_per_frame {
+                    None     => { },
+                    Some(ms) => {
+                        let elapsed = (time::precise_time_ns() - curr) / 1000000;
+                        if elapsed < ms {
+                            timer.sleep(ms - elapsed);
+                        }
+                    }
+                }
+
+                curr = time::precise_time_ns();
             }
 
             unsafe {
