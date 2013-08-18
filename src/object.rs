@@ -11,11 +11,10 @@ use glcore::functions::GL_VERSION_1_5::*;
 use glcore::functions::GL_VERSION_2_0::*;
 use glcore::consts::GL_VERSION_1_1::*;
 use glcore::consts::GL_VERSION_1_5::*;
-use nalgebra::traits::scalar_op::ScalarDiv;
 use nalgebra::traits::homogeneous::ToHomogeneous;
 use nalgebra::traits::indexable::Indexable;
 use nalgebra::traits::cross::Cross;
-use nalgebra::traits::norm::Norm;
+use nalgebra::traits::vector::AlgebraicVec;
 use nalgebra::adaptors::transform::Transform;
 use nalgebra::adaptors::rotmat::Rotmat;
 use nalgebra::mat::{Mat3, Mat4};
@@ -274,7 +273,7 @@ impl Object {
 
                 // ... and compute the mean
                 for (n, divisor) in ns.mut_iter().zip(divisor.iter()) {
-                    n.scalar_div_inplace(divisor)
+                    *n = *n / *divisor
                 }
             },
             Deleted => { }

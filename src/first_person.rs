@@ -1,7 +1,6 @@
 use std::num::{One, atan2};
-use nalgebra::traits::norm::Norm;
+use nalgebra::traits::vector::AlgebraicVec;
 use nalgebra::traits::cross::Cross;
-use nalgebra::traits::scalar_op::ScalarMul;
 use nalgebra::traits::rotation::Rotate;
 use nalgebra::types::Iso3f64;
 use nalgebra::vec::Vec3;
@@ -105,15 +104,14 @@ impl FirstPerson {
         let tangent   = Vec3::y().cross(&dir).normalized();
         let bitangent = dir.cross(&tangent);
 
-        self.eye = self.eye + tangent.scalar_mul(&(0.01 * dx as f64 / 10.0))
-            + bitangent.scalar_mul(&(0.01 * dy as f64 / 10.0))
+        self.eye = self.eye + tangent * (0.01 * dx as f64 / 10.0) + bitangent * (0.01 * dy as f64 / 10.0)
     }
 
     #[doc(hidden)]
     pub fn handle_scroll(&mut self, yoff: float) {
         let front: Vec3<f64> = self.transformation().rotate(&Vec3::z());
 
-        self.eye = self.eye + front.scalar_mul(&(self.move_step * (yoff as f64)))
+        self.eye = self.eye + front * (self.move_step * (yoff as f64))
     }
 
     #[doc(hidden)]
@@ -126,22 +124,22 @@ impl FirstPerson {
 
         if window.get_key(KEY_UP) == TRUE {
             changed = true;
-            self.eye = self.eye + front.scalar_mul(&self.move_step)
+            self.eye = self.eye + front * self.move_step
         }
 
         if window.get_key(KEY_DOWN) == TRUE {
             changed = true;
-            self.eye = self.eye + front.scalar_mul(&-self.move_step)
+            self.eye = self.eye + front * (-self.move_step)
         }
 
         if window.get_key(KEY_RIGHT) == TRUE {
             changed = true;
-            self.eye = self.eye + right.scalar_mul(&-self.move_step)
+            self.eye = self.eye + right * (-self.move_step)
         }
 
         if window.get_key(KEY_LEFT) == TRUE {
             changed = true;
-            self.eye = self.eye + right.scalar_mul(&self.move_step)
+            self.eye = self.eye + right * self.move_step
         }
 
         changed

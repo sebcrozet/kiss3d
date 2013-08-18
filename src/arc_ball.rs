@@ -1,7 +1,6 @@
 use std::num::{Zero, One, atan2};
-use nalgebra::traits::norm::Norm;
+use nalgebra::traits::vector::AlgebraicVec;
 use nalgebra::traits::cross::Cross;
-use nalgebra::traits::scalar_op::ScalarMul;
 use nalgebra::types::Iso3f64;
 use nalgebra::vec::Vec3;
 use glfw::consts::*;
@@ -112,8 +111,7 @@ impl ArcBall {
 
         let mult = self.dist / 1000.0;
 
-        self.at = self.at + tangent.scalar_mul(&(dx as f64 * mult))
-            + bitangent.scalar_mul(&(dy as f64 * mult))
+        self.at = self.at + tangent * (dx as f64 * mult) + bitangent * (dy as f64 * mult)
     }
 
     #[doc(hidden)]
