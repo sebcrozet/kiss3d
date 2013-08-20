@@ -20,6 +20,7 @@ struct LinesManager {
 
 impl LinesManager {
     /// Creates a new lines manager.
+    #[fixed_stack_segment] #[inline(never)]
     pub fn new() -> LinesManager {
         let vbuf: GLuint = 0;
         
@@ -44,6 +45,7 @@ impl LinesManager {
     }
 
     /// Actually draws the lines.
+    #[fixed_stack_segment] #[inline(never)]
     pub fn upload(&mut self, context: &LinesShaderContext) {
         if self.lines.len() == 0 { return }
 

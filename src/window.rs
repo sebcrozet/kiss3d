@@ -16,7 +16,6 @@ use glcore::functions::GL_VERSION_1_1::*;
 use glcore::functions::GL_VERSION_1_3::*;
 use glcore::functions::GL_VERSION_1_5::*;
 use glcore::functions::GL_VERSION_2_0::*;
-use glcore::functions::GL_ARB_vertex_array_object::*;
 use glcore::types::GL_VERSION_1_5::*;
 use glcore::types::GL_VERSION_1_0::*;
 use stb_image::image::*;
@@ -239,11 +238,13 @@ impl Window {
     ///   which will be placed horizontally on each line. Must not be `0`
     ///   * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
     ///   which will be placed vertically on each line. Must not be `0`
+    #[fixed_stack_segment] #[inline(never)]
     pub fn add_quad(@mut self,
-    w:            f64,
-    h:            f64,
-    wsubdivs:     uint,
-    hsubdivs:     uint) -> @mut Object {
+                     w:        f64,
+                     h:        f64,
+                     wsubdivs: uint,
+                     hsubdivs: uint)
+                     -> @mut Object {
         assert!(wsubdivs > 0 && hsubdivs > 0,
         "The number of subdivisions cannot be zero");
 
@@ -375,6 +376,7 @@ impl Window {
         res
     }
 
+    #[fixed_stack_segment] #[inline(never)]
     #[doc(hidden)]
     pub fn add_texture(@mut self, path: ~str) -> GLuint {
         let tex: Option<GLuint> = self.textures.find(&path).map(|e| **e);
@@ -477,6 +479,7 @@ impl Window {
         self.light_mode = pos;
     }
 
+    #[fixed_stack_segment] #[inline(never)]
     fn set_light_pos(@mut self, pos: &Vec3<GLfloat>) {
         unsafe { glUniform3f(self.shaders_manager.object_context().light, pos.x, pos.y, pos.z) }
     }
@@ -519,20 +522,7 @@ impl Window {
 
             window.make_context_current();
 
-            unsafe {
-                glFrontFace(GL_CCW);
-                glEnable(GL_DEPTH_TEST);
-                glDepthFunc(GL_LEQUAL);
-                glEnable(GL_POLYGON_OFFSET_FILL);
-                glPolygonOffset(1.0, 1.0);
-            }
-
-            // Create Vertex Array Object
-            let vao: GLuint = 0;
-            unsafe {
-                glGenVertexArrays(1, &vao);
-                glBindVertexArray(vao);
-            }
+            init_gl();
 
             let shaders      = ShadersManager::new();
             let mut textures = HashMap::new();
@@ -567,114 +557,93 @@ impl Window {
             window.set_mouse_button_callback(|_, b, a, m| usr_window.mouse_button_callback(b, a, m));
             window.set_scroll_callback(|_, xoff, yoff| usr_window.scroll_callback(xoff, yoff));
             window.set_cursor_pos_callback(|_, xpos, ypos| usr_window.cursor_pos_callback(xpos, ypos));
-
-            do window.set_size_callback |_, w, h| {
-                unsafe { glViewport(0, 0, w as i32, h as i32) }
-
-                let projection: Mat4<GLfloat> = MatCast::from(usr_window.projection().transposed());
-
-                unsafe {
-                    usr_window.shaders_manager.select(LinesShader);
-
-                    glUniformMatrix4fv(
-                        usr_window.shaders_manager.lines_context().proj,
-                        1,
-                        GL_FALSE,
-                        cast::transmute(&projection));
-
-                    usr_window.shaders_manager.select(ObjectShader);
-
-                    glUniformMatrix4fv(
-                        usr_window.shaders_manager.object_context().proj,
-                        1,
-                        GL_FALSE,
-                        cast::transmute(&projection));
-                }
-            }
-
+            window.set_size_callback(|_, w, h| usr_window.size_callback(w, h));
             window.set_size(800, 600);
 
             if hide {
                 window.hide()
             }
 
-            let timer = Timer::new().unwrap();
-
+            let timer    = Timer::new().unwrap();
             let mut curr = time::precise_time_ns();
 
             while !window.should_close() {
-                // Poll events
-                glfw::poll_events();
-
-                usr_window.exec_callback();
-                usr_window.camera.update(window);
-
-                if usr_window.camera.needs_rendering() {
-                    usr_window.shaders_manager.select(LinesShader);
-                    let view_location2 = usr_window.shaders_manager.lines_context().view;
-                    usr_window.camera.upload(view_location2);
-
-                    usr_window.shaders_manager.select(ObjectShader);
-                    let view_location1 = usr_window.shaders_manager.object_context().view;
-                    usr_window.camera.upload(view_location1);
-                }
-
-                usr_window.m_2d_to_3d = usr_window.camera.transformation().inverse().unwrap().to_homogeneous();
-
-                match usr_window.light_mode {
-                    StickToCamera => usr_window.set_light(StickToCamera),
-                    _             => { }
-                }
-
-                // Clear the screen to black
-                unsafe {
-                    glClearColor(
-                        usr_window.background.x,
-                        usr_window.background.y,
-                        usr_window.background.z,
-                        1.0);
-                    glClear(GL_COLOR_BUFFER_BIT);
-                    glClear(GL_DEPTH_BUFFER_BIT);
-
-                    if usr_window.lines_manager.needs_rendering() {
-                        usr_window.shaders_manager.select(LinesShader);
-                        usr_window.lines_manager.upload(usr_window.shaders_manager.lines_context());
-                        usr_window.shaders_manager.select(ObjectShader);
-                    }
-
-                    if usr_window.wireframe_mode {
-                        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                    }
-                    else {
-                        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                    }
-
-                    for o in usr_window.objects.iter() {
-                        o.upload(usr_window.shaders_manager.object_context())
-                    }
-                }
-
-                // Swap buffers
-                window.swap_buffers();
-
-                match usr_window.max_ms_per_frame {
-                    None     => { },
-                    Some(ms) => {
-                        let elapsed = (time::precise_time_ns() - curr) / 1000000;
-                        if elapsed < ms {
-                            timer.sleep(ms - elapsed);
-                        }
-                    }
-                }
-
-                curr = time::precise_time_ns();
+                usr_window.draw(&mut curr, &timer)
             }
 
-            unsafe {
+            // unsafe {
+            //     glDeleteVertexArrays(1, &vao);
+            // }
+        }
+    }
 
-                glDeleteVertexArrays(1, &vao);
+    #[fixed_stack_segment] #[inline(never)]
+    fn draw(@mut self, curr: &mut u64, timer: &Timer) {
+        // Poll events
+        glfw::poll_events();
+
+        self.exec_callback();
+        self.camera.update(self.window);
+
+        if self.camera.needs_rendering() {
+            self.shaders_manager.select(LinesShader);
+            let view_location2 = self.shaders_manager.lines_context().view;
+            self.camera.upload(view_location2);
+
+            self.shaders_manager.select(ObjectShader);
+            let view_location1 = self.shaders_manager.object_context().view;
+            self.camera.upload(view_location1);
+        }
+
+        self.m_2d_to_3d = self.camera.transformation().inverse().unwrap().to_homogeneous();
+
+        match self.light_mode {
+            StickToCamera => self.set_light(StickToCamera),
+            _             => { }
+        }
+
+        // Clear the screen to black
+        unsafe {
+            glClearColor(
+                self.background.x,
+                self.background.y,
+                self.background.z,
+                1.0);
+            glClear(GL_COLOR_BUFFER_BIT);
+            glClear(GL_DEPTH_BUFFER_BIT);
+
+            if self.lines_manager.needs_rendering() {
+                self.shaders_manager.select(LinesShader);
+                self.lines_manager.upload(self.shaders_manager.lines_context());
+                self.shaders_manager.select(ObjectShader);
+            }
+
+            if self.wireframe_mode {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            }
+            else {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
+
+            for o in self.objects.iter() {
+                o.upload(self.shaders_manager.object_context())
             }
         }
+
+        // Swap buffers
+        self.window.swap_buffers();
+
+        match self.max_ms_per_frame {
+            None     => { },
+            Some(ms) => {
+                let elapsed = (time::precise_time_ns() - *curr) / 1000000;
+                if elapsed < ms {
+                    timer.sleep(ms - elapsed);
+                }
+            }
+        }
+
+        *curr = time::precise_time_ns();
     }
 
     fn key_callback(@mut self,
@@ -739,6 +708,31 @@ impl Window {
         self.camera.handle_mouse(&event)
     }
 
+    #[fixed_stack_segment] #[inline(never)]
+    fn size_callback(@mut self, w: int, h: int) {
+        unsafe { glViewport(0, 0, w as i32, h as i32) }
+
+        let projection: Mat4<GLfloat> = MatCast::from(self.projection().transposed());
+
+        unsafe {
+            self.shaders_manager.select(LinesShader);
+
+            glUniformMatrix4fv(
+                self.shaders_manager.lines_context().proj,
+                1,
+                GL_FALSE,
+                cast::transmute(&projection));
+
+            self.shaders_manager.select(ObjectShader);
+
+            glUniformMatrix4fv(
+                self.shaders_manager.object_context().proj,
+                1,
+                GL_FALSE,
+                cast::transmute(&projection));
+        }
+    }
+
     /// The projection matrix used by the window.
     pub fn projection(&self) -> Mat4<f64> {
         let (w, h) = self.window.get_size();
@@ -761,4 +755,15 @@ impl Window {
 
 fn error_callback(_: libc::c_int, description: ~str) {
     println(fmt!("Kiss3d Error: %s", description));
+}
+
+#[fixed_stack_segment] #[inline(never)]
+fn init_gl() {
+    unsafe {
+        glFrontFace(GL_CCW);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glPolygonOffset(1.0, 1.0);
+    }
 }

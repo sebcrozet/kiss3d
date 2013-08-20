@@ -96,6 +96,7 @@ impl Object {
         }
     }
 
+    #[fixed_stack_segment] #[inline(never)]
     #[doc(hidden)]
     pub fn upload_geometry(&mut self) {
         match self.geometry {
@@ -121,6 +122,7 @@ impl Object {
         }
     }
 
+    #[fixed_stack_segment] #[inline(never)]
     #[doc(hidden)]
     pub fn upload(&self, context: &ObjectShaderContext) {
 

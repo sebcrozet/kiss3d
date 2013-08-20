@@ -21,6 +21,7 @@ use builtins::sphere_obj;
 use builtins::cone_obj;
 use builtins::cylinder_obj;
 
+#[fixed_stack_segment] #[inline(never)]
 pub fn load(ctxt: &ObjectShaderContext, textures: &mut HashMap<~str, GLuint>)
             -> HashMap<~str, GeometryIndices> {
     unsafe {

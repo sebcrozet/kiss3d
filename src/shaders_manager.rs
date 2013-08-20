@@ -45,6 +45,7 @@ pub struct ShadersManager {
 }
 
 impl ShadersManager {
+    #[fixed_stack_segment] #[inline(never)]
     pub fn new() -> ShadersManager {
         let object_context = ShadersManager::load_object_shader();
 
@@ -57,6 +58,7 @@ impl ShadersManager {
         }
     }
 
+    #[fixed_stack_segment] #[inline(never)]
     pub fn select(&mut self, shader: Shader) {
         if shader != self.shader {
             self.shader = shader;
@@ -78,6 +80,7 @@ impl ShadersManager {
         &'r self.lines_context
     }
 
+    #[fixed_stack_segment] #[inline(never)]
     fn load_object_shader() -> ObjectShaderContext {
         unsafe {
             // load the shader
@@ -107,6 +110,7 @@ impl ShadersManager {
         }
     }
 
+    #[fixed_stack_segment] #[inline(never)]
     fn load_lines_shader() -> LinesShaderContext {
         unsafe {
             // load the shader
@@ -132,6 +136,7 @@ impl ShadersManager {
         }
     }
 
+    #[fixed_stack_segment] #[inline(never)]
     fn load_shader_program(vertex_shader:   &str,
                            fragment_shader: &str)
                            -> (GLuint, GLuint, GLuint) {
@@ -164,6 +169,7 @@ impl ShadersManager {
     }
 }
 
+#[fixed_stack_segment] #[inline(never)]
 fn check_shader_error(shader: GLuint) {
     let compiles: i32 = 0;
     unsafe{
@@ -192,6 +198,7 @@ fn check_shader_error(shader: GLuint) {
 }
 
 impl Drop for ShadersManager {
+    #[fixed_stack_segment] #[inline(never)]
     fn drop(&self) {
         unsafe {
             glDeleteProgram(self.object_context.program);

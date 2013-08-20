@@ -180,6 +180,7 @@ impl Camera {
         }
     }
 
+    #[fixed_stack_segment] #[inline(never)]
     #[doc(hidden)]
     pub fn upload(&mut self, view_location: i32) {
         let mut homo = self.transformation().inverse().unwrap().to_homogeneous();
