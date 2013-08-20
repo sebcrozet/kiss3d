@@ -44,4 +44,5 @@ pub mod builtins
     pub mod cube_obj;
     pub mod cone_obj;
     pub mod cylinder_obj;
+    pub mod capsule_obj;
 }

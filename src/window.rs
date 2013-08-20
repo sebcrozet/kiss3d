@@ -227,6 +227,32 @@ impl Window {
         res
     }
 
+    /// Adds a capsule to the scene. The capsule is initially centered at (0, 0, 0) and has its
+    /// principal axis aligned with the `y` axis.
+    ///
+    /// # Arguments
+    ///   * `h` - the capsule height
+    ///   * `r` - the capsule caps radius
+    pub fn add_capsule(@mut self, h: GLfloat, r: GLfloat) -> @mut Object {
+        // FIXME: this weird block indirection are here because of Rust issue #6248
+        let res = {
+            let geom = self.geometries.find(&~"capsule").unwrap();
+            let tex  = self.textures.find(&~"default").unwrap();
+            @mut Object::new(
+                self,
+                *geom,
+                1.0, 1.0, 1.0,
+                *tex,
+                r / 0.5, h, r / 0.5,
+                Deleted)
+        };
+        // FIXME: get the geometry
+
+        self.objects.push(res);
+
+        res
+    }
+
     /// Adds a double-sided quad to the scene. The cylinder is initially centered at (0, 0, 0). The
     /// quad itself is composed of a user-defined number of triangles regularly spaced on a grid.
     /// This is the main way to draw height maps.

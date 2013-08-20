@@ -20,6 +20,7 @@ use builtins::cube_obj;
 use builtins::sphere_obj;
 use builtins::cone_obj;
 use builtins::cylinder_obj;
+use builtins::capsule_obj;
 
 #[fixed_stack_segment] #[inline(never)]
 pub fn load(ctxt: &ObjectShaderContext, textures: &mut HashMap<~str, GLuint>)
@@ -149,10 +150,12 @@ fn parse_builtins(ebuf: GLuint,
     let (sv, sn, st, isv) = obj::parse(sphere_obj::SPHERE_OBJ);
     let (pv, pn, pt, ipv) = obj::parse(cone_obj::CONE_OBJ);
     let (yv, yn, yt, iyv) = obj::parse(cylinder_obj::CYLINDER_OBJ);
+    let (av, an, at, iav) = obj::parse(capsule_obj::CAPSULE_OBJ);
 
     let shift_isv = isv.map(|i| i + (cv.len() / 3) as GLuint);
     let shift_ipv = ipv.map(|i| i + ((sv.len() + cv.len()) / 3) as GLuint);
     let shift_iyv = iyv.map(|i| i + ((sv.len() + cv.len() + pv.len()) / 3) as GLuint);
+    let shift_iav = iav.map(|i| i + ((sv.len() + cv.len() + pv.len() + yv.len()) / 3) as GLuint);
 
     // register draw informations
     let mut hmap = HashMap::new();
@@ -167,11 +170,17 @@ fn parse_builtins(ebuf: GLuint,
             iyv.len() as i32,
             ebuf, nbuf, vbuf, tbuf)
         );
+    hmap.insert(
+        ~"capsule", GeometryIndices::new(
+            icv.len() + isv.len() + ipv.len() + iyv.len(),
+            iav.len() as i32,
+            ebuf, nbuf, vbuf, tbuf)
+        );
 
     // concatenate everything
     (hmap,
-     cv + sv + pv + yv,
-     cn + sn + pn + yn,
-     ct + st + pt + yt,
-     icv + shift_isv + shift_ipv + shift_iyv)
+     cv + sv + pv + yv + av,
+     cn + sn + pn + yn + an,
+     ct + st + pt + yt + at,
+     icv + shift_isv + shift_ipv + shift_iyv + shift_iav)
 }

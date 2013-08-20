@@ -11,26 +11,30 @@ fn main() {
     do Window::spawn("Kiss3d: scaled primitives") |w| {
         // NOTE: scaling is not possible.
         for i in range(0u, 11) {
-            let dim: f32 = random();
+            let dim: f32 = random::<f32>() / 2.0;
             let dim2 = dim / 2.0;
 
             let offset = i as f64 * 1.0 - 5.0;
 
             w.add_cube(dim2, dim2, dim2).set_color(random(), random(), random())
                                         .transformation()
-                                        .translate_by(&Vec3::new(offset, 0.5, 0.0));
+                                        .translate_by(&Vec3::new(offset, 1.0, 0.0));
 
             w.add_sphere(dim2).set_color(random(), random(), random())
                               .transformation()
-                              .translate_by(&Vec3::new(offset, -0.5, 0.0));
+                              .translate_by(&Vec3::new(offset, -1.0, 0.0));
 
             w.add_cone(dim, dim2).set_color(random(), random(), random())
                                  .transformation()
-                                 .translate_by(&Vec3::new(offset, 1.5, 0.0));
+                                 .translate_by(&Vec3::new(offset, 2.0, 0.0));
 
             w.add_cylinder(dim, dim2).set_color(random(), random(), random())
                                      .transformation()
-                                     .translate_by(&Vec3::new(offset, -1.5, 0.0));
+                                     .translate_by(&Vec3::new(offset, -2.0, 0.0));
+
+            w.add_capsule(dim, dim2).set_color(random(), random(), random())
+                                    .transformation()
+                                    .translate_by(&Vec3::new(offset, 0.0, 0.0));
         }
 
         do w.set_loop_callback {
