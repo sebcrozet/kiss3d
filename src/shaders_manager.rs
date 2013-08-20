@@ -176,6 +176,7 @@ fn check_shader_error(shader: GLuint) {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &compiles);
 
         if(compiles == 0) {
+            println("Shader compilation failed.");
             let info_log_len = 0;
 
             glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_log_len);
@@ -183,7 +184,7 @@ fn check_shader_error(shader: GLuint) {
             if (info_log_len > 0) {
                 // error check for fail to allocate memory omitted
                 let chars_written = 0;
-                let info_log = " ".repeat((info_log_len + 1) as uint);
+                let info_log = " ".repeat(info_log_len as uint);
 
                 let c_str = info_log.to_c_str();
 
@@ -191,7 +192,9 @@ fn check_shader_error(shader: GLuint) {
                     glGetShaderInfoLog(shader, info_log_len, &chars_written, c_str)
                 }
 
-                fail!("Shader compilation failed: " + str::from_bytes(c_str.as_bytes()));
+                let bytes = c_str.as_bytes();
+                let bytes = bytes.slice_to(bytes.len() - 1);
+                fail!("Shader compilation failed: " + str::from_bytes(bytes));
             }
         }
     }
