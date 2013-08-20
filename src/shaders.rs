@@ -55,18 +55,18 @@ pub static LINES_VERTEX_SRC: &'static str =
     attribute vec3 position;
     attribute vec3 color;
     varying   vec3 Color;
-    uniform mat4   projection;
-    uniform mat4   view;
+    uniform   mat4   projection;
+    uniform   mat4   view;
     void main() {
         gl_Position = projection * view * vec4(position, 1.0);
-        Color       = color;
+        Color = color;
     }";
 
 // phong lighting (heavily) inspired
 // by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
 pub static LINES_FRAGMENT_SRC: &'static str =
    "#version 120
-    attribute vec3 Color;
+    varying vec3 Color;
     void main() {
       gl_FragColor = vec4(Color, 1.0);
     }";
