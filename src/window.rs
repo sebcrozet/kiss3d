@@ -590,11 +590,11 @@ impl Window {
                 window.hide()
             }
 
-            let timer    = Timer::new().unwrap();
-            let mut curr = time::precise_time_ns();
+            let mut timer = Timer::new().unwrap();
+            let mut curr  = time::precise_time_ns();
 
             while !window.should_close() {
-                usr_window.draw(&mut curr, &timer)
+                usr_window.draw(&mut curr, &mut timer)
             }
 
             // unsafe {
@@ -604,7 +604,7 @@ impl Window {
     }
 
     #[fixed_stack_segment] #[inline(never)]
-    fn draw(@mut self, curr: &mut u64, timer: &Timer) {
+    fn draw(@mut self, curr: &mut u64, timer: &mut Timer) {
         // Poll events
         glfw::poll_events();
 
