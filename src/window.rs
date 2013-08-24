@@ -10,14 +10,16 @@ use extra::time;
 use gl;
 use gl::types::*;
 use stb_image::image::*;
+use nalgebra::traits::homogeneous::{ToHomogeneous, FromHomogeneous};
 use nalgebra::traits::inv::Inv;
-use nalgebra::traits::homogeneous::ToHomogeneous;
 use nalgebra::traits::vec_cast::VecCast;
 use nalgebra::traits::mat_cast::MatCast;
 use nalgebra::traits::translation::Translation;
 use nalgebra::traits::transpose::Transpose;
+use nalgebra::traits::rlmul::RMul;
+use nalgebra::traits::vector::AlgebraicVec;
 use nalgebra::mat::Mat4;
-use nalgebra::vec::{Vec2, Vec3};
+use nalgebra::vec::{Vec2, Vec3, Vec4};
 use camera::{Camera, ArcBall};
 use object::{GeometryIndices, Object, VerticesNormalsTriangles, Deleted};
 use lines_manager::LinesManager;
@@ -44,7 +46,8 @@ pub struct Window {
     priv textures:              HashMap<~str, GLuint>,
     priv geometries:            HashMap<~str, GeometryIndices>,
     priv background:            Vec3<GLfloat>,
-    priv m_2d_to_3d:            Mat4<f64>,
+    priv projection:            Mat4<f64>,
+    priv inv_projection:        Mat4<f64>,
     priv lines_manager:         @mut LinesManager, // FIXME: @mut should not be used here
     priv shaders_manager:       ShadersManager,
     priv usr_loop_callback:     @fn(),
@@ -434,15 +437,44 @@ impl Window {
         }
     }
 
-    /// Retrieves the matrix which transforms a point from the 3d space to the normalized device
-    /// coordinate space.
-    pub fn space3d_to_space2d_matrix(&self) -> Mat4<f64> {
-        // XXX: this is clearly not the best way to do that...
-        self.m_2d_to_3d
-            // XXX: ... in fact, it is better to recompute the value here (instead of recomputing it at
-            // each frame). But doing so lead to a 'borrowed' dynamic task failure (and I do not know how
-            // to fix this yet).
-            // self.projection() * self.camera.transformation().inverse().unwrap().to_homogeneous()
+    /// Converts a 3d point to 2d screen coordinates.
+    pub fn project(&self, world_coord: &Vec3<f64>) -> Vec2<f64> {
+        let camera_coord   = self.camera.transformation().inverse().unwrap().rmul(world_coord);
+        let h_camera_coord = camera_coord.to_homogeneous();
+
+        let h_normalized_coord = self.projection.rmul(&h_camera_coord);
+
+        let normalized_coord: Vec3<f64> = FromHomogeneous::from(&h_normalized_coord);
+
+        let (w, h) = self.window.get_size();
+
+        Vec2::new(
+            (1.0 + normalized_coord.x) * (w as f64) / 2.0,
+            (1.0 + normalized_coord.y) * (h as f64) / 2.0)
+    }
+
+    /// Converts a point in 2d screen coordinates to a ray (a 3d position and a direction).
+    pub fn unproject(&self, window_coord: &Vec2<f64>) -> (Vec3<f64>, Vec3<f64>) {
+        let (w, h) = self.window.get_size();
+
+        let normalized_coord = Vec2::new(2.0 * window_coord.x / (w as f64) - 1.0,
+                                         2.0 * -window_coord.y / (h as f64) + 1.0);
+
+        let normalized_begin = Vec4::new(normalized_coord.x, normalized_coord.y, -1.0, 1.0);
+        let normalized_end   = Vec4::new(normalized_coord.x, normalized_coord.y, 1.0, 1.0);
+
+        let h_begin = self.inv_projection.rmul(&normalized_begin);
+        let h_end   = self.inv_projection.rmul(&normalized_end);
+
+        let begin = FromHomogeneous::from(&h_begin);
+        let end   = FromHomogeneous::from(&h_end);
+
+        let cam = self.camera.transformation();
+
+        let unprojected_begin = cam.rmul(&begin);
+        let unprojected_end   = cam.rmul(&end);
+
+        (unprojected_begin, (unprojected_end - unprojected_begin).normalized())
     }
 
     /// The list of objects on the scene.
@@ -556,7 +588,8 @@ impl Window {
                 textures:              textures,
                 geometries:            builtins,
                 background:            Vec3::new(0.0, 0.0, 0.0),
-                m_2d_to_3d:            One::one(),
+                inv_projection:        One::one(),
+                projection:            One::one(),
                 lines_manager:         @mut LinesManager::new(),
                 shaders_manager:       shaders,
                 usr_loop_callback:     || {},
@@ -609,8 +642,6 @@ impl Window {
             let view_location1 = self.shaders_manager.object_context().view;
             self.camera.upload(view_location1);
         }
-
-        self.m_2d_to_3d = self.camera.transformation().inverse().unwrap().to_homogeneous();
 
         match self.light_mode {
             StickToCamera => self.set_light(StickToCamera),
@@ -724,7 +755,9 @@ impl Window {
     fn size_callback(@mut self, w: int, h: int) {
         gl::Viewport(0, 0, w as i32, h as i32);
 
-        let projection: Mat4<GLfloat> = MatCast::from(self.projection().transposed());
+        self.projection = self.projection();
+        self.inv_projection = self.projection.inverse().unwrap();
+        let projection: Mat4<GLfloat> = MatCast::from(self.projection.transposed());
 
         unsafe {
             self.shaders_manager.select(LinesShader);
