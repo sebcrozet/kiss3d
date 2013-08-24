@@ -68,4 +68,4 @@ I’d love to see people improving this library for their own needs.  However, k
 
 ## Acknowledgements
 
-  - **bjz** for its awesome [glfw](https://github.com/bjz/glfw-rs.git) and [opengl](https://github.com/bjz/gl-rs.git) bindings.
+  - **bjz** for his awesome [glfw](https://github.com/bjz/glfw-rs.git) and [opengl](https://github.com/bjz/gl-rs.git) bindings.
