@@ -1,7 +1,7 @@
 use std::num::Zero;
 use std::from_str::FromStr;
 use std::hashmap::HashMap;
-use glcore::types::GL_VERSION_1_0::*;
+use gl::types::*;
 use nalgebra::traits::indexable::Indexable;
 use nalgebra::vec::{Vec3, Vec2};
 

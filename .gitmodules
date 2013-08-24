@@ -1,6 +1,3 @@
-[submodule "lib/glcore-rs"]
-	path = lib/glcore-rs
-	url = https://github.com/sebcrozet/glcore-rs.git
 [submodule "lib/glfw-rs"]
 	path = lib/glfw-rs
 	url = https://github.com/sebcrozet/glfw-rs.git
@@ -10,3 +7,6 @@
 [submodule "lib/nalgebra"]
 	path = lib/nalgebra
 	url = https://github.com/sebcrozet/nalgebra.git
+[submodule "lib/gl-rs"]
+	path = lib/gl-rs
+	url = https://github.com/bjz/gl-rs.git

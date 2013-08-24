@@ -3,14 +3,14 @@ kiss3d_lib_path=lib
 kiss3d_bin_path=bin
 kiss3d_doc_path=doc
 glfw_lib_path=lib/glfw-rs/lib
-glcore_lib_path=lib/glcore-rs/lib
+gl_lib_path=lib/gl-rs
 nalgebra_lib_path=lib/nalgebra/lib
 stb_image_lib_path=lib/rust-stb-image/
-build_cmd= rust build --opt-level 3 --out-dir $(kiss3d_bin_path) -L$(glfw_lib_path) -L$(glcore_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
+build_cmd= rust build --opt-level 3 --out-dir $(kiss3d_bin_path) -L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
 
 all:
 	mkdir -p $(kiss3d_lib_path)
-	rust build src/kiss3d.rc --opt-level 3 --out-dir $(kiss3d_lib_path) -L$(glfw_lib_path) -L$(glcore_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
+	rust build src/kiss3d.rc --opt-level 3 --out-dir $(kiss3d_lib_path) -L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
 
 test:
 	mkdir -p $(kiss3d_bin_path)
@@ -38,8 +38,8 @@ distcheck:
 
 deps:
 	make -C lib/glfw-rs
-	make -C lib/glcore-rs
 	make -C lib/nalgebra
+	cd lib/gl-rs; rustc --opt-level=3 gl_ptr.rs
 	cd lib/rust-stb-image; ./configure
 	make clean -C lib/rust-stb-image
 	make -C lib/rust-stb-image

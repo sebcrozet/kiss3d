@@ -7,17 +7,8 @@ use std::sys;
 use std::cast;
 use std::hashmap::HashMap;
 use extra::time;
-use glcore::consts::GL_VERSION_1_1::*;
-use glcore::consts::GL_VERSION_1_2::*;
-use glcore::consts::GL_VERSION_1_3::*;
-use glcore::consts::GL_VERSION_1_5::*;
-use glcore::functions::GL_VERSION_1_0::*;
-use glcore::functions::GL_VERSION_1_1::*;
-use glcore::functions::GL_VERSION_1_3::*;
-use glcore::functions::GL_VERSION_1_5::*;
-use glcore::functions::GL_VERSION_2_0::*;
-use glcore::types::GL_VERSION_1_5::*;
-use glcore::types::GL_VERSION_1_0::*;
+use gl;
+use gl::types::*;
 use stb_image::image::*;
 use nalgebra::traits::inv::Inv;
 use nalgebra::traits::homogeneous::ToHomogeneous;
@@ -264,7 +255,6 @@ impl Window {
     ///   which will be placed horizontally on each line. Must not be `0`
     ///   * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
     ///   which will be placed vertically on each line. Must not be `0`
-    #[fixed_stack_segment] #[inline(never)]
     pub fn add_quad(@mut self,
                      w:        f64,
                      h:        f64,
@@ -331,54 +321,54 @@ impl Window {
         let texture_buf:  GLuint = 0;
 
         unsafe {
-            // FIXME: use glGenBuffers(3, ...) ?
-            glGenBuffers(1, &vertex_buf);
-            glGenBuffers(1, &element_buf);
-            glGenBuffers(1, &normal_buf);
-            glGenBuffers(1, &texture_buf);
+            // FIXME: use gl::GenBuffers(3, ...) ?
+            gl::GenBuffers(1, &vertex_buf);
+            gl::GenBuffers(1, &element_buf);
+            gl::GenBuffers(1, &normal_buf);
+            gl::GenBuffers(1, &texture_buf);
         }
 
         // copy vertices
         unsafe {
-            glBindBuffer(GL_ARRAY_BUFFER, vertex_buf);
-            glBufferData(
-                GL_ARRAY_BUFFER,
+            gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buf);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
                 (vertices.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
                 cast::transmute(&vertices[0]),
-                GL_DYNAMIC_DRAW
+                gl::DYNAMIC_DRAW
             );
         }
 
         // copy elements
         unsafe {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buf);
-            glBufferData(
-                GL_ELEMENT_ARRAY_BUFFER,
+            gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, element_buf);
+            gl::BufferData(
+                gl::ELEMENT_ARRAY_BUFFER,
                 (triangles.len() * 3 * sys::size_of::<GLuint>()) as GLsizeiptr,
                 cast::transmute(&triangles[0]),
-                GL_STATIC_DRAW
+                gl::STATIC_DRAW
             );
         }
 
         // copy normals
         unsafe {
-            glBindBuffer(GL_ARRAY_BUFFER, normal_buf);
-            glBufferData(
-                GL_ARRAY_BUFFER,
+            gl::BindBuffer(gl::ARRAY_BUFFER, normal_buf);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
                 (normals.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
                 cast::transmute(&normals[0]),
-                GL_DYNAMIC_DRAW
+                gl::DYNAMIC_DRAW
             );
         }
 
         // copy texture coordinates
         unsafe {
-            glBindBuffer(GL_ARRAY_BUFFER, texture_buf);
-            glBufferData(
-                GL_ARRAY_BUFFER,
+            gl::BindBuffer(gl::ARRAY_BUFFER, texture_buf);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
                 (tex_coords.len() * 2 * sys::size_of::<GLfloat>()) as GLsizeiptr,
                 cast::transmute(&tex_coords[0]),
-                GL_STATIC_DRAW
+                gl::STATIC_DRAW
             );
         }
 
@@ -402,7 +392,6 @@ impl Window {
         res
     }
 
-    #[fixed_stack_segment] #[inline(never)]
     #[doc(hidden)]
     pub fn add_texture(@mut self, path: ~str) -> GLuint {
         let tex: Option<GLuint> = self.textures.find(&path).map(|e| **e);
@@ -413,26 +402,26 @@ impl Window {
                 let texture: GLuint = 0;
 
                 unsafe {
-                    glGenTextures(1, &texture);
+                    gl::GenTextures(1, &texture);
 
                     match load_with_depth(path.clone(), 3, false) {
                         ImageU8(image) => {
-                            glActiveTexture(GL_TEXTURE0);
-                            glBindTexture(GL_TEXTURE_2D, texture);
+                            gl::ActiveTexture(gl::TEXTURE0);
+                            gl::BindTexture(gl::TEXTURE_2D, texture);
 
-                            glTexImage2D(
-                                GL_TEXTURE_2D, 0,
-                                GL_RGB as GLint,
+                            gl::TexImage2D(
+                                gl::TEXTURE_2D, 0,
+                                gl::RGB as GLint,
                                 image.width as GLsizei,
                                 image.height as GLsizei,
-                                0, GL_RGB, GL_UNSIGNED_BYTE,
+                                0, gl::RGB, gl::UNSIGNED_BYTE,
                                 cast::transmute(&image.data[0])
                                 );
 
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE as GLint);
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE as GLint);
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR as GLint);
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR as GLint);
+                            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint);
+                            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint);
+                            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint);
+                            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
                         }
                         _ => { fail!("Failed to load texture " + path); }
                     }
@@ -505,9 +494,8 @@ impl Window {
         self.light_mode = pos;
     }
 
-    #[fixed_stack_segment] #[inline(never)]
     fn set_light_pos(@mut self, pos: &Vec3<GLfloat>) {
-        unsafe { glUniform3f(self.shaders_manager.object_context().light, pos.x, pos.y, pos.z) }
+        gl::Uniform3f(self.shaders_manager.object_context().light, pos.x, pos.y, pos.z);
     }
 
     /// The camera used to render the scene. Only one camera is supported.
@@ -547,6 +535,8 @@ impl Window {
             let window = @mut glfw::Window::create(800, 600, title, glfw::Windowed).unwrap();
 
             window.make_context_current();
+
+            gl::load_with(glfw::get_proc_address);
 
             init_gl();
 
@@ -598,12 +588,11 @@ impl Window {
             }
 
             // unsafe {
-            //     glDeleteVertexArrays(1, &vao);
+            //     gl::DeleteVertexArrays(1, &vao);
             // }
         }
     }
 
-    #[fixed_stack_segment] #[inline(never)]
     fn draw(@mut self, curr: &mut u64, timer: &mut Timer) {
         // Poll events
         glfw::poll_events();
@@ -629,31 +618,29 @@ impl Window {
         }
 
         // Clear the screen to black
-        unsafe {
-            glClearColor(
-                self.background.x,
-                self.background.y,
-                self.background.z,
-                1.0);
-            glClear(GL_COLOR_BUFFER_BIT);
-            glClear(GL_DEPTH_BUFFER_BIT);
+        gl::ClearColor(
+            self.background.x,
+            self.background.y,
+            self.background.z,
+            1.0);
+        gl::Clear(gl::COLOR_BUFFER_BIT);
+        gl::Clear(gl::DEPTH_BUFFER_BIT);
 
-            if self.lines_manager.needs_rendering() {
-                self.shaders_manager.select(LinesShader);
-                self.lines_manager.upload(self.shaders_manager.lines_context());
-                self.shaders_manager.select(ObjectShader);
-            }
+        if self.lines_manager.needs_rendering() {
+            self.shaders_manager.select(LinesShader);
+            self.lines_manager.upload(self.shaders_manager.lines_context());
+            self.shaders_manager.select(ObjectShader);
+        }
 
-            if self.wireframe_mode {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            }
-            else {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            }
+        if self.wireframe_mode {
+            gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
+        }
+        else {
+            gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL);
+        }
 
-            for o in self.objects.iter() {
-                o.upload(self.shaders_manager.object_context())
-            }
+        for o in self.objects.iter() {
+            o.upload(self.shaders_manager.object_context())
         }
 
         // Swap buffers
@@ -734,27 +721,26 @@ impl Window {
         self.camera.handle_mouse(&event)
     }
 
-    #[fixed_stack_segment] #[inline(never)]
     fn size_callback(@mut self, w: int, h: int) {
-        unsafe { glViewport(0, 0, w as i32, h as i32) }
+        gl::Viewport(0, 0, w as i32, h as i32);
 
         let projection: Mat4<GLfloat> = MatCast::from(self.projection().transposed());
 
         unsafe {
             self.shaders_manager.select(LinesShader);
 
-            glUniformMatrix4fv(
+            gl::UniformMatrix4fv(
                 self.shaders_manager.lines_context().proj,
                 1,
-                GL_FALSE,
+                gl::FALSE as u8,
                 cast::transmute(&projection));
 
             self.shaders_manager.select(ObjectShader);
 
-            glUniformMatrix4fv(
+            gl::UniformMatrix4fv(
                 self.shaders_manager.object_context().proj,
                 1,
-                GL_FALSE,
+                gl::FALSE as u8,
                 cast::transmute(&projection));
         }
     }
@@ -783,13 +769,10 @@ fn error_callback(_: libc::c_int, description: ~str) {
     println(fmt!("Kiss3d Error: %s", description));
 }
 
-#[fixed_stack_segment] #[inline(never)]
 fn init_gl() {
-    unsafe {
-        glFrontFace(GL_CCW);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-        glEnable(GL_POLYGON_OFFSET_FILL);
-        glPolygonOffset(1.0, 1.0);
-    }
+    gl::FrontFace(gl::CCW);
+    gl::Enable(gl::DEPTH_TEST);
+    gl::DepthFunc(gl::LEQUAL);
+    gl::Enable(gl::POLYGON_OFFSET_FILL);
+    gl::PolygonOffset(1.0, 1.0);
 }

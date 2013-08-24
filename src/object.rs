@@ -4,13 +4,8 @@ use std::num::{One, Zero};
 use std::ptr;
 use std::cast;
 use std::vec;
-use glcore::types::GL_VERSION_1_0::*;
-use glcore::types::GL_VERSION_1_5::*;
-use glcore::functions::GL_VERSION_1_1::*;
-use glcore::functions::GL_VERSION_1_5::*;
-use glcore::functions::GL_VERSION_2_0::*;
-use glcore::consts::GL_VERSION_1_1::*;
-use glcore::consts::GL_VERSION_1_5::*;
+use gl;
+use gl::types::*;
 use nalgebra::traits::homogeneous::ToHomogeneous;
 use nalgebra::traits::indexable::Indexable;
 use nalgebra::traits::cross::Cross;
@@ -96,23 +91,22 @@ impl Object {
         }
     }
 
-    #[fixed_stack_segment] #[inline(never)]
     #[doc(hidden)]
     pub fn upload_geometry(&mut self) {
         match self.geometry {
             VerticesNormalsTriangles(ref v, ref n, _) =>
                 unsafe {
-                    glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.vertex_buffer);
-                    glBufferSubData(
-                        GL_ARRAY_BUFFER,
+                    gl::BindBuffer(gl::ARRAY_BUFFER, self.igeometry.vertex_buffer);
+                    gl::BufferSubData(
+                        gl::ARRAY_BUFFER,
                         0,
                         (v.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
                         cast::transmute(&v[0])
                     );
 
-                    glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.normal_buffer);
-                    glBufferSubData(
-                        GL_ARRAY_BUFFER,
+                    gl::BindBuffer(gl::ARRAY_BUFFER, self.igeometry.normal_buffer);
+                    gl::BufferSubData(
+                        gl::ARRAY_BUFFER,
                         0,
                         (n.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
                         cast::transmute(&n[0])
@@ -122,7 +116,6 @@ impl Object {
         }
     }
 
-    #[fixed_stack_segment] #[inline(never)]
     #[doc(hidden)]
     pub fn upload(&self, context: &ObjectShaderContext) {
 
@@ -165,34 +158,34 @@ impl Object {
             );
 
         unsafe {
-            glUniformMatrix4fv(context.transform,
+            gl::UniformMatrix4fv(context.transform,
                                1,
-                               GL_FALSE,
+                               gl::FALSE as u8,
                                cast::transmute(&transform_glf));
 
-            glUniformMatrix3fv(context.ntransform,
+            gl::UniformMatrix3fv(context.ntransform,
                                1,
-                               GL_FALSE,
+                               gl::FALSE as u8,
                                cast::transmute(&ntransform_glf));
 
-            glUniformMatrix3fv(context.scale, 1, GL_FALSE, cast::transmute(&self.scale));
+            gl::UniformMatrix3fv(context.scale, 1, gl::FALSE as u8, cast::transmute(&self.scale));
 
-            glUniform3f(context.color, self.color.x, self.color.y, self.color.z);
+            gl::Uniform3f(context.color, self.color.x, self.color.y, self.color.z);
 
             // FIXME: we should not switch the buffers if the last drawn shape uses the same.
-            glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.vertex_buffer);
-            glVertexAttribPointer(context.pos, 3, GL_FLOAT, GL_FALSE, 0, ptr::null());
-            glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.normal_buffer);
-            glVertexAttribPointer(context.normal, 3, GL_FLOAT, GL_FALSE, 0, ptr::null());
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.igeometry.element_buffer);
-            glBindTexture(GL_TEXTURE_2D, self.texture);
-            glBindBuffer(GL_ARRAY_BUFFER, self.igeometry.texture_buffer);
-            glVertexAttribPointer(context.tex_coord, 2, GL_FLOAT, GL_FALSE, 0, ptr::null());
+            gl::BindBuffer(gl::ARRAY_BUFFER, self.igeometry.vertex_buffer);
+            gl::VertexAttribPointer(context.pos, 3, gl::FLOAT, gl::FALSE as u8, 0, ptr::null());
+            gl::BindBuffer(gl::ARRAY_BUFFER, self.igeometry.normal_buffer);
+            gl::VertexAttribPointer(context.normal, 3, gl::FLOAT, gl::FALSE as u8, 0, ptr::null());
+            gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.igeometry.element_buffer);
+            gl::BindTexture(gl::TEXTURE_2D, self.texture);
+            gl::BindBuffer(gl::ARRAY_BUFFER, self.igeometry.texture_buffer);
+            gl::VertexAttribPointer(context.tex_coord, 2, gl::FLOAT, gl::FALSE as u8, 0, ptr::null());
 
-            glDrawElements(GL_TRIANGLES,
-                           self.igeometry.size,
-                           GL_UNSIGNED_INT,
-                           (self.igeometry.offset * sys::size_of::<GLuint>()) as *libc::c_void);
+            gl::DrawElements(gl::TRIANGLES,
+                             self.igeometry.size,
+                             gl::UNSIGNED_INT,
+                             (self.igeometry.offset * sys::size_of::<GLuint>()) as *libc::c_void);
         }
     }
 

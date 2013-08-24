@@ -1,14 +1,9 @@
 use std::ptr;
 use std::cast;
 use std::sys;
+use gl;
+use gl::types::*;
 use nalgebra::vec::Vec3;
-use glcore::consts::GL_VERSION_1_1::*;
-use glcore::consts::GL_VERSION_1_5::*;
-use glcore::functions::GL_VERSION_1_1::*;
-use glcore::functions::GL_VERSION_1_5::*;
-use glcore::functions::GL_VERSION_2_0::*;
-use glcore::types::GL_VERSION_1_5::*;
-use glcore::types::GL_VERSION_1_0::*;
 use shaders_manager::LinesShaderContext;
 
 /// Structure which manages the display of short-living lines.
@@ -20,11 +15,10 @@ struct LinesManager {
 
 impl LinesManager {
     /// Creates a new lines manager.
-    #[fixed_stack_segment] #[inline(never)]
     pub fn new() -> LinesManager {
         let vbuf: GLuint = 0;
         
-        unsafe { glGenBuffers(1, &vbuf) };
+        unsafe { gl::GenBuffers(1, &vbuf) };
 
         LinesManager {
             lines:     ~[],
@@ -45,49 +39,48 @@ impl LinesManager {
     }
 
     /// Actually draws the lines.
-    #[fixed_stack_segment] #[inline(never)]
     pub fn upload(&mut self, context: &LinesShaderContext) {
         if self.lines.len() == 0 { return }
 
         unsafe {
-            glBindBuffer(GL_ARRAY_BUFFER, self.vbuf);
+            gl::BindBuffer(gl::ARRAY_BUFFER, self.vbuf);
 
             if self.lines.len() > self.max_lines {
                 // realloc the vertex buffer
                 self.max_lines = self.lines.capacity();
 
-                glBufferData(
-                    GL_ARRAY_BUFFER,
+                gl::BufferData(
+                    gl::ARRAY_BUFFER,
                     (self.max_lines * 4 * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
                     cast::transmute(&self.lines[0]),
-                    GL_DYNAMIC_DRAW
+                    gl::DYNAMIC_DRAW
                     );
             }
             else {
-                glBufferSubData(
-                    GL_ARRAY_BUFFER,
+                gl::BufferSubData(
+                    gl::ARRAY_BUFFER,
                     0,
                     (self.lines.len() * 4 * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
                     cast::transmute(&self.lines[0])
                     );
             }
 
-            glVertexAttribPointer(
+            gl::VertexAttribPointer(
                 context.color,
                 3,
-                GL_FLOAT,
-                GL_FALSE,
+                gl::FLOAT,
+                gl::FALSE as u8,
                 (6 * sys::size_of::<GLfloat>()) as GLint,
                 cast::transmute(3 * sys::size_of::<GLfloat>()));
-            glVertexAttribPointer(
+            gl::VertexAttribPointer(
                 context.pos,
                 3,
-                GL_FLOAT,
-                GL_FALSE,
+                gl::FLOAT,
+                gl::FALSE as u8,
                 (6 * sys::size_of::<GLfloat>()) as GLint,
                 ptr::null());
 
-            glDrawArrays(GL_LINES, 0, (self.lines.len() * 2) as i32);
+            gl::DrawArrays(gl::LINES, 0, (self.lines.len() * 2) as i32);
         }
 
         self.lines.clear();

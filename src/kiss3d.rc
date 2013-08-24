@@ -12,7 +12,7 @@
 extern mod std;
 extern mod extra;
 extern mod glfw;
-extern mod glcore;
+extern mod gl;
 extern mod nalgebra;
 extern mod stb_image;
 

@@ -1,10 +1,9 @@
 use std::cast;
 use std::num::Zero;
-use glcore::types::GL_VERSION_1_0::*;
-use glcore::consts::GL_VERSION_1_1::*;
-use glcore::functions::GL_VERSION_2_0::*;
 use glfw::consts::*;
 use glfw;
+use gl;
+use gl::types::*;
 use nalgebra::types::Iso3f64;
 use nalgebra::traits::inv::Inv;
 use nalgebra::traits::mat_cast::MatCast;
@@ -180,7 +179,6 @@ impl Camera {
         }
     }
 
-    #[fixed_stack_segment] #[inline(never)]
     #[doc(hidden)]
     pub fn upload(&mut self, view_location: i32) {
         let mut homo = self.transformation().inverse().unwrap().to_homogeneous();
@@ -190,10 +188,10 @@ impl Camera {
         let homo32: Mat4<GLfloat> = MatCast::from(homo);
 
         unsafe {
-            glUniformMatrix4fv(
+            gl::UniformMatrix4fv(
                 view_location,
                 1,
-                GL_FALSE,
+                gl::FALSE as u8,
                 cast::transmute(&homo32));
         }
 
