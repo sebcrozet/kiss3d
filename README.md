@@ -43,6 +43,7 @@ fn main() {
     }
 }
 ```
+
 ## Compilation
 You will need the last rust compiler from the `master` branch.
 If you encounter problems, make sure you have the last compiler version before creating an issue.
@@ -55,24 +56,16 @@ recursive clone:
     cd kiss3d
     make deps
     make
-    make test
+    make examples
 
 
-The last command will compile demos on the `bin` folder.
+The last command will compile examples on the `bin` folder.
 Use `make doc` to compile the documentation on the `doc` folder.
 
 ## Contributions
-I intend to work on this library to suit my needs only (to write demo for my
-physics engine **nphysics**).  Therefore, I’d love to see people improving this
-library for their own needs.
-
-However, keep in mind that kiss3d is KISS.
-One-liner features (from the user point of view) are preferred.
+I’d love to see people improving this library for their own needs.  However, keep in mind that
+**kiss3d** is KISS.  One-liner features (from the user point of view) are preferred.
 
 ## Acknowledgements
 
-I am more a physics guy than a graphics guy. I did not want to spend too much
-time to be able to display things on the screen. Thus I thank:
-  - **bjz** for its glfw binding and its demos
-    (git://github.com/bjz/open.gl-tutorials.git) from which I took a great
-    bunch of initialization code.
+  - **bjz** for its awesome [glfw](https://github.com/bjz/glfw-rs.git) and [opengl](https://github.com/bjz/gl-rs.git) bindings.
