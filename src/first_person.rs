@@ -64,7 +64,7 @@ impl FirstPerson {
 
     /// The camera actual transformation.
     pub fn transformation(&self) -> Iso3f64 {
-        let mut id = One::one::<Iso3f64>();
+        let mut id: Iso3f64 = One::one();
         id.look_at_z(&self.eye, &self.at(), &Vec3::y());
 
         id
@@ -84,8 +84,9 @@ impl FirstPerson {
             self.pitch = 0.0001
         }
 
-        if (self.pitch > Real::pi::<f64>() - 0.0001) {
-            self.pitch = Real::pi::<f64>() - 0.0001
+        let _pi: f64 = Real::pi();
+        if (self.pitch > _pi - 0.0001) {
+            self.pitch = _pi - 0.0001
         }
     }
 

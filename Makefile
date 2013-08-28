@@ -12,6 +12,9 @@ all:
 	mkdir -p $(kiss3d_lib_path)
 	rust build src/kiss3d.rc --opt-level 3 --out-dir $(kiss3d_lib_path) -L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
 
+test: examples
+
+
 examples:
 	mkdir -p $(kiss3d_bin_path)
 	$(build_cmd) ./examples/lines.rs 
