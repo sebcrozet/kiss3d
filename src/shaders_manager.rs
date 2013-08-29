@@ -4,10 +4,23 @@ use gl;
 use gl::types::*;
 use shaders;
 
-#[deriving(Eq)]
+#[path = "error.rs"]
+mod error;
+
 pub enum Shader {
     ObjectShader,
-    LinesShader
+    LinesShader,
+    Other // FIXME: improve the manager to handler user-defined shaders properly
+}
+
+impl Eq for Shader {
+    fn eq(&self, other: &Shader) -> bool {
+        match (*self, *other) {
+            (ObjectShader, ObjectShader) => true,
+            (LinesShader, LinesShader)   => true,
+            _ => false // FIXME: this is really suboptimal
+        }
+    }
 }
 
 pub struct ObjectShaderContext {
@@ -47,7 +60,7 @@ impl ShadersManager {
     pub fn new() -> ShadersManager {
         let object_context = ShadersManager::load_object_shader();
 
-        gl::UseProgram(object_context.program);
+        verify!(gl::UseProgram(object_context.program));
 
         ShadersManager {
             object_context: object_context,
@@ -57,12 +70,13 @@ impl ShadersManager {
     }
 
     pub fn select(&mut self, shader: Shader) {
-        if shader != self.shader {
+        if true { // FIXME: shader != self.shader {
             self.shader = shader;
 
             match self.shader {
-                ObjectShader => { gl::UseProgram(self.object_context.program); },
-                LinesShader  => { gl::UseProgram(self.lines_context.program); }
+                ObjectShader => { verify!(gl::UseProgram(self.object_context.program)); },
+                LinesShader  => { verify!(gl::UseProgram(self.lines_context.program)); }
+                _ => { }
             }
         }
     }
@@ -82,7 +96,7 @@ impl ShadersManager {
                 ShadersManager::load_shader_program(shaders::OBJECT_VERTEX_SRC,
                                                     shaders::OBJECT_FRAGMENT_SRC);
 
-            gl::UseProgram(program);
+            verify!(gl::UseProgram(program));
 
             // get the variables locations
             ObjectShaderContext {
@@ -117,43 +131,43 @@ impl ShadersManager {
                 vshader: vshader,
                 fshader: fshader,
                 pos:     gl::GetAttribLocation(program,  "position".to_c_str().unwrap()) as GLuint,
-                color:   gl::GetAttribLocation(program, "color".to_c_str().unwrap()) as GLuint,
+                color:   gl::GetAttribLocation(program,  "color".to_c_str().unwrap()) as GLuint,
                 proj:    gl::GetUniformLocation(program, "projection".to_c_str().unwrap()),
                 view:    gl::GetUniformLocation(program, "view".to_c_str().unwrap()),
             };
 
-            gl::EnableVertexAttribArray(res.pos);
-            gl::EnableVertexAttribArray(res.color);
+            verify!(gl::EnableVertexAttribArray(res.pos));
+            verify!(gl::EnableVertexAttribArray(res.color));
 
             res
         }
     }
 
-    fn load_shader_program(vertex_shader:   &str,
-                           fragment_shader: &str)
-                           -> (GLuint, GLuint, GLuint) {
+    pub fn load_shader_program(vertex_shader:   &str,
+                               fragment_shader: &str)
+                               -> (GLuint, GLuint, GLuint) {
         // Create and compile the vertex shader
         let vshader = gl::CreateShader(gl::VERTEX_SHADER);
         unsafe {
-            gl::ShaderSource(vshader, 1, &vertex_shader.to_c_str().unwrap(), ptr::null());
-            gl::CompileShader(vshader);
+            verify!(gl::ShaderSource(vshader, 1, &vertex_shader.to_c_str().unwrap(), ptr::null()));
+            verify!(gl::CompileShader(vshader));
         }
         check_shader_error(vshader);
 
         // Create and compile the fragment shader
         let fshader = gl::CreateShader(gl::FRAGMENT_SHADER);
         unsafe {
-            gl::ShaderSource(fshader, 1, &fragment_shader.to_c_str().unwrap(), ptr::null());
-            gl::CompileShader(fshader);
+            verify!(gl::ShaderSource(fshader, 1, &fragment_shader.to_c_str().unwrap(), ptr::null()));
+            verify!(gl::CompileShader(fshader));
         }
 
         check_shader_error(fshader);
 
         // Link the vertex and fragment shader into a shader program
         let program = gl::CreateProgram();
-        gl::AttachShader(program, vshader);
-        gl::AttachShader(program, fshader);
-        gl::LinkProgram(program);
+        verify!(gl::AttachShader(program, vshader));
+        verify!(gl::AttachShader(program, fshader));
+        verify!(gl::LinkProgram(program));
 
         (program, vshader, fshader)
     }

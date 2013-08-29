@@ -1,6 +1,7 @@
 *.swp
 *.swo
 *.html
+*.so
 bin/camera
 bin/cube
 bin/event
@@ -10,3 +11,4 @@ bin/quad
 bin/texturing
 bin/window
 bin/lines
+bin/post_processing

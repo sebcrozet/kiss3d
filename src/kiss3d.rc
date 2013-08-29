@@ -6,7 +6,7 @@
 #[deny(non_camel_case_types)];
 #[deny(non_uppercase_statics)];
 #[deny(unnecessary_qualification)];
-#[deny(missing_doc)];
+#[warn(missing_doc)];
 
 
 extern mod std;
@@ -45,4 +45,10 @@ pub mod builtins
     pub mod cone_obj;
     pub mod cylinder_obj;
     pub mod capsule_obj;
+}
+
+pub mod post_processing {
+    pub mod post_processing_effect;
+    pub mod waves;
+    pub mod grayscales;
 }

@@ -17,6 +17,9 @@ use nalgebra::vec::Vec3;
 use window::Window;
 use shaders_manager::ObjectShaderContext;
 
+#[path = "error.rs"]
+mod error;
+
 type Transform3d = Transform<Rotmat<Mat3<f64>>, Vec3<f64>>;
 type Scale3d     = Mat3<GLfloat>;
 
@@ -158,34 +161,34 @@ impl Object {
             );
 
         unsafe {
-            gl::UniformMatrix4fv(context.transform,
-                               1,
-                               gl::FALSE as u8,
-                               cast::transmute(&transform_glf));
+            verify!(gl::UniformMatrix4fv(context.transform,
+                                         1,
+                                         gl::FALSE as u8,
+                                         cast::transmute(&transform_glf)));
 
-            gl::UniformMatrix3fv(context.ntransform,
-                               1,
-                               gl::FALSE as u8,
-                               cast::transmute(&ntransform_glf));
+            verify!(gl::UniformMatrix3fv(context.ntransform,
+                                         1,
+                                         gl::FALSE as u8,
+                                         cast::transmute(&ntransform_glf)));
 
-            gl::UniformMatrix3fv(context.scale, 1, gl::FALSE as u8, cast::transmute(&self.scale));
+            verify!(gl::UniformMatrix3fv(context.scale, 1, gl::FALSE as u8, cast::transmute(&self.scale)));
 
-            gl::Uniform3f(context.color, self.color.x, self.color.y, self.color.z);
+            verify!(gl::Uniform3f(context.color, self.color.x, self.color.y, self.color.z));
 
             // FIXME: we should not switch the buffers if the last drawn shape uses the same.
-            gl::BindBuffer(gl::ARRAY_BUFFER, self.igeometry.vertex_buffer);
-            gl::VertexAttribPointer(context.pos, 3, gl::FLOAT, gl::FALSE as u8, 0, ptr::null());
-            gl::BindBuffer(gl::ARRAY_BUFFER, self.igeometry.normal_buffer);
-            gl::VertexAttribPointer(context.normal, 3, gl::FLOAT, gl::FALSE as u8, 0, ptr::null());
-            gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.igeometry.element_buffer);
-            gl::BindTexture(gl::TEXTURE_2D, self.texture);
-            gl::BindBuffer(gl::ARRAY_BUFFER, self.igeometry.texture_buffer);
-            gl::VertexAttribPointer(context.tex_coord, 2, gl::FLOAT, gl::FALSE as u8, 0, ptr::null());
+            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.igeometry.vertex_buffer));
+            verify!(gl::VertexAttribPointer(context.pos, 3, gl::FLOAT, gl::FALSE as u8, 0, ptr::null()));
+            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.igeometry.normal_buffer));
+            verify!(gl::VertexAttribPointer(context.normal, 3, gl::FLOAT, gl::FALSE as u8, 0, ptr::null()));
+            verify!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.igeometry.element_buffer));
+            verify!(gl::BindTexture(gl::TEXTURE_2D, self.texture));
+            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.igeometry.texture_buffer));
+            verify!(gl::VertexAttribPointer(context.tex_coord, 2, gl::FLOAT, gl::FALSE as u8, 0, ptr::null()));
 
-            gl::DrawElements(gl::TRIANGLES,
-                             self.igeometry.size,
-                             gl::UNSIGNED_INT,
-                             (self.igeometry.offset * sys::size_of::<GLuint>()) as *libc::c_void);
+            verify!(gl::DrawElements(gl::TRIANGLES,
+                                     self.igeometry.size,
+                                     gl::UNSIGNED_INT,
+                                     (self.igeometry.offset * sys::size_of::<GLuint>()) as *libc::c_void));
         }
     }
 

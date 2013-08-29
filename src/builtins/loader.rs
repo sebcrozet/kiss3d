@@ -13,6 +13,9 @@ use builtins::cone_obj;
 use builtins::cylinder_obj;
 use builtins::capsule_obj;
 
+#[path = "../error.rs"]
+mod error;
+
 pub fn load(ctxt: &ObjectShaderContext, textures: &mut HashMap<~str, GLuint>)
             -> HashMap<~str, GeometryIndices> {
     unsafe {
@@ -23,11 +26,11 @@ pub fn load(ctxt: &ObjectShaderContext, textures: &mut HashMap<~str, GLuint>)
         let default_tex: GLuint = 0;
 
         // FIXME: use gl::GenBuffers(3, ...) ?
-        gl::GenBuffers(1, &vertex_buf);
-        gl::GenBuffers(1, &element_buf);
-        gl::GenBuffers(1, &normals_buf);
-        gl::GenBuffers(1, &texture_buf);
-        gl::GenTextures(1, &default_tex);
+        verify!(gl::GenBuffers(1, &vertex_buf));
+        verify!(gl::GenBuffers(1, &element_buf));
+        verify!(gl::GenBuffers(1, &normals_buf));
+        verify!(gl::GenBuffers(1, &texture_buf));
+        verify!(gl::GenTextures(1, &default_tex));
 
         textures.insert(~"default", default_tex);
 
@@ -38,69 +41,69 @@ pub fn load(ctxt: &ObjectShaderContext, textures: &mut HashMap<~str, GLuint>)
             texture_buf); 
 
         // Upload values of vertices
-        gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buf);
-        gl::BufferData(
+        verify!(gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buf));
+        verify!(gl::BufferData(
             gl::ARRAY_BUFFER,
             (vbuf.len() * sys::size_of::<GLfloat>()) as GLsizeiptr,
             cast::transmute(&vbuf[0]),
-            gl::STATIC_DRAW);
+            gl::STATIC_DRAW));
 
         // Upload values of indices
-        gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, element_buf);
-        gl::BufferData(
+        verify!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, element_buf));
+        verify!(gl::BufferData(
             gl::ELEMENT_ARRAY_BUFFER,
             (vibuf.len() * sys::size_of::<GLuint>()) as GLsizeiptr,
             cast::transmute(&vibuf[0]),
-            gl::STATIC_DRAW);
+            gl::STATIC_DRAW));
 
         // Upload values of normals
-        gl::BindBuffer(gl::ARRAY_BUFFER, normals_buf);
-        gl::BufferData(
+        verify!(gl::BindBuffer(gl::ARRAY_BUFFER, normals_buf));
+        verify!(gl::BufferData(
             gl::ARRAY_BUFFER,
             (nbuf.len() * sys::size_of::<GLfloat>()) as GLsizeiptr,
             cast::transmute(&nbuf[0]),
-            gl::STATIC_DRAW);
+            gl::STATIC_DRAW));
 
         // Upload values of texture coordinates
-        gl::BindBuffer(gl::ARRAY_BUFFER, texture_buf);
-        gl::BufferData(
+        verify!(gl::BindBuffer(gl::ARRAY_BUFFER, texture_buf));
+        verify!(gl::BufferData(
             gl::ARRAY_BUFFER,
             (tbuf.len() * sys::size_of::<GLfloat>()) as GLsizeiptr,
             cast::transmute(&tbuf[0]),
-            gl::STATIC_DRAW);
+            gl::STATIC_DRAW));
 
         // Specify the layout of the vertex data
-        gl::EnableVertexAttribArray(ctxt.pos);
-        gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buf);
-        gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, element_buf);
-        gl::VertexAttribPointer(
+        verify!(gl::EnableVertexAttribArray(ctxt.pos));
+        verify!(gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buf));
+        verify!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, element_buf));
+        verify!(gl::VertexAttribPointer(
             ctxt.pos,
             3,
             gl::FLOAT,
             gl::FALSE as u8,
             3 * sys::size_of::<GLfloat>() as GLsizei,
-            ptr::null());
+            ptr::null()));
 
         // Specify the layout of the normals data
-        gl::EnableVertexAttribArray(ctxt.normal);
-        gl::BindBuffer(gl::ARRAY_BUFFER, normals_buf);
-        gl::VertexAttribPointer(
+        verify!(gl::EnableVertexAttribArray(ctxt.normal));
+        verify!(gl::BindBuffer(gl::ARRAY_BUFFER, normals_buf));
+        verify!(gl::VertexAttribPointer(
             ctxt.normal,
             3,
             gl::FLOAT,
             gl::FALSE as u8,
             3 * sys::size_of::<GLfloat>() as GLsizei,
-            ptr::null());
+            ptr::null()));
 
-        gl::EnableVertexAttribArray(ctxt.tex_coord);
-        gl::BindBuffer(gl::ARRAY_BUFFER, texture_buf);
-        gl::VertexAttribPointer(
+        verify!(gl::EnableVertexAttribArray(ctxt.tex_coord));
+        verify!(gl::BindBuffer(gl::ARRAY_BUFFER, texture_buf));
+        verify!(gl::VertexAttribPointer(
             ctxt.tex_coord,
             2,
             gl::FLOAT,
             gl::FALSE as u8,
             2 * sys::size_of::<GLfloat>() as GLsizei,
-            ptr::null());
+            ptr::null()));
 
         // create white texture
         // Black/white checkerboard
@@ -109,18 +112,18 @@ pub fn load(ctxt: &ObjectShaderContext, textures: &mut HashMap<~str, GLuint>)
             1.0, 1.0, 1.0
             ];
 
-        gl::ActiveTexture(gl::TEXTURE0);
-        gl::BindTexture(gl::TEXTURE_2D, default_tex);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_BASE_LEVEL, 0);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAX_LEVEL, 0);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT as i32);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT as i32);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR as i32);
-        gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, 1, 1, 0, gl::RGB, gl::FLOAT,
-        cast::transmute(&default_tex_pixels[0]));
+        verify!(gl::ActiveTexture(gl::TEXTURE0));
+        verify!(gl::BindTexture(gl::TEXTURE_2D, default_tex));
+        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_BASE_LEVEL, 0));
+        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAX_LEVEL, 0));
+        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT as i32));
+        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT as i32));
+        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32));
+        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR as i32));
+        verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, 1, 1, 0, gl::RGB, gl::FLOAT,
+                cast::transmute(&default_tex_pixels[0])));
 
-        gl::Uniform1i(ctxt.tex, 0);
+        verify!(gl::Uniform1i(ctxt.tex, 0));
 
         builtins
     }

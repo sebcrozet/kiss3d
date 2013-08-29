@@ -1,4 +1,9 @@
+/*
+ * FIXME: this file is too big. Some heavy refactoring need to be done here.
+ */
+
 use glfw;
+use std::ptr;
 use std::rt::io::timer::Timer;
 use std::rt::rtio::RtioTimer;
 use std::num::{Zero, One};
@@ -24,9 +29,12 @@ use camera::{Camera, ArcBall};
 use object::{GeometryIndices, Object, VerticesNormalsTriangles, Deleted};
 use lines_manager::LinesManager;
 use shaders_manager::{ShadersManager, ObjectShader, LinesShader};
+use post_processing::post_processing_effect::PostProcessingEffect;
 use builtins::loader;
 use event;
 use arc_ball;
+
+mod error;
 
 pub enum Light {
     Absolute(Vec3<GLfloat>),
@@ -53,9 +61,18 @@ pub struct Window {
     priv usr_loop_callback:     @fn(),
     priv usr_keyboard_callback: @fn(&event::KeyboardEvent) -> bool,
     priv usr_mouse_callback:    @fn(&event::MouseEvent) -> bool,
+    priv post_processing:       Option<@mut PostProcessingEffect>,
+    priv process_fbo:           GLuint,
+    priv process_fbo_texture:   GLuint,
+    priv process_rbo_depth:     GLuint
 }
 
 impl Window {
+    /// Sets the current processing effect.
+    pub fn set_post_processing_effect(&mut self, effect: Option<@mut PostProcessingEffect>) {
+        self.post_processing = effect;
+    }
+
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
     pub fn set_framerate_limit(&mut self, fps: Option<u64>) {
         self.max_ms_per_frame = do fps.map |f| { assert!(*f != 0); 1000 / *f }
@@ -325,56 +342,55 @@ impl Window {
 
         unsafe {
             // FIXME: use gl::GenBuffers(3, ...) ?
-            gl::GenBuffers(1, &vertex_buf);
-            gl::GenBuffers(1, &element_buf);
-            gl::GenBuffers(1, &normal_buf);
-            gl::GenBuffers(1, &texture_buf);
+            verify!(gl::GenBuffers(1, &vertex_buf));
+            verify!(gl::GenBuffers(1, &element_buf));
+            verify!(gl::GenBuffers(1, &normal_buf));
+            verify!(gl::GenBuffers(1, &texture_buf));
         }
 
         // copy vertices
         unsafe {
-            gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buf);
-            gl::BufferData(
+            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buf));
+            verify!(gl::BufferData(
                 gl::ARRAY_BUFFER,
                 (vertices.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
                 cast::transmute(&vertices[0]),
                 gl::DYNAMIC_DRAW
-            );
+            ));
         }
 
         // copy elements
         unsafe {
-            gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, element_buf);
-            gl::BufferData(
+            verify!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, element_buf));
+            verify!(gl::BufferData(
                 gl::ELEMENT_ARRAY_BUFFER,
                 (triangles.len() * 3 * sys::size_of::<GLuint>()) as GLsizeiptr,
                 cast::transmute(&triangles[0]),
                 gl::STATIC_DRAW
-            );
+            ));
         }
 
         // copy normals
         unsafe {
-            gl::BindBuffer(gl::ARRAY_BUFFER, normal_buf);
-            gl::BufferData(
+            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, normal_buf));
+            verify!(gl::BufferData(
                 gl::ARRAY_BUFFER,
                 (normals.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
                 cast::transmute(&normals[0]),
                 gl::DYNAMIC_DRAW
-            );
+            ));
         }
 
         // copy texture coordinates
         unsafe {
-            gl::BindBuffer(gl::ARRAY_BUFFER, texture_buf);
-            gl::BufferData(
+            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, texture_buf));
+            verify!(gl::BufferData(
                 gl::ARRAY_BUFFER,
                 (tex_coords.len() * 2 * sys::size_of::<GLfloat>()) as GLsizeiptr,
                 cast::transmute(&tex_coords[0]),
                 gl::STATIC_DRAW
-            );
+            ));
         }
-
 
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
@@ -405,26 +421,26 @@ impl Window {
                 let texture: GLuint = 0;
 
                 unsafe {
-                    gl::GenTextures(1, &texture);
+                    verify!(gl::GenTextures(1, &texture));
 
                     match load_with_depth(path.clone(), 3, false) {
                         ImageU8(image) => {
-                            gl::ActiveTexture(gl::TEXTURE0);
-                            gl::BindTexture(gl::TEXTURE_2D, texture);
+                            verify!(gl::ActiveTexture(gl::TEXTURE0));
+                            verify!(gl::BindTexture(gl::TEXTURE_2D, texture));
 
-                            gl::TexImage2D(
+                            verify!(gl::TexImage2D(
                                 gl::TEXTURE_2D, 0,
                                 gl::RGB as GLint,
                                 image.width as GLsizei,
                                 image.height as GLsizei,
                                 0, gl::RGB, gl::UNSIGNED_BYTE,
                                 cast::transmute(&image.data[0])
-                                );
+                                ));
 
-                            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint);
-                            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint);
-                            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint);
-                            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
+                            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));
+                            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
+                            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));
+                            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
                         }
                         _ => { fail!("Failed to load texture " + path); }
                     }
@@ -527,7 +543,9 @@ impl Window {
     }
 
     fn set_light_pos(@mut self, pos: &Vec3<GLfloat>) {
-        gl::Uniform3f(self.shaders_manager.object_context().light, pos.x, pos.y, pos.z);
+        self.shaders_manager.select(ObjectShader);
+        verify!(gl::Uniform3f(self.shaders_manager.object_context().light, pos.x, pos.y, pos.z));
+        // FIXME: select the LinesShader too ?
     }
 
     /// The camera used to render the scene. Only one camera is supported.
@@ -560,7 +578,6 @@ impl Window {
     }
 
     fn do_spawn(title: ~str, hide: bool, callback: ~fn(@mut Window)) {
-
         glfw::set_error_callback(error_callback);
 
         do glfw::start {
@@ -568,9 +585,12 @@ impl Window {
 
             window.make_context_current();
 
-            gl::load_with(glfw::get_proc_address);
+            verify!(gl::load_with(glfw::get_proc_address));
 
             init_gl();
+
+            // FIXME: load that iff the user really uses post-processing
+            let (process_fbo_texture, process_rbo_depth, process_fbo) = init_post_process_fbo(800, 600);
 
             let shaders      = ShadersManager::new();
             let mut textures = HashMap::new();
@@ -592,6 +612,10 @@ impl Window {
                 projection:            One::one(),
                 lines_manager:         @mut LinesManager::new(),
                 shaders_manager:       shaders,
+                post_processing:       None,
+                process_fbo:           process_fbo,
+                process_fbo_texture:   process_fbo_texture,
+                process_rbo_depth:     process_rbo_depth,
                 usr_loop_callback:     || {},
                 usr_keyboard_callback: |_| { true },
                 usr_mouse_callback:    |_| { true },
@@ -619,10 +643,6 @@ impl Window {
             while !window.should_close() {
                 usr_window.draw(&mut curr, &mut timer)
             }
-
-            // unsafe {
-            //     gl::DeleteVertexArrays(1, &vao);
-            // }
         }
     }
 
@@ -648,14 +668,19 @@ impl Window {
             _             => { }
         }
 
+        if self.post_processing.is_some() {
+            // if we need post-processing, render to our own frame buffer
+            verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, self.process_fbo));
+        }
+
         // Clear the screen to black
-        gl::ClearColor(
+        verify!(gl::ClearColor(
             self.background.x,
             self.background.y,
             self.background.z,
-            1.0);
-        gl::Clear(gl::COLOR_BUFFER_BIT);
-        gl::Clear(gl::DEPTH_BUFFER_BIT);
+            1.0));
+        verify!(gl::Clear(gl::COLOR_BUFFER_BIT));
+        verify!(gl::Clear(gl::DEPTH_BUFFER_BIT));
 
         if self.lines_manager.needs_rendering() {
             self.shaders_manager.select(LinesShader);
@@ -664,19 +689,36 @@ impl Window {
         }
 
         if self.wireframe_mode {
-            gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
+            verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE));
         }
         else {
-            gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL);
+            verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
         }
 
         for o in self.objects.iter() {
             o.upload(self.shaders_manager.object_context())
         }
 
-        // Swap buffers
+        match self.post_processing {
+            Some(p) => {
+                // remove the wireframe mode
+                if self.wireframe_mode {
+                    verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
+                }
+
+                // switch back to the screen framebuffer …
+                verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
+                // … and execute the post-process
+                p.update(0.016); // FIXME: use the real value
+                p.draw(&mut self.shaders_manager, self.process_fbo_texture);
+            },
+            None => { }
+        }
+
+        // We are done: swap buffers
         self.window.swap_buffers();
 
+        // Limit the fps if needed.
         match self.max_ms_per_frame {
             None     => { },
             Some(ms) => {
@@ -753,8 +795,22 @@ impl Window {
     }
 
     fn size_callback(@mut self, w: int, h: int) {
-        gl::Viewport(0, 0, w as i32, h as i32);
+        // Update the viewport
+        verify!(gl::Viewport(0, 0, w as i32, h as i32));
 
+        // Update the fbo
+        verify!(gl::BindTexture(gl::TEXTURE_2D, self.process_fbo));
+        unsafe {
+            verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA as GLint, w as GLint, h as GLint, 0,
+                    gl::RGBA, gl::UNSIGNED_BYTE, ptr::null()));
+        }
+        verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
+
+        verify!(gl::BindRenderbuffer(gl::RENDERBUFFER, self.process_rbo_depth));
+        verify!(gl::RenderbufferStorage(gl::RENDERBUFFER, gl::DEPTH_COMPONENT16, w as GLint, h as GLint));
+        verify!(gl::BindRenderbuffer(gl::RENDERBUFFER, 0));
+
+        // Update the projection
         self.projection = self.projection();
         self.inv_projection = self.projection.inverse().unwrap();
         let projection: Mat4<GLfloat> = MatCast::from(self.projection.transposed());
@@ -762,19 +818,19 @@ impl Window {
         unsafe {
             self.shaders_manager.select(LinesShader);
 
-            gl::UniformMatrix4fv(
+            verify!(gl::UniformMatrix4fv(
                 self.shaders_manager.lines_context().proj,
                 1,
                 gl::FALSE as u8,
-                cast::transmute(&projection));
+                cast::transmute(&projection)));
 
             self.shaders_manager.select(ObjectShader);
 
-            gl::UniformMatrix4fv(
+            verify!(gl::UniformMatrix4fv(
                 self.shaders_manager.object_context().proj,
                 1,
                 gl::FALSE as u8,
-                cast::transmute(&projection));
+                cast::transmute(&projection)));
         }
     }
 
@@ -803,9 +859,46 @@ fn error_callback(_: libc::c_int, description: ~str) {
 }
 
 fn init_gl() {
-    gl::FrontFace(gl::CCW);
-    gl::Enable(gl::DEPTH_TEST);
-    gl::DepthFunc(gl::LEQUAL);
-    gl::Enable(gl::POLYGON_OFFSET_FILL);
-    gl::PolygonOffset(1.0, 1.0);
+    /*
+     * Misc configurations
+     */
+    verify!(gl::FrontFace(gl::CCW));
+    verify!(gl::Enable(gl::DEPTH_TEST));
+    verify!(gl::DepthFunc(gl::LEQUAL));
+}
+
+fn init_post_process_fbo(width: uint, height: uint) -> (GLuint, GLuint, GLuint) {
+    /* Create back-buffer, used for post-processing */
+    let fbo_texture: GLuint = 0;
+    let rbo_depth:   GLuint = 0;
+    let fbo:         GLuint = 0;
+
+    /* Texture */
+    verify!(gl::ActiveTexture(gl::TEXTURE0));
+    unsafe { verify!(gl::GenTextures(1, &fbo_texture)); }
+    verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_texture));
+    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
+    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));
+    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));
+    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
+    unsafe {
+        verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA as GLint, width as GLint, height as GLint,
+                       0, gl::RGBA, gl::UNSIGNED_BYTE, ptr::null()));
+    }
+    verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
+
+    /* Depth buffer */
+    unsafe { verify!(gl::GenRenderbuffers(1, &rbo_depth)); }
+    verify!(gl::BindRenderbuffer(gl::RENDERBUFFER, rbo_depth));
+    verify!(gl::RenderbufferStorage(gl::RENDERBUFFER, gl::DEPTH_COMPONENT16, width as GLint, height as GLint));
+    verify!(gl::BindRenderbuffer(gl::RENDERBUFFER, 0));
+
+    /* Framebuffer to link everything together */
+    unsafe { gl::GenFramebuffers(1, &fbo); }
+    verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, fbo));
+    verify!(gl::FramebufferTexture2D(gl::FRAMEBUFFER, gl::COLOR_ATTACHMENT0, gl::TEXTURE_2D, fbo_texture, 0));
+    verify!(gl::FramebufferRenderbuffer(gl::FRAMEBUFFER, gl::DEPTH_ATTACHMENT, gl::RENDERBUFFER, rbo_depth));
+    verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
+
+    (fbo_texture, rbo_depth, fbo)
 }
