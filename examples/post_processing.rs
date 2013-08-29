@@ -2,7 +2,6 @@ extern mod kiss3d;
 extern mod nalgebra;
 
 use std::rand::random;
-use nalgebra::traits::rotation::Rotation;
 use nalgebra::traits::translation::Translation;
 use nalgebra::vec::Vec3;
 use kiss3d::window;

@@ -442,7 +442,9 @@ impl Window {
                             verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));
                             verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
                         }
-                        _ => { fail!("Failed to load texture " + path); }
+                        _ => {
+                            fail!("Failed to load texture " + path);
+                        }
                     }
                 }
 

@@ -36,18 +36,21 @@ static FRAGMENT_SHADER: &'static str =
       gl_FragColor  =  texture2D(fbo_texture, texcoord);
     }";
 
+/// An useless post-processing effect mainly to test that everything works correctly.
+/// It deforms the displayed scene with a wave effect.
 pub struct Waves {
-    vshader:      GLuint,
-    fshader:      GLuint,
-    program:      GLuint,
-    time:         f64,
-    offset:       GLuint,
-    fbo_texture:  GLuint,
-    fbo_vertices: GLuint,
-    v_coord:      GLint
+    priv vshader:      GLuint,
+    priv fshader:      GLuint,
+    priv program:      GLuint,
+    priv time:         f64,
+    priv offset:       GLuint,
+    priv fbo_texture:  GLuint,
+    priv fbo_vertices: GLuint,
+    priv v_coord:      GLint
 }
 
 impl Waves {
+    /// Creates a new Waves post processing effect.
     pub fn new() -> Waves {
         unsafe {
             /* Global */
@@ -131,6 +134,9 @@ impl PostProcessingEffect for Waves {
 
 impl Drop for Waves {
     fn drop(&self) {
-        println("FIXME: release resources used by the `Wave` post-processing effect.")
+        gl::DeleteProgram(self.program);
+        gl::DeleteShader(self.vshader);
+        gl::DeleteShader(self.fshader);
+        unsafe { gl::DeleteBuffers(1, &self.fbo_vertices); }
     }
 }

@@ -2,6 +2,8 @@
 *.swo
 *.html
 *.so
+*.dSYM
+*.dylib
 bin/camera
 bin/cube
 bin/event

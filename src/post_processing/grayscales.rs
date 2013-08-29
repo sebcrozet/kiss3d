@@ -32,17 +32,19 @@ static FRAGMENT_SHADER: &'static str =
       gl_FragColor  = vec4(gray, gray, gray, color.a);
     }";
 
+/// Post processing effect which turns everything in grayscales.
 pub struct Grayscales {
-    vshader:      GLuint,
-    fshader:      GLuint,
-    program:      GLuint,
-    time:         f64,
-    fbo_texture:  GLuint,
-    fbo_vertices: GLuint,
-    v_coord:      GLint
+    priv vshader:      GLuint,
+    priv fshader:      GLuint,
+    priv program:      GLuint,
+    priv time:         f64,
+    priv fbo_texture:  GLuint,
+    priv fbo_vertices: GLuint,
+    priv v_coord:      GLint
 }
 
 impl Grayscales {
+    /// Creates a new Grayscales post processing effect.
     pub fn new() -> Grayscales {
         unsafe {
             /* Global */
@@ -119,6 +121,9 @@ impl PostProcessingEffect for Grayscales {
 
 impl Drop for Grayscales {
     fn drop(&self) {
-        println("FIXME: release resources used by the `Grayscales` post-processing effect.")
+        gl::DeleteProgram(self.program);
+        gl::DeleteShader(self.vshader);
+        gl::DeleteShader(self.fshader);
+        unsafe { gl::DeleteBuffers(1, &self.fbo_vertices); }
     }
 }
