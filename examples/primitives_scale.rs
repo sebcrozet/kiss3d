@@ -7,6 +7,11 @@ use nalgebra::traits::translation::Translation;
 use nalgebra::vec::Vec3;
 use kiss3d::window::{Window, StickToCamera};
 
+#[start]
+fn start(argc: int, argv: **u8, crate_map: *u8) -> int {
+    std::rt::start_on_main_thread(argc, argv, crate_map, main)
+}
+
 fn main() {
     do Window::spawn("Kiss3d: scaled primitives") |w| {
         // NOTE: scaling is not possible.

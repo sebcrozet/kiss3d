@@ -10,6 +10,11 @@ use kiss3d::post_processing::post_processing_effect::PostProcessingEffect;
 use kiss3d::post_processing::waves::Waves;
 use kiss3d::post_processing::grayscales::Grayscales;
 
+#[start]
+fn start(argc: int, argv: **u8, crate_map: *u8) -> int {
+    std::rt::start_on_main_thread(argc, argv, crate_map, main)
+}
+
 fn main() {
     do window::Window::spawn("Kiss3d: cube") |window| {
         let c = window.add_cube(1.0, 1.0, 1.0).set_color(random(), random(), random());

@@ -4,6 +4,11 @@ extern mod nalgebra;
 use kiss3d::window;
 use kiss3d::event;
 
+#[start]
+fn start(argc: int, argv: **u8, crate_map: *u8) -> int {
+    std::rt::start_on_main_thread(argc, argv, crate_map, main)
+}
+
 fn main() {
     do window::Window::spawn("Kiss3d: events") |w| {
         do w.set_keyboard_callback |event| {

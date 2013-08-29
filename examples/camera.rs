@@ -6,6 +6,11 @@ use nalgebra::vec::Vec3;
 use kiss3d::window;
 use kiss3d::camera;
 
+#[start]
+fn start(argc: int, argv: **u8, crate_map: *u8) -> int {
+    std::rt::start_on_main_thread(argc, argv, crate_map, main)
+}
+
 fn main()
 {
     do window::Window::spawn("Kiss3d: camera") |w|
