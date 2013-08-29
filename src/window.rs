@@ -632,6 +632,7 @@ impl Window {
             window.set_cursor_pos_callback(|_, xpos, ypos| usr_window.cursor_pos_callback(xpos, ypos));
             window.set_size_callback(|_, w, h| usr_window.size_callback(w, h));
             window.set_size(800, 600);
+            usr_window.size_callback(800, 600);
 
             if hide {
                 window.hide()
