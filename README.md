@@ -31,6 +31,11 @@ use nalgebra::traits::rotation::Rotation;
 use nalgebra::vec::Vec3;
 use kiss3d::window;
 
+#[start]
+fn start(argc: int, argv: **u8, crate_map: *u8) -> int {
+    std::rt::start_on_main_thread(argc, argv, crate_map, main)
+}
+
 fn main() {
     do window::Window::spawn("Kiss3d: cube") |window| {
         let c = window.add_cube(1.0, 1.0, 1.0).set_color(1.0, 0.0, 0.0);
@@ -43,6 +48,14 @@ fn main() {
     }
 }
 ```
+
+Some controls are handled by default by the engine (they can be overridden by the user):
+    * `scroll` - zoom in / zoom out.
+    * `space` - toggle wireframe mode.
+    * `tab` - switch between the arc-ball camera and the first-person camera.
+    * `click + drag` - look around.
+    * `up`, `down`, `right`, `left` - move around (first-person camera mode only).
+    * `enter` - look at the origin `(0.0, 0.0, 0.0)` (arc-ball camera mode only).
 
 ## Compilation
 You will need the last rust compiler from the `master` branch.
