@@ -64,7 +64,7 @@ pub struct Window {
     priv post_processing:       Option<@mut PostProcessingEffect>,
     priv process_fbo:           GLuint,
     priv process_fbo_texture:   GLuint,
-    priv process_rbo_depth:     GLuint
+    priv process_fbo_depth:     GLuint
 }
 
 impl Window {
@@ -592,7 +592,7 @@ impl Window {
             init_gl();
 
             // FIXME: load that iff the user really uses post-processing
-            let (process_fbo_texture, process_rbo_depth, process_fbo) = init_post_process_fbo(800, 600);
+            let (process_fbo_texture, process_fbo_depth, process_fbo) = init_post_process_fbo(800, 600);
 
             let shaders      = ShadersManager::new();
             let mut textures = HashMap::new();
@@ -617,7 +617,7 @@ impl Window {
                 post_processing:       None,
                 process_fbo:           process_fbo,
                 process_fbo_texture:   process_fbo_texture,
-                process_rbo_depth:     process_rbo_depth,
+                process_fbo_depth:     process_fbo_depth,
                 usr_loop_callback:     || {},
                 usr_keyboard_callback: |_| { true },
                 usr_mouse_callback:    |_| { true },
@@ -676,6 +676,9 @@ impl Window {
             verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, self.process_fbo));
         }
 
+
+        // Activate the default texture
+        verify!(gl::ActiveTexture(gl::TEXTURE0));
         // Clear the screen to black
         verify!(gl::ClearColor(
             self.background.x,
@@ -712,8 +715,8 @@ impl Window {
                 // switch back to the screen framebuffer …
                 verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
                 // … and execute the post-process
-                p.update(0.016); // FIXME: use the real value
-                p.draw(&mut self.shaders_manager, self.process_fbo_texture);
+                p.update(0.016, self.width() as f64, self.height() as f64, self.znear(), self.zfar()); // FIXME: use the real value
+                p.draw(&mut self.shaders_manager, self.process_fbo_texture, self.process_fbo_depth);
             },
             None => { }
         }
@@ -802,16 +805,19 @@ impl Window {
         verify!(gl::Viewport(0, 0, w as i32, h as i32));
 
         // Update the fbo
-        verify!(gl::BindTexture(gl::TEXTURE_2D, self.process_fbo));
+        verify!(gl::BindTexture(gl::TEXTURE_2D, self.process_fbo_texture));
         unsafe {
             verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA as GLint, w as GLint, h as GLint, 0,
                     gl::RGBA, gl::UNSIGNED_BYTE, ptr::null()));
         }
         verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
-        verify!(gl::BindRenderbuffer(gl::RENDERBUFFER, self.process_rbo_depth));
-        verify!(gl::RenderbufferStorage(gl::RENDERBUFFER, gl::DEPTH_COMPONENT16, w as GLint, h as GLint));
-        verify!(gl::BindRenderbuffer(gl::RENDERBUFFER, 0));
+        verify!(gl::BindTexture(gl::TEXTURE_2D, self.process_fbo_depth));
+        unsafe {
+            verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::DEPTH_COMPONENT as GLint, w as GLint, h as GLint, 0,
+                    gl::DEPTH_COMPONENT, gl::UNSIGNED_BYTE, ptr::null()));
+        }
+        verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
         // Update the projection
         self.projection = self.projection();
@@ -873,7 +879,7 @@ fn init_gl() {
 fn init_post_process_fbo(width: uint, height: uint) -> (GLuint, GLuint, GLuint) {
     /* Create back-buffer, used for post-processing */
     let fbo_texture: GLuint = 0;
-    let rbo_depth:   GLuint = 0;
+    let fbo_depth:   GLuint = 0;
     let fbo:         GLuint = 0;
 
     /* Texture */
@@ -891,17 +897,25 @@ fn init_post_process_fbo(width: uint, height: uint) -> (GLuint, GLuint, GLuint) 
     verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
     /* Depth buffer */
-    unsafe { verify!(gl::GenRenderbuffers(1, &rbo_depth)); }
-    verify!(gl::BindRenderbuffer(gl::RENDERBUFFER, rbo_depth));
-    verify!(gl::RenderbufferStorage(gl::RENDERBUFFER, gl::DEPTH_COMPONENT16, width as GLint, height as GLint));
-    verify!(gl::BindRenderbuffer(gl::RENDERBUFFER, 0));
+    verify!(gl::ActiveTexture(gl::TEXTURE1));
+    unsafe { verify!(gl::GenTextures(1, &fbo_depth)); }
+    verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_depth));
+    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
+    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));
+    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));
+    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
+    unsafe {
+        verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::DEPTH_COMPONENT as GLint, width as GLint, height as GLint,
+                       0, gl::DEPTH_COMPONENT, gl::UNSIGNED_BYTE, ptr::null()));
+    }
+    verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
     /* Framebuffer to link everything together */
     unsafe { gl::GenFramebuffers(1, &fbo); }
     verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, fbo));
     verify!(gl::FramebufferTexture2D(gl::FRAMEBUFFER, gl::COLOR_ATTACHMENT0, gl::TEXTURE_2D, fbo_texture, 0));
-    verify!(gl::FramebufferRenderbuffer(gl::FRAMEBUFFER, gl::DEPTH_ATTACHMENT, gl::RENDERBUFFER, rbo_depth));
+    verify!(gl::FramebufferTexture2D(gl::FRAMEBUFFER, gl::DEPTH_ATTACHMENT, gl::TEXTURE_2D, fbo_depth, 0));
     verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
 
-    (fbo_texture, rbo_depth, fbo)
+    (fbo_texture, fbo_depth, fbo)
 }

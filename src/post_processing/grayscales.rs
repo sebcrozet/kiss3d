@@ -37,7 +37,6 @@ pub struct Grayscales {
     priv vshader:      GLuint,
     priv fshader:      GLuint,
     priv program:      GLuint,
-    priv time:         f64,
     priv fbo_texture:  GLuint,
     priv fbo_vertices: GLuint,
     priv v_coord:      GLint
@@ -77,7 +76,6 @@ impl Grayscales {
                 vshader:      vshader,
                 fshader:      fshader,
                 program:      program,
-                time:         0.0,
                 fbo_texture:  gl::GetUniformLocation(program, "fbo_texture".to_c_str().unwrap()) as GLuint,
                 fbo_vertices: vbo_fbo_vertices,
                 v_coord:      v_coord
@@ -88,11 +86,10 @@ impl Grayscales {
 }
 
 impl PostProcessingEffect for Grayscales {
-    fn update(&mut self, dt: f64) {
-        self.time = self.time + dt;
+    fn update(&mut self, _: f64, _: f64, _: f64, _: f64, _: f64) {
     }
 
-    fn draw(&self, shaders_manager: &mut ShadersManager, fbo_texture: GLuint) {
+    fn draw(&self, shaders_manager: &mut ShadersManager, fbo_texture: GLuint, _: GLuint) {
         shaders_manager.select(Other);
 
         /*

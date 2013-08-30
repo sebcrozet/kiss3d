@@ -95,11 +95,11 @@ impl Waves {
 }
 
 impl PostProcessingEffect for Waves {
-    fn update(&mut self, dt: f64) {
+    fn update(&mut self, dt: f64, _: f64, _: f64, _: f64, _: f64) {
         self.time = self.time + dt;
     }
 
-    fn draw(&self, shaders_manager: &mut ShadersManager, fbo_texture: GLuint) {
+    fn draw(&self, shaders_manager: &mut ShadersManager, fbo_texture: GLuint, _: GLuint) {
         shaders_manager.select(Other);
         /*
          * Configure the post-process effect.
