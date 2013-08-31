@@ -5,34 +5,33 @@ use std::hashmap::HashMap;
 use gl;
 use gl::types::*;
 use object::GeometryIndices;
-use shaders_manager::ObjectShaderContext;
+use resources::shaders_manager::ObjectShaderContext;
 use obj;
 use builtins::cube_obj;
 use builtins::sphere_obj;
 use builtins::cone_obj;
 use builtins::cylinder_obj;
 use builtins::capsule_obj;
+use resources::textures_manager::TexturesManager;
 
 #[path = "../error.rs"]
 mod error;
 
-pub fn load(ctxt: &ObjectShaderContext, textures: &mut HashMap<~str, GLuint>)
+pub fn load(ctxt: &ObjectShaderContext, textures_manager: &mut TexturesManager)
             -> HashMap<~str, GeometryIndices> {
     unsafe {
         let vertex_buf:  GLuint = 0;
         let element_buf: GLuint = 0;
         let normals_buf: GLuint = 0;
         let texture_buf: GLuint = 0;
-        let default_tex: GLuint = 0;
 
         // FIXME: use gl::GenBuffers(3, ...) ?
         verify!(gl::GenBuffers(1, &vertex_buf));
         verify!(gl::GenBuffers(1, &element_buf));
         verify!(gl::GenBuffers(1, &normals_buf));
         verify!(gl::GenBuffers(1, &texture_buf));
-        verify!(gl::GenTextures(1, &default_tex));
 
-        textures.insert(~"default", default_tex);
+        let default_tex = textures_manager.add_empty("default");
 
         let (builtins, vbuf, nbuf, tbuf, vibuf) = parse_builtins(
             element_buf,
@@ -113,7 +112,7 @@ pub fn load(ctxt: &ObjectShaderContext, textures: &mut HashMap<~str, GLuint>)
             ];
 
         verify!(gl::ActiveTexture(gl::TEXTURE0));
-        verify!(gl::BindTexture(gl::TEXTURE_2D, default_tex));
+        verify!(gl::BindTexture(gl::TEXTURE_2D, default_tex.id()));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_BASE_LEVEL, 0));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAX_LEVEL, 0));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT as i32));

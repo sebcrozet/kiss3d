@@ -15,24 +15,19 @@ use extra::time;
 use gl;
 use gl::types::*;
 use stb_image::image::*;
-use nalgebra::traits::homogeneous::{ToHomogeneous, FromHomogeneous};
-use nalgebra::traits::inv::Inv;
-use nalgebra::traits::vec_cast::VecCast;
-use nalgebra::traits::mat_cast::MatCast;
-use nalgebra::traits::translation::Translation;
-use nalgebra::traits::transpose::Transpose;
-use nalgebra::traits::rlmul::RMul;
-use nalgebra::traits::vector::AlgebraicVec;
-use nalgebra::mat::Mat4;
-use nalgebra::vec::{Vec2, Vec3, Vec4};
+use nalgebra::mat::{Mat4, Translation, Transpose, RMul, Inv, MatCast, ToHomogeneous, FromHomogeneous};
+use nalgebra::vec::{Vec2, Vec3, Vec4, AlgebraicVec, VecCast};
 use camera::{Camera, ArcBall};
 use object::{GeometryIndices, Object, VerticesNormalsTriangles, Deleted};
 use lines_manager::LinesManager;
-use shaders_manager::{ShadersManager, ObjectShader, LinesShader};
 use post_processing::post_processing_effect::PostProcessingEffect;
+use resources::shaders_manager::{ShadersManager, ObjectShader, LinesShader};
+use resources::textures_manager::{Texture, TexturesManager};
+use resources::framebuffers_manager::{FramebuffersManager, Screen, Offscreen};
 use builtins::loader;
 use event;
 use arc_ball;
+
 
 mod error;
 
@@ -46,25 +41,27 @@ pub struct Window {
     priv window:                @mut glfw::Window,
     priv max_ms_per_frame:      Option<u64>,
     priv objects:               ~[@mut Object],
+    priv transparent_objects:   ~[@mut Object],
+    priv opaque_objects:        ~[@mut Object],
     priv camera:                Camera,
     priv znear:                 f64,
     priv zfar:                  f64,
     priv light_mode:            Light,
     priv wireframe_mode:        bool,
-    priv textures:              HashMap<~str, GLuint>,
     priv geometries:            HashMap<~str, GeometryIndices>,
     priv background:            Vec3<GLfloat>,
     priv projection:            Mat4<f64>,
     priv inv_projection:        Mat4<f64>,
     priv lines_manager:         @mut LinesManager, // FIXME: @mut should not be used here
     priv shaders_manager:       ShadersManager,
+    priv textures_manager:      TexturesManager,
+    priv framebuffers_manager:  FramebuffersManager,
     priv usr_loop_callback:     @fn(),
     priv usr_keyboard_callback: @fn(&event::KeyboardEvent) -> bool,
     priv usr_mouse_callback:    @fn(&event::MouseEvent) -> bool,
     priv post_processing:       Option<@mut PostProcessingEffect>,
-    priv process_fbo:           GLuint,
     priv process_fbo_texture:   GLuint,
-    priv process_fbo_depth:     GLuint
+    priv process_fbo_depth:     GLuint,
 }
 
 impl Window {
@@ -146,13 +143,13 @@ impl Window {
     pub fn add_cube(@mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
+            let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"cube").unwrap();
-            let tex  = self.textures.find(&~"default").unwrap();
             @mut Object::new(
                 self,
                 *geom,
                 1.0, 1.0, 1.0,
-                *tex,
+                tex,
                 wx, wy, wz, Deleted)
         };
         // FIXME: get the geometry
@@ -169,13 +166,13 @@ impl Window {
     pub fn add_sphere(@mut self, r: GLfloat) -> @mut Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
+            let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"sphere").unwrap();
-            let tex  = self.textures.find(&~"default").unwrap();
             @mut Object::new(
                 self,
                 *geom,
                 1.0, 1.0, 1.0,
-                *tex,
+                tex,
                 r / 0.5, r / 0.5, r / 0.5,
                 Deleted)
         };
@@ -195,13 +192,13 @@ impl Window {
     pub fn add_cone(@mut self, h: GLfloat, r: GLfloat) -> @mut Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
+            let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"cone").unwrap();
-            let tex  = self.textures.find(&~"default").unwrap();
             @mut Object::new(
                 self,
                 *geom,
                 1.0, 1.0, 1.0,
-                *tex,
+                tex,
                 r / 0.5, h, r / 0.5,
                 Deleted)
         };
@@ -221,13 +218,13 @@ impl Window {
     pub fn add_cylinder(@mut self, h: GLfloat, r: GLfloat) -> @mut Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
+            let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"cylinder").unwrap();
-            let tex  = self.textures.find(&~"default").unwrap();
             @mut Object::new(
                 self,
                 *geom,
                 1.0, 1.0, 1.0,
-                *tex,
+                tex,
                 r / 0.5, h, r / 0.5,
                 Deleted)
         };
@@ -247,13 +244,13 @@ impl Window {
     pub fn add_capsule(@mut self, h: GLfloat, r: GLfloat) -> @mut Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
+            let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"capsule").unwrap();
-            let tex  = self.textures.find(&~"default").unwrap();
             @mut Object::new(
                 self,
                 *geom,
                 1.0, 1.0, 1.0,
-                *tex,
+                tex,
                 r / 0.5, h, r / 0.5,
                 Deleted)
         };
@@ -394,13 +391,13 @@ impl Window {
 
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex = self.textures.find(&~"default").unwrap();
+            let tex = self.textures_manager.get("default").unwrap();
             @mut Object::new(
                 self,
                 GeometryIndices::new(0, (triangles.len() * 3) as i32,
                 element_buf, normal_buf, vertex_buf, texture_buf),
                 1.0, 1.0, 1.0,
-                *tex,
+                tex,
                 1.0, 1.0, 1.0,
                 VerticesNormalsTriangles(vertices, normals, triangles)
                 )
@@ -412,47 +409,8 @@ impl Window {
     }
 
     #[doc(hidden)]
-    pub fn add_texture(@mut self, path: ~str) -> GLuint {
-        let tex: Option<GLuint> = self.textures.find(&path).map(|e| **e);
-
-        match tex {
-            Some(id) => id,
-            None => {
-                let texture: GLuint = 0;
-
-                unsafe {
-                    verify!(gl::GenTextures(1, &texture));
-
-                    match load_with_depth(path.clone(), 3, false) {
-                        ImageU8(image) => {
-                            verify!(gl::ActiveTexture(gl::TEXTURE0));
-                            verify!(gl::BindTexture(gl::TEXTURE_2D, texture));
-
-                            verify!(gl::TexImage2D(
-                                gl::TEXTURE_2D, 0,
-                                gl::RGB as GLint,
-                                image.width as GLsizei,
-                                image.height as GLsizei,
-                                0, gl::RGB, gl::UNSIGNED_BYTE,
-                                cast::transmute(&image.data[0])
-                                ));
-
-                            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));
-                            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
-                            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));
-                            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
-                        }
-                        _ => {
-                            fail!("Failed to load texture " + path);
-                        }
-                    }
-                }
-
-                self.textures.insert(path.clone(), texture);
-
-                texture
-            }
-        }
+    pub fn add_texture(@mut self, path: ~str) -> @Texture {
+        self.textures_manager.add(path)
     }
 
     /// Converts a 3d point to 2d screen coordinates.
@@ -592,22 +550,23 @@ impl Window {
             init_gl();
 
             // FIXME: load that iff the user really uses post-processing
-            let (process_fbo_texture, process_fbo_depth, process_fbo) = init_post_process_fbo(800, 600);
+            let (process_fbo_texture, process_fbo_depth) = init_post_process_buffers(800, 600);
 
+            let mut textures = TexturesManager::new(); 
             let shaders      = ShadersManager::new();
-            let mut textures = HashMap::new();
             let builtins     = loader::load(shaders.object_context(), &mut textures);
 
             let usr_window = @mut Window {
                 max_ms_per_frame:      None,
                 window:                window,
                 objects:               ~[],
+                transparent_objects:   ~[],
+                opaque_objects:        ~[],
                 camera:                Camera::new(ArcBall(arc_ball::ArcBall::new(-Vec3::z(), Zero::zero()))),
                 znear:                 0.1,
                 zfar:                  1024.0,
                 light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
                 wireframe_mode:        false,
-                textures:              textures,
                 geometries:            builtins,
                 background:            Vec3::new(0.0, 0.0, 0.0),
                 inv_projection:        One::one(),
@@ -615,12 +574,13 @@ impl Window {
                 lines_manager:         @mut LinesManager::new(),
                 shaders_manager:       shaders,
                 post_processing:       None,
-                process_fbo:           process_fbo,
                 process_fbo_texture:   process_fbo_texture,
                 process_fbo_depth:     process_fbo_depth,
                 usr_loop_callback:     || {},
                 usr_keyboard_callback: |_| { true },
                 usr_mouse_callback:    |_| { true },
+                textures_manager:      textures,
+                framebuffers_manager:  FramebuffersManager::new()
             };
 
             callback(usr_window);
@@ -673,37 +633,13 @@ impl Window {
 
         if self.post_processing.is_some() {
             // if we need post-processing, render to our own frame buffer
-            verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, self.process_fbo));
-        }
-
-
-        // Activate the default texture
-        verify!(gl::ActiveTexture(gl::TEXTURE0));
-        // Clear the screen to black
-        verify!(gl::ClearColor(
-            self.background.x,
-            self.background.y,
-            self.background.z,
-            1.0));
-        verify!(gl::Clear(gl::COLOR_BUFFER_BIT));
-        verify!(gl::Clear(gl::DEPTH_BUFFER_BIT));
-
-        if self.lines_manager.needs_rendering() {
-            self.shaders_manager.select(LinesShader);
-            self.lines_manager.upload(self.shaders_manager.lines_context());
-            self.shaders_manager.select(ObjectShader);
-        }
-
-        if self.wireframe_mode {
-            verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE));
+            self.framebuffers_manager.select(Offscreen(self.process_fbo_texture, self.process_fbo_depth));
         }
         else {
-            verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
+            self.framebuffers_manager.select(Screen);
         }
 
-        for o in self.objects.iter() {
-            o.upload(self.shaders_manager.object_context())
-        }
+        self.render_scene();
 
         match self.post_processing {
             Some(p) => {
@@ -713,9 +649,10 @@ impl Window {
                 }
 
                 // switch back to the screen framebuffer …
-                verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
+                self.framebuffers_manager.select(Screen);
                 // … and execute the post-process
-                p.update(0.016, self.width() as f64, self.height() as f64, self.znear(), self.zfar()); // FIXME: use the real value
+                // FIXME: use the real time value instead of 0.016!
+                p.update(0.016, self.width() as f64, self.height() as f64, self.znear(), self.zfar());
                 p.draw(&mut self.shaders_manager, self.process_fbo_texture, self.process_fbo_depth);
             },
             None => { }
@@ -736,6 +673,35 @@ impl Window {
         }
 
         *curr = time::precise_time_ns();
+
+        self.transparent_objects.clear();
+        self.opaque_objects.clear();
+    }
+
+    fn render_scene(@mut self) {
+        // Activate the default texture
+        verify!(gl::ActiveTexture(gl::TEXTURE0));
+        // Clear the screen to black
+        verify!(gl::ClearColor(self.background.x, self.background.y, self.background.z, 1.0));
+        verify!(gl::Clear(gl::COLOR_BUFFER_BIT));
+        verify!(gl::Clear(gl::DEPTH_BUFFER_BIT));
+
+        if self.lines_manager.needs_rendering() {
+            self.shaders_manager.select(LinesShader);
+            self.lines_manager.upload(self.shaders_manager.lines_context());
+            self.shaders_manager.select(ObjectShader);
+        }
+
+        if self.wireframe_mode {
+            verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE));
+        }
+        else {
+            verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
+        }
+
+        for o in self.objects.iter() {
+            o.upload(self.shaders_manager.object_context())
+        }
     }
 
     fn key_callback(@mut self,
@@ -876,11 +842,10 @@ fn init_gl() {
     verify!(gl::DepthFunc(gl::LEQUAL));
 }
 
-fn init_post_process_fbo(width: uint, height: uint) -> (GLuint, GLuint, GLuint) {
+fn init_post_process_buffers(width: uint, height: uint) -> (GLuint, GLuint) {
     /* Create back-buffer, used for post-processing */
     let fbo_texture: GLuint = 0;
     let fbo_depth:   GLuint = 0;
-    let fbo:         GLuint = 0;
 
     /* Texture */
     verify!(gl::ActiveTexture(gl::TEXTURE0));
@@ -906,16 +871,9 @@ fn init_post_process_fbo(width: uint, height: uint) -> (GLuint, GLuint, GLuint) 
     verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
     unsafe {
         verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::DEPTH_COMPONENT as GLint, width as GLint, height as GLint,
-                       0, gl::DEPTH_COMPONENT, gl::UNSIGNED_BYTE, ptr::null()));
+                0, gl::DEPTH_COMPONENT, gl::UNSIGNED_BYTE, ptr::null()));
     }
     verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
-    /* Framebuffer to link everything together */
-    unsafe { gl::GenFramebuffers(1, &fbo); }
-    verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, fbo));
-    verify!(gl::FramebufferTexture2D(gl::FRAMEBUFFER, gl::COLOR_ATTACHMENT0, gl::TEXTURE_2D, fbo_texture, 0));
-    verify!(gl::FramebufferTexture2D(gl::FRAMEBUFFER, gl::DEPTH_ATTACHMENT, gl::TEXTURE_2D, fbo_depth, 0));
-    verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
-
-    (fbo_texture, fbo_depth, fbo)
+    (fbo_texture, fbo_depth)
 }

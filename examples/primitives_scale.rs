@@ -2,8 +2,8 @@ extern mod kiss3d;
 extern mod nalgebra;
 
 use std::rand::random;
-use nalgebra::traits::rotation::rotate_wrt_center;
-use nalgebra::traits::translation::Translation;
+use nalgebra::mat;
+use nalgebra::mat::Translation;
 use nalgebra::vec::Vec3;
 use kiss3d::window::{Window, StickToCamera};
 
@@ -44,7 +44,7 @@ fn main() {
 
         do w.set_loop_callback {
             for o in w.objects().iter() {
-                rotate_wrt_center(o.transformation(), &Vec3::new(0.0f64, 0.014, 0.0));
+                mat::rotate_wrt_center(o.transformation(), &Vec3::new(0.0f64, 0.014, 0.0));
             }
         };
 

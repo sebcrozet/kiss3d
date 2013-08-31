@@ -4,7 +4,7 @@ use gl;
 use gl::types::*;
 use shaders;
 
-#[path = "error.rs"]
+#[path = "../error.rs"]
 mod error;
 
 pub enum Shader {

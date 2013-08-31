@@ -4,7 +4,7 @@ use std::sys;
 use gl;
 use gl::types::*;
 use nalgebra::vec::Vec3;
-use shaders_manager::LinesShaderContext;
+use resources::shaders_manager::LinesShaderContext;
 
 /// Structure which manages the display of short-living lines.
 struct LinesManager {

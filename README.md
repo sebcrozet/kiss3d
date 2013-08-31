@@ -27,7 +27,7 @@ As an example, having a red, rotating cube with the light attached to the camera
 extern mod kiss3d;
 extern mod nalgebra;
 
-use nalgebra::traits::rotation::Rotation;
+use nalgebra::mat::Rotation;
 use nalgebra::vec::Vec3;
 use kiss3d::window;
 

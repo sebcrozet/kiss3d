@@ -2,7 +2,7 @@ extern mod kiss3d;
 extern mod nalgebra;
 
 use std::rand::random;
-use nalgebra::traits::translation::Translation;
+use nalgebra::mat::Translation;
 use nalgebra::vec::Vec3;
 use kiss3d::window;
 use kiss3d::post_processing::post_processing_effect::PostProcessingEffect;

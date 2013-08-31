@@ -1,7 +1,6 @@
 use std::num::{One, atan2};
-use nalgebra::traits::vector::AlgebraicVec;
-use nalgebra::traits::cross::Cross;
-use nalgebra::traits::rotation::Rotate;
+use nalgebra::vec::{AlgebraicVec, Cross};
+use nalgebra::mat::Rotate;
 use nalgebra::types::Iso3f64;
 use nalgebra::vec::Vec3;
 use glfw::consts::*;

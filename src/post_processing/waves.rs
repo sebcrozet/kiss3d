@@ -7,7 +7,7 @@ use std::ptr;
 use std::sys;
 use gl;
 use gl::types::*;
-use shaders_manager::{ShadersManager, Other};
+use resources::shaders_manager::{ShadersManager, Other};
 use post_processing::post_processing_effect::PostProcessingEffect;
 
 #[path = "../error.rs"]

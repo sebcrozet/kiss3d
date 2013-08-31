@@ -6,16 +6,15 @@ use std::cast;
 use std::vec;
 use gl;
 use gl::types::*;
-use nalgebra::traits::homogeneous::ToHomogeneous;
-use nalgebra::traits::indexable::Indexable;
-use nalgebra::traits::cross::Cross;
-use nalgebra::traits::vector::AlgebraicVec;
+use nalgebra::mat::{Indexable, ToHomogeneous};
+use nalgebra::vec::{Cross, AlgebraicVec};
 use nalgebra::adaptors::transform::Transform;
 use nalgebra::adaptors::rotmat::Rotmat;
 use nalgebra::mat::{Mat3, Mat4};
 use nalgebra::vec::Vec3;
 use window::Window;
-use shaders_manager::ObjectShaderContext;
+use resources::shaders_manager::ObjectShaderContext;
+use resources::textures_manager::Texture;
 
 #[path = "error.rs"]
 mod error;
@@ -61,7 +60,7 @@ impl GeometryIndices {
 /// position, color, vertices and texture.
 pub struct Object {
     priv parent:      @mut Window,
-    priv texture:     GLuint,
+    priv texture:     @Texture,
     priv scale:       Scale3d,
     priv transform:   Transform3d,
     priv color:       Vec3<f32>,
@@ -76,7 +75,7 @@ impl Object {
                r:         f32,
                g:         f32,
                b:         f32,
-               texture:   GLuint,
+               texture:   @Texture,
                sx:        GLfloat,
                sy:        GLfloat,
                sz:        GLfloat,
@@ -181,7 +180,7 @@ impl Object {
             verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.igeometry.normal_buffer));
             verify!(gl::VertexAttribPointer(context.normal, 3, gl::FLOAT, gl::FALSE as u8, 0, ptr::null()));
             verify!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.igeometry.element_buffer));
-            verify!(gl::BindTexture(gl::TEXTURE_2D, self.texture));
+            verify!(gl::BindTexture(gl::TEXTURE_2D, self.texture.id()));
             verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.igeometry.texture_buffer));
             verify!(gl::VertexAttribPointer(context.tex_coord, 2, gl::FLOAT, gl::FALSE as u8, 0, ptr::null()));
 

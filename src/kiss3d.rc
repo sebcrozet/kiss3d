@@ -29,13 +29,10 @@ pub mod first_person;
  */
 #[doc(hidden)]
 pub mod shaders;
-
+ 
 #[doc(hidden)]
 pub mod lines_manager;
-
-#[doc(hidden)]
-pub mod shaders_manager;
-
+ 
 #[doc(hidden)]
 pub mod builtins
 {
@@ -46,10 +43,20 @@ pub mod builtins
     pub mod cylinder_obj;
     pub mod capsule_obj;
 }
-
+ 
 pub mod post_processing {
     pub mod post_processing_effect;
     pub mod waves;
     pub mod grayscales;
     pub mod sobel_edge_highlight;
 }
+
+pub mod resources {
+    pub mod framebuffers_manager;
+    pub mod textures_manager;
+    pub mod shaders_manager;
+}
+
+// pub mod draw {
+//     pub mod depth_peeling;
+// }

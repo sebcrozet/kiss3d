@@ -1,5 +1,5 @@
 use gl::types::*;
-use shaders_manager::ShadersManager;
+use resources::shaders_manager::ShadersManager;
 
 /// Trait of post processing effect. One post-processing effect can be used at a time. It is
 /// executed once the scene has been rendered on a texture.
