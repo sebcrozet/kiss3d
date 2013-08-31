@@ -23,6 +23,7 @@ impl Eq for Shader {
     }
 }
 
+#[doc(hidden)]
 pub struct ObjectShaderContext {
     program:    GLuint,
     vshader:    GLuint,
@@ -40,6 +41,7 @@ pub struct ObjectShaderContext {
     tex:        GLint
 }
 
+#[doc(hidden)]
 pub struct LinesShaderContext {
     program:   GLuint,
     vshader:   GLuint,
@@ -50,6 +52,8 @@ pub struct LinesShaderContext {
     view:      GLint
 }
 
+/// The shaders manager can load the default shaders and user-provided shaders. It is the main path
+/// to select a specific shader befor rendering.
 pub struct ShadersManager {
     priv object_context: ObjectShaderContext,
     priv lines_context:  LinesShaderContext,
@@ -57,6 +61,7 @@ pub struct ShadersManager {
 }
 
 impl ShadersManager {
+    /// Creates a new shaders manager.
     pub fn new() -> ShadersManager {
         let object_context = ShadersManager::load_object_shader();
 
@@ -69,8 +74,9 @@ impl ShadersManager {
         }
     }
 
+    /// Selects a specific shader program.
     pub fn select(&mut self, shader: Shader) {
-        if true { // FIXME: shader != self.shader {
+        if true { // FIXME: shader != self.shader
             self.shader = shader;
 
             match self.shader {
@@ -81,10 +87,12 @@ impl ShadersManager {
         }
     }
 
+    #[doc(hidden)]
     pub fn object_context<'r>(&'r self) -> &'r ObjectShaderContext {
         &'r self.object_context
     }
 
+    #[doc(hidden)]
     pub fn lines_context<'r>(&'r self) -> &'r LinesShaderContext {
         &'r self.lines_context
     }
@@ -143,9 +151,9 @@ impl ShadersManager {
         }
     }
 
-    pub fn load_shader_program(vertex_shader:   &str,
-                               fragment_shader: &str)
-                               -> (GLuint, GLuint, GLuint) {
+    /// Loads a shader program using the given source codes for the vertex and fragment shader.
+    /// Fails after displaying opengl compilation errors if the shaders are invalid.
+    pub fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (GLuint, GLuint, GLuint) {
         // Create and compile the vertex shader
         let vshader = gl::CreateShader(gl::VERTEX_SHADER);
         unsafe {

@@ -8,11 +8,13 @@ use stb_image::image;
 #[path = "../error.rs"]
 mod error;
 
+/// A gpu texture. It contains the texture id provided by opengl and is automatically released.
 pub struct Texture {
     priv id: GLuint
 }
 
 impl Texture {
+    /// Allocates a new texture on the gpu. The texture is not configured.
     pub fn new() -> Texture {
         let id: GLuint = 0;
 
@@ -23,6 +25,7 @@ impl Texture {
         }
     }
 
+    /// The opengl-provided texture id.
     pub fn id(&self) -> GLuint {
         self.id
     }
@@ -34,25 +37,32 @@ impl Drop for Texture {
     }
 }
 
+/// The textures manager. It keeps a cache of already-loaded textures, and can load new textures.
 pub struct TexturesManager {
     priv textures: HashMap<~str, @Texture>,
 }
 
 impl TexturesManager {
+    /// Creates a new texture manager.
     pub fn new() -> TexturesManager {
         TexturesManager {
             textures: HashMap::new()
         }
     }
 
+    /// Get a texture with the specified path. Returns `None` if the texture is not loaded.
     pub fn get(&mut self, path: &str) -> Option<@Texture> {
         self.textures.find(&path.to_owned()).map(|t| **t)
     }
 
+    /// Allocates a new unconfigured texture. If a texture with same name exists, nothing is
+    /// created and the old texture is returned.
     pub fn add_empty(&mut self, name: &str) -> @Texture {
         *self.textures.find_or_insert_with(name.to_owned(), |_| @Texture::new())
     }
 
+    /// Allocates a new texture read from a file. If a texture with same name exists, nothing is
+    /// created and the old texture is returned.
     pub fn add(&mut self, path: &str) -> @Texture {
         let tex = self.textures.find_or_insert_with(path.to_owned(), |_| @Texture::new());
 
