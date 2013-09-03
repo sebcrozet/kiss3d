@@ -604,9 +604,9 @@ impl Window {
             window.set_mouse_button_callback(|_, b, a, m| usr_window.mouse_button_callback(b, a, m));
             window.set_scroll_callback(|_, xoff, yoff| usr_window.scroll_callback(xoff, yoff));
             window.set_cursor_pos_callback(|_, xpos, ypos| usr_window.cursor_pos_callback(xpos, ypos));
-            window.set_size_callback(|_, w, h| usr_window.size_callback(w, h));
+            window.set_framebuffer_size_callback(|_, w, h| usr_window.framebuffer_size_callback(w, h));
             window.set_size(800, 600);
-            usr_window.size_callback(800, 600);
+            usr_window.framebuffer_size_callback(800, 600);
 
             if hide {
                 window.hide()
@@ -778,7 +778,7 @@ impl Window {
         self.camera.handle_mouse(&event)
     }
 
-    fn size_callback(@mut self, w: int, h: int) {
+    fn framebuffer_size_callback(@mut self, w: int, h: int) {
         // Update the viewport
         verify!(gl::Viewport(0, 0, w as i32, h as i32));
 
