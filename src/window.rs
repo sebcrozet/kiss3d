@@ -3,6 +3,7 @@
  */
 
 use glfw;
+use std::managed;
 use std::ptr;
 use std::rt::io::timer::Timer;
 use std::rt::rtio::RtioTimer;
@@ -132,6 +133,17 @@ impl Window {
         self.lines_manager.draw_line(VecCast::from(a.clone()),
                                      VecCast::from(b.clone()),
                                      VecCast::from(color.clone()));
+    }
+
+    /// Removes an object from the scene.
+    pub fn remove(@mut self, o: @mut Object) {
+        match self.objects.rposition(|e| managed::mut_ptr_eq(o, *e)) {
+            Some(i) => {
+                // XXX: release textures and buffers if nobody else use them
+                self.objects.swap_remove(i);
+            },
+            None => { }
+        }
     }
 
     /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
