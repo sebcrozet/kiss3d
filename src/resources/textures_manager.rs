@@ -1,3 +1,4 @@
+use extra::rc::Rc;
 use std::cast;
 use std::hashmap::HashMap;
 use gl;
@@ -15,14 +16,12 @@ pub struct Texture {
 
 impl Texture {
     /// Allocates a new texture on the gpu. The texture is not configured.
-    pub fn new() -> Texture {
+    pub fn new() -> Rc<Texture> {
         let id: GLuint = 0;
 
         unsafe { verify!(gl::GenTextures(1, &id)); }
 
-        Texture {
-            id: id
-        }
+        Rc::from_send(Texture { id: id })
     }
 
     /// The opengl-provided texture id.
@@ -39,7 +38,7 @@ impl Drop for Texture {
 
 /// The textures manager. It keeps a cache of already-loaded textures, and can load new textures.
 pub struct TexturesManager {
-    priv textures: HashMap<~str, @Texture>,
+    priv textures: HashMap<~str, Rc<Texture>>,
 }
 
 impl TexturesManager {
@@ -51,26 +50,26 @@ impl TexturesManager {
     }
 
     /// Get a texture with the specified path. Returns `None` if the texture is not loaded.
-    pub fn get(&mut self, path: &str) -> Option<@Texture> {
-        self.textures.find(&path.to_owned()).map(|t| **t)
+    pub fn get(&mut self, path: &str) -> Option<Rc<Texture>> {
+        self.textures.find(&path.to_owned()).map(|&t| t.clone())
     }
 
     /// Allocates a new unconfigured texture. If a texture with same name exists, nothing is
     /// created and the old texture is returned.
-    pub fn add_empty(&mut self, name: &str) -> @Texture {
-        *self.textures.find_or_insert_with(name.to_owned(), |_| @Texture::new())
+    pub fn add_empty(&mut self, name: &str) -> Rc<Texture> {
+        self.textures.find_or_insert_with(name.to_owned(), |_| Texture::new()).clone()
     }
 
     /// Allocates a new texture read from a file. If a texture with same name exists, nothing is
     /// created and the old texture is returned.
-    pub fn add(&mut self, path: &str) -> @Texture {
-        let tex = self.textures.find_or_insert_with(path.to_owned(), |_| @Texture::new());
+    pub fn add(&mut self, path: &str) -> Rc<Texture> {
+        let tex = self.textures.find_or_insert_with(path.to_owned(), |_| Texture::new());
 
         unsafe {
             match image::load_with_depth(path.to_owned(), 3, false) {
                 ImageU8(image) => {
                     verify!(gl::ActiveTexture(gl::TEXTURE0));
-                    verify!(gl::BindTexture(gl::TEXTURE_2D, tex.id));
+                    verify!(gl::BindTexture(gl::TEXTURE_2D, tex.borrow().id()));
 
                     verify!(gl::TexImage2D(
                             gl::TEXTURE_2D, 0,
@@ -91,6 +90,6 @@ impl TexturesManager {
             }
         }
 
-        *tex
+        tex.clone()
     }
 }

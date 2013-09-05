@@ -17,20 +17,23 @@ fn start(argc: int, argv: **u8, crate_map: *u8) -> int {
 
 fn main() {
     do window::Window::spawn("Kiss3d: cube") |window| {
-        let c = window.add_cube(1.0, 1.0, 1.0).set_color(random(), random(), random());
-        let b = window.add_sphere(0.5).set_color(random(), random(), random());
-        let p = window.add_cone(1.0, 0.5).set_color(random(), random(), random());
-        let y = window.add_cylinder(1.0, 0.5).set_color(random(), random(), random());
-        let a = window.add_capsule(1.0, 0.5).set_color(random(), random(), random());
+        let mut c = window.add_cube(1.0, 1.0, 1.0);
+        let mut b = window.add_sphere(0.5);
+        let mut p = window.add_cone(1.0, 0.5);
+        let mut y = window.add_cylinder(1.0, 0.5);
+        let mut a = window.add_capsule(1.0, 0.5);
 
-        c.transformation().translate_by(&Vec3::new(2.0, 0.0, 0.0));
-        b.transformation().translate_by(&Vec3::new(4.0, 0.0, 0.0));
-        p.transformation().translate_by(&Vec3::new(-2.0, 0.0, 0.0));
-        y.transformation().translate_by(&Vec3::new(-4.0, 0.0, 0.0));
-        a.transformation().translate_by(&Vec3::new(0.0, 0.0, 0.0));
+        c.translate_by(&Vec3::new(2.0, 0.0, 0.0));
+        b.translate_by(&Vec3::new(4.0, 0.0, 0.0));
+        p.translate_by(&Vec3::new(-2.0, 0.0, 0.0));
+        y.translate_by(&Vec3::new(-4.0, 0.0, 0.0));
+        a.translate_by(&Vec3::new(0.0, 0.0, 0.0));
 
-        let time    = @mut 0u;
-        let counter = @mut 0u;
+        c.set_color(random(), random(), random());
+        b.set_color(random(), random(), random());
+        p.set_color(random(), random(), random());
+        y.set_color(random(), random(), random());
+        a.set_color(random(), random(), random());
 
         let effects = [
             Some(@mut SobelEdgeHighlight::new(4.0) as @mut PostProcessingEffect),
@@ -39,18 +42,21 @@ fn main() {
             None
         ];
 
-        do window.set_loop_callback {
+        window.set_background_color(1.0, 1.0, 1.0);
+        window.set_light(window::StickToCamera);
+        window.set_framerate_limit(Some(60));
+
+        let time    = @mut 0u;
+        let counter = @mut 0u;
+
+        do window.render_loop |w| {
             if *time % 200 == 0 {
-                window.set_post_processing_effect(effects[*counter]);
+                w.set_post_processing_effect(effects[*counter]);
                 *time    = 0;
                 *counter = (*counter + 1) % effects.len();
             }
 
             *time = *time + 1;
         }
-
-        window.set_background_color(1.0, 1.0, 1.0);
-        window.set_light(window::StickToCamera);
-        window.set_framerate_limit(Some(60));
     }
 }

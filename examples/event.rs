@@ -10,8 +10,8 @@ fn start(argc: int, argv: **u8, crate_map: *u8) -> int {
 }
 
 fn main() {
-    do window::Window::spawn("Kiss3d: events") |w| {
-        do w.set_keyboard_callback |event| {
+    do window::Window::spawn("Kiss3d: events") |window| {
+        do window.set_keyboard_callback |_, event| {
             match *event {
                 event::KeyPressed(code) => {
                     println("You pressed the key with code: " + code.to_str());
@@ -23,10 +23,12 @@ fn main() {
                 }
             }
 
-            false // override the default keyboard handling
+            // Override the default keyboard handling: this will prevent the window from closing
+            // when pressing `ESC`:
+            false
         }
 
-        do w.set_mouse_callback |event| {
+        do window.set_mouse_callback |_, event| {
             match *event {
                 event::ButtonPressed(button, mods) => {
                     println("You pressed the mouse button with code: "      + button.to_str());
@@ -44,7 +46,11 @@ fn main() {
                 }
             }
 
-            true // do not override the default keyboard handling
+            // Do not override the default mouse handling:
+            true
+        }
+
+        do window.render_loop |_| {
         }
     }
 }

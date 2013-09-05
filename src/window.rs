@@ -3,20 +3,22 @@
  */
 
 use glfw;
-use std::managed;
+use glfw::consts;
 use std::ptr;
 use std::rt::io::timer::Timer;
 use std::rt::rtio::RtioTimer;
-use std::num::{Zero, One};
+use std::num::Zero;
 use std::libc;
 use std::sys;
 use std::cast;
 use std::hashmap::HashMap;
 use extra::time;
+use extra::rc::Rc;
+use extra::arc::RWArc;
 use gl;
 use gl::types::*;
 use stb_image::image::*;
-use nalgebra::mat::{Mat4, Translation, Transpose, RMul, Inv, MatCast, ToHomogeneous, FromHomogeneous};
+use nalgebra::mat::{RMul, ToHomogeneous, FromHomogeneous};
 use nalgebra::vec::{Vec2, Vec3, Vec4, AlgebraicVec, VecCast};
 use camera::{Camera, ArcBall};
 use object::{GeometryIndices, Object, VerticesNormalsTriangles, Deleted};
@@ -27,8 +29,6 @@ use resources::textures_manager::{Texture, TexturesManager};
 use resources::framebuffers_manager::{FramebuffersManager, Screen, Offscreen};
 use builtins::loader;
 use event;
-use arc_ball;
-
 
 mod error;
 
@@ -39,30 +39,24 @@ pub enum Light {
 
 /// Structure representing a window and a 3D scene. It is the main interface with the 3d engine.
 pub struct Window {
-    priv window:                @mut glfw::Window,
-    priv max_ms_per_frame:      Option<u64>,
-    priv objects:               ~[@mut Object],
-    priv transparent_objects:   ~[@mut Object],
-    priv opaque_objects:        ~[@mut Object],
-    priv camera:                Camera,
-    priv znear:                 f64,
-    priv zfar:                  f64,
-    priv light_mode:            Light,
-    priv wireframe_mode:        bool,
-    priv geometries:            HashMap<~str, GeometryIndices>,
-    priv background:            Vec3<GLfloat>,
-    priv projection:            Mat4<f64>,
-    priv inv_projection:        Mat4<f64>,
-    priv lines_manager:         @mut LinesManager, // FIXME: @mut should not be used here
-    priv shaders_manager:       ShadersManager,
-    priv textures_manager:      TexturesManager,
-    priv framebuffers_manager:  FramebuffersManager,
-    priv usr_loop_callback:     @fn(),
-    priv usr_keyboard_callback: @fn(&event::KeyboardEvent) -> bool,
-    priv usr_mouse_callback:    @fn(&event::MouseEvent) -> bool,
-    priv post_processing:       Option<@mut PostProcessingEffect>,
-    priv process_fbo_texture:   GLuint,
-    priv process_fbo_depth:     GLuint,
+    priv window:               glfw::Window,
+    priv max_ms_per_frame:     Option<u64>,
+    priv objects:              ~[Object],
+    priv camera:               @mut Camera,
+    priv light_mode:           Light,
+    priv wireframe_mode:       bool,
+    priv geometries:           HashMap<~str, GeometryIndices>,
+    priv background:           Vec3<GLfloat>,
+    priv lines_manager:        LinesManager,
+    priv shaders_manager:      ShadersManager,
+    priv textures_manager:     TexturesManager,
+    priv framebuffers_manager: FramebuffersManager,
+    priv post_processing:      Option<@mut PostProcessingEffect>,
+    priv process_fbo_texture:  GLuint,
+    priv process_fbo_depth:    GLuint,
+    priv events:               RWArc<~[event::Event]>,
+    priv keyboard_callback:    @fn(&mut Window, &event::KeyboardEvent) -> bool,
+    priv mouse_callback:       @fn(&mut Window, &event::MouseEvent) -> bool
 }
 
 impl Window {
@@ -71,79 +65,78 @@ impl Window {
         self.post_processing = effect;
     }
 
-    /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
-    pub fn set_framerate_limit(&mut self, fps: Option<u64>) {
-        self.max_ms_per_frame = do fps.map |f| { assert!(*f != 0); 1000 / *f }
-    }
-
-    /// The `znear` value used by the perspective projection.
-    pub fn znear(&self) -> f64 {
-        self.znear
-    }
-
-    /// The `zfar` value used by the perspective projection.
-    pub fn zfar(&self) -> f64 {
-        self.zfar
-    }
-
-    /// The width of the window.
+    /// The window width.
     pub fn width(&self) -> f64 {
         let (w, _) = self.window.get_size();
 
         w as f64
     }
 
-    /// The height of the window.
+    /// The window height.
     pub fn height(&self) -> f64 {
         let (_, h) = self.window.get_size();
 
         h as f64
     }
 
+    /// The current camera.
+    pub fn set_camera(&mut self, camera: @mut Camera) {
+        let (w, h) = self.window.get_size();
+
+        self.camera = camera;
+        self.camera.handle_framebuffer_size_change(w as f64, h as f64);
+    }
+
+    /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
+    pub fn set_framerate_limit(&mut self, fps: Option<u64>) {
+        self.max_ms_per_frame = do fps.map |f| { assert!(*f != 0); 1000 / *f }
+    }
+
     /// Closes the window.
-    pub fn close(@mut self) {
+    pub fn close(&mut self) {
         self.window.set_should_close(true)
     }
 
     /// Hides the window, without closing it. Use `show` to make it visible again.
-    pub fn hide(@mut self) {
+    pub fn hide(&mut self) {
         self.window.hide()
     }
 
     /// Makes the window visible. Use `hide` to hide it.
-    pub fn show(@mut self) {
+    pub fn show(&mut self) {
         self.window.show()
     }
 
     /// Switch on or off wireframe rendering mode. When set to `true`, everything in the scene will
     /// be drawn using wireframes. Wireframe rendering mode cannot be enabled on a per-object basis.
-    pub fn set_wireframe_mode(@mut self, mode: bool) {
+    pub fn set_wireframe_mode(&mut self, mode: bool) {
         self.wireframe_mode = mode;
     }
 
     /// Sets the background color.
-    pub fn set_background_color(@mut self, r: f64, g: GLfloat, b: f64) {
+    pub fn set_background_color(&mut self, r: f64, g: GLfloat, b: f64) {
         self.background.x = r as GLfloat;
         self.background.y = g as GLfloat;
         self.background.z = b as GLfloat;
     }
 
     /// Adds a line to be drawn during the next frame.
-    pub fn draw_line(@mut self, a: &Vec3<f64>, b: &Vec3<f64>, color: &Vec3<f64>) {
+    pub fn draw_line(&mut self, a: &Vec3<f64>, b: &Vec3<f64>, color: &Vec3<f64>) {
         self.lines_manager.draw_line(VecCast::from(a.clone()),
                                      VecCast::from(b.clone()),
                                      VecCast::from(color.clone()));
     }
 
     /// Removes an object from the scene.
-    pub fn remove(@mut self, o: @mut Object) {
-        match self.objects.rposition(|e| managed::mut_ptr_eq(o, *e)) {
-            Some(i) => {
-                // XXX: release textures and buffers if nobody else use them
-                self.objects.swap_remove(i);
-            },
-            None => { }
-        }
+    pub fn remove(&mut self, _: Object) {
+        fail!("Fix this!")
+        // match self.objects.iter().rposition(|e| managed::mut_ptr_eq(o, *e)) {
+        //     Some(i) => {
+        //         // XXX: release textures and buffers if nobody else use them
+        //         self.objects.swap_remove(i);
+        //     },
+        //     None => { }
+        // }
     }
 
     /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
@@ -152,13 +145,12 @@ impl Window {
     ///   * `wx` - the cube extent along the z axis
     ///   * `wy` - the cube extent along the y axis
     ///   * `wz` - the cube extent along the z axis
-    pub fn add_cube(@mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> @mut Object {
+    pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
             let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"cube").unwrap();
-            @mut Object::new(
-                self,
+            Object::new(
                 *geom,
                 1.0, 1.0, 1.0,
                 tex,
@@ -166,7 +158,7 @@ impl Window {
         };
         // FIXME: get the geometry
 
-        self.objects.push(res);
+        self.objects.push(res.clone());
 
         res
     }
@@ -175,13 +167,12 @@ impl Window {
     ///
     /// # Arguments
     ///   * `r` - the sphere radius
-    pub fn add_sphere(@mut self, r: GLfloat) -> @mut Object {
+    pub fn add_sphere(&mut self, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
             let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"sphere").unwrap();
-            @mut Object::new(
-                self,
+            Object::new(
                 *geom,
                 1.0, 1.0, 1.0,
                 tex,
@@ -190,7 +181,7 @@ impl Window {
         };
         // FIXME: get the geometry
 
-        self.objects.push(res);
+        self.objects.push(res.clone());
 
         res
     }
@@ -201,13 +192,12 @@ impl Window {
     /// # Arguments
     ///   * `h` - the cone height
     ///   * `r` - the cone base radius
-    pub fn add_cone(@mut self, h: GLfloat, r: GLfloat) -> @mut Object {
+    pub fn add_cone(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
             let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"cone").unwrap();
-            @mut Object::new(
-                self,
+            Object::new(
                 *geom,
                 1.0, 1.0, 1.0,
                 tex,
@@ -216,7 +206,7 @@ impl Window {
         };
         // FIXME: get the geometry
 
-        self.objects.push(res);
+        self.objects.push(res.clone());
 
         res
     }
@@ -227,13 +217,12 @@ impl Window {
     /// # Arguments
     ///   * `h` - the cylinder height
     ///   * `r` - the cylinder base radius
-    pub fn add_cylinder(@mut self, h: GLfloat, r: GLfloat) -> @mut Object {
+    pub fn add_cylinder(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
             let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"cylinder").unwrap();
-            @mut Object::new(
-                self,
+            Object::new(
                 *geom,
                 1.0, 1.0, 1.0,
                 tex,
@@ -242,7 +231,7 @@ impl Window {
         };
         // FIXME: get the geometry
 
-        self.objects.push(res);
+        self.objects.push(res.clone());
 
         res
     }
@@ -253,13 +242,12 @@ impl Window {
     /// # Arguments
     ///   * `h` - the capsule height
     ///   * `r` - the capsule caps radius
-    pub fn add_capsule(@mut self, h: GLfloat, r: GLfloat) -> @mut Object {
+    pub fn add_capsule(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
             let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"capsule").unwrap();
-            @mut Object::new(
-                self,
+            Object::new(
                 *geom,
                 1.0, 1.0, 1.0,
                 tex,
@@ -268,7 +256,7 @@ impl Window {
         };
         // FIXME: get the geometry
 
-        self.objects.push(res);
+        self.objects.push(res.clone());
 
         res
     }
@@ -284,12 +272,12 @@ impl Window {
     ///   which will be placed horizontally on each line. Must not be `0`
     ///   * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
     ///   which will be placed vertically on each line. Must not be `0`
-    pub fn add_quad(@mut self,
+    pub fn add_quad(&mut self,
                      w:        f64,
                      h:        f64,
                      wsubdivs: uint,
                      hsubdivs: uint)
-                     -> @mut Object {
+                     -> Object {
         assert!(wsubdivs > 0 && hsubdivs > 0,
         "The number of subdivisions cannot be zero");
 
@@ -404,33 +392,29 @@ impl Window {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
             let tex = self.textures_manager.get("default").unwrap();
-            @mut Object::new(
-                self,
+            Object::new(
                 GeometryIndices::new(0, (triangles.len() * 3) as i32,
                 element_buf, normal_buf, vertex_buf, texture_buf),
                 1.0, 1.0, 1.0,
                 tex,
                 1.0, 1.0, 1.0,
-                VerticesNormalsTriangles(vertices, normals, triangles)
-                )
+                VerticesNormalsTriangles(vertices, normals, triangles))
         };
 
-        self.objects.push(res);
+        self.objects.push(res.clone());
 
         res
     }
 
     #[doc(hidden)]
-    pub fn add_texture(@mut self, path: ~str) -> @Texture {
+    pub fn add_texture(&mut self, path: &str) -> Rc<Texture> {
         self.textures_manager.add(path)
     }
 
     /// Converts a 3d point to 2d screen coordinates.
     pub fn project(&self, world_coord: &Vec3<f64>) -> Vec2<f64> {
-        let camera_coord   = self.camera.transformation().inverse().unwrap().rmul(world_coord);
-        let h_camera_coord = camera_coord.to_homogeneous();
-
-        let h_normalized_coord = self.projection.rmul(&h_camera_coord);
+        let h_world_coord = world_coord.to_homogeneous();
+        let h_normalized_coord = self.camera.transformation().rmul(&h_world_coord);
 
         let normalized_coord: Vec3<f64> = FromHomogeneous::from(&h_normalized_coord);
 
@@ -451,32 +435,84 @@ impl Window {
         let normalized_begin = Vec4::new(normalized_coord.x, normalized_coord.y, -1.0, 1.0);
         let normalized_end   = Vec4::new(normalized_coord.x, normalized_coord.y, 1.0, 1.0);
 
-        let h_begin = self.inv_projection.rmul(&normalized_begin);
-        let h_end   = self.inv_projection.rmul(&normalized_end);
+        let cam = self.camera.inv_transformation();
 
-        let begin = FromHomogeneous::from(&h_begin);
-        let end   = FromHomogeneous::from(&h_end);
+        let h_unprojected_begin = cam.rmul(&normalized_begin);
+        let h_unprojected_end   = cam.rmul(&normalized_end);
 
-        let cam = self.camera.transformation();
-
-        let unprojected_begin = cam.rmul(&begin);
-        let unprojected_end   = cam.rmul(&end);
+        let unprojected_begin: Vec3<f64> = FromHomogeneous::from(&h_unprojected_begin);
+        let unprojected_end: Vec3<f64>   = FromHomogeneous::from(&h_unprojected_end);
 
         (unprojected_begin, (unprojected_end - unprojected_begin).normalized())
     }
 
     /// The list of objects on the scene.
-    pub fn objects<'r>(&'r self) -> &'r ~[@mut Object] {
-        &self.objects
+    pub fn objects<'r>(&'r self) -> &'r [Object] {
+        let res: &'r [Object] = self.objects;
+
+        res
     }
 
-    fn exec_callback(@mut self) {
-        (self.usr_loop_callback)()
+    /// The list of objects on the scene.
+    pub fn objects_mut<'r>(&'r mut self) -> &'r mut [Object] {
+        let res: &'r mut [Object] = self.objects;
+
+        res
     }
 
-    /// Sets the user-defined callback called at each event-pooling iteration of the engine.
-    pub fn set_loop_callback(@mut self, callback: @fn()) {
-        self.usr_loop_callback = callback
+    /// Starts an infinite loop polling events, calling an user-defined callback, and drawing the
+    /// scene.
+    pub fn render_loop(&mut self, callback: &fn(&mut Window)) {
+
+        let mut timer = Timer::new().unwrap();
+        let mut curr  = time::precise_time_ns();
+
+        while !self.window.should_close() {
+            // collect events
+            glfw::poll_events();
+            // redispatch them
+            self.redispatch_events();
+            // clear the events collector
+            self.events.write(|c| c.clear());
+
+            callback(self);
+
+            self.draw(&mut curr, &mut timer)
+        }
+    }
+
+    fn redispatch_events(&mut self) {
+        let events = self.events.clone();
+        do events.read |es| {
+            for e in es.iter() {
+                match *e {
+                    event::Keyboard(ref k) => {
+                        if (self.keyboard_callback)(self, k) {
+                            match *k {
+                                event::KeyReleased(key) => {
+                                    if key == consts::KEY_ESCAPE {
+                                        self.close();
+                                        loop
+                                    }
+                                },
+                                _ => { }
+                            }
+
+                            self.camera.handle_keyboard(&self.window, k);
+                        }
+                    },
+                    event::Mouse(ref m) => {
+                        if (self.mouse_callback)(self, m) {
+                            self.camera.handle_mouse(&self.window, m);
+                        }
+                    },
+                    event::FramebufferSize(w, h) => {
+                        self.update_viewport(w, h);
+                        self.camera.handle_framebuffer_size_change(w, h);
+                    }
+                }
+            }
+        }
     }
 
     /// Sets the user-defined callback called whenever a keyboard event is triggered. It is called
@@ -486,8 +522,8 @@ impl Window {
     ///   * callback - the user-defined keyboard event handler. If it returns `false`, the event will
     ///   not be further handled by the engine. Handlers overriding some of the default behaviour of
     ///   the engine typically return `false`.
-    pub fn set_keyboard_callback(@mut self, callback: @fn(&event::KeyboardEvent) -> bool) {
-        self.usr_keyboard_callback = callback
+    pub fn set_keyboard_callback(&mut self, callback: @fn(&mut Window, &event::KeyboardEvent) -> bool) {
+        self.keyboard_callback = callback;
     }
 
     /// Sets the user-defined callback called whenever a mouse event is triggered. It is called
@@ -497,16 +533,16 @@ impl Window {
     ///   * callback - the user-defined mouse event handler. If it returns `false`, the event will
     ///   not be further handled by the engine. Handlers overriding some of the default behaviour of
     ///   the engine typically return `false`.
-    pub fn set_mouse_callback(@mut self, callback: @fn(&event::MouseEvent) -> bool) {
-        self.usr_mouse_callback = callback
+    pub fn set_mouse_callback(&mut self, callback: @fn(&mut Window, &event::MouseEvent) -> bool) {
+        self.mouse_callback = callback;
     }
 
     /// Sets the light mode. Only one light is supported.
-    pub fn set_light(@mut self, pos: Light) {
+    pub fn set_light(&mut self, pos: Light) {
         match pos {
             Absolute(p)   => self.set_light_pos(&p),
             StickToCamera => {
-                let camera_pos = self.camera.transformation().translation();
+                let camera_pos = self.camera.eye();
                 self.set_light_pos(&VecCast::from(camera_pos))
             }
         }
@@ -514,16 +550,16 @@ impl Window {
         self.light_mode = pos;
     }
 
-    fn set_light_pos(@mut self, pos: &Vec3<GLfloat>) {
+    fn set_light_pos(&mut self, pos: &Vec3<GLfloat>) {
         self.shaders_manager.select(ObjectShader);
         verify!(gl::Uniform3f(self.shaders_manager.object_context().light, pos.x, pos.y, pos.z));
         // FIXME: select the LinesShader too ?
     }
 
-    /// The camera used to render the scene. Only one camera is supported.
-    pub fn camera<'r>(&'r mut self) -> &'r mut Camera {
-        &'r mut self.camera
-    }
+    // FIXME /// The camera used to render the scene.
+    // FIXME pub fn camera(&self) -> &Camera {
+    // FIXME     self.camera.clone()
+    // FIXME }
 
     /// Opens a window and hide it. Once the window is created and before any event pooling, a
     /// user-defined callback is called once.
@@ -533,7 +569,7 @@ impl Window {
     /// # Arguments
     ///   * `title` - the window title
     ///   * `callback` - a callback called once the window has been created
-    pub fn spawn_hidden(title: &str, callback: ~fn(@mut Window)) {
+    pub fn spawn_hidden(title: &str, callback: ~fn(&mut Window)) {
         Window::do_spawn(title.to_owned(), true, callback)
     }
 
@@ -545,15 +581,15 @@ impl Window {
     /// # Arguments
     ///   * `title` - the window title
     ///   * `callback` - a callback called once the window has been created
-    pub fn spawn(title: &str, callback: ~fn(@mut Window)) {
+    pub fn spawn(title: &str, callback: ~fn(&mut Window)) {
         Window::do_spawn(title.to_owned(), false, callback)
     }
 
-    fn do_spawn(title: ~str, hide: bool, callback: ~fn(@mut Window)) {
+    fn do_spawn(title: ~str, hide: bool, callback: ~fn(&mut Window)) {
         glfw::set_error_callback(error_callback);
 
         do glfw::start {
-            let window = @mut glfw::Window::create(800, 600, title, glfw::Windowed).unwrap();
+            let window = glfw::Window::create(800, 600, title, glfw::Windowed).unwrap();
 
             window.make_context_current();
 
@@ -567,76 +603,89 @@ impl Window {
             let mut textures = TexturesManager::new(); 
             let shaders      = ShadersManager::new();
             let builtins     = loader::load(shaders.object_context(), &mut textures);
+            let camera       = @mut ArcBall::new(-Vec3::z(), Zero::zero());
 
-            let usr_window = @mut Window {
+            let mut usr_window = Window {
                 max_ms_per_frame:      None,
                 window:                window,
                 objects:               ~[],
-                transparent_objects:   ~[],
-                opaque_objects:        ~[],
-                camera:                Camera::new(ArcBall(arc_ball::ArcBall::new(-Vec3::z(), Zero::zero()))),
-                znear:                 0.1,
-                zfar:                  1024.0,
+                camera:                camera as @mut Camera,
                 light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
                 wireframe_mode:        false,
                 geometries:            builtins,
                 background:            Vec3::new(0.0, 0.0, 0.0),
-                inv_projection:        One::one(),
-                projection:            One::one(),
-                lines_manager:         @mut LinesManager::new(),
+                lines_manager:         LinesManager::new(),
                 shaders_manager:       shaders,
                 post_processing:       None,
                 process_fbo_texture:   process_fbo_texture,
                 process_fbo_depth:     process_fbo_depth,
-                usr_loop_callback:     || {},
-                usr_keyboard_callback: |_| { true },
-                usr_mouse_callback:    |_| { true },
                 textures_manager:      textures,
-                framebuffers_manager:  FramebuffersManager::new()
+                framebuffers_manager:  FramebuffersManager::new(),
+                events:                RWArc::new(~[]),
+                keyboard_callback:     |_, _| { true },
+                mouse_callback:        |_, _| { true }
             };
 
-            callback(usr_window);
-
-            usr_window.set_light(usr_window.light_mode);
-
             // setup callbacks
-            window.set_key_callback(|_, a, b, c, d| usr_window.key_callback(a, b, c, d));
-            window.set_mouse_button_callback(|_, b, a, m| usr_window.mouse_button_callback(b, a, m));
-            window.set_scroll_callback(|_, xoff, yoff| usr_window.scroll_callback(xoff, yoff));
-            window.set_cursor_pos_callback(|_, xpos, ypos| usr_window.cursor_pos_callback(xpos, ypos));
-            window.set_framebuffer_size_callback(|_, w, h| usr_window.framebuffer_size_callback(w, h));
-            window.set_size(800, 600);
-            usr_window.framebuffer_size_callback(800, 600);
+            let collector = usr_window.events.clone();
+            do usr_window.window.set_framebuffer_size_callback |_, w, h| {
+                collector.write(|c| c.push(event::FramebufferSize(w as f64, h as f64)))
+            }
+
+            let collector = usr_window.events.clone();
+            do usr_window.window.set_key_callback |_, key, _, action, _| {
+                if action == 1 {
+                    collector.write(|c| c.push(event::Keyboard(event::KeyPressed(key))))
+                }
+                else {
+                    collector.write(|c| c.push(event::Keyboard(event::KeyReleased(key))))
+                }
+            }
+
+            let collector = usr_window.events.clone();
+            do usr_window.window.set_mouse_button_callback |_, button, action, mods| {
+                if action == 1 {
+                    collector.write(|c| c.push(event::Mouse(event::ButtonPressed(button, mods))))
+                }
+                else {
+                    collector.write(|c| c.push(event::Mouse(event::ButtonReleased(button, mods))))
+                }
+            }
+
+            let collector = usr_window.events.clone();
+            do usr_window.window.set_cursor_pos_callback |_, x, y| {
+                collector.write(|c| c.push(event::Mouse(event::CursorPos(x, y))))
+            }
+
+            let collector = usr_window.events.clone();
+            do usr_window.window.set_scroll_callback |_, x, y| {
+                collector.write(|c| c.push(event::Mouse(event::Scroll(x, y))))
+            }
+
+            let (w, h) = usr_window.window.get_size();
+            usr_window.camera.handle_framebuffer_size_change(w as f64, h as f64);
 
             if hide {
-                window.hide()
+                usr_window.window.hide()
             }
 
-            let mut timer = Timer::new().unwrap();
-            let mut curr  = time::precise_time_ns();
+            // usr_window.framebuffer_size_callback(800, 600);
+            usr_window.set_light(usr_window.light_mode);
 
-            while !window.should_close() {
-                usr_window.draw(&mut curr, &mut timer)
-            }
+            callback(&mut usr_window);
         }
     }
 
-    fn draw(@mut self, curr: &mut u64, timer: &mut Timer) {
-        // Poll events
-        glfw::poll_events();
+    fn draw(&mut self, curr: &mut u64, timer: &mut Timer) {
+        self.camera.update(&self.window);
 
-        self.exec_callback();
-        self.camera.update(self.window);
+        self.shaders_manager.select(LinesShader);
+        let view_location2 = self.shaders_manager.lines_context().view;
+        self.camera.upload(view_location2);
 
-        if self.camera.needs_rendering() {
-            self.shaders_manager.select(LinesShader);
-            let view_location2 = self.shaders_manager.lines_context().view;
-            self.camera.upload(view_location2);
-
-            self.shaders_manager.select(ObjectShader);
-            let view_location1 = self.shaders_manager.object_context().view;
-            self.camera.upload(view_location1);
-        }
+        self.shaders_manager.select(ObjectShader);
+        let view_location1 = self.shaders_manager.object_context().view;
+        self.camera.upload(view_location1);
 
         match self.light_mode {
             StickToCamera => self.set_light(StickToCamera),
@@ -653,8 +702,12 @@ impl Window {
 
         self.render_scene();
 
+        let w = self.width() as f64;
+        let h = self.height() as f64;
+        let (znear, zfar) = self.camera.clip_planes();
+
         match self.post_processing {
-            Some(p) => {
+            Some(ref mut p) => {
                 // remove the wireframe mode
                 if self.wireframe_mode {
                     verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
@@ -664,7 +717,7 @@ impl Window {
                 self.framebuffers_manager.select(Screen);
                 // … and execute the post-process
                 // FIXME: use the real time value instead of 0.016!
-                p.update(0.016, self.width() as f64, self.height() as f64, self.znear(), self.zfar());
+                p.update(0.016, w, h, znear, zfar);
                 p.draw(&mut self.shaders_manager, self.process_fbo_texture, self.process_fbo_depth);
             },
             None => { }
@@ -686,11 +739,11 @@ impl Window {
 
         *curr = time::precise_time_ns();
 
-        self.transparent_objects.clear();
-        self.opaque_objects.clear();
+        // self.transparent_objects.clear();
+        // self.opaque_objects.clear();
     }
 
-    fn render_scene(@mut self) {
+    fn render_scene(&mut self) {
         // Activate the default texture
         verify!(gl::ActiveTexture(gl::TEXTURE0));
         // Clear the screen to black
@@ -716,69 +769,8 @@ impl Window {
         }
     }
 
-    fn key_callback(@mut self,
-                    key:    libc::c_int,
-                    _:      libc::c_int,
-                    action: libc::c_int,
-                    _:      libc::c_int) {
-        let event = if action == glfw::PRESS {
-            event::KeyPressed(key)
-        }
-        else { // if action == glfw::RELEASE
-            event::KeyReleased(key)
-        };
 
-        if !(self.usr_keyboard_callback)(&event) {
-            return
-        }
-
-        if action == glfw::PRESS && key == glfw::KEY_ESCAPE {
-            self.window.set_should_close(true);
-        }
-
-        if action == glfw::PRESS && key == glfw::KEY_SPACE {
-            self.set_wireframe_mode(!self.wireframe_mode);
-        }
-
-        self.camera.handle_keyboard(&event);
-    }
-
-    fn cursor_pos_callback(@mut self, xpos: float, ypos: float) {
-        let event = event::CursorPos(xpos, ypos);
-
-        if (self.usr_mouse_callback)(&event) {
-            self.camera.handle_mouse(&event)
-        }
-    }
-
-    fn scroll_callback(@mut self, xoff: float, yoff: float) {
-        let event = event::Scroll(xoff, yoff);
-
-        if (self.usr_mouse_callback)(&event) {
-            self.camera.handle_mouse(&event)
-        }
-    }
-
-    fn mouse_button_callback(@mut self,
-                             button: libc::c_int,
-                             action: libc::c_int,
-                             mods:   libc::c_int) {
-        let event = if action == 1 {
-            event::ButtonPressed(button, mods)
-        }
-        else {
-            event::ButtonReleased(button, mods)
-        };
-
-        if !(self.usr_mouse_callback)(&event) {
-            return
-        }
-
-
-        self.camera.handle_mouse(&event)
-    }
-
-    fn framebuffer_size_callback(@mut self, w: int, h: int) {
+    fn update_viewport(&mut self, w: f64, h: f64) {
         // Update the viewport
         verify!(gl::Viewport(0, 0, w as i32, h as i32));
 
@@ -786,58 +778,16 @@ impl Window {
         verify!(gl::BindTexture(gl::TEXTURE_2D, self.process_fbo_texture));
         unsafe {
             verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA as GLint, w as GLint, h as GLint, 0,
-                    gl::RGBA, gl::UNSIGNED_BYTE, ptr::null()));
+            gl::RGBA, gl::UNSIGNED_BYTE, ptr::null()));
         }
         verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
         verify!(gl::BindTexture(gl::TEXTURE_2D, self.process_fbo_depth));
         unsafe {
             verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::DEPTH_COMPONENT as GLint, w as GLint, h as GLint, 0,
-                    gl::DEPTH_COMPONENT, gl::UNSIGNED_BYTE, ptr::null()));
+            gl::DEPTH_COMPONENT, gl::UNSIGNED_BYTE, ptr::null()));
         }
         verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
-
-        // Update the projection
-        self.projection = self.projection();
-        self.inv_projection = self.projection.inverse().unwrap();
-        let projection: Mat4<GLfloat> = MatCast::from(self.projection.transposed());
-
-        unsafe {
-            self.shaders_manager.select(LinesShader);
-
-            verify!(gl::UniformMatrix4fv(
-                self.shaders_manager.lines_context().proj,
-                1,
-                gl::FALSE as u8,
-                cast::transmute(&projection)));
-
-            self.shaders_manager.select(ObjectShader);
-
-            verify!(gl::UniformMatrix4fv(
-                self.shaders_manager.object_context().proj,
-                1,
-                gl::FALSE as u8,
-                cast::transmute(&projection)));
-        }
-    }
-
-    /// The projection matrix used by the window.
-    pub fn projection(&self) -> Mat4<f64> {
-        let (w, h) = self.window.get_size();
-        let fov    = (45.0 as f64).to_radians();
-        let aspect = w as f64 / (h as f64);
-
-        let sy = 1.0 / (fov * 0.5).tan();
-        let sx = -sy / aspect;
-        let sz = -(self.zfar + self.znear) / (self.znear - self.zfar);
-        let tz = 2.0 * self.zfar * self.znear / (self.znear - self.zfar);
-
-        Mat4::new(
-            sx , 0.0, 0.0, 0.0,
-            0.0, sy , 0.0, 0.0,
-            0.0, 0.0, sz , tz,
-            0.0, 0.0, 1.0, 0.0
-            )
     }
 }
 

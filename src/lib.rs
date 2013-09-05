@@ -8,7 +8,6 @@
 #[deny(unnecessary_qualification)];
 #[warn(missing_doc)];
 
-
 extern mod std;
 extern mod extra;
 extern mod glfw;
@@ -19,20 +18,19 @@ extern mod stb_image;
 pub mod window;
 pub mod event;
 pub mod object;
-pub mod camera;
 pub mod obj;
-pub mod arc_ball;
-pub mod first_person;
+
+pub mod camera;
 
 /*
  * the user should not see/use the following modules
  */
 #[doc(hidden)]
 pub mod shaders;
- 
+
 #[doc(hidden)]
 pub mod lines_manager;
- 
+
 #[doc(hidden)]
 pub mod builtins
 {
@@ -43,7 +41,7 @@ pub mod builtins
     pub mod cylinder_obj;
     pub mod capsule_obj;
 }
- 
+
 pub mod post_processing {
     pub mod post_processing_effect;
     pub mod waves;

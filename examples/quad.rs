@@ -11,10 +11,15 @@ fn start(argc: int, argv: **u8, crate_map: *u8) -> int {
 
 fn main() {
     do window::Window::spawn("Kiss3d: quad waves") |window| {
-        let c    = window.add_quad(5.0, 4.0, 500, 400).set_color(random(), random(), random());
+        let mut c = window.add_quad(5.0, 4.0, 500, 400);
+        
+        c.set_color(random(), random(), random());
+
         let time = @mut 0.016f32;
 
-        do window.set_loop_callback {
+        window.set_light(window::StickToCamera);
+
+        do window.render_loop |_| {
             do c.modify_vertices |vs| {
                 for v in vs.mut_iter() {
                     v.z = time.sin() * (((v.x + *time) * 4.0).cos() +
@@ -26,7 +31,5 @@ fn main() {
 
             *time = *time + 0.016;
         }
-
-        window.set_light(window::StickToCamera);
     }
 }

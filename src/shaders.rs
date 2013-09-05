@@ -7,7 +7,6 @@ pub static OBJECT_VERTEX_SRC: &'static str =
     varying vec3 ws_normal;
     varying vec3 ws_position;
     varying vec2 tex_coord;
-    uniform mat4 projection;
     uniform mat4 view;
     uniform mat4 transform;
     uniform mat3 scale;
@@ -17,7 +16,7 @@ pub static OBJECT_VERTEX_SRC: &'static str =
         vec4 pos4   = transform * scale4 * vec4(position, 1.0);
         tex_coord   = tex_coord_v;
         ws_position = pos4.xyz;
-        gl_Position = projection * view * transform * scale4 * vec4(position, 1.0);
+        gl_Position = view * transform * scale4 * vec4(position, 1.0);
         ws_normal   = normalize(ntransform * scale * normal);
     }";
 
@@ -55,10 +54,9 @@ pub static LINES_VERTEX_SRC: &'static str =
     attribute vec3 position;
     attribute vec3 color;
     varying   vec3 Color;
-    uniform   mat4   projection;
     uniform   mat4   view;
     void main() {
-        gl_Position = projection * view * vec4(position, 1.0);
+        gl_Position = view * vec4(position, 1.0);
         Color = color;
     }";
 

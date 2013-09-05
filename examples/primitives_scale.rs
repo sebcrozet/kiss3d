@@ -2,8 +2,7 @@ extern mod kiss3d;
 extern mod nalgebra;
 
 use std::rand::random;
-use nalgebra::mat;
-use nalgebra::mat::Translation;
+use nalgebra::mat::{Translation, RotationWithTranslation};
 use nalgebra::vec::Vec3;
 use kiss3d::window::{Window, StickToCamera};
 
@@ -13,7 +12,7 @@ fn start(argc: int, argv: **u8, crate_map: *u8) -> int {
 }
 
 fn main() {
-    do Window::spawn("Kiss3d: scaled primitives") |w| {
+    do Window::spawn("Kiss3d: scaled primitives") |window| {
         // NOTE: scaling is not possible.
         for i in range(0u, 11) {
             let dim: f32 = random::<f32>() / 2.0;
@@ -21,33 +20,31 @@ fn main() {
 
             let offset = i as f64 * 1.0 - 5.0;
 
-            w.add_cube(dim2, dim2, dim2).set_color(random(), random(), random())
-                                        .transformation()
-                                        .translate_by(&Vec3::new(offset, 1.0, 0.0));
+            let mut cu = window.add_cube(dim2, dim2, dim2);
+            let mut s  = window.add_sphere(dim2);
+            let mut co = window.add_cone(dim, dim2);
+            let mut cy = window.add_cylinder(dim, dim2);
+            let mut ca = window.add_capsule(dim, dim2);
 
-            w.add_sphere(dim2).set_color(random(), random(), random())
-                              .transformation()
-                              .translate_by(&Vec3::new(offset, -1.0, 0.0));
+            cu.translate_by(&Vec3::new(offset, 1.0, 0.0));
+            s.translate_by(&Vec3::new(offset, -1.0, 0.0));
+            co.translate_by(&Vec3::new(offset, 2.0, 0.0));
+            cy.translate_by(&Vec3::new(offset, -2.0, 0.0));
+            ca.translate_by(&Vec3::new(offset, 0.0, 0.0));
 
-            w.add_cone(dim, dim2).set_color(random(), random(), random())
-                                 .transformation()
-                                 .translate_by(&Vec3::new(offset, 2.0, 0.0));
-
-            w.add_cylinder(dim, dim2).set_color(random(), random(), random())
-                                     .transformation()
-                                     .translate_by(&Vec3::new(offset, -2.0, 0.0));
-
-            w.add_capsule(dim, dim2).set_color(random(), random(), random())
-                                    .transformation()
-                                    .translate_by(&Vec3::new(offset, 0.0, 0.0));
+            cu.set_color(random(), random(), random());
+            s.set_color(random(), random(), random());
+            co.set_color(random(), random(), random());
+            cy.set_color(random(), random(), random());
+            ca.set_color(random(), random(), random());
         }
 
-        do w.set_loop_callback {
-            for o in w.objects().iter() {
-                mat::rotate_wrt_center(o.transformation(), &Vec3::new(0.0f64, 0.014, 0.0));
+        window.set_light(StickToCamera);
+
+        do window.render_loop |w| {
+            for o in w.objects_mut().mut_iter() {
+                o.rotate_wrt_center(&Vec3::new(0.0f64, 0.014, 0.0));
             }
         };
-
-        w.set_light(StickToCamera);
     };
 }

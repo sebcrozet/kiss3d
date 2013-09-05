@@ -17,10 +17,12 @@ with one-liners.
 ## Features
 Most features are one-liners.
   - open a window with a default arc-ball camera and a point light.
+  - a first-person camera is available too and user-defined cameras are possible.
   - display boxes, spheres, cones, cylinders, quads and lines.
   - change an object color or texture.
   - change an object transform (we use the [nalgebra](https://github.com/sebcrozet/nalgebra) library to do that).
     An object cannot be scaled though.
+  - create basic post-processing effects.
 
 As an example, having a red, rotating cube with the light attached to the camera is as simple as:
 ```rust
@@ -38,13 +40,15 @@ fn start(argc: int, argv: **u8, crate_map: *u8) -> int {
 
 fn main() {
     do window::Window::spawn("Kiss3d: cube") |window| {
-        let c = window.add_cube(1.0, 1.0, 1.0).set_color(1.0, 0.0, 0.0);
+        let mut c = window.add_cube(1.0, 1.0, 1.0);
 
-        do window.set_loop_callback {
-            c.transformation().rotate_by(&Vec3::new(0.0f64, 0.014, 0.0))
-        }
+        c.set_color(1.0, 0.0, 0.0);
 
         window.set_light(window::StickToCamera);
+
+        do window.render_loop |_| {
+            c.rotate_by(&Vec3::new(0.0f64, 0.014, 0.0))
+        }
     }
 }
 ```
@@ -52,11 +56,9 @@ fn main() {
 Some controls are handled by default by the engine (they can be overridden by the user):
   - `scroll`: zoom in / zoom out.
   - `space`: toggle wireframe mode.
-  - `tab`: switch between the arc-ball camera and the first-person camera.
   - `left click + drag`: look around.
   - `right click + drag`: translate the view point.
-  - `up`, `down`, `right`, `left`: move around (first-person camera mode only).
-  - `enter`: look at the origin `(0.0, 0.0, 0.0)` (arc-ball camera mode only).
+  - `enter`: look at the origin `(0.0, 0.0, 0.0)`.
 
 ## Compilation
 You will need the last rust compiler from the `master` branch.

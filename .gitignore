@@ -14,3 +14,4 @@ bin/texturing
 bin/window
 bin/lines
 bin/post_processing
+bin/wireframe

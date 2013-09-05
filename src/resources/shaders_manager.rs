@@ -36,7 +36,6 @@ pub struct ObjectShaderContext {
     transform:  GLint,
     scale:      GLint,
     ntransform: GLint,
-    proj:       GLint,
     view:       GLint,
     tex:        GLint
 }
@@ -48,7 +47,6 @@ pub struct LinesShaderContext {
     fshader:   GLuint,
     pos:       GLuint,
     color:     GLuint,
-    proj:      GLint,
     view:      GLint
 }
 
@@ -119,7 +117,6 @@ impl ShadersManager {
                 transform:  gl::GetUniformLocation(program, "transform".to_c_str().unwrap()),
                 scale:      gl::GetUniformLocation(program, "scale".to_c_str().unwrap()),
                 ntransform: gl::GetUniformLocation(program, "ntransform".to_c_str().unwrap()),
-                proj:       gl::GetUniformLocation(program, "projection".to_c_str().unwrap()),
                 view:       gl::GetUniformLocation(program, "view".to_c_str().unwrap()),
                 tex:        gl::GetUniformLocation(program, "tex".to_c_str().unwrap())
             }
@@ -140,7 +137,6 @@ impl ShadersManager {
                 fshader: fshader,
                 pos:     gl::GetAttribLocation(program,  "position".to_c_str().unwrap()) as GLuint,
                 color:   gl::GetAttribLocation(program,  "color".to_c_str().unwrap()) as GLuint,
-                proj:    gl::GetUniformLocation(program, "projection".to_c_str().unwrap()),
                 view:    gl::GetUniformLocation(program, "view".to_c_str().unwrap()),
             };
 

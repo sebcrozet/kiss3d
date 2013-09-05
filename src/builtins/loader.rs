@@ -112,7 +112,7 @@ pub fn load(ctxt: &ObjectShaderContext, textures_manager: &mut TexturesManager)
             ];
 
         verify!(gl::ActiveTexture(gl::TEXTURE0));
-        verify!(gl::BindTexture(gl::TEXTURE_2D, default_tex.id()));
+        verify!(gl::BindTexture(gl::TEXTURE_2D, default_tex.borrow().id()));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_BASE_LEVEL, 0));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAX_LEVEL, 0));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT as i32));
