@@ -314,8 +314,19 @@ impl Object {
             d.texture = parent.add_texture(path);
         }
     }
-}
 
+    /// Move and orient the object such that it is placed at the point `eye` and have its `x` axis
+    /// oriented toward `at`.
+    pub fn look_at(&mut self, eye: &Vec3<f64>, at: &Vec3<f64>, up: &Vec3<f64>) {
+        self.data.with_mut_borrow(|d| d.transform.look_at(eye, at, up))
+    }
+
+    /// Move and orient the object such that it is placed at the point `eye` and have its `z` axis
+    /// oriented toward `at`.
+    pub fn look_at_z(&mut self, eye: &Vec3<f64>, at: &Vec3<f64>, up: &Vec3<f64>) {
+        self.data.with_mut_borrow(|d| d.transform.look_at_z(eye, at, up))
+    }
+}
 
 impl Transformation<Transform3d> for Object {
     fn transformation(&self) -> Transform3d {
@@ -402,14 +413,3 @@ impl Translation<Vec3<f64>> for Object {
         self.data.with_mut_borrow(|d| d.transform.set_translation(t))
     }
 }
-
-// FIXME: there is something weird in nalgebra which prevent his from compiling
-// impl Translate<Vec3<f64>> for Object {
-//     fn translate(&self, v: &Vec3<f64>) -> Vec3<f64> {
-//         self.data.with_borrow(|d| d.transform.translate(v))
-//     }
-// 
-//     fn inv_translate(&self, v: &Vec3<f64>) -> Vec3<f64> {
-//         self.data.with_borrow(|d| d.transform.inv_translate(v))
-//     }
-// } 
