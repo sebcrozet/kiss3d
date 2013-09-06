@@ -201,7 +201,7 @@ fn check_shader_error(shader: GLuint) {
 
                 let bytes = c_str.as_bytes();
                 let bytes = bytes.slice_to(bytes.len() - 1);
-                fail!("Shader compilation failed: " + str::from_bytes(bytes));
+                fail!("Shader compilation failed: " + str::from_utf8(bytes));
             }
         }
     }

@@ -333,6 +333,10 @@ impl Transformation<Transform3d> for Object {
     fn transformed(&self, _: &Transform3d) -> Object {
         fail!("Cannot clone an object.")
     }
+
+    fn set_transformation(&mut self, t: Transform3d) {
+        self.data.with_mut_borrow(|d| d.transform.set_transformation(t))
+    }
 }
 
 impl Transform<Vec3<f64>> for Object {
@@ -361,6 +365,10 @@ impl Rotation<Vec3<f64>> for Object {
     fn rotated(&self, _: &Vec3<f64>) -> Object {
         fail!("Cannot clone an object.")
     }
+
+    fn set_rotation(&mut self, r: Vec3<f64>) {
+        self.data.with_mut_borrow(|d| d.transform.set_rotation(r))
+    }
 }
 
 impl Rotate<Vec3<f64>> for Object {
@@ -388,6 +396,10 @@ impl Translation<Vec3<f64>> for Object {
 
     fn translated(&self, _: &Vec3<f64>) -> Object {
         fail!("Cannot clone an object.")
+    }
+
+    fn set_translation(&mut self, t: Vec3<f64>) {
+        self.data.with_mut_borrow(|d| d.transform.set_translation(t))
     }
 }
 
