@@ -28,6 +28,7 @@ examples:
 	$(build_cmd) ./examples/quad.rs 
 	$(build_cmd) ./examples/primitives_scale.rs 
 	$(build_cmd) ./examples/post_processing.rs 
+	$(build_cmd) ./examples/add_remove.rs 
 
 doc:
 	mkdir -p $(kiss3d_doc_path)

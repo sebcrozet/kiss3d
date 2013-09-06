@@ -133,15 +133,14 @@ impl Window {
     }
 
     /// Removes an object from the scene.
-    pub fn remove(&mut self, _: Object) {
-        fail!("Fix this!")
-        // match self.objects.iter().rposition(|e| managed::mut_ptr_eq(o, *e)) {
-        //     Some(i) => {
-        //         // XXX: release textures and buffers if nobody else use them
-        //         self.objects.swap_remove(i);
-        //     },
-        //     None => { }
-        // }
+    pub fn remove(&mut self, o: Object) {
+        match self.objects.iter().rposition(|e| o == *e) {
+            Some(i) => {
+                // XXX: release textures and buffers if nobody else use them
+                self.objects.swap_remove(i);
+            },
+            None => { }
+        }
     }
 
     /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).

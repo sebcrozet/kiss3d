@@ -4,6 +4,7 @@ use std::num::{One, Zero};
 use std::ptr;
 use std::cast;
 use std::vec;
+use std::borrow;
 use extra::rc::{Rc, RcMut};
 use gl;
 use gl::types::*;
@@ -411,5 +412,11 @@ impl Translation<Vec3<f64>> for Object {
 
     fn set_translation(&mut self, t: Vec3<f64>) {
         self.data.with_mut_borrow(|d| d.transform.set_translation(t))
+    }
+}
+
+impl Eq for Object {
+    fn eq(&self, other: &Object) -> bool {
+        self.data.with_borrow(|d1| other.data.with_borrow(|d2| borrow::ref_eq(d1, d2)))
     }
 }
