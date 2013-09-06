@@ -129,13 +129,6 @@ impl ArcBall {
     }
 
     /// Transformation applied by the camera without perspective.
-    pub fn view_transform(&self) -> Iso3f64 {
-        let mut id: Iso3f64 = One::one();
-        id.look_at_z(&self.eye(), &self.at, &Vec3::y());
-
-        id
-    }
-
     fn update_restrictions(&mut self) {
         if (self.dist < 0.00001) {
             self.dist = 0.00001
@@ -185,6 +178,13 @@ impl ArcBall {
 impl Camera for ArcBall {
     fn clip_planes(&self) -> (f64, f64) {
         (self.znear, self.zfar)
+    }
+
+    fn view_transform(&self) -> Iso3f64 {
+        let mut id: Iso3f64 = One::one();
+        id.look_at_z(&self.eye(), &self.at, &Vec3::y());
+
+        id
     }
 
     fn eye(&self) -> Vec3<f64> {

@@ -4,6 +4,7 @@ use gl;
 use gl::types::*;
 use nalgebra::vec::Vec3;
 use nalgebra::mat::{Mat4, MatCast, Transpose};
+use nalgebra::types::Iso3f64;
 use event;
 
 /// Trait every camera must implement.
@@ -23,6 +24,8 @@ pub trait Camera {
      */
     /// The camera position.
     fn eye(&self) -> Vec3<f64>; // FIXME: should this be here?
+    /// The camera view transform.
+    fn view_transform(&self) -> Iso3f64;
     /// The transformation applied by the camera to transform a point in world coordinates to
     /// a point in device coordinates.
     fn transformation(&self) -> Mat4<f64>;

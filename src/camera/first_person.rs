@@ -86,14 +86,6 @@ impl FirstPerson {
         self.update_projviews();
     }
 
-    /// The camera actual transformation.
-    pub fn view_transform(&self) -> Iso3f64 {
-        let mut id: Iso3f64 = One::one();
-        id.look_at_z(&self.eye, &self.at(), &Vec3::y());
-
-        id
-    }
-
     /// The point the camera is looking at.
     pub fn at(&self) -> Vec3<f64> {
         let ax = self.eye.x + self.yaw.cos() * self.pitch.sin();
@@ -154,6 +146,14 @@ impl FirstPerson {
 impl Camera for FirstPerson {
     fn clip_planes(&self) -> (f64, f64) {
         (self.znear, self.zfar)
+    }
+
+    /// The camera view transformation (i-e transformation without projection).
+    fn view_transform(&self) -> Iso3f64 {
+        let mut id: Iso3f64 = One::one();
+        id.look_at_z(&self.eye, &self.at(), &Vec3::y());
+
+        id
     }
 
     fn handle_mouse(&mut self, window: &glfw::Window, event: &event::MouseEvent) {
