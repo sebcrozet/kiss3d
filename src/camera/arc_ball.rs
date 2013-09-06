@@ -76,6 +76,11 @@ impl ArcBall {
         res
     }
 
+    /// The point the arc-ball is looking at.
+    pub fn at(&self) -> Vec3<f64> {
+        self.at
+    }
+
     /// The arc-ball camera `yaw`.
     pub fn yaw(&self) -> f64 {
         self.yaw
