@@ -80,6 +80,11 @@ impl Window {
     }
 
     /// The current camera.
+    pub fn camera(&self) -> @mut Camera {
+        self.camera
+    }
+
+    /// The current camera.
     pub fn set_camera(&mut self, camera: @mut Camera) {
         let (w, h) = self.window.get_size();
 
