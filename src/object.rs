@@ -10,10 +10,9 @@ use gl;
 use gl::types::*;
 use nalgebra::mat::{Indexable, ToHomogeneous, Transformation, Transform, Rotation, Rotate, Translation};
 use nalgebra::vec::{Cross, AlgebraicVec};
-use nalgebra::adaptors::transform;
-use nalgebra::adaptors::rotmat::Rotmat;
 use nalgebra::mat::{Mat3, Mat4};
 use nalgebra::vec::Vec3;
+use nalgebra::types::Iso3f64;
 use window::Window;
 use resources::shaders_manager::ObjectShaderContext;
 use resources::textures_manager::Texture;
@@ -21,7 +20,7 @@ use resources::textures_manager::Texture;
 #[path = "error.rs"]
 mod error;
 
-type Transform3d = transform::Transform<Rotmat<Mat3<f64>>, Vec3<f64>>;
+type Transform3d = Iso3f64;
 type Scale3d     = Mat3<GLfloat>;
 
 pub enum Geometry {
@@ -90,11 +89,11 @@ impl Object {
             scale:     Mat3::new(sx, 0.0, 0.0,
                                  0.0, sy, 0.0,
                                  0.0, 0.0, sz),
-            transform:   One::one(),
-            igeometry:   igeometry,
-            geometry:    geometry,
-            color:       Vec3::new(r, g, b),
-            texture:     texture
+            transform: One::one(),
+            igeometry: igeometry,
+            geometry:  geometry,
+            color:     Vec3::new(r, g, b),
+            texture:   texture
         };
 
         Object {
