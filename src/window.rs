@@ -60,6 +60,11 @@ pub struct Window {
 }
 
 impl Window {
+    /// Accsess the glfw window.
+    pub fn glfw_window<'r>(&'r self) -> &'r glfw::Window {
+        &self.window
+    }
+
     /// Sets the current processing effect.
     pub fn set_post_processing_effect(&mut self, effect: Option<@mut PostProcessingEffect>) {
         self.post_processing = effect;
