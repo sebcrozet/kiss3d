@@ -287,8 +287,7 @@ impl Window {
                      wsubdivs: uint,
                      hsubdivs: uint)
                      -> Object {
-        assert!(wsubdivs > 0 && hsubdivs > 0,
-        "The number of subdivisions cannot be zero");
+        assert!(wsubdivs > 0 && hsubdivs > 0, "The number of subdivisions cannot be zero");
 
         let wstep    = (w as GLfloat) / (wsubdivs as GLfloat);
         let hstep    = (h as GLfloat) / (hsubdivs as GLfloat);
@@ -609,7 +608,7 @@ impl Window {
             // FIXME: load that iff the user really uses post-processing
             let (process_fbo_texture, process_fbo_depth) = init_post_process_buffers(800, 600);
 
-            let mut textures = TexturesManager::new(); 
+            let mut textures = TexturesManager::new();
             let shaders      = ShadersManager::new();
             let builtins     = loader::load(shaders.object_context(), &mut textures);
             let camera       = @mut ArcBall::new(-Vec3::z(), Zero::zero());
