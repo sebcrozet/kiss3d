@@ -9,7 +9,7 @@ use extra::rc::{Rc, RcMut};
 use gl;
 use gl::types::*;
 use nalgebra::mat::{Indexable, ToHomogeneous, Transformation, Transform, Rotation, Rotate, Translation};
-use nalgebra::vec::{Cross, AlgebraicVec};
+use nalgebra::vec::{Cross, Norm};
 use nalgebra::mat::{Mat3, Mat4};
 use nalgebra::vec::Vec3;
 use nalgebra::types::Iso3f64;

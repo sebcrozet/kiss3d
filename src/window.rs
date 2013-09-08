@@ -19,7 +19,7 @@ use gl;
 use gl::types::*;
 use stb_image::image::*;
 use nalgebra::mat::{RMul, ToHomogeneous, FromHomogeneous};
-use nalgebra::vec::{Vec2, Vec3, Vec4, AlgebraicVec, VecCast};
+use nalgebra::vec::{Vec2, Vec3, Vec4, Norm, VecCast};
 use camera::{Camera, ArcBall};
 use object::{GeometryIndices, Object, VerticesNormalsTriangles, Deleted};
 use lines_manager::LinesManager;

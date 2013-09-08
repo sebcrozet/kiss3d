@@ -1,7 +1,7 @@
 use std::num::{Zero, One, atan2};
 use glfw;
 use glfw::consts::*;
-use nalgebra::vec::{Vec2, Vec3, AlgebraicVec, Cross};
+use nalgebra::vec::{Vec2, Vec3, Norm, Cross};
 use nalgebra::mat::{Mat4, Inv, ToHomogeneous};
 use nalgebra::types::Iso3f64;
 use camera::Camera;
