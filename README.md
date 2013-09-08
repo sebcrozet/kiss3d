@@ -55,10 +55,9 @@ fn main() {
 
 Some controls are handled by default by the engine (they can be overridden by the user):
   - `scroll`: zoom in / zoom out.
-  - `space`: toggle wireframe mode.
   - `left click + drag`: look around.
   - `right click + drag`: translate the view point.
-  - `enter`: look at the origin `(0.0, 0.0, 0.0)`.
+  - `enter`: look at the origin (0.0, 0.0, 0.0).
 
 ## Compilation
 You will need the last rust compiler from the `master` branch.
