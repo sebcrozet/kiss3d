@@ -153,8 +153,7 @@ pub fn compute_normals(coordinates: &[Coord],
     }
 
     // Grow the output buffer if it is too small.
-    let last_id = normals.len() - 1;
-    normals.grow_set(last_id, &Zero::zero(), Zero::zero());
+    normals.grow_set(coordinates.len() - 1, &Zero::zero(), Zero::zero());
 
     // Accumulate normals ...
     for f in faces.iter() {

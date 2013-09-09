@@ -86,13 +86,10 @@ pub fn parse(string: &str) -> Mesh {
                         // n = normal
                         // When the `t` or `n` coordinate is missing, we set `Bounded::max_value()`
                         // instead: they will be dealt with later.
-                        let mut curr_ids: Vec3<GLuint> = Zero::zero();
+                        let mut curr_ids: Vec3<GLuint> = Bounded::max_value();
 
                         for (i, w) in word.split_iter('/').enumerate() {
-                            if i != 0 && w.len() == 0 {
-                                curr_ids.set(i, Bounded::max_value());
-                            }
-                            else {
+                            if i == 0 || w.len() != 0 {
                                 let idx: Option<GLuint> = FromStr::from_str(w);
                                 match idx {
                                     Some(id) => curr_ids.set(i, id - 1),
@@ -137,7 +134,41 @@ pub fn parse(string: &str) -> Mesh {
         }
     }
 
-    reformat(coords, Some(normals), Some(uvs), mesh)
+    let mut ignore_uvs     = false;
+    let mut ignore_normals = false;
+
+    for v in mesh.iter() {
+        if v.y == Bounded::max_value() {
+            ignore_uvs = true;
+
+            if ignore_normals {
+                break;
+            }
+        }
+
+        if v.z == Bounded::max_value() {
+            ignore_normals = true;
+
+            if ignore_uvs {
+                break;
+            }
+        }
+    }
+
+    if !uvs.is_empty() && ignore_uvs {
+        println("Warning: some texture coordinates are missing. Dropping texture coordinates"
+                + " infos for every vertex.");
+    }
+
+    if !normals.is_empty() && ignore_normals {
+        println("Warning: some normals are missing. Dropping normals infos for every vertex.");
+    }
+
+    reformat(
+        coords,
+        if ignore_normals { None } else { Some(normals) },
+        if ignore_uvs { None } else { Some(uvs) },
+        mesh)
 }
 
 fn reformat(coords:  ~[Coord],
