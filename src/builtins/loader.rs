@@ -46,7 +46,7 @@ pub fn load(ctxt: &ObjectShaderContext, textures_manager: &mut TexturesManager) 
 
 fn parse_builtins() -> HashMap<~str, Rc<Mesh>> {
     // load
-    let m_cube     = obj::parse_file("L200-OBJ.obj"); // obj::parse(cube_obj::CUBE_OBJ);
+    let m_cube     = obj::parse(cube_obj::CUBE_OBJ);
     let m_sphere   = obj::parse(sphere_obj::SPHERE_OBJ);
     let m_cone     = obj::parse(cone_obj::CONE_OBJ);
     let m_cylinder = obj::parse(cylinder_obj::CYLINDER_OBJ);
