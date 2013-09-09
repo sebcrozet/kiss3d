@@ -1,5 +1,4 @@
 use std::sys;
-use std::libc;
 use std::num::{One, Zero};
 use std::ptr;
 use std::cast;
@@ -197,7 +196,7 @@ impl Object {
                 verify!(gl::DrawElements(gl::TRIANGLES,
                 data.igeometry.size,
                 gl::UNSIGNED_INT,
-                (data.igeometry.offset * sys::size_of::<GLuint>()) as *libc::c_void));
+                cast::transmute(data.igeometry.offset * sys::size_of::<GLuint>())));
             }
         }
     }
@@ -264,15 +263,15 @@ impl Object {
                 VerticesNormalsTriangles(ref vs, ref mut ns, ref ts) => {
                     let mut divisor = vec::from_elem(vs.len(), 0f32);
 
-                    // ... and compute the mean
+                    // Reinit all normals to zero.
                     for n in ns.mut_iter() {
                         *n = Zero::zero()
                     }
 
                     // accumulate normals...
                     for &(v1, v2, v3) in ts.iter() {
-                        let edge1 = vs[v2] - vs[v1];
-                        let edge2 = vs[v3] - vs[v1];
+                        let edge1  = vs[v2] - vs[v1];
+                        let edge2  = vs[v3] - vs[v1];
                         let normal = edge1.cross(&edge2).normalized();
 
                         ns[v1] = ns[v1] + normal;
