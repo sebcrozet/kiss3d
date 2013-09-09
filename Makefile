@@ -17,6 +17,7 @@ test: examples
 
 examples:
 	mkdir -p $(kiss3d_bin_path)
+	$(build_cmd) ./examples/obj.rs 
 	$(build_cmd) ./examples/cube.rs 
 	$(build_cmd) ./examples/primitives.rs 
 	$(build_cmd) ./examples/primitives_scale.rs 

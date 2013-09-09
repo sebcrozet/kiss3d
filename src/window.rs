@@ -30,6 +30,7 @@ use resources::framebuffers_manager::{FramebuffersManager, Screen, Offscreen};
 use builtins::loader;
 use event;
 use mesh::Mesh;
+use obj;
 
 mod error;
 
@@ -149,6 +150,37 @@ impl Window {
         }
     }
 
+    pub fn add_obj(&mut self, path: &str, scale: GLfloat) -> Object {
+        // FIXME: this weird block indirection are here because of Rust issue #6248
+        let res = {
+            let tex  = self.textures_manager.get("default").unwrap();
+            let key  = path.to_owned();
+            let (insert, mesh) =
+                match self.geometries.find(&key) {
+                    Some(m) => (false, m.clone()),
+                    None    => {
+                        let m = Rc::from_send(obj::parse_file(path));
+
+                        (true, m)
+                    },
+                };
+
+            if insert {
+                self.geometries.insert(key, mesh.clone());
+            }
+
+            Object::new(
+                mesh,
+                1.0, 1.0, 1.0,
+                tex,
+                scale, scale, scale, Deleted)
+        };
+
+        self.objects.push(res.clone());
+
+        res
+    }
+
     /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
     ///
     /// # Arguments
@@ -166,7 +198,6 @@ impl Window {
                 tex,
                 wx, wy, wz, Deleted)
         };
-        // FIXME: get the geometry
 
         self.objects.push(res.clone());
 
@@ -189,7 +220,6 @@ impl Window {
                 r / 0.5, r / 0.5, r / 0.5,
                 Deleted)
         };
-        // FIXME: get the geometry
 
         self.objects.push(res.clone());
 
@@ -214,7 +244,6 @@ impl Window {
                 r / 0.5, h, r / 0.5,
                 Deleted)
         };
-        // FIXME: get the geometry
 
         self.objects.push(res.clone());
 
@@ -239,7 +268,6 @@ impl Window {
                 r / 0.5, h, r / 0.5,
                 Deleted)
         };
-        // FIXME: get the geometry
 
         self.objects.push(res.clone());
 
@@ -264,7 +292,6 @@ impl Window {
                 r / 0.5, h, r / 0.5,
                 Deleted)
         };
-        // FIXME: get the geometry
 
         self.objects.push(res.clone());
 

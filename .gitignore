@@ -16,3 +16,4 @@ bin/lines
 bin/post_processing
 bin/wireframe
 bin/add_remove
+bin/obj
