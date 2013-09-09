@@ -32,7 +32,7 @@ pub fn parse(string: &str) -> Mesh {
 
     for (l, line) in string.any_line_iter().enumerate() {
         let mut mode       = Unknown;
-        let mut num_parsed = 0;
+        let mut num_parsed = 0u;
         let mut curr_coords: Coord  = Zero::zero();
         let mut curr_normal: Normal = Zero::zero();
         let mut curr_tex:    UV     = Zero::zero();
@@ -45,7 +45,7 @@ pub fn parse(string: &str) -> Mesh {
                     &"f"  => mode = F,
                     &"vt" => mode = VT,
                     _     => {
-                        println("Warning: unknown line " + l.to_str() + " ignored.");
+                        println("Warning: unknown line " + l.to_str() + " ignored: `" + line + "'");
                         break
                     }
                 }
@@ -101,6 +101,14 @@ pub fn parse(string: &str) -> Mesh {
                             }
                         }
 
+                        if i > 3 {
+                            // on the fly triangulation as trangle fan
+                            let p1 = mesh[mesh.len() - (i - 1)];
+                            let p2 = mesh[mesh.len() - 1];
+                            mesh.push(p1);
+                            mesh.push(p2);
+                        }
+
                         mesh.push(curr_ids);
                     }
                     _  => { }
@@ -115,7 +123,7 @@ pub fn parse(string: &str) -> Mesh {
             match mode {
                 V  => if num_parsed != 3 { error(l, "vertices must have 3 components.") },
                 VN => if num_parsed != 3 { error(l, "normals must have 3 components.")  },
-                F  => if num_parsed != 3 { error(l, "faces with more than 3 vertices are not supported.") },
+                F  => if num_parsed < 3 { error(l, "faces must have at least 3 vertices.") },
                 VT => if num_parsed != 2 { error(l, "texture coordinates must have 2 components.") },
                 _  => { }
             }
