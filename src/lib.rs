@@ -19,7 +19,7 @@ pub mod window;
 pub mod event;
 pub mod object;
 pub mod obj;
-
+pub mod mesh;
 pub mod camera;
 
 /*

@@ -105,7 +105,7 @@ impl ShadersManager {
             verify!(gl::UseProgram(program));
 
             // get the variables locations
-            ObjectShaderContext {
+            let ctxt = ObjectShaderContext {
                 program:    program,
                 vshader:    vshader,
                 fshader:    fshader,
@@ -119,7 +119,13 @@ impl ShadersManager {
                 ntransform: gl::GetUniformLocation(program, "ntransform".to_c_str().unwrap()),
                 view:       gl::GetUniformLocation(program, "view".to_c_str().unwrap()),
                 tex:        gl::GetUniformLocation(program, "tex".to_c_str().unwrap())
-            }
+            };
+
+            verify!(gl::EnableVertexAttribArray(ctxt.pos));
+            verify!(gl::EnableVertexAttribArray(ctxt.normal));
+            verify!(gl::EnableVertexAttribArray(ctxt.tex_coord));
+
+            ctxt
         }
     }
 

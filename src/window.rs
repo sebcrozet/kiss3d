@@ -21,7 +21,7 @@ use stb_image::image::*;
 use nalgebra::mat::{RMul, ToHomogeneous, FromHomogeneous};
 use nalgebra::vec::{Vec2, Vec3, Vec4, Norm, VecCast};
 use camera::{Camera, ArcBall};
-use object::{GeometryIndices, Object, VerticesNormalsTriangles, Deleted};
+use object::{Object, VerticesNormalsTriangles, Deleted};
 use lines_manager::LinesManager;
 use post_processing::post_processing_effect::PostProcessingEffect;
 use resources::shaders_manager::{ShadersManager, ObjectShader, LinesShader};
@@ -29,6 +29,7 @@ use resources::textures_manager::{Texture, TexturesManager};
 use resources::framebuffers_manager::{FramebuffersManager, Screen, Offscreen};
 use builtins::loader;
 use event;
+use mesh::Mesh;
 
 mod error;
 
@@ -45,7 +46,7 @@ pub struct Window {
     priv camera:               @mut Camera,
     priv light_mode:           Light,
     priv wireframe_mode:       bool,
-    priv geometries:           HashMap<~str, GeometryIndices>,
+    priv geometries:           HashMap<~str, Rc<Mesh>>,
     priv background:           Vec3<GLfloat>,
     priv lines_manager:        LinesManager,
     priv shaders_manager:      ShadersManager,
@@ -160,7 +161,7 @@ impl Window {
             let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"cube").unwrap();
             Object::new(
-                *geom,
+                geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
                 wx, wy, wz, Deleted)
@@ -182,7 +183,7 @@ impl Window {
             let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"sphere").unwrap();
             Object::new(
-                *geom,
+                geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
                 r / 0.5, r / 0.5, r / 0.5,
@@ -207,7 +208,7 @@ impl Window {
             let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"cone").unwrap();
             Object::new(
-                *geom,
+                geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
                 r / 0.5, h, r / 0.5,
@@ -232,7 +233,7 @@ impl Window {
             let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"cylinder").unwrap();
             Object::new(
-                *geom,
+                geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
                 r / 0.5, h, r / 0.5,
@@ -257,7 +258,7 @@ impl Window {
             let tex  = self.textures_manager.get("default").unwrap();
             let geom = self.geometries.find(&~"capsule").unwrap();
             Object::new(
-                *geom,
+                geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
                 r / 0.5, h, r / 0.5,
@@ -287,131 +288,7 @@ impl Window {
                      wsubdivs: uint,
                      hsubdivs: uint)
                      -> Object {
-        assert!(wsubdivs > 0 && hsubdivs > 0, "The number of subdivisions cannot be zero");
-
-        let wstep    = (w as GLfloat) / (wsubdivs as GLfloat);
-        let hstep    = (h as GLfloat) / (hsubdivs as GLfloat);
-        let wtexstep = 1.0 / (wsubdivs as GLfloat);
-        let htexstep = 1.0 / (hsubdivs as GLfloat);
-        let cw       = w as GLfloat / 2.0;
-        let ch       = h as GLfloat / 2.0;
-
-        let mut vertices   = ~[];
-        let mut normals    = ~[];
-        let mut triangles  = ~[];
-        let mut tex_coords = ~[];
-
-        // create the vertices
-        for i in range(0u, hsubdivs + 1) {
-            for j in range(0u, wsubdivs + 1) {
-                vertices.push(Vec3::new(j as GLfloat * wstep - cw, i as GLfloat * hstep - ch, 0.0));
-                tex_coords.push(Vec2::new(1.0 - j as GLfloat * wtexstep, 1.0 - i as GLfloat * htexstep))
-            }
-        }
-
-        // create the normals
-        do ((hsubdivs + 1) * (wsubdivs + 1)).times {
-            { normals.push(Vec3::new(1.0 as GLfloat, 0.0, 0.0)) }
-        }
-
-        // create triangles
-        fn dl_triangle(i: u32, j: u32, ws: u32) -> (u32, u32, u32) {
-            ((i + 1) * ws + j, i * ws + j, (i + 1) * ws + j + 1)
-        }
-
-        fn ur_triangle(i: u32, j: u32, ws: u32) -> (u32, u32, u32) {
-            (i * ws + j, i * ws + (j + 1), (i + 1) * ws + j + 1)
-        }
-
-        fn inv_wind((a, b, c): (u32, u32, u32)) -> (u32, u32, u32) {
-            (b, a, c)
-        }
-
-        for i in range(0u, hsubdivs) {
-            for j in range(0u, wsubdivs) {
-                // build two triangles...
-                triangles.push(dl_triangle(i as GLuint,
-                j as GLuint,
-                (wsubdivs + 1) as GLuint));
-                triangles.push(ur_triangle(i as GLuint,
-                j as GLuint,
-                (wsubdivs + 1) as GLuint));
-            }
-        }
-
-        // create gpu buffers
-        let vertex_buf:   GLuint = 0;
-        let element_buf:  GLuint = 0;
-        let normal_buf:   GLuint = 0;
-        let texture_buf:  GLuint = 0;
-
-        unsafe {
-            // FIXME: use gl::GenBuffers(3, ...) ?
-            verify!(gl::GenBuffers(1, &vertex_buf));
-            verify!(gl::GenBuffers(1, &element_buf));
-            verify!(gl::GenBuffers(1, &normal_buf));
-            verify!(gl::GenBuffers(1, &texture_buf));
-        }
-
-        // copy vertices
-        unsafe {
-            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buf));
-            verify!(gl::BufferData(
-                gl::ARRAY_BUFFER,
-                (vertices.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
-                cast::transmute(&vertices[0]),
-                gl::DYNAMIC_DRAW
-            ));
-        }
-
-        // copy elements
-        unsafe {
-            verify!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, element_buf));
-            verify!(gl::BufferData(
-                gl::ELEMENT_ARRAY_BUFFER,
-                (triangles.len() * 3 * sys::size_of::<GLuint>()) as GLsizeiptr,
-                cast::transmute(&triangles[0]),
-                gl::STATIC_DRAW
-            ));
-        }
-
-        // copy normals
-        unsafe {
-            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, normal_buf));
-            verify!(gl::BufferData(
-                gl::ARRAY_BUFFER,
-                (normals.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
-                cast::transmute(&normals[0]),
-                gl::DYNAMIC_DRAW
-            ));
-        }
-
-        // copy texture coordinates
-        unsafe {
-            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, texture_buf));
-            verify!(gl::BufferData(
-                gl::ARRAY_BUFFER,
-                (tex_coords.len() * 2 * sys::size_of::<GLfloat>()) as GLsizeiptr,
-                cast::transmute(&tex_coords[0]),
-                gl::STATIC_DRAW
-            ));
-        }
-
-        // FIXME: this weird block indirection are here because of Rust issue #6248
-        let res = {
-            let tex = self.textures_manager.get("default").unwrap();
-            Object::new(
-                GeometryIndices::new(0, (triangles.len() * 3) as i32,
-                element_buf, normal_buf, vertex_buf, texture_buf),
-                1.0, 1.0, 1.0,
-                tex,
-                1.0, 1.0, 1.0,
-                VerticesNormalsTriangles(vertices, normals, triangles))
-        };
-
-        self.objects.push(res.clone());
-
-        res
+        fail!("Review code");
     }
 
     #[doc(hidden)]
