@@ -5,7 +5,7 @@ use std::sys;
 use std::cast;
 use gl;
 use gl::types::*;
-use nalgebra::vec::{Vec2, Vec3, Cross, Norm, Dim};
+use nalgebra::vec::{Vec2, Vec3, Cross, Norm};
 
 pub type Coord  = Vec3<GLfloat>;
 pub type Normal = Vec3<GLfloat>;
@@ -16,6 +16,8 @@ pub type Face   = Vec3<Vertex>;
 #[path = "error.rs"]
 mod error;
 
+/// A Mesh contains all geometric data of a mesh: vertex buffer, index buffer, normals and uvs.
+/// It also contains the GPU location of those buffers.
 pub struct Mesh {
     priv coords:  ~[Coord],
     priv faces:   ~[Face],
@@ -28,6 +30,7 @@ pub struct Mesh {
 }
 
 impl Mesh {
+    /// Creates a new mesh. Arguments set to `None` are automatically computed.
     pub fn new(coords:   ~[Coord],
                faces:    ~[Face],
                normals:  Option<~[Normal]>,
@@ -55,6 +58,7 @@ impl Mesh {
         }
     }
 
+    /// Binds this mesh buffers to vertex attributes.
     pub fn bind(&self, coords: GLuint, normals: GLuint, uvs: GLuint) {
         unsafe {
             verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.vbuf));
@@ -70,56 +74,66 @@ impl Mesh {
         }
     }
 
+    /// Number of points needed to draw this mesh.
     pub fn num_pts(&self) -> uint {
-        self.faces.len()
+        self.faces.len() * 3
     }
 
+    /// Recompute this mesh normals.
     pub fn recompute_normals(&mut self) {
         compute_normals(self.coords, self.faces, &mut self.normals);
     }
 
+    /// This mesh faces.
     pub fn faces<'r>(&'r self) -> &'r [Face] {
         let res: &'r [Face] = self.faces;
 
         res
     }
 
+    /// This mesh faces.
     pub fn faces_mut<'r>(&'r mut self) -> &'r mut [Face] {
         let res: &'r mut [Face] = self.faces;
 
         res
     }
 
+    /// This mesh normals.
     pub fn normals<'r>(&'r self) -> &'r [Normal] {
         let res: &'r [Normal] = self.normals;
 
         res
     }
 
+    /// This mesh normals.
     pub fn normals_mut<'r>(&'r mut self) -> &'r mut [Normal] {
         let res: &'r mut [Normal] = self.normals;
 
         res
     }
 
+    /// This mesh vertices coordinates.
     pub fn coordinates<'r>(&'r self) -> &'r [Coord] {
         let res: &'r [Coord] = self.coords;
 
         res
     }
 
+    /// This mesh vertices coordinates.
     pub fn coordinates_mut<'r>(&'r mut self) -> &'r mut [Coord] {
         let res: &'r mut [Coord] = self.coords;
 
         res
     }
 
+    /// This mesh texture coordinates.
     pub fn uvs<'r>(&'r self) -> &'r [UV] {
         let res: &'r [UV] = self.uvs;
 
         res
     }
 
+    /// This mesh texture coordinates.
     pub fn uvs_mut<'r>(&'r mut self) -> &'r mut [UV] {
         let res: &'r mut [UV] = self.uvs;
 
@@ -127,6 +141,7 @@ impl Mesh {
     }
 }
 
+/// Comutes normals from a set of faces.
 pub fn compute_normals_array(coordinates: &[Coord],
                              faces:       &[Face])
                              -> ~[Normal] {
@@ -137,6 +152,7 @@ pub fn compute_normals_array(coordinates: &[Coord],
     res
 }
 
+/// Comutes normals from a set of faces.
 pub fn compute_normals(coordinates: &[Coord],
                        faces:       &[Face],
                        normals:     &mut ~[Normal]) {
@@ -182,7 +198,7 @@ pub enum BufferType {
 }
 
 impl BufferType {
-    pub fn to_gl(&self) -> GLuint {
+    fn to_gl(&self) -> GLuint {
         match *self {
             ArrayBuffer        => gl::ARRAY_BUFFER,
             ElementArrayBuffer => gl::ELEMENT_ARRAY_BUFFER
@@ -196,7 +212,7 @@ pub enum AllocationType {
 }
 
 impl AllocationType {
-    pub fn to_gl(&self) -> GLuint {
+    fn to_gl(&self) -> GLuint {
         match *self {
             StaticDraw  => gl::STATIC_DRAW,
             DynamicDraw => gl::DYNAMIC_DRAW
@@ -204,6 +220,7 @@ impl AllocationType {
     }
 }
 
+/// Allocates and uploads a buffer to the gpu.
 pub fn load_buffer<T>(buf: &[T], buf_type: BufferType, allocation_type: AllocationType) -> GLuint {
     // Upload values of vertices
     let buf_id: GLuint = 0;

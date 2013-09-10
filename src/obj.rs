@@ -4,7 +4,7 @@ use std::num::Zero;
 use std::from_str::FromStr;
 use std::hashmap::HashMap;
 use gl::types::*;
-use nalgebra::vec::{Vec3, Vec2, Indexable};
+use nalgebra::vec::{Vec3, Indexable};
 use mesh::{Mesh, Coord, Vertex, Normal, UV};
 
 enum Mode {
@@ -19,6 +19,7 @@ fn error(line: uint, err: &str) -> ! {
     fail!("At line " + line.to_str() + ": " + err)
 }
 
+/// Parses an obj file.
 pub fn parse_file(path: &str) -> Mesh {
     parse(io::read_whole_file_str(&PosixPath(path)).expect("Unable to open the file: " + path))
 }

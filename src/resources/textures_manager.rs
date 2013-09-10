@@ -1,3 +1,4 @@
+use std::local_data;
 use extra::rc::Rc;
 use std::cast;
 use std::hashmap::HashMap;
@@ -34,6 +35,20 @@ impl Drop for Texture {
     fn drop(&self) {
        unsafe { verify!(gl::DeleteTextures(1, &self.id)); }
     }
+}
+
+local_data_key!(KEY_TEXTURE_MANAGER: @mut TexturesManager)
+
+/// Inits the texture manager, and put in on TLS.
+pub fn init_singleton() {
+    if local_data::get(KEY_TEXTURE_MANAGER, |tm| tm.is_none()) {
+        local_data::set(KEY_TEXTURE_MANAGER, @mut TexturesManager::new())
+    }
+}
+
+/// Gets the texture manager.
+pub fn singleton() -> @mut TexturesManager {
+    local_data::get(KEY_TEXTURE_MANAGER, |tm| *tm.unwrap())
 }
 
 /// The textures manager. It keeps a cache of already-loaded textures, and can load new textures.

@@ -27,9 +27,9 @@ examples:
 	$(build_cmd) ./examples/lines.rs 
 	$(build_cmd) ./examples/window.rs 
 	$(build_cmd) ./examples/event.rs 
-	$(build_cmd) ./examples/quad.rs 
 	$(build_cmd) ./examples/post_processing.rs 
 	$(build_cmd) ./examples/add_remove.rs 
+	$(build_cmd) ./examples/quad.rs 
 
 doc:
 	mkdir -p $(kiss3d_doc_path)

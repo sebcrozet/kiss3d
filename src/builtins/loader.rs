@@ -1,6 +1,4 @@
-use std::sys;
 use std::cast;
-use std::ptr;
 use std::hashmap::HashMap;
 use extra::rc::Rc;
 use gl;
@@ -12,17 +10,17 @@ use builtins::sphere_obj;
 use builtins::cone_obj;
 use builtins::cylinder_obj;
 use builtins::capsule_obj;
-use resources::textures_manager::TexturesManager;
+use resources::textures_manager;
 use mesh::Mesh;
 
 #[path = "../error.rs"]
 mod error;
 
-pub fn load(ctxt: &ObjectShaderContext, textures_manager: &mut TexturesManager) -> HashMap<~str, Rc<Mesh>> {
+pub fn load(ctxt: &ObjectShaderContext) -> HashMap<~str, Rc<Mesh>> {
     unsafe {
         // create white texture
         // Black/white checkerboard
-        let default_tex = textures_manager.add_empty("default");
+        let default_tex = textures_manager::singleton().add_empty("default");
         let default_tex_pixels: [ GLfloat, ..3 ] = [
             1.0, 1.0, 1.0
             ];

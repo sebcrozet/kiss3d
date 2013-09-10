@@ -15,7 +15,7 @@ fn main() {
         let mut c = window.add_cube(1.0, 1.0, 1.0);
 
         c.set_color(1.0, 0.0, 0.0);
-        c.set_texture(window, "media/kitten.png");
+        c.set_texture("media/kitten.png");
 
 
         window.set_light(window::StickToCamera);

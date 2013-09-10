@@ -1,20 +1,16 @@
-use std::sys;
-use std::ptr;
-use std::num::{One, Zero};
+use std::num::One;
 use std::ptr;
 use std::cast;
-use std::vec;
 use std::borrow;
 use extra::rc::{Rc, RcMut};
 use gl;
 use gl::types::*;
 use nalgebra::mat::{Indexable, ToHomogeneous, Transformation, Transform, Rotation, Rotate, Translation};
-use nalgebra::vec::{Cross, Norm};
 use nalgebra::mat::{Mat3, Mat4};
 use nalgebra::vec::Vec3;
 use nalgebra::types::Iso3f64;
-use window::Window;
 use resources::shaders_manager::ObjectShaderContext;
+use resources::textures_manager;
 use resources::textures_manager::Texture;
 use mesh::Mesh;
 
@@ -23,11 +19,6 @@ mod error;
 
 type Transform3d = Iso3f64;
 type Scale3d     = Mat3<GLfloat>;
-
-pub enum Geometry {
-    VerticesNormalsTriangles(~[Vec3<f32>], ~[Vec3<f32>], ~[(GLuint, GLuint, GLuint)]),
-    Deleted
-}
 
 /// Set of datas identifying a scene node.
 pub struct ObjectData {
@@ -54,8 +45,7 @@ impl Object {
                texture:  Rc<Texture>,
                sx:       GLfloat,
                sy:       GLfloat,
-               sz:       GLfloat,
-               geometry: Geometry) -> Object {
+               sz:       GLfloat) -> Object {
         let data = ObjectData {
             scale:     Mat3::new(sx, 0.0, 0.0,
                                  0.0, sy, 0.0,
@@ -160,7 +150,7 @@ impl Object {
                 verify!(gl::BindTexture(gl::TEXTURE_2D, data.texture.borrow().id()));
 
                 verify!(gl::DrawElements(gl::TRIANGLES,
-                                         data.mesh.borrow().num_pts() as GLint * 3,
+                                         data.mesh.borrow().num_pts() as GLint,
                                          gl::UNSIGNED_INT,
                                          ptr::null()));
             }
@@ -242,11 +232,9 @@ impl Object {
     ///
     /// # Arguments
     ///   * `path` - relative path of the texture on the disk
-    // FIXME: find a way to avoid the `parent` argument.
-    // Maybe using singletons for resourses managers?
-    pub fn set_texture(&mut self, parent: &mut Window, path: &str) {
+    pub fn set_texture(&mut self, path: &str) {
         do self.data.with_mut_borrow |d| {
-            d.texture = parent.add_texture(path);
+            d.texture = textures_manager::singleton().add(path);
         }
     }
 

@@ -9,8 +9,6 @@ use std::rt::io::timer::Timer;
 use std::rt::rtio::RtioTimer;
 use std::num::Zero;
 use std::libc;
-use std::sys;
-use std::cast;
 use std::hashmap::HashMap;
 use extra::time;
 use extra::rc::Rc;
@@ -21,11 +19,12 @@ use stb_image::image::*;
 use nalgebra::mat::{RMul, ToHomogeneous, FromHomogeneous};
 use nalgebra::vec::{Vec2, Vec3, Vec4, Norm, VecCast};
 use camera::{Camera, ArcBall};
-use object::{Object, VerticesNormalsTriangles, Deleted};
+use object::Object;
 use lines_manager::LinesManager;
 use post_processing::post_processing_effect::PostProcessingEffect;
 use resources::shaders_manager::{ShadersManager, ObjectShader, LinesShader};
-use resources::textures_manager::{Texture, TexturesManager};
+use resources::textures_manager::Texture;
+use resources::textures_manager;
 use resources::framebuffers_manager::{FramebuffersManager, Screen, Offscreen};
 use builtins::loader;
 use event;
@@ -51,7 +50,6 @@ pub struct Window {
     priv background:           Vec3<GLfloat>,
     priv lines_manager:        LinesManager,
     priv shaders_manager:      ShadersManager,
-    priv textures_manager:     TexturesManager,
     priv framebuffers_manager: FramebuffersManager,
     priv post_processing:      Option<@mut PostProcessingEffect>,
     priv process_fbo_texture:  GLuint,
@@ -150,10 +148,15 @@ impl Window {
         }
     }
 
+    /// Adds an obj model to the scene.
+    ///
+    /// # Arguments
+    ///     * `path`  - relative path to the obj file.
+    ///     * `scale` - uniform scale to apply to the model.
     pub fn add_obj(&mut self, path: &str, scale: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = self.textures_manager.get("default").unwrap();
+            let tex  = textures_manager::singleton().get("default").unwrap();
             let key  = path.to_owned();
             let (insert, mesh) =
                 match self.geometries.find(&key) {
@@ -173,7 +176,7 @@ impl Window {
                 mesh,
                 1.0, 1.0, 1.0,
                 tex,
-                scale, scale, scale, Deleted)
+                scale, scale, scale)
         };
 
         self.objects.push(res.clone());
@@ -190,13 +193,13 @@ impl Window {
     pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = self.textures_manager.get("default").unwrap();
+            let tex  = textures_manager::singleton().get("default").unwrap();
             let geom = self.geometries.find(&~"cube").unwrap();
             Object::new(
                 geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
-                wx, wy, wz, Deleted)
+                wx, wy, wz)
         };
 
         self.objects.push(res.clone());
@@ -211,14 +214,13 @@ impl Window {
     pub fn add_sphere(&mut self, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = self.textures_manager.get("default").unwrap();
+            let tex  = textures_manager::singleton().get("default").unwrap();
             let geom = self.geometries.find(&~"sphere").unwrap();
             Object::new(
                 geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
-                r / 0.5, r / 0.5, r / 0.5,
-                Deleted)
+                r / 0.5, r / 0.5, r / 0.5)
         };
 
         self.objects.push(res.clone());
@@ -235,14 +237,13 @@ impl Window {
     pub fn add_cone(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = self.textures_manager.get("default").unwrap();
+            let tex  = textures_manager::singleton().get("default").unwrap();
             let geom = self.geometries.find(&~"cone").unwrap();
             Object::new(
                 geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
-                r / 0.5, h, r / 0.5,
-                Deleted)
+                r / 0.5, h, r / 0.5)
         };
 
         self.objects.push(res.clone());
@@ -259,14 +260,13 @@ impl Window {
     pub fn add_cylinder(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = self.textures_manager.get("default").unwrap();
+            let tex  = textures_manager::singleton().get("default").unwrap();
             let geom = self.geometries.find(&~"cylinder").unwrap();
             Object::new(
                 geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
-                r / 0.5, h, r / 0.5,
-                Deleted)
+                r / 0.5, h, r / 0.5)
         };
 
         self.objects.push(res.clone());
@@ -283,14 +283,13 @@ impl Window {
     pub fn add_capsule(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = self.textures_manager.get("default").unwrap();
+            let tex  = textures_manager::singleton().get("default").unwrap();
             let geom = self.geometries.find(&~"capsule").unwrap();
             Object::new(
                 geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
-                r / 0.5, h, r / 0.5,
-                Deleted)
+                r / 0.5, h, r / 0.5)
         };
 
         self.objects.push(res.clone());
@@ -310,17 +309,17 @@ impl Window {
     ///   * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
     ///   which will be placed vertically on each line. Must not be `0`
     pub fn add_quad(&mut self,
-                     w:        f64,
-                     h:        f64,
-                     wsubdivs: uint,
-                     hsubdivs: uint)
+                     _: f64,
+                     _: f64,
+                     _: uint,
+                     _: uint)
                      -> Object {
         fail!("Review code");
     }
 
     #[doc(hidden)]
     pub fn add_texture(&mut self, path: &str) -> Rc<Texture> {
-        self.textures_manager.add(path)
+        textures_manager::singleton().add(path)
     }
 
     /// Converts a 3d point to 2d screen coordinates.
@@ -498,6 +497,7 @@ impl Window {
     }
 
     fn do_spawn(title: ~str, hide: bool, callback: ~fn(&mut Window)) {
+        textures_manager::init_singleton();
         glfw::set_error_callback(error_callback);
 
         do glfw::start {
@@ -512,9 +512,8 @@ impl Window {
             // FIXME: load that iff the user really uses post-processing
             let (process_fbo_texture, process_fbo_depth) = init_post_process_buffers(800, 600);
 
-            let mut textures = TexturesManager::new();
             let shaders      = ShadersManager::new();
-            let builtins     = loader::load(shaders.object_context(), &mut textures);
+            let builtins     = loader::load(shaders.object_context());
             let camera       = @mut ArcBall::new(-Vec3::z(), Zero::zero());
 
             let mut usr_window = Window {
@@ -531,7 +530,6 @@ impl Window {
                 post_processing:       None,
                 process_fbo_texture:   process_fbo_texture,
                 process_fbo_depth:     process_fbo_depth,
-                textures_manager:      textures,
                 framebuffers_manager:  FramebuffersManager::new(),
                 events:                RWArc::new(~[]),
                 keyboard_callback:     |_, _| { true },
