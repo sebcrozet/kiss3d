@@ -26,19 +26,19 @@ pub struct ObjectData {
     priv scale:     Scale3d,
     priv transform: Transform3d,
     priv color:     Vec3<f32>,
-    priv mesh:      Rc<Mesh>,
 }
 
 /// Structure of all 3d objects on the scene. This is the only interface to manipulate the object
 /// position, color, vertices and texture.
 #[deriving(Clone)]
 pub struct Object {
-    priv data: RcMut<ObjectData>
+    priv data:    RcMut<ObjectData>,
+    priv mesh:    RcMut<Mesh>
 }
 
 impl Object {
     #[doc(hidden)]
-    pub fn new(mesh:     Rc<Mesh>,
+    pub fn new(mesh:     RcMut<Mesh>,
                r:        f32,
                g:        f32,
                b:        f32,
@@ -51,13 +51,13 @@ impl Object {
                                  0.0, sy, 0.0,
                                  0.0, 0.0, sz),
             transform: One::one(),
-            mesh:      mesh,
             color:     Vec3::new(r, g, b),
-            texture:   texture
+            texture: texture,
         };
 
         Object {
-            data: RcMut::from_freeze(data)
+            data:    RcMut::from_freeze(data),
+            mesh:    mesh,
         }
     }
 
@@ -145,79 +145,31 @@ impl Object {
                 verify!(gl::Uniform3f(context.color, data.color.x, data.color.y, data.color.z));
 
                 // FIXME: we should not switch the buffers if the last drawn shape uses the same.
-                data.mesh.borrow().bind(context.pos, context.normal, context.tex_coord);
+                self.mesh.with_borrow(|m| m.bind(context.pos, context.normal, context.tex_coord));
 
-                verify!(gl::BindTexture(gl::TEXTURE_2D, data.texture.borrow().id()));
+                verify!(gl::ActiveTexture(gl::TEXTURE0));
+                verify!(gl::BindTexture(gl::TEXTURE_2D, self.data.with_borrow(|d| d.texture.borrow().id())));
 
                 verify!(gl::DrawElements(gl::TRIANGLES,
-                                         data.mesh.borrow().num_pts() as GLint,
+                                         self.mesh.with_borrow(|m| m.num_pts()) as GLint,
                                          gl::UNSIGNED_INT,
                                          ptr::null()));
+
+                self.mesh.with_borrow(|m| m.unbind());
             }
         }
     }
 
-    // /// The object geometry. Some geometries might not be
-    // /// available (because they are only loaded on graphics memory); in this case this is a no-op.
-    // pub fn geometry<'r>(&'r self) -> &'r Geometry {
-    //     do self.data.with_borrow |data| {
-    //         &'r data.geometry
-    //     }
-    // }
-
-    /*
-    /// Applies a user-defined callback on the object geometry. Some geometries might not be
-    /// available (because they are only loaded on graphics memory); in this case this is a no-op.
-    ///
-    /// # Arguments
-    ///   * `f` - A user-defined callback called on the object geometry. If it returns `true`, the
-    ///   geometry will be updated on graphics memory too. Otherwise, the modification will not have
-    ///   any effect on the 3d display.
-    pub fn modify_geometry(&mut self,
-                           f: &fn(vertices:  &mut ~[Vec3<f32>],
-                           normals:   &mut ~[Vec3<f32>],
-                           triangles: &mut ~[(GLuint, GLuint, GLuint)]) -> bool) {
-        let update = do self.data.with_mut_borrow |d| {
-            match d.geometry {
-                VerticesNormalsTriangles(ref mut v, ref mut n, ref mut t) => f(v, n, t),
-                Deleted => false
+    /// Get a write access to the geometry mesh. Return true if the geometry needs to be
+    /// re-uploaded to the GPU.
+    pub fn modify_mesh(&mut self, f: &fn(&mut Mesh) -> bool) {
+        do self.mesh.with_mut_borrow |m| {
+            if f(m) {
+                // FIXME: find a way to upload only the modified parts.
+                m.upload()
             }
-        };
-
-        if update {
-            self.upload_geometry()
         }
     }
-    */
-
-    /*
-    /// Applies a user-defined callback on the object vertices. Some geometries might not be
-    /// available (because they are only loaded on graphics memory); in this case this is a no-op.
-    ///
-    /// # Arguments
-    ///   * `f` - A user-defined callback called on the object vertice. The normals are automatically
-    ///   recomputed. If it returns `true`, the the geometry will be updated on graphics memory too.
-    ///   Otherwise, the modifications will not have any effect on the 3d display.
-    pub fn modify_vertices(&mut self, f: &fn(&mut ~[Vec3<f32>]) -> bool) {
-        let (update, normals) =
-            do self.data.with_mut_borrow |d| {
-                match d.geometry {
-                    VerticesNormalsTriangles(ref mut v, _, _) => (f(v), true),
-                    Deleted => (false, false)
-                }
-            };
-
-        if normals {
-            fail!("Code needs review.");
-            // self.recompute_normals()
-        }
-
-        if update {
-            self.upload_geometry()
-        }
-    }
-    */
-
 
     /// Sets the color of the object. Colors components must be on the range `[0.0, 1.0]`.
     pub fn set_color(&mut self, r: f32, g: f32, b: f32) {
@@ -233,9 +185,7 @@ impl Object {
     /// # Arguments
     ///   * `path` - relative path of the texture on the disk
     pub fn set_texture(&mut self, path: &str) {
-        do self.data.with_mut_borrow |d| {
-            d.texture = textures_manager::singleton().add(path);
-        }
+        self.data.with_mut_borrow(|d| d.texture = textures_manager::singleton().add(path));
     }
 
     /// Move and orient the object such that it is placed at the point `eye` and have its `x` axis

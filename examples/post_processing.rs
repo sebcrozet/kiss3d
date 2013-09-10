@@ -46,17 +46,17 @@ fn main() {
         window.set_light(window::StickToCamera);
         window.set_framerate_limit(Some(60));
 
-        let time    = @mut 0u;
-        let counter = @mut 0u;
+        let mut time    = 0u;
+        let mut counter = 0u;
 
         do window.render_loop |w| {
-            if *time % 200 == 0 {
-                w.set_post_processing_effect(effects[*counter]);
-                *time    = 0;
-                *counter = (*counter + 1) % effects.len();
+            if time % 200 == 0 {
+                w.set_post_processing_effect(effects[counter]);
+                time    = 0;
+                counter = (counter + 1) % effects.len();
             }
 
-            *time = *time + 1;
+            time = time + 1;
         }
     }
 }

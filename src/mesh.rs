@@ -31,10 +31,11 @@ pub struct Mesh {
 
 impl Mesh {
     /// Creates a new mesh. Arguments set to `None` are automatically computed.
-    pub fn new(coords:   ~[Coord],
-               faces:    ~[Face],
-               normals:  Option<~[Normal]>,
-               uvs:      Option<~[UV]>)
+    pub fn new(coords:          ~[Coord],
+               faces:           ~[Face],
+               normals:         Option<~[Normal]>,
+               uvs:             Option<~[UV]>,
+               fast_modifiable: bool)
                -> Mesh {
         let normals = match normals {
             Some(ns) => ns,
@@ -46,16 +47,25 @@ impl Mesh {
             None     => vec::from_elem(coords.len(), Zero::zero()) // dummy uvs
         };
 
+        let draw_location = if fast_modifiable { DynamicDraw } else { StaticDraw };
         Mesh {
-            ebuf:    load_buffer(faces, ElementArrayBuffer, StaticDraw),
-            nbuf:    load_buffer(normals, ArrayBuffer, StaticDraw),
-            vbuf:    load_buffer(coords, ArrayBuffer, StaticDraw),
-            tbuf:    load_buffer(uvs, ArrayBuffer, StaticDraw),
+            ebuf:    load_buffer(faces, ElementArrayBuffer, draw_location),
+            nbuf:    load_buffer(normals, ArrayBuffer, draw_location),
+            vbuf:    load_buffer(coords, ArrayBuffer, draw_location),
+            tbuf:    load_buffer(uvs, ArrayBuffer, draw_location),
             coords:  coords,
             faces:   faces,
             normals: normals,
             uvs:     uvs
         }
+    }
+
+    /// Upload this mesh datas to the GPU.
+    pub fn upload(&self) {
+        upload_buffer(self.faces, self.ebuf, ElementArrayBuffer, StaticDraw);
+        upload_buffer(self.normals, self.nbuf, ArrayBuffer, StaticDraw);
+        upload_buffer(self.coords, self.vbuf, ArrayBuffer, StaticDraw);
+        upload_buffer(self.uvs, self.tbuf, ArrayBuffer, StaticDraw);
     }
 
     /// Binds this mesh buffers to vertex attributes.
@@ -72,6 +82,12 @@ impl Mesh {
             verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.tbuf));
             verify!(gl::VertexAttribPointer(uvs, 2, gl::FLOAT, gl::FALSE as u8, 0, ptr::null()));
         }
+    }
+
+    /// Unbind this mesh buffers to vertex attributes.
+    pub fn unbind(&self) {
+        verify!(gl::BindBuffer(gl::ARRAY_BUFFER, 0));
+        verify!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0));
     }
 
     /// Number of points needed to draw this mesh.
@@ -92,7 +108,7 @@ impl Mesh {
     }
 
     /// This mesh faces.
-    pub fn faces_mut<'r>(&'r mut self) -> &'r mut [Face] {
+    pub fn mut_faces<'r>(&'r mut self) -> &'r mut [Face] {
         let res: &'r mut [Face] = self.faces;
 
         res
@@ -106,21 +122,21 @@ impl Mesh {
     }
 
     /// This mesh normals.
-    pub fn normals_mut<'r>(&'r mut self) -> &'r mut [Normal] {
+    pub fn mut_normals<'r>(&'r mut self) -> &'r mut [Normal] {
         let res: &'r mut [Normal] = self.normals;
 
         res
     }
 
     /// This mesh vertices coordinates.
-    pub fn coordinates<'r>(&'r self) -> &'r [Coord] {
+    pub fn coords<'r>(&'r self) -> &'r [Coord] {
         let res: &'r [Coord] = self.coords;
 
         res
     }
 
     /// This mesh vertices coordinates.
-    pub fn coordinates_mut<'r>(&'r mut self) -> &'r mut [Coord] {
+    pub fn mut_coords<'r>(&'r mut self) -> &'r mut [Coord] {
         let res: &'r mut [Coord] = self.coords;
 
         res
@@ -208,14 +224,16 @@ impl BufferType {
 
 pub enum AllocationType {
     StaticDraw,
-    DynamicDraw
+    DynamicDraw,
+    StreamDraw
 }
 
 impl AllocationType {
     fn to_gl(&self) -> GLuint {
         match *self {
             StaticDraw  => gl::STATIC_DRAW,
-            DynamicDraw => gl::DYNAMIC_DRAW
+            DynamicDraw => gl::DYNAMIC_DRAW,
+            StreamDraw  => gl::STREAM_DRAW
         }
     }
 }
@@ -227,6 +245,15 @@ pub fn load_buffer<T>(buf: &[T], buf_type: BufferType, allocation_type: Allocati
 
     unsafe {
         verify!(gl::GenBuffers(1, &buf_id));
+        upload_buffer(buf, buf_id, buf_type, allocation_type);
+    }
+
+    buf_id
+}
+
+/// Allocates and uploads a buffer to the gpu.
+pub fn upload_buffer<T>(buf: &[T], buf_id: GLuint, buf_type: BufferType, allocation_type: AllocationType) {
+    unsafe {
         verify!(gl::BindBuffer(buf_type.to_gl(), buf_id));
         verify!(gl::BufferData(
                 buf_type.to_gl(),
@@ -234,8 +261,6 @@ pub fn load_buffer<T>(buf: &[T], buf_type: BufferType, allocation_type: Allocati
                 cast::transmute(&buf[0]),
                 allocation_type.to_gl()));
     }
-
-    buf_id
 }
 
 impl Drop for Mesh {

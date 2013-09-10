@@ -15,21 +15,23 @@ fn main() {
         
         c.set_color(random(), random(), random());
 
-        let time = @mut 0.016f32;
+        let mut time = 0.016f32;
 
         window.set_light(window::StickToCamera);
 
         do window.render_loop |_| {
-            do c.modify_vertices |vs| {
-                for v in vs.mut_iter() {
-                    v.z = time.sin() * (((v.x + *time) * 4.0).cos() +
-                                        time.sin() * ((v.y + *time) * 4.0 + *time).cos()) / 2.0
+            do c.modify_mesh |m| {
+                for v in m.mut_coords().mut_iter() {
+                    v.z = time.sin() * (((v.x + time) * 4.0).cos() +
+                          time.sin() * ((v.y + time) * 4.0 + time).cos()) / 2.0
                 }
+
+                m.recompute_normals();
 
                 true
             }
 
-            *time = *time + 0.016;
+            time = time + 0.016;
         }
     }
 }

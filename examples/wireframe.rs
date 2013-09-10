@@ -19,17 +19,17 @@ fn main() {
         window.set_light(window::StickToCamera);
         window.set_framerate_limit(Some(60));
 
-        let time = @mut 0u;
-        let on   = @mut true;
+        let mut time = 0u;
+        let mut on   = true;
 
         do window.render_loop |w| {
-            if *time % 200 == 0 {
+            if time % 200 == 0 {
                 // Toogle the wireframe mode.
-                w.set_wireframe_mode(*on);
-                *on = !*on;
+                w.set_wireframe_mode(on);
+                on = !on;
             }
 
-            *time = *time + 1;
+            time = time + 1;
 
             c.rotate_by(&Vec3::new(0.0f64, 0.014, 0.0))
         }

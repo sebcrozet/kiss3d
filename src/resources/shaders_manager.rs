@@ -68,18 +68,40 @@ impl ShadersManager {
         ShadersManager {
             object_context: object_context,
             lines_context:  ShadersManager::load_lines_shader(),
-            shader:         ObjectShader
+            shader:         Other
         }
     }
 
     /// Selects a specific shader program.
     pub fn select(&mut self, shader: Shader) {
         if true { // FIXME: shader != self.shader
+            match self.shader {
+                ObjectShader => {
+                    verify!(gl::DisableVertexAttribArray(self.object_context.pos));
+                    verify!(gl::DisableVertexAttribArray(self.object_context.normal));
+                    verify!(gl::DisableVertexAttribArray(self.object_context.tex_coord));
+                },
+                LinesShader => {
+                    verify!(gl::DisableVertexAttribArray(self.lines_context.pos));
+                    verify!(gl::DisableVertexAttribArray(self.lines_context.color));
+                }
+                _ => { }
+            }
+
             self.shader = shader;
 
             match self.shader {
-                ObjectShader => { verify!(gl::UseProgram(self.object_context.program)); },
-                LinesShader  => { verify!(gl::UseProgram(self.lines_context.program)); }
+                ObjectShader => {
+                    verify!(gl::UseProgram(self.object_context.program));
+                    verify!(gl::EnableVertexAttribArray(self.object_context.pos));
+                    verify!(gl::EnableVertexAttribArray(self.object_context.normal));
+                    verify!(gl::EnableVertexAttribArray(self.object_context.tex_coord));
+                },
+                LinesShader => {
+                    verify!(gl::UseProgram(self.lines_context.program));
+                    verify!(gl::EnableVertexAttribArray(self.lines_context.pos));
+                    verify!(gl::EnableVertexAttribArray(self.lines_context.color));
+                }
                 _ => { }
             }
         }
@@ -121,10 +143,6 @@ impl ShadersManager {
                 tex:        gl::GetUniformLocation(program, "tex".to_c_str().unwrap())
             };
 
-            verify!(gl::EnableVertexAttribArray(ctxt.pos));
-            verify!(gl::EnableVertexAttribArray(ctxt.normal));
-            verify!(gl::EnableVertexAttribArray(ctxt.tex_coord));
-
             ctxt
         }
     }
@@ -137,6 +155,8 @@ impl ShadersManager {
                     shaders::LINES_VERTEX_SRC,
                     shaders::LINES_FRAGMENT_SRC);
 
+            verify!(gl::UseProgram(program));
+
             let res = LinesShaderContext {
                 program: program,
                 vshader: vshader,
@@ -145,9 +165,6 @@ impl ShadersManager {
                 color:   gl::GetAttribLocation(program,  "color".to_c_str().unwrap()) as GLuint,
                 view:    gl::GetUniformLocation(program, "view".to_c_str().unwrap()),
             };
-
-            verify!(gl::EnableVertexAttribArray(res.pos));
-            verify!(gl::EnableVertexAttribArray(res.color));
 
             res
         }

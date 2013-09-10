@@ -70,7 +70,6 @@ impl Grayscales {
             verify!(gl::UseProgram(program));
 
             let v_coord = gl::GetAttribLocation(program, "v_coord".to_c_str().unwrap());
-            verify!(gl::EnableVertexAttribArray(v_coord as GLuint));
 
             Grayscales {
                 vshader:      vshader,
@@ -91,6 +90,8 @@ impl PostProcessingEffect for Grayscales {
 
     fn draw(&self, shaders_manager: &mut ShadersManager, fbo_texture: GLuint, _: GLuint) {
         shaders_manager.select(Other);
+
+        verify!(gl::EnableVertexAttribArray(self.v_coord as GLuint));
 
         /*
          * Finalize draw
@@ -113,6 +114,7 @@ impl PostProcessingEffect for Grayscales {
                 ptr::null());
         }
         verify!(gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4));
+        verify!(gl::DisableVertexAttribArray(self.v_coord as GLuint));
     }
 }
 

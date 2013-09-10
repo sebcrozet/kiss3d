@@ -200,7 +200,7 @@ impl Camera for ArcBall {
         Vec3::new(px, py, pz)
     }
 
-    fn handle_mouse(&mut self, window: &glfw::Window, event: &event::MouseEvent) {
+    fn handle_event(&mut self, window: &glfw::Window, event: &event::Event) {
         match *event {
             event::CursorPos(x, y) => {
                 let curr_pos = Vec2::new(x as f64, y as f64);
@@ -217,24 +217,17 @@ impl Camera for ArcBall {
 
                 self.last_cursor_pos = curr_pos;
             },
-            event::Scroll(_, off)  => self.handle_scroll(off),
-            _ => { }
-        }
-    }
-
-    fn handle_keyboard(&mut self, _: &glfw::Window, event: &event::KeyboardEvent) {
-        match *event {
             event::KeyReleased(button) => if button == KEY_ENTER {
                 self.at = Zero::zero();
                 self.update_projviews();
             },
+            event::Scroll(_, off) => self.handle_scroll(off),
+            event::FramebufferSize(w, h) => {
+                self.projection = Mat4::new_perspective(w, h, self.fov, self.znear, self.zfar);
+                self.update_projviews();
+            },
             _ => { }
         }
-    }
-
-    fn handle_framebuffer_size_change(&mut self, w: f64, h: f64) {
-        self.projection = Mat4::new_perspective(w, h, self.fov, self.znear, self.zfar);
-        self.update_projviews();
     }
 
     fn transformation(&self) -> Mat4<f64> {

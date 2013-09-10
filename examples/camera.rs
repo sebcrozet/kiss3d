@@ -28,23 +28,22 @@ fn main()
 
         window.set_camera(arc_ball as @mut Camera);
 
-        do window.set_keyboard_callback |w, event| {
-            match *event {
-                KeyReleased(key) => {
-                    if key == consts::KEY_1 {
-                        w.set_camera(arc_ball as @mut Camera)
+        do window.render_loop |w| {
+            do w.poll_events |w, event| {
+                match *event {
+                    KeyReleased(key) => {
+                        if key == consts::KEY_1 {
+                            w.set_camera(arc_ball as @mut Camera)
+                        }
+                        else {
+                            w.set_camera(first_person as @mut Camera)
+                        }
                     }
-                    else {
-                        w.set_camera(first_person as @mut Camera)
-                    }
+                    _ => { }
                 }
-                _ => { }
+                true
             }
-            true
-        }
 
-        do window.render_loop |w|
-        {
             w.draw_line(&Zero::zero(), &Vec3::x(), &Vec3::x());
             w.draw_line(&Zero::zero(), &Vec3::y(), &Vec3::y());
             w.draw_line(&Zero::zero(), &Vec3::z(), &Vec3::z());

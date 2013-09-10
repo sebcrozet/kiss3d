@@ -80,6 +80,7 @@ impl TexturesManager {
     pub fn add(&mut self, path: &str) -> Rc<Texture> {
         let tex = self.textures.find_or_insert_with(path.to_owned(), |_| Texture::new());
 
+        // FIXME: dont re-load the texture if it already exists!
         unsafe {
             match image::load_with_depth(path.to_owned(), 3, false) {
                 ImageU8(image) => {

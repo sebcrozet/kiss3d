@@ -137,7 +137,6 @@ impl SobelEdgeHighlight {
             verify!(gl::UseProgram(program));
 
             let v_coord = gl::GetAttribLocation(program, "v_coord".to_c_str().unwrap());
-            verify!(gl::EnableVertexAttribArray(v_coord as GLuint));
 
             SobelEdgeHighlight {
                 gl_vshader:      vshader,
@@ -175,6 +174,8 @@ impl PostProcessingEffect for SobelEdgeHighlight {
             fbo_texture:     GLuint,
             fbo_depth:       GLuint) {
         shaders_manager.select(Other);
+
+        verify!(gl::EnableVertexAttribArray(self.gl_v_coord as GLuint));
         /*
          * Finalize draw
          */
@@ -198,6 +199,7 @@ impl PostProcessingEffect for SobelEdgeHighlight {
 
 
         verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.gl_fbo_vertices));
+
         unsafe {
             gl::VertexAttribPointer(
                 self.gl_v_coord as GLuint,
@@ -207,7 +209,9 @@ impl PostProcessingEffect for SobelEdgeHighlight {
                 0,
                 ptr::null());
         }
+
         verify!(gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4));
+        verify!(gl::DisableVertexAttribArray(self.gl_v_coord as GLuint));
     }
 }
 

@@ -206,5 +206,5 @@ fn reformat(coords:  ~[Coord],
         resf.push(Vec3::new(f[0], f[1], f[2]))
     }
 
-    Mesh::new(resc, resf, resn, resu)
+    Mesh::new(resc, resf, resn, resu, false)
 }

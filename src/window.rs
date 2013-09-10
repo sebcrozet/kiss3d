@@ -11,7 +11,7 @@ use std::num::Zero;
 use std::libc;
 use std::hashmap::HashMap;
 use extra::time;
-use extra::rc::Rc;
+use extra::rc::{Rc, RcMut};
 use extra::arc::RWArc;
 use gl;
 use gl::types::*;
@@ -46,7 +46,7 @@ pub struct Window {
     priv camera:               @mut Camera,
     priv light_mode:           Light,
     priv wireframe_mode:       bool,
-    priv geometries:           HashMap<~str, Rc<Mesh>>,
+    priv geometries:           HashMap<~str, RcMut<Mesh>>,
     priv background:           Vec3<GLfloat>,
     priv lines_manager:        LinesManager,
     priv shaders_manager:      ShadersManager,
@@ -54,9 +54,7 @@ pub struct Window {
     priv post_processing:      Option<@mut PostProcessingEffect>,
     priv process_fbo_texture:  GLuint,
     priv process_fbo_depth:    GLuint,
-    priv events:               RWArc<~[event::Event]>,
-    priv keyboard_callback:    @fn(&mut Window, &event::KeyboardEvent) -> bool,
-    priv mouse_callback:       @fn(&mut Window, &event::MouseEvent) -> bool
+    priv events:               RWArc<~[event::Event]>
 }
 
 impl Window {
@@ -94,7 +92,7 @@ impl Window {
         let (w, h) = self.window.get_size();
 
         self.camera = camera;
-        self.camera.handle_framebuffer_size_change(w as f64, h as f64);
+        self.camera.handle_event(&self.window, &event::FramebufferSize(w as f64, h as f64));
     }
 
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
@@ -162,7 +160,7 @@ impl Window {
                 match self.geometries.find(&key) {
                     Some(m) => (false, m.clone()),
                     None    => {
-                        let m = Rc::from_send(obj::parse_file(path));
+                        let m = RcMut::from_send(obj::parse_file(path));
 
                         (true, m)
                     },
@@ -309,12 +307,74 @@ impl Window {
     ///   * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
     ///   which will be placed vertically on each line. Must not be `0`
     pub fn add_quad(&mut self,
-                     _: f64,
-                     _: f64,
-                     _: uint,
-                     _: uint)
+                     w:        f64,
+                     h:        f64,
+                     wsubdivs: uint,
+                     hsubdivs: uint)
                      -> Object {
-        fail!("Review code");
+        assert!(wsubdivs > 0 && hsubdivs > 0, "The number of subdivisions cannot be zero");
+
+        let wstep    = (w as GLfloat) / (wsubdivs as GLfloat);
+        let hstep    = (h as GLfloat) / (hsubdivs as GLfloat);
+        let wtexstep = 1.0 / (wsubdivs as GLfloat);
+        let htexstep = 1.0 / (hsubdivs as GLfloat);
+        let cw       = w as GLfloat / 2.0;
+        let ch       = h as GLfloat / 2.0;
+
+        let mut vertices   = ~[];
+        let mut normals    = ~[];
+        let mut triangles  = ~[];
+        let mut tex_coords = ~[];
+
+        // create the vertices
+        for i in range(0u, hsubdivs + 1) {
+            for j in range(0u, wsubdivs + 1) {
+                vertices.push(Vec3::new(j as GLfloat * wstep - cw, i as GLfloat * hstep - ch, 0.0));
+                tex_coords.push(Vec2::new(1.0 - j as GLfloat * wtexstep, 1.0 - i as GLfloat * htexstep))
+            }
+        }
+
+        // create the normals
+        do ((hsubdivs + 1) * (wsubdivs + 1)).times {
+            { normals.push(Vec3::new(1.0 as GLfloat, 0.0, 0.0)) }
+        }
+
+        // create triangles
+        fn dl_triangle(i: u32, j: u32, ws: u32) -> Vec3<GLuint> {
+            Vec3::new((i + 1) * ws + j, i * ws + j, (i + 1) * ws + j + 1)
+        }
+
+        fn ur_triangle(i: u32, j: u32, ws: u32) -> Vec3<GLuint> {
+            Vec3::new(i * ws + j, i * ws + (j + 1), (i + 1) * ws + j + 1)
+        }
+
+        fn inv_wind(t: &Vec3<GLuint>) -> Vec3<GLuint> {
+            Vec3::new(t.y, t.x, t.z)
+        }
+
+        for i in range(0u, hsubdivs) {
+            for j in range(0u, wsubdivs) {
+                // build two triangles...
+                triangles.push(dl_triangle(i as GLuint, j as GLuint, (wsubdivs + 1) as GLuint));
+                triangles.push(ur_triangle(i as GLuint, j as GLuint, (wsubdivs + 1) as GLuint));
+            }
+        }
+
+        let mesh = Mesh::new(vertices, triangles, Some(normals), Some(tex_coords), true);
+
+        // FIXME: this weird block indirection are here because of Rust issue #6248
+        let res = {
+            let tex = textures_manager::singleton().get("default").unwrap();
+            Object::new(
+                RcMut::from_send(mesh),
+                1.0, 1.0, 1.0,
+                tex,
+                1.0, 1.0, 1.0)
+        };
+
+        self.objects.push(res.clone());
+
+        res
     }
 
     #[doc(hidden)]
@@ -371,6 +431,39 @@ impl Window {
         res
     }
 
+    /// Poll events and pass them to a user-defined function. If the function returns `true`, the
+    /// default engine event handler (camera, framebuffer size, etc.) is executed, if it returns
+    /// `false`, the default engine event handler is not executed. Return `false` if you want to
+    /// override the default engine behaviour.
+    #[inline(always)]
+    pub fn poll_events(&mut self, events_handler: &fn(&mut Window, &event::Event) -> bool) {
+        // redispatch them
+        let events = self.events.clone();
+        do events.read |es| {
+            for e in es.iter() {
+                if events_handler(self, e) {
+                    match *e {
+                        event::KeyReleased(key) => {
+                            if key == consts::KEY_ESCAPE {
+                                self.close();
+                                loop
+                            }
+                        },
+                        event::FramebufferSize(w, h) => {
+                            self.update_viewport(w, h);
+                        },
+                        _ => { }
+                    }
+
+                    self.camera.handle_event(&self.window, e);
+                }
+            }
+        }
+
+        // clear the events collector
+        self.events.write(|c| c.clear());
+    }
+
     /// Starts an infinite loop polling events, calling an user-defined callback, and drawing the
     /// scene.
     pub fn render_loop(&mut self, callback: &fn(&mut Window)) {
@@ -381,71 +474,13 @@ impl Window {
         while !self.window.should_close() {
             // collect events
             glfw::poll_events();
-            // redispatch them
-            self.redispatch_events();
-            // clear the events collector
-            self.events.write(|c| c.clear());
 
             callback(self);
 
+            self.poll_events(|_, _| true);
+
             self.draw(&mut curr, &mut timer)
         }
-    }
-
-    fn redispatch_events(&mut self) {
-        let events = self.events.clone();
-        do events.read |es| {
-            for e in es.iter() {
-                match *e {
-                    event::Keyboard(ref k) => {
-                        if (self.keyboard_callback)(self, k) {
-                            match *k {
-                                event::KeyReleased(key) => {
-                                    if key == consts::KEY_ESCAPE {
-                                        self.close();
-                                        loop
-                                    }
-                                },
-                                _ => { }
-                            }
-
-                            self.camera.handle_keyboard(&self.window, k);
-                        }
-                    },
-                    event::Mouse(ref m) => {
-                        if (self.mouse_callback)(self, m) {
-                            self.camera.handle_mouse(&self.window, m);
-                        }
-                    },
-                    event::FramebufferSize(w, h) => {
-                        self.update_viewport(w, h);
-                        self.camera.handle_framebuffer_size_change(w, h);
-                    }
-                }
-            }
-        }
-    }
-
-    /// Sets the user-defined callback called whenever a keyboard event is triggered. It is called
-    /// before any specific event handling from the engine (e.g. for the camera).
-    ///
-    /// # Arguments
-    ///   * callback - the user-defined keyboard event handler. If it returns `false`, the event will
-    ///   not be further handled by the engine. Handlers overriding some of the default behaviour of
-    ///   the engine typically return `false`.
-    pub fn set_keyboard_callback(&mut self, callback: @fn(&mut Window, &event::KeyboardEvent) -> bool) {
-        self.keyboard_callback = callback;
-    }
-
-    /// Sets the user-defined callback called whenever a mouse event is triggered. It is called
-    /// before any specific event handling from the engine (e.g. for the camera).
-    ///
-    /// # Arguments
-    ///   * callback - the user-defined mouse event handler. If it returns `false`, the event will
-    ///   not be further handled by the engine. Handlers overriding some of the default behaviour of
-    ///   the engine typically return `false`.
-    pub fn set_mouse_callback(&mut self, callback: @fn(&mut Window, &event::MouseEvent) -> bool) {
-        self.mouse_callback = callback;
     }
 
     /// Sets the light mode. Only one light is supported.
@@ -497,10 +532,11 @@ impl Window {
     }
 
     fn do_spawn(title: ~str, hide: bool, callback: ~fn(&mut Window)) {
-        textures_manager::init_singleton();
         glfw::set_error_callback(error_callback);
 
         do glfw::start {
+            textures_manager::init_singleton();
+
             let window = glfw::Window::create(800, 600, title, glfw::Windowed).unwrap();
 
             window.make_context_current();
@@ -512,7 +548,8 @@ impl Window {
             // FIXME: load that iff the user really uses post-processing
             let (process_fbo_texture, process_fbo_depth) = init_post_process_buffers(800, 600);
 
-            let shaders      = ShadersManager::new();
+            let mut shaders  = ShadersManager::new();
+            shaders.select(ObjectShader);
             let builtins     = loader::load(shaders.object_context());
             let camera       = @mut ArcBall::new(-Vec3::z(), Zero::zero());
 
@@ -531,9 +568,7 @@ impl Window {
                 process_fbo_texture:   process_fbo_texture,
                 process_fbo_depth:     process_fbo_depth,
                 framebuffers_manager:  FramebuffersManager::new(),
-                events:                RWArc::new(~[]),
-                keyboard_callback:     |_, _| { true },
-                mouse_callback:        |_, _| { true }
+                events:                RWArc::new(~[])
             };
 
             // setup callbacks
@@ -545,35 +580,37 @@ impl Window {
             let collector = usr_window.events.clone();
             do usr_window.window.set_key_callback |_, key, _, action, _| {
                 if action == 1 {
-                    collector.write(|c| c.push(event::Keyboard(event::KeyPressed(key))))
+                    collector.write(|c| c.push(event::KeyPressed(key)))
                 }
                 else {
-                    collector.write(|c| c.push(event::Keyboard(event::KeyReleased(key))))
+                    collector.write(|c| c.push(event::KeyReleased(key)))
                 }
             }
 
             let collector = usr_window.events.clone();
             do usr_window.window.set_mouse_button_callback |_, button, action, mods| {
                 if action == 1 {
-                    collector.write(|c| c.push(event::Mouse(event::ButtonPressed(button, mods))))
+                    collector.write(|c| c.push(event::ButtonPressed(button, mods)))
                 }
                 else {
-                    collector.write(|c| c.push(event::Mouse(event::ButtonReleased(button, mods))))
+                    collector.write(|c| c.push(event::ButtonReleased(button, mods)))
                 }
             }
 
             let collector = usr_window.events.clone();
             do usr_window.window.set_cursor_pos_callback |_, x, y| {
-                collector.write(|c| c.push(event::Mouse(event::CursorPos(x, y))))
+                collector.write(|c| c.push(event::CursorPos(x, y)))
             }
 
             let collector = usr_window.events.clone();
             do usr_window.window.set_scroll_callback |_, x, y| {
-                collector.write(|c| c.push(event::Mouse(event::Scroll(x, y))))
+                collector.write(|c| c.push(event::Scroll(x, y)))
             }
 
             let (w, h) = usr_window.window.get_size();
-            usr_window.camera.handle_framebuffer_size_change(w as f64, h as f64);
+            usr_window.camera.handle_event(
+                &usr_window.window,
+                &event::FramebufferSize(w as f64, h as f64));
 
             if hide {
                 usr_window.window.hide()
@@ -729,7 +766,7 @@ fn init_post_process_buffers(width: uint, height: uint) -> (GLuint, GLuint) {
     verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
     unsafe {
         verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA as GLint, width as GLint, height as GLint,
-                       0, gl::RGBA, gl::UNSIGNED_BYTE, ptr::null()));
+        0, gl::RGBA, gl::UNSIGNED_BYTE, ptr::null()));
     }
     verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
@@ -743,7 +780,7 @@ fn init_post_process_buffers(width: uint, height: uint) -> (GLuint, GLuint) {
     verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
     unsafe {
         verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::DEPTH_COMPONENT as GLint, width as GLint, height as GLint,
-                0, gl::DEPTH_COMPONENT, gl::UNSIGNED_BYTE, ptr::null()));
+        0, gl::DEPTH_COMPONENT, gl::UNSIGNED_BYTE, ptr::null()));
     }
     verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 

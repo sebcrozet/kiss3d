@@ -6,6 +6,9 @@ use gl::types::*;
 use nalgebra::vec::Vec3;
 use resources::shaders_manager::LinesShaderContext;
 
+#[path = "error.rs"]
+mod error;
+
 /// Structure which manages the display of short-living lines.
 struct LinesManager {
     priv lines:     ~[(Vec3<GLfloat>, Vec3<GLfloat>, Vec3<GLfloat>, Vec3<GLfloat>)],
@@ -18,7 +21,7 @@ impl LinesManager {
     pub fn new() -> LinesManager {
         let vbuf: GLuint = 0;
         
-        unsafe { gl::GenBuffers(1, &vbuf) };
+        unsafe { verify!(gl::GenBuffers(1, &vbuf)) };
 
         LinesManager {
             lines:     ~[],
@@ -43,44 +46,43 @@ impl LinesManager {
         if self.lines.len() == 0 { return }
 
         unsafe {
-            gl::BindBuffer(gl::ARRAY_BUFFER, self.vbuf);
+            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.vbuf));
 
             if self.lines.len() > self.max_lines {
                 // realloc the vertex buffer
                 self.max_lines = self.lines.capacity();
 
-                gl::BufferData(
+                verify!(gl::BufferData(
                     gl::ARRAY_BUFFER,
                     (self.max_lines * 4 * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
                     cast::transmute(&self.lines[0]),
-                    gl::DYNAMIC_DRAW
-                    );
+                    gl::STREAM_DRAW));
             }
             else {
-                gl::BufferSubData(
+                verify!(gl::BufferSubData(
                     gl::ARRAY_BUFFER,
                     0,
                     (self.lines.len() * 4 * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
-                    cast::transmute(&self.lines[0])
-                    );
+                    cast::transmute(&self.lines[0])));
             }
 
-            gl::VertexAttribPointer(
+            verify!(gl::VertexAttribPointer(
                 context.color,
                 3,
                 gl::FLOAT,
                 gl::FALSE as u8,
                 (6 * sys::size_of::<GLfloat>()) as GLint,
-                cast::transmute(3 * sys::size_of::<GLfloat>()));
-            gl::VertexAttribPointer(
+                cast::transmute(3 * sys::size_of::<GLfloat>())));
+
+            verify!(gl::VertexAttribPointer(
                 context.pos,
                 3,
                 gl::FLOAT,
                 gl::FALSE as u8,
                 (6 * sys::size_of::<GLfloat>()) as GLint,
-                ptr::null());
+                ptr::null()));
 
-            gl::DrawArrays(gl::LINES, 0, (self.lines.len() * 2) as i32);
+            verify!(gl::DrawArrays(gl::LINES, 0, (self.lines.len() * 2) as i32));
         }
 
         self.lines.clear();

@@ -13,11 +13,7 @@ pub trait Camera {
      * Event handling.
      */
     /// Handle a mouse event.
-    fn handle_mouse(&mut self, &glfw::Window, &event::MouseEvent);
-    /// Handle a keyboard event.
-    fn handle_keyboard(&mut self, &glfw::Window, &event::KeyboardEvent);
-    /// Take in account a change in the framebuffer size.
-    fn handle_framebuffer_size_change(&mut self, w: f64, h: f64);
+    fn handle_event(&mut self, &glfw::Window, &event::Event);
 
     /*
      * Transformation-related methods.
