@@ -237,3 +237,14 @@ pub fn load_buffer<T>(buf: &[T], buf_type: BufferType, allocation_type: Allocati
 
     buf_id
 }
+
+impl Drop for Mesh {
+    fn drop(&self) {
+        unsafe {
+            verify!(gl::DeleteBuffers(1, &self.ebuf));
+            verify!(gl::DeleteBuffers(1, &self.nbuf));
+            verify!(gl::DeleteBuffers(1, &self.vbuf));
+            verify!(gl::DeleteBuffers(1, &self.tbuf));
+        }
+    }
+}
