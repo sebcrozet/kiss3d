@@ -61,33 +61,6 @@ impl Object {
         }
     }
 
-    /*
-    #[doc(hidden)]
-    pub fn upload_geometry(&mut self) {
-        do self.data.with_mut_borrow |data| {
-            match data.geometry {
-                VerticesNormalsTriangles(ref v, ref n, _) =>
-                    unsafe {
-                        gl::BindBuffer(gl::ARRAY_BUFFER, data.igeometry.vertex_buffer);
-                        gl::BufferSubData(
-                            gl::ARRAY_BUFFER,
-                            0,
-                            (v.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
-                            cast::transmute(&v[0]));
-
-                        gl::BindBuffer(gl::ARRAY_BUFFER, data.igeometry.normal_buffer);
-                        gl::BufferSubData(
-                            gl::ARRAY_BUFFER,
-                            0,
-                            (n.len() * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
-                            cast::transmute(&n[0]));
-                    },
-                    Deleted => { }
-            }
-        }
-    }
-    */
-
     #[doc(hidden)]
     pub fn upload(&self, context: &ObjectShaderContext) {
         do self.data.with_borrow |data| {
@@ -157,6 +130,16 @@ impl Object {
 
                 self.mesh.with_borrow(|m| m.unbind());
             }
+        }
+    }
+
+    /// Sets the local scaling factor of the object.
+    pub fn set_scale(&mut self, sx: f64, sy: f64, sz: f64) {
+        do self.data.with_mut_borrow |d| {
+            d.scale = Mat3::new(
+                sx as GLfloat, 0.0, 0.0,
+                0.0, sy as GLfloat, 0.0,
+                0.0, 0.0, sz as GLfloat)
         }
     }
 

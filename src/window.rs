@@ -467,7 +467,6 @@ impl Window {
     /// Starts an infinite loop polling events, calling an user-defined callback, and drawing the
     /// scene.
     pub fn render_loop(&mut self, callback: &fn(&mut Window)) {
-
         let mut timer = Timer::new().unwrap();
         let mut curr  = time::precise_time_ns();
 
