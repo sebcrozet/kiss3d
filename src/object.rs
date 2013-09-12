@@ -26,6 +26,7 @@ pub struct ObjectData {
     priv scale:     Scale3d,
     priv transform: Transform3d,
     priv color:     Vec3<f32>,
+    priv visible:   bool
 }
 
 /// Structure of all 3d objects on the scene. This is the only interface to manipulate the object
@@ -52,7 +53,8 @@ impl Object {
                                  0.0, 0.0, sz),
             transform: One::one(),
             color:     Vec3::new(r, g, b),
-            texture: texture,
+            texture:   texture,
+            visible:   true
         };
 
         Object {
@@ -64,73 +66,85 @@ impl Object {
     #[doc(hidden)]
     pub fn upload(&self, context: &ObjectShaderContext) {
         do self.data.with_borrow |data| {
-            let formated_transform:  Mat4<f64> = data.transform.to_homogeneous();
-            let formated_ntransform: Mat3<f64> = data.transform.submat().submat();
+            if data.visible {
+                let formated_transform:  Mat4<f64> = data.transform.to_homogeneous();
+                let formated_ntransform: Mat3<f64> = data.transform.submat().submat();
 
-            // we convert the matrix elements and do the transposition at the same time
-            let transform_glf = Mat4::new(
-                formated_transform.at((0, 0)) as GLfloat,
-                formated_transform.at((1, 0)) as GLfloat,
-                formated_transform.at((2, 0)) as GLfloat,
-                formated_transform.at((3, 0)) as GLfloat,
+                // we convert the matrix elements and do the transposition at the same time
+                let transform_glf = Mat4::new(
+                    formated_transform.at((0, 0)) as GLfloat,
+                    formated_transform.at((1, 0)) as GLfloat,
+                    formated_transform.at((2, 0)) as GLfloat,
+                    formated_transform.at((3, 0)) as GLfloat,
 
-                formated_transform.at((0, 1)) as GLfloat,
-                formated_transform.at((1, 1)) as GLfloat,
-                formated_transform.at((2, 1)) as GLfloat,
-                formated_transform.at((3, 1)) as GLfloat,
+                    formated_transform.at((0, 1)) as GLfloat,
+                    formated_transform.at((1, 1)) as GLfloat,
+                    formated_transform.at((2, 1)) as GLfloat,
+                    formated_transform.at((3, 1)) as GLfloat,
 
-                formated_transform.at((0, 2)) as GLfloat,
-                formated_transform.at((1, 2)) as GLfloat,
-                formated_transform.at((2, 2)) as GLfloat,
-                formated_transform.at((3, 2)) as GLfloat,
+                    formated_transform.at((0, 2)) as GLfloat,
+                    formated_transform.at((1, 2)) as GLfloat,
+                    formated_transform.at((2, 2)) as GLfloat,
+                    formated_transform.at((3, 2)) as GLfloat,
 
-                formated_transform.at((0, 3)) as GLfloat,
-                formated_transform.at((1, 3)) as GLfloat,
-                formated_transform.at((2, 3)) as GLfloat,
-                formated_transform.at((3, 3)) as GLfloat
-                );
+                    formated_transform.at((0, 3)) as GLfloat,
+                    formated_transform.at((1, 3)) as GLfloat,
+                    formated_transform.at((2, 3)) as GLfloat,
+                    formated_transform.at((3, 3)) as GLfloat
+                    );
 
-            let ntransform_glf = Mat3::new(
-                formated_ntransform.at((0, 0)) as GLfloat,
-                formated_ntransform.at((1, 0)) as GLfloat,
-                formated_ntransform.at((2, 0)) as GLfloat,
-                formated_ntransform.at((0, 1)) as GLfloat,
-                formated_ntransform.at((1, 1)) as GLfloat,
-                formated_ntransform.at((2, 1)) as GLfloat,
-                formated_ntransform.at((0, 2)) as GLfloat,
-                formated_ntransform.at((1, 2)) as GLfloat,
-                formated_ntransform.at((2, 2)) as GLfloat
-                );
+                let ntransform_glf = Mat3::new(
+                    formated_ntransform.at((0, 0)) as GLfloat,
+                    formated_ntransform.at((1, 0)) as GLfloat,
+                    formated_ntransform.at((2, 0)) as GLfloat,
+                    formated_ntransform.at((0, 1)) as GLfloat,
+                    formated_ntransform.at((1, 1)) as GLfloat,
+                    formated_ntransform.at((2, 1)) as GLfloat,
+                    formated_ntransform.at((0, 2)) as GLfloat,
+                    formated_ntransform.at((1, 2)) as GLfloat,
+                    formated_ntransform.at((2, 2)) as GLfloat
+                    );
 
-            unsafe {
-                verify!(gl::UniformMatrix4fv(context.transform,
-                                             1,
-                                             gl::FALSE as u8,
-                                             cast::transmute(&transform_glf)));
+                unsafe {
+                    verify!(gl::UniformMatrix4fv(context.transform,
+                                                 1,
+                                                 gl::FALSE as u8,
+                                                 cast::transmute(&transform_glf)));
 
-                verify!(gl::UniformMatrix3fv(context.ntransform,
-                                             1,
-                                             gl::FALSE as u8,
-                                             cast::transmute(&ntransform_glf)));
+                    verify!(gl::UniformMatrix3fv(context.ntransform,
+                                                 1,
+                                                 gl::FALSE as u8,
+                                                 cast::transmute(&ntransform_glf)));
 
-                verify!(gl::UniformMatrix3fv(context.scale, 1, gl::FALSE as u8, cast::transmute(&data.scale)));
+                    verify!(gl::UniformMatrix3fv(context.scale, 1, gl::FALSE as u8, cast::transmute(&data.scale)));
 
-                verify!(gl::Uniform3f(context.color, data.color.x, data.color.y, data.color.z));
+                    verify!(gl::Uniform3f(context.color, data.color.x, data.color.y, data.color.z));
 
-                // FIXME: we should not switch the buffers if the last drawn shape uses the same.
-                self.mesh.with_borrow(|m| m.bind(context.pos, context.normal, context.tex_coord));
+                    // FIXME: we should not switch the buffers if the last drawn shape uses the same.
+                    self.mesh.with_borrow(|m| m.bind(context.pos, context.normal, context.tex_coord));
 
-                verify!(gl::ActiveTexture(gl::TEXTURE0));
-                verify!(gl::BindTexture(gl::TEXTURE_2D, self.data.with_borrow(|d| d.texture.borrow().id())));
+                    verify!(gl::ActiveTexture(gl::TEXTURE0));
+                    verify!(gl::BindTexture(gl::TEXTURE_2D, self.data.with_borrow(|d| d.texture.borrow().id())));
 
-                verify!(gl::DrawElements(gl::TRIANGLES,
-                                         self.mesh.with_borrow(|m| m.num_pts()) as GLint,
-                                         gl::UNSIGNED_INT,
-                                         ptr::null()));
+                    verify!(gl::DrawElements(gl::TRIANGLES,
+                                             self.mesh.with_borrow(|m| m.num_pts()) as GLint,
+                                             gl::UNSIGNED_INT,
+                                             ptr::null()));
 
-                self.mesh.with_borrow(|m| m.unbind());
+                    self.mesh.with_borrow(|m| m.unbind());
+                }
             }
         }
+    }
+
+    /// Sets the visible state of this object. An invisible object does not draw itself.
+    pub fn set_visible(&mut self, visible: bool) {
+        self.data.with_mut_borrow(|d| d.visible = visible)
+    }
+
+    /// Returns true if this object can be visible.
+    pub fn visible(&self) -> bool {
+        self.data.with_borrow(|d| d.visible)
     }
 
     /// Sets the local scaling factor of the object.
