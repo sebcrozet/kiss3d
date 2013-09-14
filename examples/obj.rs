@@ -12,7 +12,7 @@ fn start(argc: int, argv: **u8, crate_map: *u8) -> int {
 
 fn main() {
     do window::Window::spawn("Kiss3d: obj") |window| {
-        let mut c = window.add_obj("media/L200-OBJ.obj", 1.0);
+        let mut c = window.add_obj("media/monkey.obj", 1.0);
 
         c.set_color(1.0, 0.0, 0.0);
 
