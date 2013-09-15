@@ -16,7 +16,7 @@ use extra::arc::RWArc;
 use gl;
 use gl::types::*;
 use stb_image::image::*;
-use nalgebra::mat::{RMul, ToHomogeneous, FromHomogeneous};
+use nalgebra::mat::{ToHomogeneous, FromHomogeneous};
 use nalgebra::vec::{Vec2, Vec3, Vec4, Norm, VecCast};
 use camera::{Camera, ArcBall};
 use object::Object;
@@ -385,7 +385,7 @@ impl Window {
     /// Converts a 3d point to 2d screen coordinates.
     pub fn project(&self, world_coord: &Vec3<f64>) -> Vec2<f64> {
         let h_world_coord = world_coord.to_homogeneous();
-        let h_normalized_coord = self.camera.transformation().rmul(&h_world_coord);
+        let h_normalized_coord = self.camera.transformation() * h_world_coord;
 
         let normalized_coord: Vec3<f64> = FromHomogeneous::from(&h_normalized_coord);
 
@@ -408,8 +408,8 @@ impl Window {
 
         let cam = self.camera.inv_transformation();
 
-        let h_unprojected_begin = cam.rmul(&normalized_begin);
-        let h_unprojected_end   = cam.rmul(&normalized_end);
+        let h_unprojected_begin = cam * normalized_begin;
+        let h_unprojected_end   = cam * normalized_end;
 
         let unprojected_begin: Vec3<f64> = FromHomogeneous::from(&h_unprojected_begin);
         let unprojected_end: Vec3<f64>   = FromHomogeneous::from(&h_unprojected_end);
