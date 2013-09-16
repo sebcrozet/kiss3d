@@ -1,4 +1,5 @@
 use gl::types::*;
+use resources::framebuffers_manager::RenderTarget;
 use resources::shaders_manager::ShadersManager;
 
 /// Trait of post processing effect. One post-processing effect can be used at a time. It is
@@ -12,8 +13,5 @@ pub trait PostProcessingEffect {
     ///     * `shaders_manager` - manager to switch between the different shaders.
     ///     * `fbo_texture` - id to the texture containing the last scene drawn.
     ///     * `fbo_depth` - the depth buffer as a texture.
-    fn draw(&self,
-            shaders_manager: &mut ShadersManager,
-            fbo_texture:     GLuint,
-            fbo_depth:       GLuint);
+    fn draw(&self, shaders_manager: &mut ShadersManager, target: &RenderTarget);
 }

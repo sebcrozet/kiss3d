@@ -25,7 +25,7 @@ use post_processing::post_processing_effect::PostProcessingEffect;
 use resources::shaders_manager::{ShadersManager, ObjectShader, LinesShader};
 use resources::textures_manager::Texture;
 use resources::textures_manager;
-use resources::framebuffers_manager::{FramebuffersManager, Screen, Offscreen};
+use resources::framebuffers_manager::{FramebuffersManager, RenderTarget};
 use builtins::loader;
 use event;
 use mesh::Mesh;
@@ -40,25 +40,24 @@ pub enum Light {
 
 /// Structure representing a window and a 3D scene. It is the main interface with the 3d engine.
 pub struct Window {
-    priv window:               glfw::Window,
-    priv max_ms_per_frame:     Option<u64>,
-    priv objects:              ~[Object],
-    priv camera:               @mut Camera,
-    priv light_mode:           Light,
-    priv wireframe_mode:       bool,
-    priv geometries:           HashMap<~str, RcMut<Mesh>>,
-    priv background:           Vec3<GLfloat>,
-    priv lines_manager:        LinesManager,
-    priv shaders_manager:      ShadersManager,
-    priv framebuffers_manager: FramebuffersManager,
-    priv post_processing:      Option<@mut PostProcessingEffect>,
-    priv process_fbo_texture:  GLuint,
-    priv process_fbo_depth:    GLuint,
-    priv events:               RWArc<~[event::Event]>
+    priv window:                     glfw::Window,
+    priv max_ms_per_frame:           Option<u64>,
+    priv objects:                    ~[Object],
+    priv camera:                     @mut Camera,
+    priv light_mode:                 Light,
+    priv wireframe_mode:             bool,
+    priv geometries:                 HashMap<~str, RcMut<Mesh>>,
+    priv background:                 Vec3<GLfloat>,
+    priv lines_manager:              LinesManager,
+    priv shaders_manager:            ShadersManager,
+    priv framebuffers_manager:       FramebuffersManager,
+    priv post_processing:            Option<@mut PostProcessingEffect>,
+    priv post_process_render_target: RenderTarget,
+    priv events:                     RWArc<~[event::Event]>
 }
 
 impl Window {
-    /// Accsess the glfw window.
+    /// Access the glfw window.
     pub fn glfw_window<'r>(&'r self) -> &'r glfw::Window {
         &self.window
     }
@@ -545,7 +544,7 @@ impl Window {
             init_gl();
 
             // FIXME: load that iff the user really uses post-processing
-            let (process_fbo_texture, process_fbo_depth) = init_post_process_buffers(800, 600);
+            let mut framebuffers = FramebuffersManager::new();
 
             let mut shaders  = ShadersManager::new();
             shaders.select(ObjectShader);
@@ -564,9 +563,8 @@ impl Window {
                 lines_manager:         LinesManager::new(),
                 shaders_manager:       shaders,
                 post_processing:       None,
-                process_fbo_texture:   process_fbo_texture,
-                process_fbo_depth:     process_fbo_depth,
-                framebuffers_manager:  FramebuffersManager::new(),
+                post_process_render_target: FramebuffersManager::new_render_target(800, 600),
+                framebuffers_manager:  framebuffers,
                 events:                RWArc::new(~[])
             };
 
@@ -640,10 +638,10 @@ impl Window {
 
         if self.post_processing.is_some() {
             // if we need post-processing, render to our own frame buffer
-            self.framebuffers_manager.select(Offscreen(self.process_fbo_texture, self.process_fbo_depth));
+            self.framebuffers_manager.select(&self.post_process_render_target);
         }
         else {
-            self.framebuffers_manager.select(Screen);
+            self.framebuffers_manager.select(&FramebuffersManager::screen());
         }
 
         self.render_scene();
@@ -660,11 +658,11 @@ impl Window {
                 }
 
                 // switch back to the screen framebuffer …
-                self.framebuffers_manager.select(Screen);
+                self.framebuffers_manager.select(&FramebuffersManager::screen());
                 // … and execute the post-process
                 // FIXME: use the real time value instead of 0.016!
                 p.update(0.016, w, h, znear, zfar);
-                p.draw(&mut self.shaders_manager, self.process_fbo_texture, self.process_fbo_depth);
+                p.draw(&mut self.shaders_manager, &self.post_process_render_target);
             },
             None => { }
         }
@@ -718,22 +716,8 @@ impl Window {
 
     fn update_viewport(&mut self, w: f64, h: f64) {
         // Update the viewport
-        verify!(gl::Viewport(0, 0, w as i32, h as i32));
-
-        // Update the fbo
-        verify!(gl::BindTexture(gl::TEXTURE_2D, self.process_fbo_texture));
-        unsafe {
-            verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA as GLint, w as GLint, h as GLint, 0,
-            gl::RGBA, gl::UNSIGNED_BYTE, ptr::null()));
-        }
-        verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
-
-        verify!(gl::BindTexture(gl::TEXTURE_2D, self.process_fbo_depth));
-        unsafe {
-            verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::DEPTH_COMPONENT as GLint, w as GLint, h as GLint, 0,
-            gl::DEPTH_COMPONENT, gl::UNSIGNED_BYTE, ptr::null()));
-        }
-        verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
+        FramebuffersManager::screen().resize(w, h);
+        self.post_process_render_target.resize(w, h);
     }
 }
 
@@ -748,40 +732,4 @@ fn init_gl() {
     verify!(gl::FrontFace(gl::CCW));
     verify!(gl::Enable(gl::DEPTH_TEST));
     verify!(gl::DepthFunc(gl::LEQUAL));
-}
-
-fn init_post_process_buffers(width: uint, height: uint) -> (GLuint, GLuint) {
-    /* Create back-buffer, used for post-processing */
-    let fbo_texture: GLuint = 0;
-    let fbo_depth:   GLuint = 0;
-
-    /* Texture */
-    verify!(gl::ActiveTexture(gl::TEXTURE0));
-    unsafe { verify!(gl::GenTextures(1, &fbo_texture)); }
-    verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_texture));
-    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
-    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));
-    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));
-    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
-    unsafe {
-        verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA as GLint, width as GLint, height as GLint,
-        0, gl::RGBA, gl::UNSIGNED_BYTE, ptr::null()));
-    }
-    verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
-
-    /* Depth buffer */
-    verify!(gl::ActiveTexture(gl::TEXTURE1));
-    unsafe { verify!(gl::GenTextures(1, &fbo_depth)); }
-    verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_depth));
-    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
-    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));
-    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));
-    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
-    unsafe {
-        verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::DEPTH_COMPONENT as GLint, width as GLint, height as GLint,
-        0, gl::DEPTH_COMPONENT, gl::UNSIGNED_BYTE, ptr::null()));
-    }
-    verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
-
-    (fbo_texture, fbo_depth)
 }

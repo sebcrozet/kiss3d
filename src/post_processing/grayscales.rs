@@ -3,6 +3,7 @@ use std::ptr;
 use std::sys;
 use gl;
 use gl::types::*;
+use resources::framebuffers_manager::RenderTarget;
 use resources::shaders_manager::{ShadersManager, Other};
 use post_processing::post_processing_effect::PostProcessingEffect;
 
@@ -88,7 +89,7 @@ impl PostProcessingEffect for Grayscales {
     fn update(&mut self, _: f64, _: f64, _: f64, _: f64, _: f64) {
     }
 
-    fn draw(&self, shaders_manager: &mut ShadersManager, fbo_texture: GLuint, _: GLuint) {
+    fn draw(&self, shaders_manager: &mut ShadersManager, target: &RenderTarget) {
         shaders_manager.select(Other);
 
         verify!(gl::EnableVertexAttribArray(self.v_coord as GLuint));
@@ -100,7 +101,7 @@ impl PostProcessingEffect for Grayscales {
         verify!(gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT));
 
         verify!(gl::UseProgram(self.program));
-        verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_texture));
+        verify!(gl::BindTexture(gl::TEXTURE_2D, target.texture_id()));
         verify!(gl::Uniform1i(self.fbo_texture as GLint, /* gl::TEXTURE*/0));
 
         verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.fbo_vertices));

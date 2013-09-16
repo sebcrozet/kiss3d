@@ -3,6 +3,7 @@ use std::ptr;
 use std::sys;
 use gl;
 use gl::types::*;
+use resources::framebuffers_manager::RenderTarget;
 use resources::shaders_manager::{ShadersManager, Other};
 use post_processing::post_processing_effect::PostProcessingEffect;
 
@@ -169,10 +170,7 @@ impl PostProcessingEffect for SobelEdgeHighlight {
         self.zf     = zfar;
     }
 
-    fn draw(&self,
-            shaders_manager: &mut ShadersManager,
-            fbo_texture:     GLuint,
-            fbo_depth:       GLuint) {
+    fn draw(&self, shaders_manager: &mut ShadersManager, target: &RenderTarget) {
         shaders_manager.select(Other);
 
         verify!(gl::EnableVertexAttribArray(self.gl_v_coord as GLuint));
@@ -190,11 +188,11 @@ impl PostProcessingEffect for SobelEdgeHighlight {
         verify!(gl::Uniform1f(self.gl_zfar  as GLint, self.zf  as GLfloat));
 
         verify!(gl::ActiveTexture(gl::TEXTURE0));
-        verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_texture));
+        verify!(gl::BindTexture(gl::TEXTURE_2D, target.texture_id()));
         verify!(gl::Uniform1i(self.gl_fbo_texture as GLint, 0));
 
         verify!(gl::ActiveTexture(gl::TEXTURE1));
-        verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_depth));
+        verify!(gl::BindTexture(gl::TEXTURE_2D, target.depth_id()));
         verify!(gl::Uniform1i(self.gl_fbo_depth as GLint, 1));
 
 

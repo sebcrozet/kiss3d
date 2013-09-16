@@ -7,6 +7,7 @@ use std::ptr;
 use std::sys;
 use gl;
 use gl::types::*;
+use resources::framebuffers_manager::RenderTarget;
 use resources::shaders_manager::{ShadersManager, Other};
 use post_processing::post_processing_effect::PostProcessingEffect;
 
@@ -98,7 +99,7 @@ impl PostProcessingEffect for Waves {
         self.time = self.time + dt;
     }
 
-    fn draw(&self, shaders_manager: &mut ShadersManager, fbo_texture: GLuint, _: GLuint) {
+    fn draw(&self, shaders_manager: &mut ShadersManager, target: &RenderTarget) {
         shaders_manager.select(Other);
 
         verify!(gl::EnableVertexAttribArray(self.v_coord as GLuint));
@@ -116,7 +117,7 @@ impl PostProcessingEffect for Waves {
         gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
         gl::UseProgram(self.program);
-        gl::BindTexture(gl::TEXTURE_2D, fbo_texture);
+        gl::BindTexture(gl::TEXTURE_2D, target.texture_id());
         gl::Uniform1i(self.fbo_texture as GLint, /* gl::TEXTURE*/0);
 
         gl::BindBuffer(gl::ARRAY_BUFFER, self.fbo_vertices);
