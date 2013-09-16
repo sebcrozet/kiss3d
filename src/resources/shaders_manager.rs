@@ -202,6 +202,7 @@ impl ShadersManager {
 
 fn check_shader_error(shader: GLuint) {
     let compiles: i32 = 0;
+
     unsafe{
         gl::GetShaderiv(shader, gl::COMPILE_STATUS, &compiles);
 

@@ -18,6 +18,7 @@ struct OffscreenBuffers {
 }
 
 impl RenderTarget {
+    /// Returns an opengl handle to the offscreen texture buffer.
     pub fn texture_id(&self) -> GLuint {
         match *self {
             Screen           => 0,
@@ -25,6 +26,7 @@ impl RenderTarget {
         }
     }
 
+    /// Returns an opengl handle to the offscreen depth buffer.
     pub fn depth_id(&self) -> GLuint {
         match *self {
             Screen           => 0,
@@ -32,6 +34,7 @@ impl RenderTarget {
         }
     }
 
+    /// Resizes this render target.
     pub fn resize(&mut self, w: f64, h: f64) {
         match *self {
             Screen => {
@@ -85,6 +88,8 @@ impl FramebuffersManager {
         }
     }
 
+    /// Creates a new render target. A render target is the combination of a color buffer and a
+    /// depth buffer.
     pub fn new_render_target(width: uint, height: uint) -> RenderTarget {
         let fbo_texture: GLuint = 0;
         let fbo_depth:   GLuint = 0;
@@ -120,6 +125,7 @@ impl FramebuffersManager {
         Offscreen(OffscreenBuffers { texture: fbo_texture, depth: fbo_depth, ncpy: NonCopyable::new() })
     }
 
+    /// Returns the render target associated with the screen.
     pub fn screen() -> RenderTarget {
         Screen
     }

@@ -1,4 +1,3 @@
-use gl::types::*;
 use resources::framebuffers_manager::RenderTarget;
 use resources::shaders_manager::ShadersManager;
 

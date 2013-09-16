@@ -4,7 +4,6 @@
 
 use glfw;
 use glfw::consts;
-use std::ptr;
 use std::rt::io::timer::Timer;
 use std::rt::rtio::RtioTimer;
 use std::num::Zero;
@@ -544,8 +543,6 @@ impl Window {
             init_gl();
 
             // FIXME: load that iff the user really uses post-processing
-            let mut framebuffers = FramebuffersManager::new();
-
             let mut shaders  = ShadersManager::new();
             shaders.select(ObjectShader);
             let builtins     = loader::load(shaders.object_context());
@@ -564,7 +561,7 @@ impl Window {
                 shaders_manager:       shaders,
                 post_processing:       None,
                 post_process_render_target: FramebuffersManager::new_render_target(800, 600),
-                framebuffers_manager:  framebuffers,
+                framebuffers_manager:  FramebuffersManager::new(),
                 events:                RWArc::new(~[])
             };
 
