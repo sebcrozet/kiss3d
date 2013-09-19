@@ -32,7 +32,7 @@ impl Texture {
 }
 
 impl Drop for Texture {
-    fn drop(&self) {
+    fn drop(&mut self) {
        unsafe { verify!(gl::DeleteTextures(1, &self.id)); }
     }
 }

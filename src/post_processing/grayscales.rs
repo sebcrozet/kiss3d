@@ -120,7 +120,7 @@ impl PostProcessingEffect for Grayscales {
 }
 
 impl Drop for Grayscales {
-    fn drop(&self) {
+    fn drop(&mut self) {
         gl::DeleteProgram(self.program);
         gl::DeleteShader(self.vshader);
         gl::DeleteShader(self.fshader);

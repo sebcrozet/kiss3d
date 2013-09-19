@@ -214,7 +214,7 @@ impl PostProcessingEffect for SobelEdgeHighlight {
 }
 
 impl Drop for SobelEdgeHighlight {
-    fn drop(&self) {
+    fn drop(&mut self) {
         gl::DeleteProgram(self.gl_program);
         gl::DeleteShader(self.gl_vshader);
         gl::DeleteShader(self.gl_fshader);

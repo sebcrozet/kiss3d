@@ -264,7 +264,7 @@ pub fn upload_buffer<T>(buf: &[T], buf_id: GLuint, buf_type: BufferType, allocat
 }
 
 impl Drop for Mesh {
-    fn drop(&self) {
+    fn drop(&mut self) {
         unsafe {
             verify!(gl::DeleteBuffers(1, &self.ebuf));
             verify!(gl::DeleteBuffers(1, &self.nbuf));

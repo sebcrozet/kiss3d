@@ -232,7 +232,7 @@ fn check_shader_error(shader: GLuint) {
 }
 
 impl Drop for ShadersManager {
-    fn drop(&self) {
+    fn drop(&mut self) {
         gl::DeleteProgram(self.object_context.program);
         gl::DeleteShader(self.object_context.fshader);
         gl::DeleteShader(self.object_context.vshader);

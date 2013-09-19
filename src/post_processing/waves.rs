@@ -136,7 +136,7 @@ impl PostProcessingEffect for Waves {
 }
 
 impl Drop for Waves {
-    fn drop(&self) {
+    fn drop(&mut self) {
         gl::DeleteProgram(self.program);
         gl::DeleteShader(self.vshader);
         gl::DeleteShader(self.fshader);
