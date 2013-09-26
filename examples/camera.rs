@@ -3,15 +3,14 @@ extern mod kiss3d;
 extern mod nalgebra;
 
 use std::num::Zero;
-use glfw::consts;
 use nalgebra::vec::Vec3;
 use kiss3d::window;
 use kiss3d::event::KeyReleased;
 use kiss3d::camera::{Camera, ArcBall, FirstPerson};
 
 #[start]
-fn start(argc: int, argv: **u8, crate_map: *u8) -> int {
-    std::rt::start_on_main_thread(argc, argv, crate_map, main)
+fn start(argc: int, argv: **u8) -> int {
+    std::rt::start_on_main_thread(argc, argv, main)
 }
 
 fn main()
@@ -32,7 +31,7 @@ fn main()
             do w.poll_events |w, event| {
                 match *event {
                     KeyReleased(key) => {
-                        if key == consts::KEY_1 {
+                        if key == glfw::Key1 {
                             w.set_camera(arc_ball as @mut Camera)
                         }
                         else {

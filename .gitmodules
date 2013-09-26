@@ -7,6 +7,3 @@
 [submodule "lib/nalgebra"]
 	path = lib/nalgebra
 	url = https://github.com/sebcrozet/nalgebra.git
-[submodule "lib/gl-rs"]
-	path = lib/gl-rs
-	url = https://github.com/bjz/gl-rs.git

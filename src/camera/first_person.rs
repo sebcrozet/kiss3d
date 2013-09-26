@@ -1,6 +1,5 @@
 use std::num::{Zero, One, atan2};
 use glfw;
-use glfw::consts::*;
 use nalgebra::vec::{Vec2, Vec3, Norm, Cross};
 use nalgebra::mat::{Mat4, Inv, ToHomogeneous, Rotate};
 use nalgebra::types::Iso3f64;
@@ -161,12 +160,12 @@ impl Camera for FirstPerson {
             event::CursorPos(x, y) => {
                 let curr_pos = Vec2::new(x as f64, y as f64);
 
-                if window.get_mouse_button(MOUSE_BUTTON_1) == PRESS {
+                if window.get_mouse_button(glfw::MouseButtonLeft) == glfw::Press {
                     let dpos = curr_pos - self.last_cursor_pos;
                     self.handle_left_button_displacement(&dpos)
                 }
 
-                if window.get_mouse_button(MOUSE_BUTTON_2) == PRESS {
+                if window.get_mouse_button(glfw::MouseButtonRight) == glfw::Press {
                     let dpos = curr_pos - self.last_cursor_pos;
                     self.handle_right_button_displacement(&dpos)
                 }
@@ -199,19 +198,19 @@ impl Camera for FirstPerson {
         let front: Vec3<f64> = t.rotate(&Vec3::z());
         let right: Vec3<f64> = t.rotate(&Vec3::x());
 
-        if window.get_key(KEY_UP) == TRUE {
+        if window.get_key(glfw::KeyUp) == glfw::Press {
             self.eye = self.eye + front * self.move_step
         }
 
-        if window.get_key(KEY_DOWN) == TRUE {
+        if window.get_key(glfw::KeyDown) == glfw::Press {
             self.eye = self.eye + front * (-self.move_step)
         }
 
-        if window.get_key(KEY_RIGHT) == TRUE {
+        if window.get_key(glfw::KeyRight) == glfw::Press {
             self.eye = self.eye + right * (-self.move_step)
         }
 
-        if window.get_key(KEY_LEFT) == TRUE {
+        if window.get_key(glfw::KeyLeft) == glfw::Press {
             self.eye = self.eye + right * self.move_step
         }
 

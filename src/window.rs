@@ -3,11 +3,9 @@
  */
 
 use glfw;
-use glfw::consts;
 use std::rt::io::timer::Timer;
 use std::rt::rtio::RtioTimer;
 use std::num::Zero;
-use std::libc;
 use std::hashmap::HashMap;
 use extra::time;
 use extra::rc::{Rc, RcMut};
@@ -442,7 +440,7 @@ impl Window {
                 if events_handler(self, e) {
                     match *e {
                         event::KeyReleased(key) => {
-                            if key == consts::KEY_ESCAPE {
+                            if key == glfw::KeyEscape {
                                 self.close();
                                 loop
                             }
@@ -573,7 +571,7 @@ impl Window {
 
             let collector = usr_window.events.clone();
             do usr_window.window.set_key_callback |_, key, _, action, _| {
-                if action == 1 {
+                if action == glfw::Press {
                     collector.write(|c| c.push(event::KeyPressed(key)))
                 }
                 else {
@@ -583,7 +581,7 @@ impl Window {
 
             let collector = usr_window.events.clone();
             do usr_window.window.set_mouse_button_callback |_, button, action, mods| {
-                if action == 1 {
+                if action == glfw::Press {
                     collector.write(|c| c.push(event::ButtonPressed(button, mods)))
                 }
                 else {
@@ -718,7 +716,7 @@ impl Window {
     }
 }
 
-fn error_callback(_: libc::c_int, description: ~str) {
+fn error_callback(_: glfw::Error, description: ~str) {
     println(fmt!("Kiss3d Error: %s", description));
 }
 
