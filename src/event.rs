@@ -9,6 +9,6 @@ pub enum Event {
     FramebufferSize(f64, f64),
     ButtonPressed(glfw::MouseButton,  glfw::Modifiers),
     ButtonReleased(glfw::MouseButton, glfw::Modifiers),
-    CursorPos(float, float),
-    Scroll(float, float)
+    CursorPos(f64, f64),
+    Scroll(f64, f64)
 }

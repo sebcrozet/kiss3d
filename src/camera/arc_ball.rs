@@ -167,7 +167,7 @@ impl ArcBall {
         self.update_projviews();
     }
 
-    fn handle_scroll(&mut self, off: float) {
+    fn handle_scroll(&mut self, off: f64) {
         self.dist = self.dist + self.dist_step * (off as f64) / 120.0;
         self.update_restrictions();
         self.update_projviews();

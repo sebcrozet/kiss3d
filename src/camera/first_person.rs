@@ -121,16 +121,16 @@ impl FirstPerson {
         let tangent   = Vec3::y().cross(&dir).normalized();
         let bitangent = dir.cross(&tangent);
 
-        self.eye = self.eye + tangent * (0.01 * dpos.x as f64 / 10.0) + bitangent * (0.01 * dpos.y as f64 / 10.0);
+        self.eye = self.eye + tangent * (0.01 * dpos.x / 10.0) + bitangent * (0.01 * dpos.y / 10.0);
         self.update_restrictions();
         self.update_projviews();
     }
 
     #[doc(hidden)]
-    pub fn handle_scroll(&mut self, yoff: float) {
+    pub fn handle_scroll(&mut self, yoff: f64) {
         let front: Vec3<f64> = self.view_transform().rotate(&Vec3::z());
 
-        self.eye = self.eye + front * (self.move_step * (yoff as f64));
+        self.eye = self.eye + front * (self.move_step * yoff);
 
         self.update_restrictions();
         self.update_projviews();
