@@ -18,9 +18,9 @@ pub struct Texture {
 impl Texture {
     /// Allocates a new texture on the gpu. The texture is not configured.
     pub fn new() -> Rc<Texture> {
-        let id: GLuint = 0;
+        let mut id: GLuint = 0;
 
-        unsafe { verify!(gl::GenTextures(1, &id)); }
+        unsafe { verify!(gl::GenTextures(1, &mut id)); }
 
         Rc::from_send(Texture { id: id })
     }

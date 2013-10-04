@@ -442,7 +442,7 @@ impl Window {
                         event::KeyReleased(key) => {
                             if key == glfw::KeyEscape {
                                 self.close();
-                                loop
+                                continue
                             }
                         },
                         event::FramebufferSize(w, h) => {

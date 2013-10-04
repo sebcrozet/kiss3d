@@ -115,7 +115,7 @@ impl SobelEdgeHighlight {
     pub fn new(threshold: f64) -> SobelEdgeHighlight {
         unsafe {
             /* Global */
-            let vbo_fbo_vertices: GLuint = 0;;
+            let mut vbo_fbo_vertices: GLuint = 0;;
             /* init_resources */
             let fbo_vertices: [GLfloat, ..8] = [
                 -1.0, -1.0,
@@ -123,7 +123,7 @@ impl SobelEdgeHighlight {
                 -1.0,  1.0,
                 1.0,  1.0];
 
-            verify!(gl::GenBuffers(1, &vbo_fbo_vertices));
+            verify!(gl::GenBuffers(1, &mut vbo_fbo_vertices));
             verify!(gl::BindBuffer(gl::ARRAY_BUFFER, vbo_fbo_vertices));
             verify!(gl::BufferData(
                 gl::ARRAY_BUFFER,

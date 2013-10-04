@@ -48,7 +48,7 @@ impl Grayscales {
     pub fn new() -> Grayscales {
         unsafe {
             /* Global */
-            let vbo_fbo_vertices: GLuint = 0;;
+            let mut vbo_fbo_vertices: GLuint = 0;;
             /* init_resources */
             let fbo_vertices: [GLfloat, ..8] = [
                 -1.0, -1.0,
@@ -56,7 +56,7 @@ impl Grayscales {
                 -1.0,  1.0,
                 1.0,  1.0];
 
-            verify!(gl::GenBuffers(1, &vbo_fbo_vertices));
+            verify!(gl::GenBuffers(1, &mut vbo_fbo_vertices));
             verify!(gl::BindBuffer(gl::ARRAY_BUFFER, vbo_fbo_vertices));
             verify!(gl::BufferData(
                 gl::ARRAY_BUFFER,

@@ -241,10 +241,10 @@ impl AllocationType {
 /// Allocates and uploads a buffer to the gpu.
 pub fn load_buffer<T>(buf: &[T], buf_type: BufferType, allocation_type: AllocationType) -> GLuint {
     // Upload values of vertices
-    let buf_id: GLuint = 0;
+    let mut buf_id: GLuint = 0;
 
     unsafe {
-        verify!(gl::GenBuffers(1, &buf_id));
+        verify!(gl::GenBuffers(1, &mut buf_id));
         upload_buffer(buf, buf_id, buf_type, allocation_type);
     }
 

@@ -73,9 +73,9 @@ impl FramebuffersManager {
     /// Creates a new framebuffer manager.
     pub fn new() -> FramebuffersManager {
         // create an off-screen framebuffer
-        let fbo: GLuint = 0;
+        let mut fbo: GLuint = 0;
 
-        unsafe { gl::GenFramebuffers(1, &fbo); }
+        unsafe { gl::GenFramebuffers(1, &mut fbo); }
 
         // ensure that the current framebuffer is the screen
         verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
@@ -91,12 +91,12 @@ impl FramebuffersManager {
     /// Creates a new render target. A render target is the combination of a color buffer and a
     /// depth buffer.
     pub fn new_render_target(width: uint, height: uint) -> RenderTarget {
-        let fbo_texture: GLuint = 0;
-        let fbo_depth:   GLuint = 0;
+        let mut fbo_texture: GLuint = 0;
+        let mut fbo_depth:   GLuint = 0;
 
         /* Texture */
         verify!(gl::ActiveTexture(gl::TEXTURE0));
-        unsafe { verify!(gl::GenTextures(1, &fbo_texture)); }
+        unsafe { verify!(gl::GenTextures(1, &mut fbo_texture)); }
         verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_texture));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));
@@ -110,7 +110,7 @@ impl FramebuffersManager {
 
         /* Depth buffer */
         verify!(gl::ActiveTexture(gl::TEXTURE1));
-        unsafe { verify!(gl::GenTextures(1, &fbo_depth)); }
+        unsafe { verify!(gl::GenTextures(1, &mut fbo_depth)); }
         verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_depth));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));

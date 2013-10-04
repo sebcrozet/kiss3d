@@ -55,7 +55,7 @@ impl Waves {
     pub fn new() -> Waves {
         unsafe {
             /* Global */
-            let vbo_fbo_vertices: GLuint = 0;;
+            let mut vbo_fbo_vertices: GLuint = 0;;
             /* init_resources */
             let fbo_vertices: [GLfloat, ..8] = [
                 -1.0, -1.0,
@@ -64,7 +64,7 @@ impl Waves {
                 1.0,  1.0,
                 ];
 
-            gl::GenBuffers(1, &vbo_fbo_vertices);
+            gl::GenBuffers(1, &mut vbo_fbo_vertices);
             gl::BindBuffer(gl::ARRAY_BUFFER, vbo_fbo_vertices);
             gl::BufferData(
                 gl::ARRAY_BUFFER,

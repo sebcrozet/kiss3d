@@ -201,26 +201,26 @@ impl ShadersManager {
 }
 
 fn check_shader_error(shader: GLuint) {
-    let compiles: i32 = 0;
+    let mut compiles: i32 = 0;
 
     unsafe{
-        gl::GetShaderiv(shader, gl::COMPILE_STATUS, &compiles);
+        gl::GetShaderiv(shader, gl::COMPILE_STATUS, &mut compiles);
 
         if(compiles == 0) {
             println("Shader compilation failed.");
-            let info_log_len = 0;
+            let mut info_log_len = 0;
 
-            gl::GetShaderiv(shader, gl::INFO_LOG_LENGTH, &info_log_len);
+            gl::GetShaderiv(shader, gl::INFO_LOG_LENGTH, &mut info_log_len);
 
             if (info_log_len > 0) {
                 // error check for fail to allocate memory omitted
-                let chars_written = 0;
+                let mut chars_written = 0;
                 let info_log = " ".repeat(info_log_len as uint);
 
-                let c_str = info_log.to_c_str();
+                let mut c_str = info_log.to_c_str();
 
-                do c_str.with_ref |c_str| {
-                    gl::GetShaderInfoLog(shader, info_log_len, &chars_written, c_str);
+                do c_str.with_mut_ref |c_str| {
+                    gl::GetShaderInfoLog(shader, info_log_len, &mut chars_written, c_str);
                 }
 
                 let bytes = c_str.as_bytes();

@@ -3,7 +3,7 @@ kiss3d_lib_path=lib
 kiss3d_bin_path=bin
 kiss3d_doc_path=doc
 glfw_lib_path=lib/glfw-rs
-gl_lib_path=lib/gl-rs
+gl_lib_path=lib/gl-rs/src/gl
 nalgebra_lib_path=lib/nalgebra/lib
 stb_image_lib_path=lib/rust-stb-image/
 build_cmd= rust build -Llib --opt-level 3 --out-dir $(kiss3d_bin_path) -L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
@@ -46,7 +46,7 @@ distcheck:
 deps:
 	rustc --out-dir $(glfw_lib_path) --opt-level=3 lib/glfw-rs/src/glfw/lib.rs
 	make -C lib/nalgebra
-	cd lib/gl-rs; rustc --opt-level=3 gl.rs
+	cd lib/gl-rs; rustc --opt-level=3 src/gl/lib.rs
 	cd lib/rust-stb-image; ./configure
 	make clean -C lib/rust-stb-image
 	make -C lib/rust-stb-image

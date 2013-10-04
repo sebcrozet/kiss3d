@@ -19,9 +19,9 @@ struct LinesManager {
 impl LinesManager {
     /// Creates a new lines manager.
     pub fn new() -> LinesManager {
-        let vbuf: GLuint = 0;
+        let mut vbuf: GLuint = 0;
         
-        unsafe { verify!(gl::GenBuffers(1, &vbuf)) };
+        unsafe { verify!(gl::GenBuffers(1, &mut vbuf)) };
 
         LinesManager {
             lines:     ~[],
