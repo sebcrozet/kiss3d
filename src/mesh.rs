@@ -208,8 +208,11 @@ pub fn compute_normals(coordinates: &[Coord],
     }
 }
 
+/// Type of gpu buffer.
 pub enum BufferType {
+    /// An array buffer bindable to a gl::ARRAY_BUFFER.
     ArrayBuffer,
+    /// An array buffer bindable to a gl::ELEMENT_ARRAY_BUFFER.
     ElementArrayBuffer
 }
 
@@ -222,9 +225,13 @@ impl BufferType {
     }
 }
 
+/// Allocation type of gpu buffers.
 pub enum AllocationType {
+    /// STATIC_DRAW allocation type.
     StaticDraw,
+    /// DYNAMIC_DRAW allocation type.
     DynamicDraw,
+    /// STREAM_DRAW allocation type.
     StreamDraw
 }
 

@@ -7,6 +7,7 @@ use shaders;
 #[path = "../error.rs"]
 mod error;
 
+#[doc(hidden)] // FIXME: this is a dummy enum atm, it needs to be completely rethought.
 pub enum Shader {
     ObjectShader,
     LinesShader,

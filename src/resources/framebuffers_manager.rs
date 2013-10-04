@@ -6,8 +6,11 @@ use gl::types::*;
 #[path = "../error.rs"]
 mod error;
 
+/// The target to every rendering call.
 pub enum RenderTarget {
+    /// The screen (main framebuffer).
     priv Screen,
+    /// An offscreen buffer.
     priv Offscreen(OffscreenBuffers)
 }
 
