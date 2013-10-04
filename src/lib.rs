@@ -49,6 +49,7 @@ pub mod post_processing {
     pub mod waves;
     pub mod grayscales;
     pub mod sobel_edge_highlight;
+    pub mod oculus_stereo;
 }
 
 pub mod resources {
