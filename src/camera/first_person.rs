@@ -1,8 +1,7 @@
-use std::num::{Zero, One, atan2};
+use std::num::atan2;
 use glfw;
-use nalgebra::vec::{Vec2, Vec3, Norm, Cross};
-use nalgebra::mat::{Mat4, Inv, ToHomogeneous, Rotate};
-use nalgebra::types::Iso3f64;
+use nalgebra::na::{Vec2, Vec3, Mat4, Iso3};
+use nalgebra::na;
 use camera::Camera;
 use event;
 
@@ -51,7 +50,7 @@ impl FirstPerson {
                              eye:    Vec3<f64>,
                              at:     Vec3<f64>) -> FirstPerson {
         let mut res = FirstPerson {
-            eye:           Vec3::new(0.0, 0.0, 0.0),
+            eye:           na::vec3(0.0, 0.0, 0.0),
             yaw:           0.0,
             pitch:         0.0,
             yaw_step:      0.005,
@@ -61,9 +60,9 @@ impl FirstPerson {
             znear:      znear,
             zfar:       zfar,
             projection: Mat4::new_perspective(800.0, 600.0, fov, znear, zfar),
-            proj_view:  Zero::zero(),
-            inv_proj_view:   Zero::zero(),
-            last_cursor_pos: Zero::zero()
+            proj_view:  na::zero(),
+            inv_proj_view:   na::zero(),
+            last_cursor_pos: na::zero()
         };
 
         res.look_at_z(eye, at);
@@ -74,7 +73,7 @@ impl FirstPerson {
 
     /// Changes the orientation and position of the camera to look at the specified point.
     pub fn look_at_z(&mut self, eye: Vec3<f64>, at: Vec3<f64>) {
-        let dist  = (eye - at).norm();
+        let dist  = na::norm(&(eye - at));
 
         let pitch = ((at.y - eye.y) / dist).acos();
         let yaw   = atan2(at.z - eye.z, at.x - eye.x);
@@ -117,9 +116,9 @@ impl FirstPerson {
     #[doc(hidden)]
     pub fn handle_right_button_displacement(&mut self, dpos: &Vec2<f64>) {
         let at        = self.at();
-        let dir       = (at - self.eye).normalized();
-        let tangent   = Vec3::y().cross(&dir).normalized();
-        let bitangent = dir.cross(&tangent);
+        let dir       = na::normalized(&(at - self.eye));
+        let tangent   = na::normalized(&na::cross(&Vec3::y(), &dir));
+        let bitangent = na::cross(&dir, &tangent);
 
         self.eye = self.eye + tangent * (0.01 * dpos.x / 10.0) + bitangent * (0.01 * dpos.y / 10.0);
         self.update_restrictions();
@@ -128,7 +127,7 @@ impl FirstPerson {
 
     #[doc(hidden)]
     pub fn handle_scroll(&mut self, yoff: f64) {
-        let front: Vec3<f64> = self.view_transform().rotate(&Vec3::z());
+        let front: Vec3<f64> = na::rotate(&self.view_transform(), &Vec3::z());
 
         self.eye = self.eye + front * (self.move_step * yoff);
 
@@ -137,8 +136,8 @@ impl FirstPerson {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view = self.projection * self.view_transform().inverse().unwrap().to_homogeneous();
-        self.inv_proj_view = self.proj_view.inverse().unwrap();
+        self.proj_view     = self.projection * na::to_homogeneous(&na::inverted(&self.view_transform()).unwrap());
+        self.inv_proj_view = na::inverted(&self.proj_view).unwrap();
     }
 }
 
@@ -148,8 +147,8 @@ impl Camera for FirstPerson {
     }
 
     /// The camera view transformation (i-e transformation without projection).
-    fn view_transform(&self) -> Iso3f64 {
-        let mut id: Iso3f64 = One::one();
+    fn view_transform(&self) -> Iso3<f64> {
+        let mut id: Iso3<f64> = na::one();
         id.look_at_z(&self.eye, &self.at(), &Vec3::y());
 
         id
@@ -158,7 +157,7 @@ impl Camera for FirstPerson {
     fn handle_event(&mut self, window: &glfw::Window, event: &event::Event) {
         match *event {
             event::CursorPos(x, y) => {
-                let curr_pos = Vec2::new(x as f64, y as f64);
+                let curr_pos = na::vec2(x as f64, y as f64);
 
                 if window.get_mouse_button(glfw::MouseButtonLeft) == glfw::Press {
                     let dpos = curr_pos - self.last_cursor_pos;
@@ -195,8 +194,8 @@ impl Camera for FirstPerson {
 
     fn update(&mut self, window: &glfw::Window) {
         let t                = self.view_transform();
-        let front: Vec3<f64> = t.rotate(&Vec3::z());
-        let right: Vec3<f64> = t.rotate(&Vec3::x());
+        let front: Vec3<f64> = na::rotate(&t, &Vec3::z());
+        let right: Vec3<f64> = na::rotate(&t, &Vec3::x());
 
         if window.get_key(glfw::KeyUp) == glfw::Press {
             self.eye = self.eye + front * self.move_step

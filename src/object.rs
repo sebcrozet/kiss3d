@@ -1,14 +1,11 @@
-use std::num::One;
 use std::ptr;
 use std::cast;
 use std::borrow;
 use extra::rc::{Rc, RcMut};
 use gl;
 use gl::types::*;
-use nalgebra::mat::{Indexable, ToHomogeneous, Transformation, Transform, Rotation, Rotate, Translation};
-use nalgebra::mat::{Mat3, Mat4};
-use nalgebra::vec::Vec3;
-use nalgebra::types::Iso3f64;
+use nalgebra::na::{Mat3, Mat4, Vec3, Iso3, Indexable};
+use nalgebra::na;
 use resources::shaders_manager::ObjectShaderContext;
 use resources::textures_manager;
 use resources::textures_manager::Texture;
@@ -17,7 +14,7 @@ use mesh::Mesh;
 #[path = "error.rs"]
 mod error;
 
-type Transform3d = Iso3f64;
+type Transform3d = Iso3<f64>;
 type Scale3d     = Mat3<GLfloat>;
 
 /// Set of datas identifying a scene node.
@@ -51,8 +48,8 @@ impl Object {
             scale:     Mat3::new(sx, 0.0, 0.0,
                                  0.0, sy, 0.0,
                                  0.0, 0.0, sz),
-            transform: One::one(),
-            color:     Vec3::new(r, g, b),
+            transform: na::one(),
+            color:     na::vec3(r, g, b),
             texture:   texture,
             visible:   true
         };
@@ -67,8 +64,8 @@ impl Object {
     pub fn upload(&self, context: &ObjectShaderContext) {
         do self.data.with_borrow |data| {
             if data.visible {
-                let formated_transform:  Mat4<f64> = data.transform.to_homogeneous();
-                let formated_ntransform: Mat3<f64> = data.transform.submat().submat();
+                let formated_transform:  Mat4<f64>  = na::to_homogeneous(&data.transform);
+                let formated_ntransform: &Mat3<f64> = data.transform.rotation.submat();
 
                 // we convert the matrix elements and do the transposition at the same time
                 let transform_glf = Mat4::new(
@@ -198,7 +195,7 @@ impl Object {
     }
 }
 
-impl Transformation<Transform3d> for Object {
+impl na::Transformation<Transform3d> for Object {
     fn transformation(&self) -> Transform3d {
         self.data.with_borrow(|d| d.transform.clone())
     }
@@ -220,7 +217,7 @@ impl Transformation<Transform3d> for Object {
     }
 }
 
-impl Transform<Vec3<f64>> for Object {
+impl na::Transform<Vec3<f64>> for Object {
     fn transform(&self, v: &Vec3<f64>) -> Vec3<f64> {
         self.data.with_borrow(|d| d.transform.transform(v))
     }
@@ -230,7 +227,7 @@ impl Transform<Vec3<f64>> for Object {
     }
 } 
 
-impl Rotation<Vec3<f64>> for Object {
+impl na::Rotation<Vec3<f64>> for Object {
     fn rotation(&self) -> Vec3<f64> {
         self.data.with_borrow(|d| d.transform.rotation())
     }
@@ -252,7 +249,7 @@ impl Rotation<Vec3<f64>> for Object {
     }
 }
 
-impl Rotate<Vec3<f64>> for Object {
+impl na::Rotate<Vec3<f64>> for Object {
     fn rotate(&self, v: &Vec3<f64>) -> Vec3<f64> {
         self.data.with_borrow(|d| d.transform.rotate(v))
     }
@@ -262,7 +259,7 @@ impl Rotate<Vec3<f64>> for Object {
     }
 } 
 
-impl Translation<Vec3<f64>> for Object {
+impl na::Translation<Vec3<f64>> for Object {
     fn translation(&self) -> Vec3<f64> {
         self.data.with_borrow(|d| d.transform.translation())
     }

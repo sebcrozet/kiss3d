@@ -1,8 +1,7 @@
 extern mod kiss3d;
 extern mod nalgebra;
 
-use nalgebra::mat::Rotation;
-use nalgebra::vec::Vec3;
+use nalgebra::na;
 use kiss3d::window;
 
 #[start]
@@ -31,7 +30,7 @@ fn main() {
 
             time = time + 1;
 
-            c.rotate_by(&Vec3::new(0.0f64, 0.014, 0.0))
+            na::rotate_by(&mut c, &na::vec3(0.0f64, 0.014, 0.0))
         }
     }
 }

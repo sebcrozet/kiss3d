@@ -1,11 +1,11 @@
 use std::ptr;
-use std::num::Zero;
 use std::vec;
 use std::sys;
 use std::cast;
 use gl;
 use gl::types::*;
-use nalgebra::vec::{Vec2, Vec3, Cross, Norm};
+use nalgebra::na::{Vec2, Vec3};
+use nalgebra::na;
 
 pub type Coord  = Vec3<GLfloat>;
 pub type Normal = Vec3<GLfloat>;
@@ -44,7 +44,7 @@ impl Mesh {
 
         let uvs = match uvs {
             Some(us) => us,
-            None     => vec::from_elem(coords.len(), Zero::zero()) // dummy uvs
+            None     => vec::from_elem(coords.len(), na::zero()) // dummy uvs
         };
 
         let draw_location = if fast_modifiable { DynamicDraw } else { StaticDraw };
@@ -181,17 +181,17 @@ pub fn compute_normals(coordinates: &[Coord],
 
     // Reinit all normals to zero.
     for n in normals.mut_iter() {
-        *n = Zero::zero()
+        *n = na::zero()
     }
 
     // Grow the output buffer if it is too small.
-    normals.grow_set(coordinates.len() - 1, &Zero::zero(), Zero::zero());
+    normals.grow_set(coordinates.len() - 1, &na::zero(), na::zero());
 
     // Accumulate normals ...
     for f in faces.iter() {
         let edge1  = coordinates[f.y] - coordinates[f.x];
         let edge2  = coordinates[f.z] - coordinates[f.x];
-        let normal = edge1.cross(&edge2).normalized();
+        let normal = na::normalized(&na::cross(&edge1, &edge2));
 
         normals[f.x] = normals[f.x] + normal;
         normals[f.y] = normals[f.y] + normal;

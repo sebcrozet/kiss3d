@@ -2,8 +2,7 @@ extern mod kiss3d;
 extern mod nalgebra;
 
 use std::rand::random;
-use nalgebra::mat::Translation;
-use nalgebra::vec::Vec3;
+use nalgebra::na;
 use kiss3d::window;
 use kiss3d::post_processing::post_processing_effect::PostProcessingEffect;
 use kiss3d::post_processing::waves::Waves;
@@ -23,11 +22,11 @@ fn main() {
         let mut y = window.add_cylinder(1.0, 0.5);
         let mut a = window.add_capsule(1.0, 0.5);
 
-        c.translate_by(&Vec3::new(2.0, 0.0, 0.0));
-        b.translate_by(&Vec3::new(4.0, 0.0, 0.0));
-        p.translate_by(&Vec3::new(-2.0, 0.0, 0.0));
-        y.translate_by(&Vec3::new(-4.0, 0.0, 0.0));
-        a.translate_by(&Vec3::new(0.0, 0.0, 0.0));
+        na::translate_by(&mut c, &na::vec3(2.0, 0.0, 0.0));
+        na::translate_by(&mut b, &na::vec3(4.0, 0.0, 0.0));
+        na::translate_by(&mut p, &na::vec3(-2.0, 0.0, 0.0));
+        na::translate_by(&mut y, &na::vec3(-4.0, 0.0, 0.0));
+        na::translate_by(&mut a, &na::vec3(0.0, 0.0, 0.0));
 
         c.set_color(random(), random(), random());
         b.set_color(random(), random(), random());

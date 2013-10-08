@@ -2,8 +2,7 @@ extern mod kiss3d;
 extern mod nalgebra;
 
 use std::rand::random;
-use nalgebra::mat::{Translation, RotationWithTranslation};
-use nalgebra::vec::Vec3;
+use nalgebra::na;
 use kiss3d::window::{Window, StickToCamera};
 
 #[start]
@@ -26,11 +25,11 @@ fn main() {
             let mut cy = window.add_cylinder(dim, dim2);
             let mut ca = window.add_capsule(dim, dim2);
 
-            cu.translate_by(&Vec3::new(offset, 1.0, 0.0));
-            s.translate_by(&Vec3::new(offset, -1.0, 0.0));
-            co.translate_by(&Vec3::new(offset, 2.0, 0.0));
-            cy.translate_by(&Vec3::new(offset, -2.0, 0.0));
-            ca.translate_by(&Vec3::new(offset, 0.0, 0.0));
+            na::translate_by(&mut cu, &na::vec3(offset, 1.0, 0.0));
+            na::translate_by(&mut s, &na::vec3(offset, -1.0, 0.0));
+            na::translate_by(&mut co, &na::vec3(offset, 2.0, 0.0));
+            na::translate_by(&mut cy, &na::vec3(offset, -2.0, 0.0));
+            na::translate_by(&mut ca, &na::vec3(offset, 0.0, 0.0));
 
             cu.set_color(random(), random(), random());
             s.set_color(random(), random(), random());
@@ -43,7 +42,7 @@ fn main() {
 
         do window.render_loop |w| {
             for o in w.objects_mut().mut_iter() {
-                o.rotate_wrt_center(&Vec3::new(0.0f64, 0.014, 0.0));
+                na::rotate_wrt_center(o, &na::vec3(0.0f64, 0.014, 0.0));
             }
         };
     };

@@ -4,7 +4,7 @@ use std::num::Zero;
 use std::from_str::FromStr;
 use std::hashmap::HashMap;
 use gl::types::*;
-use nalgebra::vec::{Vec3, Indexable};
+use nalgebra::na::{Vec3, Indexable};
 use mesh::{Mesh, Coord, Vertex, Normal, UV};
 
 enum Mode {

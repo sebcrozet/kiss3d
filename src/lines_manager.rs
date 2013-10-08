@@ -3,7 +3,7 @@ use std::cast;
 use std::sys;
 use gl;
 use gl::types::*;
-use nalgebra::vec::Vec3;
+use nalgebra::na::Vec3;
 use resources::shaders_manager::LinesShaderContext;
 
 #[path = "error.rs"]

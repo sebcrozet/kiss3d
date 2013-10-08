@@ -4,7 +4,6 @@
 
 use glfw;
 use std::rt::io::timer::Timer;
-use std::rt::rtio::RtioTimer;
 use std::num::Zero;
 use std::hashmap::HashMap;
 use extra::time;
@@ -13,8 +12,8 @@ use extra::arc::RWArc;
 use gl;
 use gl::types::*;
 use stb_image::image::*;
-use nalgebra::mat::{ToHomogeneous, FromHomogeneous};
-use nalgebra::vec::{Vec2, Vec3, Vec4, Norm, VecCast};
+use nalgebra::na::{Vec2, Vec3};
+use nalgebra::na;
 use camera::{Camera, ArcBall};
 use object::Object;
 use lines_manager::LinesManager;
@@ -129,9 +128,9 @@ impl Window {
 
     /// Adds a line to be drawn during the next frame.
     pub fn draw_line(&mut self, a: &Vec3<f64>, b: &Vec3<f64>, color: &Vec3<f64>) {
-        self.lines_manager.draw_line(VecCast::from(a.clone()),
-                                     VecCast::from(b.clone()),
-                                     VecCast::from(color.clone()));
+        self.lines_manager.draw_line(na::cast_vec(a.clone()),
+                                     na::cast_vec(b.clone()),
+                                     na::cast_vec(color.clone()));
     }
 
     /// Removes an object from the scene.
@@ -328,27 +327,27 @@ impl Window {
         // create the vertices
         for i in range(0u, hsubdivs + 1) {
             for j in range(0u, wsubdivs + 1) {
-                vertices.push(Vec3::new(j as GLfloat * wstep - cw, i as GLfloat * hstep - ch, 0.0));
-                tex_coords.push(Vec2::new(1.0 - j as GLfloat * wtexstep, 1.0 - i as GLfloat * htexstep))
+                vertices.push(na::vec3(j as GLfloat * wstep - cw, i as GLfloat * hstep - ch, 0.0));
+                tex_coords.push(na::vec2(1.0 - j as GLfloat * wtexstep, 1.0 - i as GLfloat * htexstep))
             }
         }
 
         // create the normals
         do ((hsubdivs + 1) * (wsubdivs + 1)).times {
-            { normals.push(Vec3::new(1.0 as GLfloat, 0.0, 0.0)) }
+            { normals.push(na::vec3(1.0 as GLfloat, 0.0, 0.0)) }
         }
 
         // create triangles
         fn dl_triangle(i: u32, j: u32, ws: u32) -> Vec3<GLuint> {
-            Vec3::new((i + 1) * ws + j, i * ws + j, (i + 1) * ws + j + 1)
+            na::vec3((i + 1) * ws + j, i * ws + j, (i + 1) * ws + j + 1)
         }
 
         fn ur_triangle(i: u32, j: u32, ws: u32) -> Vec3<GLuint> {
-            Vec3::new(i * ws + j, i * ws + (j + 1), (i + 1) * ws + j + 1)
+            na::vec3(i * ws + j, i * ws + (j + 1), (i + 1) * ws + j + 1)
         }
 
         fn inv_wind(t: &Vec3<GLuint>) -> Vec3<GLuint> {
-            Vec3::new(t.y, t.x, t.z)
+            na::vec3(t.y, t.x, t.z)
         }
 
         for i in range(0u, hsubdivs) {
@@ -383,14 +382,14 @@ impl Window {
 
     /// Converts a 3d point to 2d screen coordinates.
     pub fn project(&self, world_coord: &Vec3<f64>) -> Vec2<f64> {
-        let h_world_coord = world_coord.to_homogeneous();
+        let h_world_coord = na::to_homogeneous(world_coord);
         let h_normalized_coord = self.camera.transformation() * h_world_coord;
 
-        let normalized_coord: Vec3<f64> = FromHomogeneous::from(&h_normalized_coord);
+        let normalized_coord: Vec3<f64> = na::from_homogeneous(&h_normalized_coord);
 
         let (w, h) = self.window.get_size();
 
-        Vec2::new(
+        na::vec2(
             (1.0 + normalized_coord.x) * (w as f64) / 2.0,
             (1.0 + normalized_coord.y) * (h as f64) / 2.0)
     }
@@ -399,21 +398,22 @@ impl Window {
     pub fn unproject(&self, window_coord: &Vec2<f64>) -> (Vec3<f64>, Vec3<f64>) {
         let (w, h) = self.window.get_size();
 
-        let normalized_coord = Vec2::new(2.0 * window_coord.x / (w as f64) - 1.0,
-                                         2.0 * -window_coord.y / (h as f64) + 1.0);
+        let normalized_coord = na::vec2(
+            2.0 * window_coord.x / (w as f64) - 1.0,
+            2.0 * -window_coord.y / (h as f64) + 1.0);
 
-        let normalized_begin = Vec4::new(normalized_coord.x, normalized_coord.y, -1.0, 1.0);
-        let normalized_end   = Vec4::new(normalized_coord.x, normalized_coord.y, 1.0, 1.0);
+        let normalized_begin = na::vec4(normalized_coord.x, normalized_coord.y, -1.0, 1.0);
+        let normalized_end   = na::vec4(normalized_coord.x, normalized_coord.y, 1.0, 1.0);
 
         let cam = self.camera.inv_transformation();
 
         let h_unprojected_begin = cam * normalized_begin;
         let h_unprojected_end   = cam * normalized_end;
 
-        let unprojected_begin: Vec3<f64> = FromHomogeneous::from(&h_unprojected_begin);
-        let unprojected_end: Vec3<f64>   = FromHomogeneous::from(&h_unprojected_end);
+        let unprojected_begin: Vec3<f64> = na::from_homogeneous(&h_unprojected_begin);
+        let unprojected_end: Vec3<f64>   = na::from_homogeneous(&h_unprojected_end);
 
-        (unprojected_begin, (unprojected_end - unprojected_begin).normalized())
+        (unprojected_begin, na::normalized(&(unprojected_end - unprojected_begin)))
     }
 
     /// The list of objects on the scene.
@@ -487,7 +487,7 @@ impl Window {
             Absolute(p)   => self.set_light_pos(&p),
             StickToCamera => {
                 let camera_pos = self.camera.eye();
-                self.set_light_pos(&VecCast::from(camera_pos))
+                self.set_light_pos(&na::cast_vec(camera_pos))
             }
         }
 
@@ -535,7 +535,8 @@ impl Window {
         do glfw::start {
             textures_manager::init_singleton();
 
-            let window = glfw::Window::create(800, 600, title, glfw::Windowed).unwrap();
+            let window = glfw::Window::create(800, 600, title, glfw::Windowed)
+                         .expect("Unable to open a glfw window.");
 
             window.make_context_current();
 
@@ -554,10 +555,10 @@ impl Window {
                 window:                window,
                 objects:               ~[],
                 camera:                camera as @mut Camera,
-                light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
+                light_mode:            Absolute(na::vec3(0.0, 10.0, 0.0)),
                 wireframe_mode:        false,
                 geometries:            builtins,
-                background:            Vec3::new(0.0, 0.0, 0.0),
+                background:            na::vec3(0.0, 0.0, 0.0),
                 lines_manager:         LinesManager::new(),
                 shaders_manager:       shaders,
                 post_processing:       None,

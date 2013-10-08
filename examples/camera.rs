@@ -2,8 +2,8 @@ extern mod glfw;
 extern mod kiss3d;
 extern mod nalgebra;
 
-use std::num::Zero;
-use nalgebra::vec::Vec3;
+use nalgebra::na::Vec3;
+use nalgebra::na;
 use kiss3d::window;
 use kiss3d::event::KeyReleased;
 use kiss3d::camera::{Camera, ArcBall, FirstPerson};
@@ -20,8 +20,8 @@ fn main()
         window.set_light(window::StickToCamera);
 
         // Replace the default arc-ball camera so that we can control it
-        let eye = Vec3::new(10.0f64, 10.0, 10.0);
-        let at  = Vec3::new(0.0f64, 0.0, 0.0);
+        let eye = na::vec3(10.0f64, 10.0, 10.0);
+        let at  = na::zero();
         let arc_ball     = @mut ArcBall::new(eye, at);
         let first_person = @mut FirstPerson::new(eye, at);
 
@@ -43,9 +43,9 @@ fn main()
                 true
             }
 
-            w.draw_line(&Zero::zero(), &Vec3::x(), &Vec3::x());
-            w.draw_line(&Zero::zero(), &Vec3::y(), &Vec3::y());
-            w.draw_line(&Zero::zero(), &Vec3::z(), &Vec3::z());
+            w.draw_line(&na::zero(), &Vec3::x(), &Vec3::x());
+            w.draw_line(&na::zero(), &Vec3::y(), &Vec3::y());
+            w.draw_line(&na::zero(), &Vec3::z(), &Vec3::z());
 
             let curr_yaw = arc_ball.yaw();
 

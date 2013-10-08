@@ -1,8 +1,7 @@
-use std::num::{Zero, One, atan2};
+use std::num::atan2;
 use glfw;
-use nalgebra::vec::{Vec2, Vec3, Norm, Cross};
-use nalgebra::mat::{Mat4, Inv, ToHomogeneous};
-use nalgebra::types::Iso3f64;
+use nalgebra::na::{Vec2, Vec3, Mat4, Iso3};
+use nalgebra::na;
 use camera::Camera;
 use event;
 
@@ -54,7 +53,7 @@ impl ArcBall {
                              eye:    Vec3<f64>,
                              at:     Vec3<f64>) -> ArcBall {
         let mut res = ArcBall {
-            at:         Vec3::new(0.0, 0.0, 0.0),
+            at:         na::vec3(0.0, 0.0, 0.0),
             yaw:        0.0,
             pitch:      0.0,
             dist:       0.0,
@@ -65,9 +64,9 @@ impl ArcBall {
             znear:      znear,
             zfar:       zfar,
             projection: Mat4::new_perspective(800.0, 600.0, fov, znear, zfar),
-            proj_view:  Zero::zero(),
-            inv_proj_view:   Zero::zero(),
-            last_cursor_pos: Zero::zero()
+            proj_view:  na::zero(),
+            inv_proj_view:   na::zero(),
+            last_cursor_pos: na::zero()
         };
 
         res.look_at_z(eye, at);
@@ -121,7 +120,7 @@ impl ArcBall {
 
     /// Move and orient the camera such that it looks at a specific point.
     pub fn look_at_z(&mut self, eye: Vec3<f64>, at: Vec3<f64>) {
-        let dist  = (eye - at).norm();
+        let dist  = na::norm(&(eye - at));
         let pitch = ((eye.y - at.y) / dist).acos();
         let yaw   = atan2(eye.z - at.z, eye.x - at.x);
 
@@ -158,9 +157,9 @@ impl ArcBall {
 
     fn handle_right_button_displacement(&mut self, dpos: &Vec2<f64>) {
         let eye       = self.eye();
-        let dir       = (self.at - eye).normalized();
-        let tangent   = Vec3::y().cross(&dir).normalized();
-        let bitangent = dir.cross(&tangent);
+        let dir       = na::normalized(&(self.at - eye));
+        let tangent   = na::normalized(&na::cross(&Vec3::y(), &dir));
+        let bitangent = na::cross(&dir, &tangent);
         let mult      = self.dist / 1000.0;
 
         self.at = self.at + tangent * (dpos.x * mult) + bitangent * (dpos.y * mult);
@@ -174,8 +173,8 @@ impl ArcBall {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view = self.projection * self.view_transform().inverse().unwrap().to_homogeneous();
-        self.inv_proj_view = self.proj_view.inverse().unwrap();
+        self.proj_view     = self.projection * na::to_homogeneous(&na::inverted(&self.view_transform()).unwrap());
+        self.inv_proj_view = na::inverted(&self.proj_view).unwrap();
     }
 }
 
@@ -184,8 +183,8 @@ impl Camera for ArcBall {
         (self.znear, self.zfar)
     }
 
-    fn view_transform(&self) -> Iso3f64 {
-        let mut id: Iso3f64 = One::one();
+    fn view_transform(&self) -> Iso3<f64> {
+        let mut id: Iso3<f64> = na::one();
         id.look_at_z(&self.eye(), &self.at, &Vec3::y());
 
         id
@@ -196,13 +195,13 @@ impl Camera for ArcBall {
         let py = self.at.y + self.dist * self.pitch.cos();
         let pz = self.at.z + self.dist * self.yaw.sin() * self.pitch.sin();
 
-        Vec3::new(px, py, pz)
+        na::vec3(px, py, pz)
     }
 
     fn handle_event(&mut self, window: &glfw::Window, event: &event::Event) {
         match *event {
             event::CursorPos(x, y) => {
-                let curr_pos = Vec2::new(x as f64, y as f64);
+                let curr_pos = na::vec2(x as f64, y as f64);
 
                 if window.get_mouse_button(glfw::MouseButtonLeft) == glfw::Press {
                     let dpos = curr_pos - self.last_cursor_pos;
@@ -217,7 +216,7 @@ impl Camera for ArcBall {
                 self.last_cursor_pos = curr_pos;
             },
             event::KeyReleased(button) => if button == glfw::KeyEnter {
-                self.at = Zero::zero();
+                self.at = na::zero();
                 self.update_projviews();
             },
             event::Scroll(_, off) => self.handle_scroll(off),
