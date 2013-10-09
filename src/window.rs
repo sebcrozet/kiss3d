@@ -128,9 +128,9 @@ impl Window {
 
     /// Adds a line to be drawn during the next frame.
     pub fn draw_line(&mut self, a: &Vec3<f64>, b: &Vec3<f64>, color: &Vec3<f64>) {
-        self.lines_manager.draw_line(na::cast_vec(a.clone()),
-                                     na::cast_vec(b.clone()),
-                                     na::cast_vec(color.clone()));
+        self.lines_manager.draw_line(na::cast(a.clone()),
+                                     na::cast(b.clone()),
+                                     na::cast(color.clone()));
     }
 
     /// Removes an object from the scene.
@@ -487,7 +487,7 @@ impl Window {
             Absolute(p)   => self.set_light_pos(&p),
             StickToCamera => {
                 let camera_pos = self.camera.eye();
-                self.set_light_pos(&na::cast_vec(camera_pos))
+                self.set_light_pos(&na::cast(camera_pos))
             }
         }
 

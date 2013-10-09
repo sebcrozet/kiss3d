@@ -44,7 +44,7 @@ pub trait Camera {
 
         na::transpose(&mut homo);
 
-        let homo32: Mat4<GLfloat> = na::cast_mat(homo);
+        let homo32: Mat4<GLfloat> = na::cast(homo);
 
         unsafe {
             gl::UniformMatrix4fv(
