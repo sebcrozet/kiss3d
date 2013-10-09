@@ -744,5 +744,6 @@ fn init_gl() {
      */
     verify!(gl::FrontFace(gl::CCW));
     verify!(gl::Enable(gl::DEPTH_TEST));
+    verify!(gl::Enable(gl::SCISSOR_TEST));
     verify!(gl::DepthFunc(gl::LEQUAL));
 }

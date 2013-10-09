@@ -1,6 +1,7 @@
 pub use camera::private::camera::Camera;
 pub use camera::private::arc_ball::ArcBall;
 pub use camera::private::first_person::FirstPerson;
+pub use camera::private::first_person_stereo::FirstPersonStereo;
 
 pub mod private {
     #[path = "../camera.rs"]
@@ -11,4 +12,7 @@ pub mod private {
 
     #[path = "../first_person.rs"]
     pub mod first_person;
+
+    #[path = "../first_person_stereo.rs"]
+    pub mod first_person_stereo;
 }

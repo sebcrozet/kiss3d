@@ -28,6 +28,7 @@ examples:
 	$(build_cmd) ./examples/primitives.rs 
 	$(build_cmd) ./examples/primitives_scale.rs 
 	$(build_cmd) ./examples/camera.rs 
+	$(build_cmd) ./examples/stereo.rs 
 	$(build_cmd) ./examples/wireframe.rs 
 	$(build_cmd) ./examples/window.rs 
 
