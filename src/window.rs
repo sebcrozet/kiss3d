@@ -37,6 +37,9 @@ pub enum Light {
     StickToCamera
 }
 
+static DEFAULT_WIDTH: uint =  800u;
+static DEFAULT_HEIGHT: uint = 600u;
+
 /// Structure representing a window and a 3D scene. It is the main interface with the 3d engine.
 pub struct Window {
     priv window:                     glfw::Window,
@@ -514,7 +517,7 @@ impl Window {
     ///   * `title` - the window title
     ///   * `callback` - a callback called once the window has been created
     pub fn spawn_hidden(title: &str, callback: ~fn(&mut Window)) {
-        Window::do_spawn(title.to_owned(), true, callback)
+        Window::do_spawn(title.to_owned(), true, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
     }
 
     /// Opens a window. Once the window is created and before any event pooling, a user-defined
@@ -526,16 +529,21 @@ impl Window {
     ///   * `title` - the window title
     ///   * `callback` - a callback called once the window has been created
     pub fn spawn(title: &str, callback: ~fn(&mut Window)) {
-        Window::do_spawn(title.to_owned(), false, callback)
+        Window::do_spawn(title.to_owned(), false, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
     }
 
-    fn do_spawn(title: ~str, hide: bool, callback: ~fn(&mut Window)) {
+    /// spawn with window size
+    pub fn spawn_size(title: &str, width: uint, height: uint, callback: ~fn(&mut Window)) {
+        Window::do_spawn(title.to_owned(), false, width, height, callback)
+    }
+
+    fn do_spawn(title: ~str, hide: bool, width: uint, height: uint, callback: ~fn(&mut Window)) {
         glfw::set_error_callback(error_callback);
 
         do glfw::start {
             textures_manager::init_singleton();
 
-            let window = glfw::Window::create(800, 600, title, glfw::Windowed)
+            let window = glfw::Window::create(width, height, title, glfw::Windowed)
                          .expect("Unable to open a glfw window.");
 
             window.make_context_current();
@@ -562,7 +570,7 @@ impl Window {
                 lines_manager:         LinesManager::new(),
                 shaders_manager:       shaders,
                 post_processing:       None,
-                post_process_render_target: FramebuffersManager::new_render_target(800, 600),
+                post_process_render_target: FramebuffersManager::new_render_target(width, height),
                 framebuffers_manager:  FramebuffersManager::new(),
                 events:                RWArc::new(~[])
             };
@@ -612,7 +620,7 @@ impl Window {
                 usr_window.window.hide()
             }
 
-            // usr_window.framebuffer_size_callback(800, 600);
+            // usr_window.framebuffer_size_callback(DEFAULT_WIDTH, DEFAULT_HEIGHT);
             usr_window.set_light(usr_window.light_mode);
 
             callback(&mut usr_window);
