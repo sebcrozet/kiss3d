@@ -630,14 +630,6 @@ impl Window {
     fn draw(&mut self, curr: &mut u64, timer: &mut Timer) {
         self.camera.update(&self.window);
 
-        self.shaders_manager.select(LinesShader);
-        let view_location2 = self.shaders_manager.lines_context().view;
-        self.camera.upload(view_location2);
-
-        self.shaders_manager.select(ObjectShader);
-        let view_location1 = self.shaders_manager.object_context().view;
-        self.camera.upload(view_location1);
-
         match self.light_mode {
             StickToCamera => self.set_light(StickToCamera),
             _             => { }
@@ -651,7 +643,21 @@ impl Window {
             self.framebuffers_manager.select(&FramebuffersManager::screen());
         }
 
-        self.render_scene();
+        // TODO: change to pass_iter when I learn the lingo
+        for pass in range(0u, self.camera.num_passes()) {
+            self.camera.start_pass(pass, &self.window);
+
+            self.shaders_manager.select(LinesShader);
+            let view_location2 = self.shaders_manager.lines_context().view;
+            self.camera.upload(pass, view_location2);
+
+            self.shaders_manager.select(ObjectShader);
+            let view_location1 = self.shaders_manager.object_context().view;
+            self.camera.upload(pass, view_location1);
+
+            self.render_scene();
+        }
+        self.camera.render_complete(&self.window);
 
         let w = self.width() as f64;
         let h = self.height() as f64;
