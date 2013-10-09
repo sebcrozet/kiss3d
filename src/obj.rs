@@ -179,8 +179,8 @@ fn reformat(coords:  ~[Coord],
     let mut map:  HashMap<Vec3<GLuint>, GLuint> = HashMap::new();
     let mut vertex_ids: ~[Vertex]   = ~[];
     let mut resc: ~[Coord]          = ~[];
-    let mut resn: Option<~[Normal]> = normals.map(|_| ~[]);
-    let mut resu: Option<~[UV]>     = uvs.map(|_| ~[]);
+    let mut resn: Option<~[Normal]> = normals.as_ref().map(|_| ~[]);
+    let mut resu: Option<~[UV]>     = uvs.as_ref().map(|_| ~[]);
 
     for point in mesh.iter() {
         let idx = match map.find(point) {
@@ -188,8 +188,8 @@ fn reformat(coords:  ~[Coord],
             None    => {
                 let idx = resc.len() as GLuint;
                 resc.push(coords[point.x]);
-                resu.map_mut(|l| l.push(uvs.get_ref()[point.y]));
-                resn.map_mut(|l| l.push(normals.get_ref()[point.z]));
+                resu.as_mut().map(|l| l.push(uvs.get_ref()[point.y]));
+                resn.as_mut().map(|l| l.push(normals.get_ref()[point.z]));
 
                 vertex_ids.push(idx);
 
@@ -197,7 +197,7 @@ fn reformat(coords:  ~[Coord],
             }
         };
 
-        idx.map(|i| map.insert(*point, *i));
+        idx.map(|i| map.insert(*point, i));
     }
 
     let mut resf = vec::with_capacity(vertex_ids.len() / 3);

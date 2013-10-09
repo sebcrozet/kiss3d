@@ -66,7 +66,7 @@ impl TexturesManager {
 
     /// Get a texture with the specified path. Returns `None` if the texture is not loaded.
     pub fn get(&mut self, path: &str) -> Option<Rc<Texture>> {
-        self.textures.find(&path.to_owned()).map(|&t| t.clone())
+        self.textures.find(&path.to_owned()).map(|t| t.clone())
     }
 
     /// Allocates a new unconfigured texture. If a texture with same name exists, nothing is

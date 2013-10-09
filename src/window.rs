@@ -95,7 +95,7 @@ impl Window {
 
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
     pub fn set_framerate_limit(&mut self, fps: Option<u64>) {
-        self.max_ms_per_frame = do fps.map |f| { assert!(*f != 0); 1000 / *f }
+        self.max_ms_per_frame = do fps.map |f| { assert!(f != 0); 1000 / f }
     }
 
     /// Closes the window.
