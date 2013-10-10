@@ -19,14 +19,12 @@ fn load_file(path: &str) -> ~str {
     io::read_whole_file_str(&PosixPath(path)).expect("Unable to open the file: " + path)
 }
 
-/// An useless post-processing effect mainly to test that everything works correctly.
-/// It deforms the displayed scene with a wave effect.
+/// An post-processing effect to support the oculus rift.
 pub struct OculusStereo {
     priv vshader:      GLuint,
     priv fshader:      GLuint,
     priv program:      GLuint,
     priv time:         f64,
-    priv offset:       GLuint,
     priv fbo_texture:  GLuint,
     priv fbo_vertices: GLuint,
     priv v_coord:      GLint,
@@ -77,7 +75,6 @@ impl OculusStereo {
                 fshader:      fshader,
                 program:      program,
                 time:         0.0,
-                offset:       gl::GetUniformLocation(program, "offset".to_c_str().unwrap()) as GLuint,
                 fbo_texture:  gl::GetUniformLocation(program, "fbo_texture".to_c_str().unwrap()) as GLuint,
                 fbo_vertices: vbo_fbo_vertices,
                 v_coord:      v_coord,
@@ -85,8 +82,8 @@ impl OculusStereo {
                 kappa_1:  gl::GetUniformLocation(program, "kappa_1".to_c_str().unwrap()) as GLuint,
                 kappa_2:  gl::GetUniformLocation(program, "kappa_2".to_c_str().unwrap()) as GLuint,
                 kappa_3:  gl::GetUniformLocation(program, "kappa_3".to_c_str().unwrap()) as GLuint,
-                scale:  gl::GetUniformLocation(program, "Scale".to_c_str().unwrap()) as GLuint,
-                scale_in:  gl::GetUniformLocation(program, "ScaleIn".to_c_str().unwrap()) as GLuint,
+                scale:    gl::GetUniformLocation(program, "Scale".to_c_str().unwrap()) as GLuint,
+                scale_in: gl::GetUniformLocation(program, "ScaleIn".to_c_str().unwrap()) as GLuint,
                 h:  1f64, // will be updated in the first update
                 w:  1f64, // ditto
             }
@@ -113,8 +110,6 @@ impl PostProcessingEffect for OculusStereo {
          * Configure the post-process effect.
          */
         gl::UseProgram(self.program);
-        let move = self.time * 2.0 * 3.14159 * 0.75;  // 3/4 of a wave cycle per second
-        gl::Uniform1f(self.offset as GLint, move as f32);
         let kappa = [1.0, 1.7, 0.7, 15.0];
         gl::Uniform1f(self.kappa_0 as GLint, kappa[0] as f32);
         gl::Uniform1f(self.kappa_1 as GLint, kappa[1] as f32);
