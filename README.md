@@ -1,6 +1,3 @@
-**NOTE: there is currently a bug on the rust std lib, preventing kiss3d from working properly.
-See mozilla/rust#9774 for more information. A workaround is being worked on nalgebra.**
-
 # kiss3d
 
 Keep It Simple, Stupid 3d graphics engine.
