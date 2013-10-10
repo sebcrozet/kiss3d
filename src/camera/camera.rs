@@ -45,7 +45,7 @@ pub trait Camera {
 
     // TODO: is there an extra copy here? or does rust avoid it?
     fn upload_mat(&self, view_location: i32, homo_base: Mat4<f64>) {
-        let mut homo = homo_base.clone();
+        let mut homo = homo_base;
         na::transpose(&mut homo);
 
         let homo32: Mat4<GLfloat> = na::cast(homo);
