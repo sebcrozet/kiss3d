@@ -40,13 +40,11 @@ pub trait Camera {
     /// Upload the camera transfomation to the gpu. This cam be called multiple times on the render
     /// loop.
     fn upload(&self, _pass: uint, view_location: i32) {
-        self.upload_mat(view_location, self.transformation());
+        self.upload_mat(view_location, &self.transformation());
     }
 
-    // TODO: is there an extra copy here? or does rust avoid it?
-    fn upload_mat(&self, view_location: i32, homo_base: Mat4<f64>) {
-        let mut homo = homo_base;
-        na::transpose(&mut homo);
+    fn upload_mat(&self, view_location: i32, homo_base: &Mat4<f64>) {
+        let homo = na::transposed(homo_base);
 
         let homo32: Mat4<GLfloat> = na::cast(homo);
 

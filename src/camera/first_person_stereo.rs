@@ -296,7 +296,7 @@ impl Camera for FirstPersonStereo {
     }
 
     fn upload(&self, pass: uint, view_location: i32) {
-        self.upload_mat(view_location, self.transformation_eye(pass));
+        self.upload_mat(view_location, &self.transformation_eye(pass));
     }
 
     fn num_passes(&self) -> uint { 2u }
