@@ -1,7 +1,7 @@
 use std::local_data;
-use extra::rc::Rc;
 use std::cast;
 use std::hashmap::HashMap;
+use std::rc::Rc;
 use gl;
 use gl::types::*;
 use stb_image::image::ImageU8;
@@ -22,7 +22,7 @@ impl Texture {
 
         unsafe { verify!(gl::GenTextures(1, &mut id)); }
 
-        Rc::from_send(Texture { id: id })
+        Rc::new(Texture { id: id })
     }
 
     /// The opengl-provided texture id.

@@ -1,6 +1,6 @@
 use std::cast;
 use std::hashmap::HashMap;
-use extra::rc::RcMut;
+use std::rc::RcMut;
 use gl;
 use gl::types::*;
 use resources::shaders_manager::ObjectShaderContext;

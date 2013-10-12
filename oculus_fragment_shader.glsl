@@ -9,7 +9,7 @@ const vec2 LensCenterRight = vec2(0.75, 0.5);
 uniform vec2 Scale;
 uniform vec2 ScaleIn;
 
-attribute vec2 v_coord;
+varying vec2 v_coord;
 varying vec2 f_texcoord;
 
 // Debugging

@@ -1,7 +1,7 @@
 use std::ptr;
 use std::cast;
 use std::borrow;
-use extra::rc::{Rc, RcMut};
+use std::rc::{RcMut, Rc};
 use gl;
 use gl::types::*;
 use nalgebra::na::{Mat3, Mat4, Vec3, Iso3, Indexable};
@@ -55,7 +55,7 @@ impl Object {
         };
 
         Object {
-            data:    RcMut::from_freeze(data),
+            data:    RcMut::new(data),
             mesh:    mesh,
         }
     }
