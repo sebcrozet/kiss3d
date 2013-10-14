@@ -4,7 +4,8 @@ use std::borrow;
 use std::rc::{RcMut, Rc};
 use gl;
 use gl::types::*;
-use nalgebra::na::{Mat3, Mat4, Vec3, Iso3, Indexable};
+use nalgebra::na::{Mat3, Mat4, Vec3, Iso3,
+                   Indexable, Rotation, Rotate, Translation, Transformation};
 use nalgebra::na;
 use resources::shaders_manager::ObjectShaderContext;
 use resources::textures_manager;
@@ -49,7 +50,7 @@ impl Object {
                                  0.0, sy, 0.0,
                                  0.0, 0.0, sz),
             transform: na::one(),
-            color:     na::vec3(r, g, b),
+            color:     Vec3::new(r, g, b),
             texture:   texture,
             visible:   true
         };
@@ -195,7 +196,7 @@ impl Object {
     }
 }
 
-impl na::Transformation<Transform3d> for Object {
+impl Transformation<Transform3d> for Object {
     fn transformation(&self) -> Transform3d {
         self.data.with_borrow(|d| d.transform.clone())
     }
@@ -204,11 +205,19 @@ impl na::Transformation<Transform3d> for Object {
         self.data.with_borrow(|d| d.transform.inv_transformation())
     }
 
-    fn transform_by(&mut self, t: &Transform3d) {
-        self.data.with_mut_borrow(|d| d.transform.transform_by(t))
+    fn append_transformation(&mut self, t: &Transform3d) {
+        self.data.with_mut_borrow(|d| d.transform.append_transformation(t))
     }
 
-    fn transformed(&self, _: &Transform3d) -> Object {
+    fn append_transformation_cpy(_: &Object, _: &Transform3d) -> Object {
+        fail!("Cannot clone an object.")
+    }
+
+    fn prepend_transformation(&mut self, t: &Transform3d) {
+        self.data.with_mut_borrow(|d| d.transform.prepend_transformation(t))
+    }
+
+    fn prepend_transformation_cpy(_: &Object, _: &Transform3d) -> Object {
         fail!("Cannot clone an object.")
     }
 
@@ -227,7 +236,7 @@ impl na::Transform<Vec3<f64>> for Object {
     }
 } 
 
-impl na::Rotation<Vec3<f64>> for Object {
+impl Rotation<Vec3<f64>> for Object {
     fn rotation(&self) -> Vec3<f64> {
         self.data.with_borrow(|d| d.transform.rotation())
     }
@@ -236,11 +245,19 @@ impl na::Rotation<Vec3<f64>> for Object {
         self.data.with_borrow(|d| d.transform.inv_rotation())
     }
 
-    fn rotate_by(&mut self, t: &Vec3<f64>) {
-        self.data.with_mut_borrow(|d| d.transform.rotate_by(t))
+    fn append_rotation(&mut self, t: &Vec3<f64>) {
+        self.data.with_mut_borrow(|d| d.transform.append_rotation(t))
     }
 
-    fn rotated(&self, _: &Vec3<f64>) -> Object {
+    fn append_rotation_cpy(_: &Object, _: &Vec3<f64>) -> Object {
+        fail!("Cannot clone an object.")
+    }
+
+    fn prepend_rotation(&mut self, t: &Vec3<f64>) {
+        self.data.with_mut_borrow(|d| d.transform.prepend_rotation(t))
+    }
+
+    fn prepend_rotation_cpy(_: &Object, _: &Vec3<f64>) -> Object {
         fail!("Cannot clone an object.")
     }
 
@@ -249,7 +266,7 @@ impl na::Rotation<Vec3<f64>> for Object {
     }
 }
 
-impl na::Rotate<Vec3<f64>> for Object {
+impl Rotate<Vec3<f64>> for Object {
     fn rotate(&self, v: &Vec3<f64>) -> Vec3<f64> {
         self.data.with_borrow(|d| d.transform.rotate(v))
     }
@@ -259,7 +276,7 @@ impl na::Rotate<Vec3<f64>> for Object {
     }
 } 
 
-impl na::Translation<Vec3<f64>> for Object {
+impl Translation<Vec3<f64>> for Object {
     fn translation(&self) -> Vec3<f64> {
         self.data.with_borrow(|d| d.transform.translation())
     }
@@ -268,11 +285,19 @@ impl na::Translation<Vec3<f64>> for Object {
         self.data.with_borrow(|d| d.transform.inv_translation())
     }
 
-    fn translate_by(&mut self, t: &Vec3<f64>) {
-        self.data.with_mut_borrow(|d| d.transform.translate_by(t))
+    fn append_translation(&mut self, t: &Vec3<f64>) {
+        self.data.with_mut_borrow(|d| d.transform.append_translation(t))
     }
 
-    fn translated(&self, _: &Vec3<f64>) -> Object {
+    fn append_translation_cpy(_: &Object, _: &Vec3<f64>) -> Object {
+        fail!("Cannot clone an object.")
+    }
+
+    fn prepend_translation(&mut self, t: &Vec3<f64>) {
+        self.data.with_mut_borrow(|d| d.transform.prepend_translation(t))
+    }
+
+    fn prepend_translation_cpy(_: &Object, _: &Vec3<f64>) -> Object {
         fail!("Cannot clone an object.")
     }
 

@@ -20,7 +20,7 @@ fn main()
         window.set_light(window::StickToCamera);
 
         // Replace the default arc-ball camera so that we can control it
-        let eye = na::vec3(10.0f64, 10.0, 10.0);
+        let eye = Vec3::new(10.0f64, 10.0, 10.0);
         let at  = na::zero();
         let arc_ball     = @mut ArcBall::new(eye, at);
         let first_person = @mut FirstPerson::new(eye, at);

@@ -50,7 +50,7 @@ impl FirstPerson {
                              eye:    Vec3<f64>,
                              at:     Vec3<f64>) -> FirstPerson {
         let mut res = FirstPerson {
-            eye:           na::vec3(0.0, 0.0, 0.0),
+            eye:           Vec3::new(0.0, 0.0, 0.0),
             yaw:           0.0,
             pitch:         0.0,
             yaw_step:      0.005,
@@ -116,8 +116,8 @@ impl FirstPerson {
     #[doc(hidden)]
     pub fn handle_right_button_displacement(&mut self, dpos: &Vec2<f64>) {
         let at        = self.at();
-        let dir       = na::normalized(&(at - self.eye));
-        let tangent   = na::normalized(&na::cross(&Vec3::y(), &dir));
+        let dir       = na::normalize(&(at - self.eye));
+        let tangent   = na::normalize(&na::cross(&Vec3::y(), &dir));
         let bitangent = na::cross(&dir, &tangent);
 
         self.eye = self.eye + tangent * (0.01 * dpos.x / 10.0) + bitangent * (0.01 * dpos.y / 10.0);
@@ -136,8 +136,8 @@ impl FirstPerson {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view     = self.projection * na::to_homogeneous(&na::inverted(&self.view_transform()).unwrap());
-        self.inv_proj_view = na::inverted(&self.proj_view).unwrap();
+        self.proj_view     = self.projection * na::to_homogeneous(&na::inv(&self.view_transform()).unwrap());
+        self.inv_proj_view = na::inv(&self.proj_view).unwrap();
     }
 }
 
@@ -157,7 +157,7 @@ impl Camera for FirstPerson {
     fn handle_event(&mut self, window: &glfw::Window, event: &event::Event) {
         match *event {
             event::CursorPos(x, y) => {
-                let curr_pos = na::vec2(x as f64, y as f64);
+                let curr_pos = Vec2::new(x as f64, y as f64);
 
                 if window.get_mouse_button(glfw::MouseButtonLeft) == glfw::Press {
                     let dpos = curr_pos - self.last_cursor_pos;

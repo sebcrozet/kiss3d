@@ -191,7 +191,7 @@ pub fn compute_normals(coordinates: &[Coord],
     for f in faces.iter() {
         let edge1  = coordinates[f.y] - coordinates[f.x];
         let edge2  = coordinates[f.z] - coordinates[f.x];
-        let normal = na::normalized(&na::cross(&edge1, &edge2));
+        let normal = na::normalize(&na::cross(&edge1, &edge2));
 
         normals[f.x] = normals[f.x] + normal;
         normals[f.y] = normals[f.y] + normal;

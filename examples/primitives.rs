@@ -2,7 +2,7 @@ extern mod kiss3d;
 extern mod nalgebra;
 
 use std::rand::random;
-use nalgebra::na;
+use nalgebra::na::{Vec3, Translation, RotationWithTranslation};
 use kiss3d::window::{Window, StickToCamera};
 
 #[start]
@@ -24,20 +24,20 @@ fn main() {
         y.set_color(random(), random(), random());
         a.set_color(random(), random(), random());
 
-        na::translate_by(&mut c, &na::vec3(2.0, 0.0, 0.0));
-        na::translate_by(&mut b, &na::vec3(4.0, 0.0, 0.0));
-        na::translate_by(&mut p, &na::vec3(-2.0, 0.0, 0.0));
-        na::translate_by(&mut y, &na::vec3(-4.0, 0.0, 0.0));
-        na::translate_by(&mut a, &na::vec3(0.0, 0.0, 0.0));
+        c.append_translation(&Vec3::new(2.0, 0.0, 0.0));
+        b.append_translation(&Vec3::new(4.0, 0.0, 0.0));
+        p.append_translation(&Vec3::new(-2.0, 0.0, 0.0));
+        y.append_translation(&Vec3::new(-4.0, 0.0, 0.0));
+        a.append_translation(&Vec3::new(0.0, 0.0, 0.0));
 
         window.set_light(StickToCamera);
 
         do window.render_loop |_| {
-            na::rotate_wrt_center(&mut c, &na::vec3(0.0f64, 0.014, 0.0));
-            na::rotate_wrt_center(&mut b, &na::vec3(0.0f64, 0.014, 0.0));
-            na::rotate_wrt_center(&mut p, &na::vec3(0.0f64, 0.014, 0.0));
-            na::rotate_wrt_center(&mut y, &na::vec3(0.0f64, 0.014, 0.0));
-            na::rotate_wrt_center(&mut a, &na::vec3(0.0f64, 0.014, 0.0));
+            c.append_rotation_wrt_center(&Vec3::new(0.0f64, 0.014, 0.0));
+            b.append_rotation_wrt_center(&Vec3::new(0.0f64, 0.014, 0.0));
+            p.append_rotation_wrt_center(&Vec3::new(0.0f64, 0.014, 0.0));
+            y.append_rotation_wrt_center(&Vec3::new(0.0f64, 0.014, 0.0));
+            a.append_rotation_wrt_center(&Vec3::new(0.0f64, 0.014, 0.0));
         };
     };
 }

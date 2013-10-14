@@ -53,7 +53,7 @@ impl ArcBall {
                              eye:    Vec3<f64>,
                              at:     Vec3<f64>) -> ArcBall {
         let mut res = ArcBall {
-            at:         na::vec3(0.0, 0.0, 0.0),
+            at:         Vec3::new(0.0, 0.0, 0.0),
             yaw:        0.0,
             pitch:      0.0,
             dist:       0.0,
@@ -157,8 +157,8 @@ impl ArcBall {
 
     fn handle_right_button_displacement(&mut self, dpos: &Vec2<f64>) {
         let eye       = self.eye();
-        let dir       = na::normalized(&(self.at - eye));
-        let tangent   = na::normalized(&na::cross(&Vec3::y(), &dir));
+        let dir       = na::normalize(&(self.at - eye));
+        let tangent   = na::normalize(&na::cross(&Vec3::y(), &dir));
         let bitangent = na::cross(&dir, &tangent);
         let mult      = self.dist / 1000.0;
 
@@ -173,8 +173,8 @@ impl ArcBall {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view     = self.projection * na::to_homogeneous(&na::inverted(&self.view_transform()).unwrap());
-        self.inv_proj_view = na::inverted(&self.proj_view).unwrap();
+        self.proj_view     = self.projection * na::to_homogeneous(&na::inv(&self.view_transform()).unwrap());
+        self.inv_proj_view = na::inv(&self.proj_view).unwrap();
     }
 }
 
@@ -195,13 +195,13 @@ impl Camera for ArcBall {
         let py = self.at.y + self.dist * self.pitch.cos();
         let pz = self.at.z + self.dist * self.yaw.sin() * self.pitch.sin();
 
-        na::vec3(px, py, pz)
+        Vec3::new(px, py, pz)
     }
 
     fn handle_event(&mut self, window: &glfw::Window, event: &event::Event) {
         match *event {
             event::CursorPos(x, y) => {
-                let curr_pos = na::vec2(x as f64, y as f64);
+                let curr_pos = Vec2::new(x as f64, y as f64);
 
                 if window.get_mouse_button(glfw::MouseButtonLeft) == glfw::Press {
                     let dpos = curr_pos - self.last_cursor_pos;

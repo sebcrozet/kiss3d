@@ -12,7 +12,7 @@ use extra::arc::RWArc;
 use gl;
 use gl::types::*;
 use stb_image::image::*;
-use nalgebra::na::{Vec2, Vec3};
+use nalgebra::na::{Vec2, Vec3, Vec4};
 use nalgebra::na;
 use camera::{Camera, ArcBall};
 use object::Object;
@@ -330,27 +330,27 @@ impl Window {
         // create the vertices
         for i in range(0u, hsubdivs + 1) {
             for j in range(0u, wsubdivs + 1) {
-                vertices.push(na::vec3(j as GLfloat * wstep - cw, i as GLfloat * hstep - ch, 0.0));
-                tex_coords.push(na::vec2(1.0 - j as GLfloat * wtexstep, 1.0 - i as GLfloat * htexstep))
+                vertices.push(Vec3::new(j as GLfloat * wstep - cw, i as GLfloat * hstep - ch, 0.0));
+                tex_coords.push(Vec2::new(1.0 - j as GLfloat * wtexstep, 1.0 - i as GLfloat * htexstep))
             }
         }
 
         // create the normals
         do ((hsubdivs + 1) * (wsubdivs + 1)).times {
-            { normals.push(na::vec3(1.0 as GLfloat, 0.0, 0.0)) }
+            { normals.push(Vec3::new(1.0 as GLfloat, 0.0, 0.0)) }
         }
 
         // create triangles
         fn dl_triangle(i: u32, j: u32, ws: u32) -> Vec3<GLuint> {
-            na::vec3((i + 1) * ws + j, i * ws + j, (i + 1) * ws + j + 1)
+            Vec3::new((i + 1) * ws + j, i * ws + j, (i + 1) * ws + j + 1)
         }
 
         fn ur_triangle(i: u32, j: u32, ws: u32) -> Vec3<GLuint> {
-            na::vec3(i * ws + j, i * ws + (j + 1), (i + 1) * ws + j + 1)
+            Vec3::new(i * ws + j, i * ws + (j + 1), (i + 1) * ws + j + 1)
         }
 
         fn inv_wind(t: &Vec3<GLuint>) -> Vec3<GLuint> {
-            na::vec3(t.y, t.x, t.z)
+            Vec3::new(t.y, t.x, t.z)
         }
 
         for i in range(0u, hsubdivs) {
@@ -392,7 +392,7 @@ impl Window {
 
         let (w, h) = self.window.get_size();
 
-        na::vec2(
+        Vec2::new(
             (1.0 + normalized_coord.x) * (w as f64) / 2.0,
             (1.0 + normalized_coord.y) * (h as f64) / 2.0)
     }
@@ -401,12 +401,12 @@ impl Window {
     pub fn unproject(&self, window_coord: &Vec2<f64>) -> (Vec3<f64>, Vec3<f64>) {
         let (w, h) = self.window.get_size();
 
-        let normalized_coord = na::vec2(
+        let normalized_coord = Vec2::new(
             2.0 * window_coord.x / (w as f64) - 1.0,
             2.0 * -window_coord.y / (h as f64) + 1.0);
 
-        let normalized_begin = na::vec4(normalized_coord.x, normalized_coord.y, -1.0, 1.0);
-        let normalized_end   = na::vec4(normalized_coord.x, normalized_coord.y, 1.0, 1.0);
+        let normalized_begin = Vec4::new(normalized_coord.x, normalized_coord.y, -1.0, 1.0);
+        let normalized_end   = Vec4::new(normalized_coord.x, normalized_coord.y, 1.0, 1.0);
 
         let cam = self.camera.inv_transformation();
 
@@ -416,7 +416,7 @@ impl Window {
         let unprojected_begin: Vec3<f64> = na::from_homogeneous(&h_unprojected_begin);
         let unprojected_end: Vec3<f64>   = na::from_homogeneous(&h_unprojected_end);
 
-        (unprojected_begin, na::normalized(&(unprojected_end - unprojected_begin)))
+        (unprojected_begin, na::normalize(&(unprojected_end - unprojected_begin)))
     }
 
     /// The list of objects on the scene.
@@ -563,10 +563,10 @@ impl Window {
                 window:                window,
                 objects:               ~[],
                 camera:                camera as @mut Camera,
-                light_mode:            Absolute(na::vec3(0.0, 10.0, 0.0)),
+                light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
                 wireframe_mode:        false,
                 geometries:            builtins,
-                background:            na::vec3(0.0, 0.0, 0.0),
+                background:            Vec3::new(0.0, 0.0, 0.0),
                 lines_manager:         LinesManager::new(),
                 shaders_manager:       shaders,
                 post_processing:       None,

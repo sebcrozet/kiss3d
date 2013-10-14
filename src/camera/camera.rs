@@ -44,7 +44,7 @@ pub trait Camera {
     }
 
     fn upload_mat(&self, view_location: i32, homo_base: &Mat4<f64>) {
-        let homo = na::transposed(homo_base);
+        let homo = na::transpose(homo_base);
 
         let homo32: Mat4<GLfloat> = na::cast(homo);
 

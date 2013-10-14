@@ -1,7 +1,7 @@
 extern mod kiss3d;
 extern mod nalgebra;
 
-use nalgebra::na;
+use nalgebra::na::{Vec3, Rotation};
 use kiss3d::window;
 
 #[start]
@@ -20,7 +20,7 @@ fn main() {
         window.set_light(window::StickToCamera);
 
         do window.render_loop |_| {
-            na::rotate_by(&mut c, &na::vec3(0.0f64, 0.014, 0.0))
+            c.append_rotation(&Vec3::new(0.0f64, 0.014, 0.0))
         }
     }
 }

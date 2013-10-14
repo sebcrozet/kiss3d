@@ -137,8 +137,8 @@ impl FirstPersonStereo {
     fn update_eyes_location(&mut self) {
         // left and right are on a line perpendicular to both up and the target
         // up is always y
-        let dir       = (self.at() - self.eye).normalized();
-        let tangent   = Vec3::y().cross(&dir).normalized();
+        let dir       = na::normalize(&(self.at() - self.eye));
+        let tangent   = na::normalize(&na::cross(&Vec3::y(), &dir));
         self.eye_left = self.eye - tangent * (self.ipd / 2.0 as f64);
         self.eye_right = self.eye + tangent * (self.ipd / 2.0 as f64);
         //println(fmt!("eye_left = %f,%f,%f", self.eye_left.x as float, self.eye_left.y as float, self.eye_left.z as float));
@@ -149,8 +149,8 @@ impl FirstPersonStereo {
     #[doc(hidden)]
     pub fn handle_right_button_displacement(&mut self, dpos: &Vec2<f64>) {
         let at        = self.at();
-        let dir       = (at - self.eye).normalized();
-        let tangent   = Vec3::y().cross(&dir).normalized();
+        let dir       = na::normalize(&(at - self.eye));
+        let tangent   = na::normalize(&na::cross(&Vec3::y(), &dir));
         let bitangent = dir.cross(&tangent);
 
         self.eye = self.eye + tangent * (0.01 * dpos.x as f64 / 10.0) + bitangent * (0.01 * dpos.y as f64 / 10.0);
@@ -172,10 +172,10 @@ impl FirstPersonStereo {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view = self.projection * na::to_homogeneous(&na::inverted(&self.view_transform()).unwrap());
-        self.inv_proj_view = na::inverted(&self.proj_view).unwrap();
-        self.proj_view_left = self.projection * na::to_homogeneous(&na::inverted(&self.view_transform_left()).unwrap());
-        self.proj_view_right = self.projection * na::to_homogeneous(&na::inverted(&self.view_transform_right()).unwrap());
+        self.proj_view = self.projection * na::to_homogeneous(&na::inv(&self.view_transform()).unwrap());
+        self.inv_proj_view = na::inv(&self.proj_view).unwrap();
+        self.proj_view_left = self.projection * na::to_homogeneous(&na::inv(&self.view_transform_left()).unwrap());
+        self.proj_view_right = self.projection * na::to_homogeneous(&na::inv(&self.view_transform_right()).unwrap());
     }
 
     fn transformation_eye(&self, eye: uint) -> Mat4<f64> {
