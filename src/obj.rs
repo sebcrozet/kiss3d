@@ -21,7 +21,7 @@ fn error(line: uint, err: &str) -> ! {
 
 /// Parses an obj file.
 pub fn parse_file(path: &str) -> Mesh {
-    parse(io::read_whole_file_str(&PosixPath(path)).expect("Unable to open the file: " + path))
+    parse(io::read_whole_file_str(&Path::new(path)).expect("Unable to open the file: " + path))
 }
 
 /// Parses a string representing an obj file and returns (vertices, normals, texture coordinates, indices)

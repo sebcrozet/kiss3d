@@ -1,9 +1,7 @@
 use std::num::{Zero, One, atan2};
 use glfw;
 use gl;
-use nalgebra::na::{Vec2, Vec3, Norm, Cross};
-use nalgebra::na::{Mat4, Rotate};
-use nalgebra::na::Iso3;
+use nalgebra::na::{Vec2, Vec3, Mat4, Iso3, Rotate};
 use nalgebra::na;
 use camera::Camera;
 use event;
@@ -94,7 +92,7 @@ impl FirstPersonStereo {
 
     /// Changes the orientation and position of the camera to look at the specified point.
     pub fn look_at_z(&mut self, eye: Vec3<f64>, at: Vec3<f64>) {
-        let dist  = (eye - at).norm();
+        let dist  = na::norm(&(eye - at));
 
         let pitch = ((at.y - eye.y) / dist).acos();
         let yaw   = atan2(at.z - eye.z, at.x - eye.x);
@@ -151,7 +149,7 @@ impl FirstPersonStereo {
         let at        = self.at();
         let dir       = na::normalize(&(at - self.eye));
         let tangent   = na::normalize(&na::cross(&Vec3::y(), &dir));
-        let bitangent = dir.cross(&tangent);
+        let bitangent = na::cross(&dir, &tangent);
 
         self.eye = self.eye + tangent * (0.01 * dpos.x as f64 / 10.0) + bitangent * (0.01 * dpos.y as f64 / 10.0);
         // TODO: ugly - should move eye update to where eye_left & eye_right are updated

@@ -16,7 +16,7 @@ use post_processing::post_processing_effect::PostProcessingEffect;
 mod error;
 
 fn load_file(path: &str) -> ~str {
-    io::read_whole_file_str(&PosixPath(path)).expect("Unable to open the file: " + path)
+    io::read_whole_file_str(&Path::new(path)).expect("Unable to open the file: " + path)
 }
 
 /// An post-processing effect to support the oculus rift.
