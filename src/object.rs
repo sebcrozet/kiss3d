@@ -4,8 +4,7 @@ use std::borrow;
 use std::rc::{RcMut, Rc};
 use gl;
 use gl::types::*;
-use nalgebra::na::{Mat3, Mat4, Vec3, Iso3,
-                   Indexable, Rotation, Rotate, Translation, Transformation};
+use nalgebra::na::{Mat3, Mat4, Vec3, Iso3, Rotation, Rotate, Translation, Transformation};
 use nalgebra::na;
 use resources::shaders_manager::ObjectShaderContext;
 use resources::textures_manager;
@@ -65,43 +64,12 @@ impl Object {
     pub fn upload(&self, context: &ObjectShaderContext) {
         do self.data.with_borrow |data| {
             if data.visible {
-                let formated_transform:  Mat4<f64>  = na::to_homogeneous(&data.transform);
-                let formated_ntransform: &Mat3<f64> = data.transform.rotation.submat();
+                let formated_transform:  Mat4<f64> = na::to_homogeneous(&data.transform);
+                let formated_ntransform: Mat3<f64> = *data.transform.rotation.submat();
 
-                // we convert the matrix elements and do the transposition at the same time
-                let transform_glf = Mat4::new(
-                    formated_transform.at((0, 0)) as GLfloat,
-                    formated_transform.at((1, 0)) as GLfloat,
-                    formated_transform.at((2, 0)) as GLfloat,
-                    formated_transform.at((3, 0)) as GLfloat,
-
-                    formated_transform.at((0, 1)) as GLfloat,
-                    formated_transform.at((1, 1)) as GLfloat,
-                    formated_transform.at((2, 1)) as GLfloat,
-                    formated_transform.at((3, 1)) as GLfloat,
-
-                    formated_transform.at((0, 2)) as GLfloat,
-                    formated_transform.at((1, 2)) as GLfloat,
-                    formated_transform.at((2, 2)) as GLfloat,
-                    formated_transform.at((3, 2)) as GLfloat,
-
-                    formated_transform.at((0, 3)) as GLfloat,
-                    formated_transform.at((1, 3)) as GLfloat,
-                    formated_transform.at((2, 3)) as GLfloat,
-                    formated_transform.at((3, 3)) as GLfloat
-                    );
-
-                let ntransform_glf = Mat3::new(
-                    formated_ntransform.at((0, 0)) as GLfloat,
-                    formated_ntransform.at((1, 0)) as GLfloat,
-                    formated_ntransform.at((2, 0)) as GLfloat,
-                    formated_ntransform.at((0, 1)) as GLfloat,
-                    formated_ntransform.at((1, 1)) as GLfloat,
-                    formated_ntransform.at((2, 1)) as GLfloat,
-                    formated_ntransform.at((0, 2)) as GLfloat,
-                    formated_ntransform.at((1, 2)) as GLfloat,
-                    formated_ntransform.at((2, 2)) as GLfloat
-                    );
+                // we convert the matrix elements
+                let transform_glf: Mat4<GLfloat>  = na::cast(formated_transform);
+                let ntransform_glf: Mat3<GLfloat> = na::cast(formated_ntransform);
 
                 unsafe {
                     verify!(gl::UniformMatrix4fv(context.transform,

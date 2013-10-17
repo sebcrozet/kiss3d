@@ -43,10 +43,8 @@ pub trait Camera {
         self.upload_mat(view_location, &self.transformation());
     }
 
-    fn upload_mat(&self, view_location: i32, homo_base: &Mat4<f64>) {
-        let homo = na::transpose(homo_base);
-
-        let homo32: Mat4<GLfloat> = na::cast(homo);
+    fn upload_mat(&self, view_location: i32, homo: &Mat4<f64>) {
+        let homo32: Mat4<GLfloat> = na::cast(*homo);
 
         unsafe {
             gl::UniformMatrix4fv(
