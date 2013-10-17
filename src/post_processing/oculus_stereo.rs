@@ -24,7 +24,7 @@ pub struct OculusStereo {
     priv vshader:      GLuint,
     priv fshader:      GLuint,
     priv program:      GLuint,
-    priv time:         f64,
+    priv time:         f32,
     priv fbo_texture:  GLuint,
     priv fbo_vertices: GLuint,
     priv v_coord:      GLint,
@@ -34,8 +34,8 @@ pub struct OculusStereo {
     priv kappa_3:      GLuint,
     priv scale:        GLuint,
     priv scale_in:     GLuint,
-    priv w:            f64,
-    priv h:            f64
+    priv w:            f32,
+    priv h:            f32
 }
 
 impl OculusStereo {
@@ -84,26 +84,26 @@ impl OculusStereo {
                 kappa_3:  gl::GetUniformLocation(program, "kappa_3".to_c_str().unwrap()) as GLuint,
                 scale:    gl::GetUniformLocation(program, "Scale".to_c_str().unwrap()) as GLuint,
                 scale_in: gl::GetUniformLocation(program, "ScaleIn".to_c_str().unwrap()) as GLuint,
-                h:  1f64, // will be updated in the first update
-                w:  1f64, // ditto
+                h:  1f32, // will be updated in the first update
+                w:  1f32, // ditto
             }
         }
     }
 }
 
 impl PostProcessingEffect for OculusStereo {
-    fn update(&mut self, _: f64, w: f64, h: f64, _: f64, _: f64) {
+    fn update(&mut self, _: f32, w: f32, h: f32, _: f32, _: f32) {
         self.w = w;
         self.h = h;
     }
 
     fn draw(&self, shaders_manager: &mut ShadersManager, target: &RenderTarget) {
         shaders_manager.select(Other);
-        let scaleFactor = 0.9f64; // firebox: in Oculus SDK example it's "1.0f/Distortion.Scale"
-        let aspect = (self.w / 2.0f64) / (self.h); // firebox: rift's "half screen aspect ratio"
+        let scaleFactor = 0.9f32; // firebox: in Oculus SDK example it's "1.0f/Distortion.Scale"
+        let aspect = (self.w / 2.0f32) / (self.h); // firebox: rift's "half screen aspect ratio"
 
-        let scale = [0.5f64, aspect];
-        let scale_in = [2.0f64 * scaleFactor, 1.0f64 / aspect * scaleFactor];
+        let scale = [0.5f32, aspect];
+        let scale_in = [2.0f32 * scaleFactor, 1.0f32 / aspect * scaleFactor];
 
         verify!(gl::EnableVertexAttribArray(self.v_coord as GLuint));
         /*
@@ -111,12 +111,12 @@ impl PostProcessingEffect for OculusStereo {
          */
         gl::UseProgram(self.program);
         let kappa = [1.0, 1.7, 0.7, 15.0];
-        gl::Uniform1f(self.kappa_0 as GLint, kappa[0] as f32);
-        gl::Uniform1f(self.kappa_1 as GLint, kappa[1] as f32);
-        gl::Uniform1f(self.kappa_2 as GLint, kappa[2] as f32);
-        gl::Uniform1f(self.kappa_3 as GLint, kappa[3] as f32);
-        gl::Uniform2f(self.scale as GLint, scale[0] as f32, scale[1] as f32);
-        gl::Uniform2f(self.scale_in as GLint, scale_in[0] as f32, scale_in[1] as f32);
+        gl::Uniform1f(self.kappa_0 as GLint, kappa[0]);
+        gl::Uniform1f(self.kappa_1 as GLint, kappa[1]);
+        gl::Uniform1f(self.kappa_2 as GLint, kappa[2]);
+        gl::Uniform1f(self.kappa_3 as GLint, kappa[3]);
+        gl::Uniform2f(self.scale as GLint, scale[0], scale[1]);
+        gl::Uniform2f(self.scale_in as GLint, scale_in[0], scale_in[1]);
 
         /*
          * Finalize draw

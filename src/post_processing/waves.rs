@@ -43,7 +43,7 @@ pub struct Waves {
     priv vshader:      GLuint,
     priv fshader:      GLuint,
     priv program:      GLuint,
-    priv time:         f64,
+    priv time:         f32,
     priv offset:       GLuint,
     priv fbo_texture:  GLuint,
     priv fbo_vertices: GLuint,
@@ -95,7 +95,7 @@ impl Waves {
 }
 
 impl PostProcessingEffect for Waves {
-    fn update(&mut self, dt: f64, _: f64, _: f64, _: f64, _: f64) {
+    fn update(&mut self, dt: f32, _: f32, _: f32, _: f32, _: f32) {
         self.time = self.time + dt;
     }
 
@@ -108,7 +108,7 @@ impl PostProcessingEffect for Waves {
          */
         gl::UseProgram(self.program);
         let move = self.time * 2.0 * 3.14159 * 0.75;  // 3/4 of a wave cycle per second
-        gl::Uniform1f(self.offset as GLint, move as f32);
+        gl::Uniform1f(self.offset as GLint, move);
 
         /*
          * Finalize draw

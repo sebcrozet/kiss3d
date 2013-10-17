@@ -70,17 +70,17 @@ impl Window {
     }
 
     /// The window width.
-    pub fn width(&self) -> f64 {
+    pub fn width(&self) -> f32 {
         let (w, _) = self.window.get_size();
 
-        w as f64
+        w as f32
     }
 
     /// The window height.
-    pub fn height(&self) -> f64 {
+    pub fn height(&self) -> f32 {
         let (_, h) = self.window.get_size();
 
-        h as f64
+        h as f32
     }
 
     /// The current camera.
@@ -93,7 +93,7 @@ impl Window {
         let (w, h) = self.window.get_size();
 
         self.camera = camera;
-        self.camera.handle_event(&self.window, &event::FramebufferSize(w as f64, h as f64));
+        self.camera.handle_event(&self.window, &event::FramebufferSize(w as f32, h as f32));
     }
 
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
@@ -123,17 +123,15 @@ impl Window {
     }
 
     /// Sets the background color.
-    pub fn set_background_color(&mut self, r: f64, g: GLfloat, b: f64) {
-        self.background.x = r as GLfloat;
-        self.background.y = g as GLfloat;
-        self.background.z = b as GLfloat;
+    pub fn set_background_color(&mut self, r: f32, g: GLfloat, b: f32) {
+        self.background.x = r;
+        self.background.y = g;
+        self.background.z = b;
     }
 
     /// Adds a line to be drawn during the next frame.
-    pub fn draw_line(&mut self, a: &Vec3<f64>, b: &Vec3<f64>, color: &Vec3<f64>) {
-        self.lines_manager.draw_line(na::cast(a.clone()),
-                                     na::cast(b.clone()),
-                                     na::cast(color.clone()));
+    pub fn draw_line(&mut self, a: &Vec3<f32>, b: &Vec3<f32>, color: &Vec3<f32>) {
+        self.lines_manager.draw_line(a.clone(), b.clone(), color.clone());
     }
 
     /// Removes an object from the scene.
@@ -308,19 +306,19 @@ impl Window {
     ///   * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
     ///   which will be placed vertically on each line. Must not be `0`
     pub fn add_quad(&mut self,
-                     w:        f64,
-                     h:        f64,
+                     w:        f32,
+                     h:        f32,
                      wsubdivs: uint,
                      hsubdivs: uint)
                      -> Object {
         assert!(wsubdivs > 0 && hsubdivs > 0, "The number of subdivisions cannot be zero");
 
-        let wstep    = (w as GLfloat) / (wsubdivs as GLfloat);
-        let hstep    = (h as GLfloat) / (hsubdivs as GLfloat);
+        let wstep    = w / (wsubdivs as GLfloat);
+        let hstep    = h / (hsubdivs as GLfloat);
         let wtexstep = 1.0 / (wsubdivs as GLfloat);
         let htexstep = 1.0 / (hsubdivs as GLfloat);
-        let cw       = w as GLfloat / 2.0;
-        let ch       = h as GLfloat / 2.0;
+        let cw       = w / 2.0;
+        let ch       = h / 2.0;
 
         let mut vertices   = ~[];
         let mut normals    = ~[];
@@ -337,7 +335,7 @@ impl Window {
 
         // create the normals
         do ((hsubdivs + 1) * (wsubdivs + 1)).times {
-            { normals.push(Vec3::new(1.0 as GLfloat, 0.0, 0.0)) }
+            { normals.push(Vec3::new(1.0, 0.0, 0.0)) }
         }
 
         // create triangles
@@ -384,26 +382,26 @@ impl Window {
     }
 
     /// Converts a 3d point to 2d screen coordinates.
-    pub fn project(&self, world_coord: &Vec3<f64>) -> Vec2<f64> {
+    pub fn project(&self, world_coord: &Vec3<f32>) -> Vec2<f32> {
         let h_world_coord = na::to_homogeneous(world_coord);
         let h_normalized_coord = self.camera.transformation() * h_world_coord;
 
-        let normalized_coord: Vec3<f64> = na::from_homogeneous(&h_normalized_coord);
+        let normalized_coord: Vec3<f32> = na::from_homogeneous(&h_normalized_coord);
 
         let (w, h) = self.window.get_size();
 
         Vec2::new(
-            (1.0 + normalized_coord.x) * (w as f64) / 2.0,
-            (1.0 + normalized_coord.y) * (h as f64) / 2.0)
+            (1.0 + normalized_coord.x) * (w as f32) / 2.0,
+            (1.0 + normalized_coord.y) * (h as f32) / 2.0)
     }
 
     /// Converts a point in 2d screen coordinates to a ray (a 3d position and a direction).
-    pub fn unproject(&self, window_coord: &Vec2<f64>) -> (Vec3<f64>, Vec3<f64>) {
+    pub fn unproject(&self, window_coord: &Vec2<f32>) -> (Vec3<f32>, Vec3<f32>) {
         let (w, h) = self.window.get_size();
 
         let normalized_coord = Vec2::new(
-            2.0 * window_coord.x / (w as f64) - 1.0,
-            2.0 * -window_coord.y / (h as f64) + 1.0);
+            2.0 * window_coord.x  / (w as f32) - 1.0,
+            2.0 * -window_coord.y / (h as f32) + 1.0);
 
         let normalized_begin = Vec4::new(normalized_coord.x, normalized_coord.y, -1.0, 1.0);
         let normalized_end   = Vec4::new(normalized_coord.x, normalized_coord.y, 1.0, 1.0);
@@ -413,8 +411,8 @@ impl Window {
         let h_unprojected_begin = cam * normalized_begin;
         let h_unprojected_end   = cam * normalized_end;
 
-        let unprojected_begin: Vec3<f64> = na::from_homogeneous(&h_unprojected_begin);
-        let unprojected_end: Vec3<f64>   = na::from_homogeneous(&h_unprojected_end);
+        let unprojected_begin: Vec3<f32> = na::from_homogeneous(&h_unprojected_begin);
+        let unprojected_end: Vec3<f32>   = na::from_homogeneous(&h_unprojected_end);
 
         (unprojected_begin, na::normalize(&(unprojected_end - unprojected_begin)))
     }
@@ -490,7 +488,7 @@ impl Window {
             Absolute(p)   => self.set_light_pos(&p),
             StickToCamera => {
                 let camera_pos = self.camera.eye();
-                self.set_light_pos(&na::cast(camera_pos))
+                self.set_light_pos(&camera_pos)
             }
         }
 
@@ -578,7 +576,7 @@ impl Window {
             // setup callbacks
             let collector = usr_window.events.clone();
             do usr_window.window.set_framebuffer_size_callback |_, w, h| {
-                collector.write(|c| c.push(event::FramebufferSize(w as f64, h as f64)))
+                collector.write(|c| c.push(event::FramebufferSize(w as f32, h as f32)))
             }
 
             let collector = usr_window.events.clone();
@@ -603,18 +601,18 @@ impl Window {
 
             let collector = usr_window.events.clone();
             do usr_window.window.set_cursor_pos_callback |_, x, y| {
-                collector.write(|c| c.push(event::CursorPos(x, y)))
+                collector.write(|c| c.push(event::CursorPos(x as f32, y as f32)))
             }
 
             let collector = usr_window.events.clone();
             do usr_window.window.set_scroll_callback |_, x, y| {
-                collector.write(|c| c.push(event::Scroll(x, y)))
+                collector.write(|c| c.push(event::Scroll(x as f32, y as f32)))
             }
 
             let (w, h) = usr_window.window.get_size();
             usr_window.camera.handle_event(
                 &usr_window.window,
-                &event::FramebufferSize(w as f64, h as f64));
+                &event::FramebufferSize(w as f32, h as f32));
 
             if hide {
                 usr_window.window.hide()
@@ -659,8 +657,8 @@ impl Window {
         }
         self.camera.render_complete(&self.window);
 
-        let w = self.width() as f64;
-        let h = self.height() as f64;
+        let w = self.width();
+        let h = self.height();
         let (znear, zfar) = self.camera.clip_planes();
 
         match self.post_processing {
@@ -727,7 +725,7 @@ impl Window {
     }
 
 
-    fn update_viewport(&mut self, w: f64, h: f64) {
+    fn update_viewport(&mut self, w: f32, h: f32) {
         // Update the viewport
         verify!(gl::Scissor(0 as i32, 0 as i32, w as i32, h as i32));
         FramebuffersManager::screen().resize(w, h);

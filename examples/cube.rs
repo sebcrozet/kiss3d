@@ -18,7 +18,7 @@ fn main() {
         window.set_light(window::StickToCamera);
 
         do window.render_loop |_| {
-            c.prepend_rotation(&Vec3::new(0.0f64, 0.014, 0.0))
+            c.prepend_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
         }
     }
 }

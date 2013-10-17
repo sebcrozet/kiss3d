@@ -86,7 +86,7 @@ impl Grayscales {
 }
 
 impl PostProcessingEffect for Grayscales {
-    fn update(&mut self, _: f64, _: f64, _: f64, _: f64, _: f64) {
+    fn update(&mut self, _: f32, _: f32, _: f32, _: f32, _: f32) {
     }
 
     fn draw(&self, shaders_manager: &mut ShadersManager, target: &RenderTarget) {

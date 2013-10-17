@@ -17,7 +17,7 @@ fn main() {
             let dim: f32 = random::<f32>() / 2.0;
             let dim2 = dim / 2.0;
 
-            let offset = i as f64 * 1.0 - 5.0;
+            let offset = i as f32 * 1.0 - 5.0;
 
             let mut cu = window.add_cube(dim2, dim2, dim2);
             let mut sp = window.add_sphere(dim2);
@@ -42,7 +42,7 @@ fn main() {
 
         do window.render_loop |w| {
             for o in w.objects_mut().mut_iter() {
-                o.append_rotation_wrt_center(&Vec3::new(0.0f64, 0.014, 0.0));
+                o.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
             }
         };
     };

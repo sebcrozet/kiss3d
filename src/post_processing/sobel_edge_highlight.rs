@@ -91,11 +91,11 @@ static FRAGMENT_SHADER: &'static str =
 
 /// Post processing effect which turns everything in grayscales.
 pub struct SobelEdgeHighlight {
-    priv shiftx:          f64,
-    priv shifty:          f64,
-    priv zn:              f64,
-    priv zf:              f64,
-    priv threshold:       f64,
+    priv shiftx:          f32,
+    priv shifty:          f32,
+    priv zn:              f32,
+    priv zf:              f32,
+    priv threshold:       f32,
     priv gl_vshader:      GLuint,
     priv gl_fshader:      GLuint,
     priv gl_program:      GLuint,
@@ -112,7 +112,7 @@ pub struct SobelEdgeHighlight {
 
 impl SobelEdgeHighlight {
     /// Creates a new SobelEdgeHighlight post processing effect.
-    pub fn new(threshold: f64) -> SobelEdgeHighlight {
+    pub fn new(threshold: f32) -> SobelEdgeHighlight {
         unsafe {
             /* Global */
             let mut vbo_fbo_vertices: GLuint = 0;;
@@ -163,7 +163,7 @@ impl SobelEdgeHighlight {
 }
 
 impl PostProcessingEffect for SobelEdgeHighlight {
-    fn update(&mut self, _: f64, w: f64, h: f64, znear: f64, zfar: f64) {
+    fn update(&mut self, _: f32, w: f32, h: f32, znear: f32, zfar: f32) {
         self.shiftx = 2.0 / w;
         self.shifty = 2.0 / h;
         self.zn     = znear;
@@ -181,11 +181,11 @@ impl PostProcessingEffect for SobelEdgeHighlight {
 
         verify!(gl::UseProgram(self.gl_program));
 
-        verify!(gl::Uniform1f(self.gl_threshold as GLint, self.threshold as GLfloat));
-        verify!(gl::Uniform1f(self.gl_nx as GLint, self.shiftx as GLfloat));
-        verify!(gl::Uniform1f(self.gl_ny as GLint, self.shifty as GLfloat));
-        verify!(gl::Uniform1f(self.gl_znear as GLint, self.zn  as GLfloat));
-        verify!(gl::Uniform1f(self.gl_zfar  as GLint, self.zf  as GLfloat));
+        verify!(gl::Uniform1f(self.gl_threshold as GLint, self.threshold));
+        verify!(gl::Uniform1f(self.gl_nx as GLint, self.shiftx));
+        verify!(gl::Uniform1f(self.gl_ny as GLint, self.shifty));
+        verify!(gl::Uniform1f(self.gl_znear as GLint, self.zn ));
+        verify!(gl::Uniform1f(self.gl_zfar  as GLint, self.zf ));
 
         verify!(gl::ActiveTexture(gl::TEXTURE0));
         verify!(gl::BindTexture(gl::TEXTURE_2D, target.texture_id()));

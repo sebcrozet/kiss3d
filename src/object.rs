@@ -14,7 +14,7 @@ use mesh::Mesh;
 #[path = "error.rs"]
 mod error;
 
-type Transform3d = Iso3<f64>;
+type Transform3d = Iso3<f32>;
 type Scale3d     = Mat3<GLfloat>;
 
 /// Set of datas identifying a scene node.
@@ -64,23 +64,20 @@ impl Object {
     pub fn upload(&self, context: &ObjectShaderContext) {
         do self.data.with_borrow |data| {
             if data.visible {
-                let formated_transform:  Mat4<f64> = na::to_homogeneous(&data.transform);
-                let formated_ntransform: Mat3<f64> = *data.transform.rotation.submat();
+                let formated_transform:  Mat4<f32> = na::to_homogeneous(&data.transform);
+                let formated_ntransform: Mat3<f32> = *data.transform.rotation.submat();
 
                 // we convert the matrix elements
-                let transform_glf: Mat4<GLfloat>  = na::cast(formated_transform);
-                let ntransform_glf: Mat3<GLfloat> = na::cast(formated_ntransform);
-
                 unsafe {
                     verify!(gl::UniformMatrix4fv(context.transform,
                                                  1,
                                                  gl::FALSE as u8,
-                                                 cast::transmute(&transform_glf)));
+                                                 cast::transmute(&formated_transform)));
 
                     verify!(gl::UniformMatrix3fv(context.ntransform,
                                                  1,
                                                  gl::FALSE as u8,
-                                                 cast::transmute(&ntransform_glf)));
+                                                 cast::transmute(&formated_ntransform)));
 
                     verify!(gl::UniformMatrix3fv(context.scale, 1, gl::FALSE as u8, cast::transmute(&data.scale)));
 
@@ -114,12 +111,12 @@ impl Object {
     }
 
     /// Sets the local scaling factor of the object.
-    pub fn set_scale(&mut self, sx: f64, sy: f64, sz: f64) {
+    pub fn set_scale(&mut self, sx: f32, sy: f32, sz: f32) {
         do self.data.with_mut_borrow |d| {
             d.scale = Mat3::new(
-                sx as GLfloat, 0.0, 0.0,
-                0.0, sy as GLfloat, 0.0,
-                0.0, 0.0, sz as GLfloat)
+                sx, 0.0, 0.0,
+                0.0, sy, 0.0,
+                0.0, 0.0, sz)
         }
     }
 
@@ -153,13 +150,13 @@ impl Object {
 
     /// Move and orient the object such that it is placed at the point `eye` and have its `x` axis
     /// oriented toward `at`.
-    pub fn look_at(&mut self, eye: &Vec3<f64>, at: &Vec3<f64>, up: &Vec3<f64>) {
+    pub fn look_at(&mut self, eye: &Vec3<f32>, at: &Vec3<f32>, up: &Vec3<f32>) {
         self.data.with_mut_borrow(|d| d.transform.look_at(eye, at, up))
     }
 
     /// Move and orient the object such that it is placed at the point `eye` and have its `z` axis
     /// oriented toward `at`.
-    pub fn look_at_z(&mut self, eye: &Vec3<f64>, at: &Vec3<f64>, up: &Vec3<f64>) {
+    pub fn look_at_z(&mut self, eye: &Vec3<f32>, at: &Vec3<f32>, up: &Vec3<f32>) {
         self.data.with_mut_borrow(|d| d.transform.look_at_z(eye, at, up))
     }
 }
@@ -194,82 +191,82 @@ impl Transformation<Transform3d> for Object {
     }
 }
 
-impl na::Transform<Vec3<f64>> for Object {
-    fn transform(&self, v: &Vec3<f64>) -> Vec3<f64> {
+impl na::Transform<Vec3<f32>> for Object {
+    fn transform(&self, v: &Vec3<f32>) -> Vec3<f32> {
         self.data.with_borrow(|d| d.transform.transform(v))
     }
 
-    fn inv_transform(&self, v: &Vec3<f64>) -> Vec3<f64> {
+    fn inv_transform(&self, v: &Vec3<f32>) -> Vec3<f32> {
         self.data.with_borrow(|d| d.transform.inv_transform(v))
     }
 } 
 
-impl Rotation<Vec3<f64>> for Object {
-    fn rotation(&self) -> Vec3<f64> {
+impl Rotation<Vec3<f32>> for Object {
+    fn rotation(&self) -> Vec3<f32> {
         self.data.with_borrow(|d| d.transform.rotation())
     }
 
-    fn inv_rotation(&self) -> Vec3<f64> {
+    fn inv_rotation(&self) -> Vec3<f32> {
         self.data.with_borrow(|d| d.transform.inv_rotation())
     }
 
-    fn append_rotation(&mut self, t: &Vec3<f64>) {
+    fn append_rotation(&mut self, t: &Vec3<f32>) {
         self.data.with_mut_borrow(|d| d.transform.append_rotation(t))
     }
 
-    fn append_rotation_cpy(_: &Object, _: &Vec3<f64>) -> Object {
+    fn append_rotation_cpy(_: &Object, _: &Vec3<f32>) -> Object {
         fail!("Cannot clone an object.")
     }
 
-    fn prepend_rotation(&mut self, t: &Vec3<f64>) {
+    fn prepend_rotation(&mut self, t: &Vec3<f32>) {
         self.data.with_mut_borrow(|d| d.transform.prepend_rotation(t))
     }
 
-    fn prepend_rotation_cpy(_: &Object, _: &Vec3<f64>) -> Object {
+    fn prepend_rotation_cpy(_: &Object, _: &Vec3<f32>) -> Object {
         fail!("Cannot clone an object.")
     }
 
-    fn set_rotation(&mut self, r: Vec3<f64>) {
+    fn set_rotation(&mut self, r: Vec3<f32>) {
         self.data.with_mut_borrow(|d| d.transform.set_rotation(r))
     }
 }
 
-impl Rotate<Vec3<f64>> for Object {
-    fn rotate(&self, v: &Vec3<f64>) -> Vec3<f64> {
+impl Rotate<Vec3<f32>> for Object {
+    fn rotate(&self, v: &Vec3<f32>) -> Vec3<f32> {
         self.data.with_borrow(|d| d.transform.rotate(v))
     }
 
-    fn inv_rotate(&self, v: &Vec3<f64>) -> Vec3<f64> {
+    fn inv_rotate(&self, v: &Vec3<f32>) -> Vec3<f32> {
         self.data.with_borrow(|d| d.transform.inv_rotate(v))
     }
 } 
 
-impl Translation<Vec3<f64>> for Object {
-    fn translation(&self) -> Vec3<f64> {
+impl Translation<Vec3<f32>> for Object {
+    fn translation(&self) -> Vec3<f32> {
         self.data.with_borrow(|d| d.transform.translation())
     }
 
-    fn inv_translation(&self) -> Vec3<f64> {
+    fn inv_translation(&self) -> Vec3<f32> {
         self.data.with_borrow(|d| d.transform.inv_translation())
     }
 
-    fn append_translation(&mut self, t: &Vec3<f64>) {
+    fn append_translation(&mut self, t: &Vec3<f32>) {
         self.data.with_mut_borrow(|d| d.transform.append_translation(t))
     }
 
-    fn append_translation_cpy(_: &Object, _: &Vec3<f64>) -> Object {
+    fn append_translation_cpy(_: &Object, _: &Vec3<f32>) -> Object {
         fail!("Cannot clone an object.")
     }
 
-    fn prepend_translation(&mut self, t: &Vec3<f64>) {
+    fn prepend_translation(&mut self, t: &Vec3<f32>) {
         self.data.with_mut_borrow(|d| d.transform.prepend_translation(t))
     }
 
-    fn prepend_translation_cpy(_: &Object, _: &Vec3<f64>) -> Object {
+    fn prepend_translation_cpy(_: &Object, _: &Vec3<f32>) -> Object {
         fail!("Cannot clone an object.")
     }
 
-    fn set_translation(&mut self, t: Vec3<f64>) {
+    fn set_translation(&mut self, t: Vec3<f32>) {
         self.data.with_mut_borrow(|d| d.transform.set_translation(t))
     }
 }

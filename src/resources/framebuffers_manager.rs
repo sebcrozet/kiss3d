@@ -38,7 +38,7 @@ impl RenderTarget {
     }
 
     /// Resizes this render target.
-    pub fn resize(&mut self, w: f64, h: f64) {
+    pub fn resize(&mut self, w: f32, h: f32) {
         match *self {
             Screen => {
                 verify!(gl::Viewport(0, 0, w as i32, h as i32));

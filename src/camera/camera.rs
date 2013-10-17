@@ -1,9 +1,7 @@
 use std::cast;
 use glfw;
 use gl;
-use gl::types::*;
 use nalgebra::na::{Vec3, Mat4, Iso3};
-use nalgebra::na;
 use event;
 
 /// Trait every camera must implement.
@@ -18,17 +16,17 @@ pub trait Camera {
      * Transformation-related methods.
      */
     /// The camera position.
-    fn eye(&self) -> Vec3<f64>; // FIXME: should this be here?
+    fn eye(&self) -> Vec3<f32>; // FIXME: should this be here?
     /// The camera view transform.
-    fn view_transform(&self) -> Iso3<f64>;
+    fn view_transform(&self) -> Iso3<f32>;
     /// The transformation applied by the camera to transform a point in world coordinates to
     /// a point in device coordinates.
-    fn transformation(&self) -> Mat4<f64>;
+    fn transformation(&self) -> Mat4<f32>;
     /// The transformation applied by the camera to transform point in device coordinates to a
     /// point in world coordinate.
-    fn inv_transformation(&self) -> Mat4<f64>;
+    fn inv_transformation(&self) -> Mat4<f32>;
     /// The clipping planes, aka. (`znear`, `zfar`).
-    fn clip_planes(&self) -> (f64, f64); // FIXME: should this be here?
+    fn clip_planes(&self) -> (f32, f32); // FIXME: should this be here?
 
     /*
      * Update & upload
@@ -43,15 +41,13 @@ pub trait Camera {
         self.upload_mat(view_location, &self.transformation());
     }
 
-    fn upload_mat(&self, view_location: i32, homo: &Mat4<f64>) {
-        let homo32: Mat4<GLfloat> = na::cast(*homo);
-
+    fn upload_mat(&self, view_location: i32, homo: &Mat4<f32>) {
         unsafe {
             gl::UniformMatrix4fv(
                 view_location,
                 1,
                 gl::FALSE as u8,
-                cast::transmute(&homo32));
+                cast::transmute(homo));
         }
     }
 

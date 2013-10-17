@@ -30,7 +30,7 @@ fn main() {
 
             time = time + 1;
 
-            c.append_rotation(&Vec3::new(0.0f64, 0.014, 0.0))
+            c.append_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
         }
     }
 }

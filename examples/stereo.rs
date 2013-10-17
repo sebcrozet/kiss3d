@@ -21,9 +21,9 @@ fn main() {
         let mut c = window.add_cube(1.0, 1.0, 1.0);
         //c.position(
 
-        let eye = Vec3::new(00.0f64, 0.0, 10.0);
-        let at  = Vec3::new(00.0f64, 0.0, 0.0);
-        let first_person_stereo = @mut FirstPersonStereo::new(eye, at, 0.3f64);
+        let eye = Vec3::new(00.0f32, 0.0, 10.0);
+        let at  = Vec3::new(00.0f32, 0.0, 0.0);
+        let first_person_stereo = @mut FirstPersonStereo::new(eye, at, 0.3f32);
         let camera = first_person_stereo as @mut Camera;
         window.set_camera(camera);
 
@@ -41,12 +41,12 @@ fn main() {
         let mut using_shader = true;
 
         do window.render_loop |w| {
-            //c.rotate_by(&Vec3::new(0.0f64, 0.014, 0.0))
-            fn update_ipd(camera: @mut FirstPersonStereo, val: f64) -> bool {
+            //c.rotate_by(&Vec3::new(0.0f32, 0.014, 0.0))
+            fn update_ipd(camera: @mut FirstPersonStereo, val: f32) -> bool {
                 //  cannot borrow `*camera` as immutable because it is also borrowed as mutable
                 let ipd = camera.ipd();
                 camera.set_ipd(ipd + val);
-                println(fmt!("ipd = %f", camera.ipd() as f64));
+
                 true
             }
             do w.poll_events |w, event| {
@@ -54,10 +54,10 @@ fn main() {
                     KeyReleased(key) => {
                         match key {
                             glfw::Key1 => {
-                                update_ipd(first_person_stereo, 0.1f64)
+                                update_ipd(first_person_stereo, 0.1f32)
                             },
                             glfw::Key2 => {
-                                update_ipd(first_person_stereo, -0.1f64)
+                                update_ipd(first_person_stereo, -0.1f32)
                             },
                             glfw::KeyS => {
                                 using_shader = match using_shader {

@@ -14,41 +14,41 @@ use event;
 #[deriving(ToStr)]
 pub struct FirstPerson {
     /// The camera position
-    priv eye:        Vec3<f64>,
+    priv eye:        Vec3<f32>,
     /// Yaw of the camera (rotation along the y axis).
-    priv yaw:        f64,
+    priv yaw:        f32,
     /// Pitch of the camera (rotation along the x axis).
-    priv pitch:      f64,
+    priv pitch:      f32,
 
     /// Increment of the yaw per unit mouse movement. The default value is 0.005.
-    priv yaw_step:   f64,
+    priv yaw_step:   f32,
     /// Increment of the pitch per unit mouse movement. The default value is 0.005.
-    priv pitch_step: f64,
+    priv pitch_step: f32,
     /// Increment of the translation per arrow press. The default value is 0.1.
-    priv move_step:  f64,
+    priv move_step:  f32,
 
     /// Low level datas
-    priv fov:        f64,
-    priv znear:      f64,
-    priv zfar:       f64,
-    priv projection:      Mat4<f64>,
-    priv proj_view:       Mat4<f64>,
-    priv inv_proj_view:   Mat4<f64>,
-    priv last_cursor_pos: Vec2<f64>
+    priv fov:        f32,
+    priv znear:      f32,
+    priv zfar:       f32,
+    priv projection:      Mat4<f32>,
+    priv proj_view:       Mat4<f32>,
+    priv inv_proj_view:   Mat4<f32>,
+    priv last_cursor_pos: Vec2<f32>
 }
 
 impl FirstPerson {
     /// Creates a first person camera with default sensitivity values.
-    pub fn new(eye: Vec3<f64>, at: Vec3<f64>) -> FirstPerson {
-        FirstPerson::new_with_frustrum(45.0f64.to_radians(), 0.1, 1024.0, eye, at)
+    pub fn new(eye: Vec3<f32>, at: Vec3<f32>) -> FirstPerson {
+        FirstPerson::new_with_frustrum(45.0f32.to_radians(), 0.1, 1024.0, eye, at)
     }
 
     /// Creates a new first person camera with default sensitivity values.
-    pub fn new_with_frustrum(fov:    f64,
-                             znear:  f64,
-                             zfar:   f64,
-                             eye:    Vec3<f64>,
-                             at:     Vec3<f64>) -> FirstPerson {
+    pub fn new_with_frustrum(fov:    f32,
+                             znear:  f32,
+                             zfar:   f32,
+                             eye:    Vec3<f32>,
+                             at:     Vec3<f32>) -> FirstPerson {
         let mut res = FirstPerson {
             eye:           Vec3::new(0.0, 0.0, 0.0),
             yaw:           0.0,
@@ -72,7 +72,7 @@ impl FirstPerson {
 
 
     /// Changes the orientation and position of the camera to look at the specified point.
-    pub fn look_at_z(&mut self, eye: Vec3<f64>, at: Vec3<f64>) {
+    pub fn look_at_z(&mut self, eye: Vec3<f32>, at: Vec3<f32>) {
         let dist  = na::norm(&(eye - at));
 
         let pitch = ((at.y - eye.y) / dist).acos();
@@ -85,7 +85,7 @@ impl FirstPerson {
     }
 
     /// The point the camera is looking at.
-    pub fn at(&self) -> Vec3<f64> {
+    pub fn at(&self) -> Vec3<f32> {
         let ax = self.eye.x + self.yaw.cos() * self.pitch.sin();
         let ay = self.eye.y + self.pitch.cos();
         let az = self.eye.z + self.yaw.sin() * self.pitch.sin();
@@ -98,14 +98,14 @@ impl FirstPerson {
             self.pitch = 0.0001
         }
 
-        let _pi: f64 = Real::pi();
+        let _pi: f32 = Real::pi();
         if (self.pitch > _pi - 0.0001) {
             self.pitch = _pi - 0.0001
         }
     }
 
     #[doc(hidden)]
-    pub fn handle_left_button_displacement(&mut self, dpos: &Vec2<f64>) {
+    pub fn handle_left_button_displacement(&mut self, dpos: &Vec2<f32>) {
         self.yaw   = self.yaw   + dpos.x * self.yaw_step;
         self.pitch = self.pitch + dpos.y * self.pitch_step;
 
@@ -114,7 +114,7 @@ impl FirstPerson {
     }
 
     #[doc(hidden)]
-    pub fn handle_right_button_displacement(&mut self, dpos: &Vec2<f64>) {
+    pub fn handle_right_button_displacement(&mut self, dpos: &Vec2<f32>) {
         let at        = self.at();
         let dir       = na::normalize(&(at - self.eye));
         let tangent   = na::normalize(&na::cross(&Vec3::y(), &dir));
@@ -126,8 +126,8 @@ impl FirstPerson {
     }
 
     #[doc(hidden)]
-    pub fn handle_scroll(&mut self, yoff: f64) {
-        let front: Vec3<f64> = na::rotate(&self.view_transform(), &Vec3::z());
+    pub fn handle_scroll(&mut self, yoff: f32) {
+        let front: Vec3<f32> = na::rotate(&self.view_transform(), &Vec3::z());
 
         self.eye = self.eye + front * (self.move_step * yoff);
 
@@ -142,13 +142,13 @@ impl FirstPerson {
 }
 
 impl Camera for FirstPerson {
-    fn clip_planes(&self) -> (f64, f64) {
+    fn clip_planes(&self) -> (f32, f32) {
         (self.znear, self.zfar)
     }
 
     /// The camera view transformation (i-e transformation without projection).
-    fn view_transform(&self) -> Iso3<f64> {
-        let mut id: Iso3<f64> = na::one();
+    fn view_transform(&self) -> Iso3<f32> {
+        let mut id: Iso3<f32> = na::one();
         id.look_at_z(&self.eye, &self.at(), &Vec3::y());
 
         id
@@ -157,7 +157,7 @@ impl Camera for FirstPerson {
     fn handle_event(&mut self, window: &glfw::Window, event: &event::Event) {
         match *event {
             event::CursorPos(x, y) => {
-                let curr_pos = Vec2::new(x as f64, y as f64);
+                let curr_pos = Vec2::new(x, y);
 
                 if window.get_mouse_button(glfw::MouseButtonLeft) == glfw::Press {
                     let dpos = curr_pos - self.last_cursor_pos;
@@ -180,22 +180,22 @@ impl Camera for FirstPerson {
         }
     }
 
-    fn eye(&self) -> Vec3<f64> {
+    fn eye(&self) -> Vec3<f32> {
         self.eye
     }
 
-    fn transformation(&self) -> Mat4<f64> {
+    fn transformation(&self) -> Mat4<f32> {
         self.proj_view
     }
 
-    fn inv_transformation(&self) -> Mat4<f64> {
+    fn inv_transformation(&self) -> Mat4<f32> {
         self.inv_proj_view
     }
 
     fn update(&mut self, window: &glfw::Window) {
         let t                = self.view_transform();
-        let front: Vec3<f64> = na::rotate(&t, &Vec3::z());
-        let right: Vec3<f64> = na::rotate(&t, &Vec3::x());
+        let front: Vec3<f32> = na::rotate(&t, &Vec3::z());
+        let right: Vec3<f32> = na::rotate(&t, &Vec3::x());
 
         if window.get_key(glfw::KeyUp) == glfw::Press {
             self.eye = self.eye + front * self.move_step

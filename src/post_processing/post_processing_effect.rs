@@ -5,7 +5,7 @@ use resources::shaders_manager::ShadersManager;
 /// executed once the scene has been rendered on a texture.
 pub trait PostProcessingEffect {
     /// Updates the post processing effect.
-    fn update(&mut self, dt: f64, w: f64, h: f64, znear: f64, zfar: f64);
+    fn update(&mut self, dt: f32, w: f32, h: f32, znear: f32, zfar: f32);
     /// Render the effect.
     ///
     /// # Arguments:
