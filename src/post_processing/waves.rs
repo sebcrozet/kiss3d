@@ -1,10 +1,12 @@
+//! An useless post-processe effect: waves deformations.
+
 // This a simple post-process. I do this only to learn how works post-processing; so it might be
 // useless for anybody else.
 // This is inspired _a lot_ by: http://en.wikibooks.org/wiki/Opengl::Programming/Post-Processing
 
 use std::cast;
 use std::ptr;
-use std::sys;
+use std::mem;
 use gl;
 use gl::types::*;
 use resources::framebuffers_manager::RenderTarget;
@@ -68,7 +70,7 @@ impl Waves {
             gl::BindBuffer(gl::ARRAY_BUFFER, vbo_fbo_vertices);
             gl::BufferData(
                 gl::ARRAY_BUFFER,
-                (fbo_vertices.len() * sys::size_of::<GLfloat>()) as GLsizeiptr,
+                (fbo_vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
                 cast::transmute(&fbo_vertices[0]),
                 gl::STATIC_DRAW);
             gl::BindBuffer(gl::ARRAY_BUFFER, 0);

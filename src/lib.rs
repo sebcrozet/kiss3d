@@ -44,6 +44,7 @@ pub mod builtins
     pub mod capsule_obj;
 }
 
+/// A bunch of post-processing effects.
 pub mod post_processing {
     pub mod post_processing_effect;
     pub mod waves;
@@ -52,6 +53,7 @@ pub mod post_processing {
     pub mod oculus_stereo;
 }
 
+/// GPU resource managers.
 pub mod resources {
     pub mod framebuffers_manager;
     pub mod textures_manager;

@@ -1,3 +1,5 @@
+//! Data structure of a scene node.
+
 use std::ptr;
 use std::cast;
 use std::borrow;

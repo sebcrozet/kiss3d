@@ -1,18 +1,15 @@
-pub use camera::private::camera::Camera;
-pub use camera::private::arc_ball::ArcBall;
-pub use camera::private::first_person::FirstPerson;
-pub use camera::private::first_person_stereo::FirstPersonStereo;
+//! Camera trait with some commonimplementations.
 
-pub mod private {
-    #[path = "../camera.rs"]
-    pub mod camera;
+pub use camera::camera::Camera;
+pub use camera::arc_ball::ArcBall;
+pub use camera::first_person::FirstPerson;
+pub use camera::first_person_stereo::FirstPersonStereo;
 
-    #[path = "../arc_ball.rs"]
-    pub mod arc_ball;
-
-    #[path = "../first_person.rs"]
-    pub mod first_person;
-
-    #[path = "../first_person_stereo.rs"]
-    pub mod first_person_stereo;
-}
+#[doc(hidden)]
+pub mod camera;
+#[doc(hidden)]
+pub mod arc_ball;
+#[doc(hidden)]
+pub mod first_person;
+#[doc(hidden)]
+pub mod first_person_stereo;

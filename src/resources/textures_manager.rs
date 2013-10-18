@@ -1,3 +1,5 @@
+//! A resource manager to load textures.
+
 use std::local_data;
 use std::cast;
 use std::hashmap::HashMap;

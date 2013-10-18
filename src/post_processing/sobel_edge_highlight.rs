@@ -1,6 +1,8 @@
+//! A post-processing effect to highlight edges.
+
 use std::cast;
 use std::ptr;
-use std::sys;
+use std::mem;
 use gl;
 use gl::types::*;
 use resources::framebuffers_manager::RenderTarget;
@@ -127,7 +129,7 @@ impl SobelEdgeHighlight {
             verify!(gl::BindBuffer(gl::ARRAY_BUFFER, vbo_fbo_vertices));
             verify!(gl::BufferData(
                 gl::ARRAY_BUFFER,
-                (fbo_vertices.len() * sys::size_of::<GLfloat>()) as GLsizeiptr,
+                (fbo_vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
                 cast::transmute(&fbo_vertices[0]),
                 gl::STATIC_DRAW));
             verify!(gl::BindBuffer(gl::ARRAY_BUFFER, 0));

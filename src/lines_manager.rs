@@ -1,6 +1,6 @@
 use std::ptr;
 use std::cast;
-use std::sys;
+use std::mem;
 use gl;
 use gl::types::*;
 use nalgebra::na::Vec3;
@@ -54,7 +54,7 @@ impl LinesManager {
 
                 verify!(gl::BufferData(
                     gl::ARRAY_BUFFER,
-                    (self.max_lines * 4 * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
+                    (self.max_lines * 4 * 3 * mem::size_of::<GLfloat>()) as GLsizeiptr,
                     cast::transmute(&self.lines[0]),
                     gl::STREAM_DRAW));
             }
@@ -62,7 +62,7 @@ impl LinesManager {
                 verify!(gl::BufferSubData(
                     gl::ARRAY_BUFFER,
                     0,
-                    (self.lines.len() * 4 * 3 * sys::size_of::<GLfloat>()) as GLsizeiptr,
+                    (self.lines.len() * 4 * 3 * mem::size_of::<GLfloat>()) as GLsizeiptr,
                     cast::transmute(&self.lines[0])));
             }
 
@@ -71,15 +71,15 @@ impl LinesManager {
                 3,
                 gl::FLOAT,
                 gl::FALSE as u8,
-                (6 * sys::size_of::<GLfloat>()) as GLint,
-                cast::transmute(3 * sys::size_of::<GLfloat>())));
+                (6 * mem::size_of::<GLfloat>()) as GLint,
+                cast::transmute(3 * mem::size_of::<GLfloat>())));
 
             verify!(gl::VertexAttribPointer(
                 context.pos,
                 3,
                 gl::FLOAT,
                 gl::FALSE as u8,
-                (6 * sys::size_of::<GLfloat>()) as GLint,
+                (6 * mem::size_of::<GLfloat>()) as GLint,
                 ptr::null()));
 
             verify!(gl::DrawArrays(gl::LINES, 0, (self.lines.len() * 2) as i32));

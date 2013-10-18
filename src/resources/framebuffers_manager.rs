@@ -1,3 +1,5 @@
+//! Resource manager to allocate and switch between framebuffers.
+
 use std::ptr;
 use std::util::NonCopyable;
 use gl;

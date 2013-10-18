@@ -1,3 +1,4 @@
+//! The kiss3d window.
 /*
  * FIXME: this file is too big. Some heavy refactoring need to be done here.
  */

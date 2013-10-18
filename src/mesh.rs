@@ -1,6 +1,8 @@
+//! Data structure of a scene node geometry.
+
 use std::ptr;
 use std::vec;
-use std::sys;
+use std::mem;
 use std::cast;
 use gl;
 use gl::types::*;
@@ -264,7 +266,7 @@ pub fn upload_buffer<T>(buf: &[T], buf_id: GLuint, buf_type: BufferType, allocat
         verify!(gl::BindBuffer(buf_type.to_gl(), buf_id));
         verify!(gl::BufferData(
                 buf_type.to_gl(),
-                (buf.len() * sys::size_of::<T>()) as GLsizeiptr,
+                (buf.len() * mem::size_of::<T>()) as GLsizeiptr,
                 cast::transmute(&buf[0]),
                 allocation_type.to_gl()));
     }

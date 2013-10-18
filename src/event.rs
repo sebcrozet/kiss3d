@@ -1,3 +1,5 @@
+//! Data structure for event handling.
+
 use glfw;
 
 // FIXME: should those be on glfw?

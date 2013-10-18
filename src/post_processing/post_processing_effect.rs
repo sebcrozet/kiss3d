@@ -1,3 +1,5 @@
+//! Trait implemented by every post-processing effect.
+
 use resources::framebuffers_manager::RenderTarget;
 use resources::shaders_manager::ShadersManager;
 

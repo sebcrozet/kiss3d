@@ -1,3 +1,5 @@
+//! Simplistic obj loader.
+
 use std::vec;
 use std::io;
 use std::num::Zero;

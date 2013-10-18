@@ -1,3 +1,5 @@
+//! Resource manager to load and switch between shaders.
+
 use std::ptr;
 use std::str;
 use gl;
