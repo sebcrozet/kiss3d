@@ -3,6 +3,8 @@ before_install:
   - sudo apt-get update
 install:
   - sudo apt-get install rust-nightly
+  - sudo apt-get install libglfw-dev
+  - sudo apt-get install libXxf86vm-dev
 script:
   - git submodule init
   - git submodule update
