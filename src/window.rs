@@ -735,7 +735,7 @@ impl Window {
 }
 
 fn error_callback(_: glfw::Error, description: ~str) {
-    println(fmt!("Kiss3d Error: %s", description));
+    println(format!("Kiss3d Error: {}", description));
 }
 
 fn init_gl() {
