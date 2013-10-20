@@ -1,4 +1,4 @@
-# kiss3d
+# kiss3d  [![Build Status](https://travis-ci.org/sebcrozet/kiss3d.png?branch=master)](https://travis-ci.org/sebcrozet/kiss3d)
 
 Keep It Simple, Stupid 3d graphics engine.
 
