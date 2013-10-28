@@ -1,7 +1,10 @@
 //! Simplistic obj loader.
 
+use std::rt::io;
+use std::rt::io::file::FileInfo;
+use std::rt::io::extensions::ReaderUtil;
 use std::vec;
-use std::io;
+use std::str;
 use std::num::Zero;
 use std::from_str::FromStr;
 use std::hashmap::HashMap;
@@ -23,7 +26,9 @@ fn error(line: uint, err: &str) -> ! {
 
 /// Parses an obj file.
 pub fn parse_file(path: &str) -> Mesh {
-    parse(io::read_whole_file_str(&Path::new(path)).expect("Unable to open the file: " + path))
+    let s   = Path::new(path).open_reader(io::Open).expect("Cannot open the file: " + path).read_to_end();
+    let obj = str::from_utf8_owned(s);
+    parse(obj)
 }
 
 /// Parses a string representing an obj file and returns (vertices, normals, texture coordinates, indices)

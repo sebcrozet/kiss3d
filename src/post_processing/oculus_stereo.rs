@@ -1,9 +1,12 @@
 //! Post processing effect to support the Oculus Rift.
 
-use std::io;
+use std::rt::io;
 use std::cast;
 use std::ptr;
 use std::mem;
+use std::rt::io::file::FileInfo;
+use std::rt::io::extensions::ReaderUtil;
+use std::str;
 use gl;
 use gl::types::*;
 use resources::framebuffers_manager::RenderTarget;
@@ -14,7 +17,8 @@ use post_processing::post_processing_effect::PostProcessingEffect;
 mod error;
 
 fn load_file(path: &str) -> ~str {
-    io::read_whole_file_str(&Path::new(path)).expect("Unable to open the file: " + path)
+    let s = Path::new(path).open_reader(io::Open).expect("Cannot open the file: " + path).read_to_end();
+    str::from_utf8_owned(s)
 }
 
 /// An post-processing effect to support the oculus rift.

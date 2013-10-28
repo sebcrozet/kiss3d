@@ -1,3 +1,5 @@
+#[feature(managed_boxes)];
+
 extern mod kiss3d;
 extern mod nalgebra;
 

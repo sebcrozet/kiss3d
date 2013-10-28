@@ -9,6 +9,7 @@
 #[warn(missing_doc)];
 #[feature(globs)];
 #[feature(macro_rules)];
+#[feature(managed_boxes)];
 
 extern mod std;
 extern mod extra;

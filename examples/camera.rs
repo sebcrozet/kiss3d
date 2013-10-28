@@ -1,6 +1,9 @@
+#[feature(managed_boxes)];
+
 extern mod glfw;
 extern mod kiss3d;
 extern mod nalgebra;
+
 
 use nalgebra::na::Vec3;
 use nalgebra::na;
