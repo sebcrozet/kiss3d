@@ -5,7 +5,7 @@ use std::cast;
 use std::ptr;
 use std::mem;
 use std::rt::io::file::FileInfo;
-use std::rt::io::extensions::ReaderUtil;
+use std::rt::io::Reader;
 use std::str;
 use gl;
 use gl::types::*;

@@ -2,7 +2,7 @@
 
 use std::rt::io;
 use std::rt::io::file::FileInfo;
-use std::rt::io::extensions::ReaderUtil;
+use std::rt::io::Reader;
 use std::vec;
 use std::str;
 use std::num::Zero;
