@@ -1,7 +1,6 @@
 //! Simplistic obj loader.
 
-use std::rt::io;
-use std::rt::io::file::FileInfo;
+use std::rt::io::fs::File;
 use std::rt::io::Reader;
 use std::vec;
 use std::str;
@@ -26,7 +25,7 @@ fn error(line: uint, err: &str) -> ! {
 
 /// Parses an obj file.
 pub fn parse_file(path: &str) -> Mesh {
-    let s   = Path::new(path).open_reader(io::Open).expect("Cannot open the file: " + path).read_to_end();
+    let s   = File::open(&Path::new(path)).expect("Cannot open the file: " + path).read_to_end();
     let obj = str::from_utf8_owned(s);
     parse(obj)
 }
