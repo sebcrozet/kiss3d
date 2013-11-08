@@ -29,13 +29,12 @@ As an example, having a red, rotating cube with the light attached to the camera
 extern mod kiss3d;
 extern mod nalgebra;
 
-use nalgebra::mat::Rotation;
-use nalgebra::vec::Vec3;
+use nalgebra::na::{Vec3, Rotation};
 use kiss3d::window;
 
 #[start]
-fn start(argc: int, argv: **u8, crate_map: *u8) -> int {
-    std::rt::start_on_main_thread(argc, argv, crate_map, main)
+fn start(argc: int, argv: **u8) -> int {
+    std::rt::start_on_main_thread(argc, argv, main)
 }
 
 fn main() {
@@ -47,7 +46,7 @@ fn main() {
         window.set_light(window::StickToCamera);
 
         do window.render_loop |_| {
-            c.rotate_by(&Vec3::new(0.0f64, 0.014, 0.0))
+            c.prepend_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
         }
     }
 }
