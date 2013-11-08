@@ -6,11 +6,12 @@ glfw_lib_path=lib/glfw-rs
 gl_lib_path=lib/gl-rs/src/gl
 nalgebra_lib_path=lib/nalgebra/lib
 stb_image_lib_path=lib/rust-stb-image/
-build_cmd= rustc -Llib --opt-level 3 --out-dir $(kiss3d_bin_path) -L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
+libs=-L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
+build_cmd= rustc -Llib  $(libs) --opt-level 3 --out-dir $(kiss3d_bin_path)
 
 all:
 	mkdir -p $(kiss3d_lib_path)
-	rustc src/lib.rs --opt-level 3 --out-dir $(kiss3d_lib_path) -L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
+	rustc src/lib.rs --opt-level 3 --out-dir $(kiss3d_lib_path) $(libs)
 
 test: examples
 
@@ -34,7 +35,7 @@ examples:
 
 doc:
 	mkdir -p $(kiss3d_doc_path)
-	rust doc src/lib.rs --output-dir $(kiss3d_doc_path)
+	rustdoc $(libs) src/lib.rs
 
 distcheck:
 	rm -rf $(tmp)
