@@ -4,7 +4,7 @@
  */
 
 use glfw;
-use std::rt::io::timer::Timer;
+use std::io::timer::Timer;
 use std::num::Zero;
 use std::hashmap::HashMap;
 use std::rc::{RcMut, Rc};

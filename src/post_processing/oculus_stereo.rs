@@ -1,10 +1,10 @@
 //! Post processing effect to support the Oculus Rift.
 
-use std::rt::io::fs::File;
+use std::io::fs::File;
 use std::cast;
 use std::ptr;
 use std::mem;
-use std::rt::io::Reader;
+use std::io::Reader;
 use std::str;
 use gl;
 use gl::types::*;
