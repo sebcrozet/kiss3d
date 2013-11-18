@@ -1,7 +1,7 @@
 //! Simplistic obj loader.
 
-use std::rt::io::fs::File;
-use std::rt::io::Reader;
+use std::io::fs::File;
+use std::io::Reader;
 use std::vec;
 use std::str;
 use std::num::Zero;
