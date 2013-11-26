@@ -1,7 +1,8 @@
-#[link(name     = "kiss3d"
-       , vers   = "0.0"
-       , author = "Sébastien Crozet"
-       , uuid   = "0914a60f-37cd-40dc-9779-d72f237d99cc")];
+#[link(name         = "kiss3d"
+       , package_id = "kiss3d"
+       , vers       = "0.0"
+       , author     = "Sébastien Crozet"
+       , uuid       = "0914a60f-37cd-40dc-9779-d72f237d99cc")];
 #[crate_type = "lib"];
 #[deny(non_camel_case_types)];
 #[deny(non_uppercase_statics)];

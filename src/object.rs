@@ -3,7 +3,8 @@
 use std::ptr;
 use std::cast;
 use std::borrow;
-use std::rc::{RcMut, Rc};
+use std::cell::RefCell;
+use std::rc::Rc;
 use gl;
 use gl::types::*;
 use nalgebra::na::{Mat3, Mat4, Vec3, Iso3, Rotation, Rotate, Translation, Transformation};
@@ -32,13 +33,13 @@ pub struct ObjectData {
 /// position, color, vertices and texture.
 #[deriving(Clone)]
 pub struct Object {
-    priv data:    RcMut<ObjectData>,
-    priv mesh:    RcMut<Mesh>
+    priv data:    Rc<RefCell<ObjectData>>,
+    priv mesh:    Rc<RefCell<Mesh>>
 }
 
 impl Object {
     #[doc(hidden)]
-    pub fn new(mesh:     RcMut<Mesh>,
+    pub fn new(mesh:     Rc<RefCell<Mesh>>,
                r:        f32,
                g:        f32,
                b:        f32,
@@ -57,89 +58,90 @@ impl Object {
         };
 
         Object {
-            data:    RcMut::new(data),
+            data:    Rc::from_mut(RefCell::new(data)),
             mesh:    mesh,
         }
     }
 
     #[doc(hidden)]
     pub fn upload(&self, context: &ObjectShaderContext) {
-        do self.data.with_borrow |data| {
-            if data.visible {
-                let formated_transform:  Mat4<f32> = na::to_homogeneous(&data.transform);
-                let formated_ntransform: Mat3<f32> = *data.transform.rotation.submat();
+        let mut data = self.data.borrow().borrow_mut();
+        let data = data.get();
+        if data.visible {
+            let formated_transform:  Mat4<f32> = na::to_homogeneous(&data.transform);
+            let formated_ntransform: Mat3<f32> = *data.transform.rotation.submat();
 
-                // we convert the matrix elements
-                unsafe {
-                    verify!(gl::UniformMatrix4fv(context.transform,
-                                                 1,
-                                                 gl::FALSE as u8,
-                                                 cast::transmute(&formated_transform)));
+            // we convert the matrix elements
+            unsafe {
+                verify!(gl::UniformMatrix4fv(context.transform,
+                                             1,
+                                             gl::FALSE as u8,
+                                             cast::transmute(&formated_transform)));
 
-                    verify!(gl::UniformMatrix3fv(context.ntransform,
-                                                 1,
-                                                 gl::FALSE as u8,
-                                                 cast::transmute(&formated_ntransform)));
+                verify!(gl::UniformMatrix3fv(context.ntransform,
+                                             1,
+                                             gl::FALSE as u8,
+                                             cast::transmute(&formated_ntransform)));
 
-                    verify!(gl::UniformMatrix3fv(context.scale, 1, gl::FALSE as u8, cast::transmute(&data.scale)));
+                verify!(gl::UniformMatrix3fv(context.scale, 1, gl::FALSE as u8, cast::transmute(&data.scale)));
 
-                    verify!(gl::Uniform3f(context.color, data.color.x, data.color.y, data.color.z));
+                verify!(gl::Uniform3f(context.color, data.color.x, data.color.y, data.color.z));
 
-                    // FIXME: we should not switch the buffers if the last drawn shape uses the same.
-                    self.mesh.with_borrow(|m| m.bind(context.pos, context.normal, context.tex_coord));
+                // FIXME: we should not switch the buffers if the last drawn shape uses the same.
+                let mesh = self.mesh.borrow().borrow();
+                let mesh = mesh.get();
+                mesh.bind(context.pos, context.normal, context.tex_coord);
 
-                    verify!(gl::ActiveTexture(gl::TEXTURE0));
-                    verify!(gl::BindTexture(gl::TEXTURE_2D, self.data.with_borrow(|d| d.texture.borrow().id())));
+                verify!(gl::ActiveTexture(gl::TEXTURE0));
+                verify!(gl::BindTexture(gl::TEXTURE_2D, data.texture.borrow().id()));
 
-                    verify!(gl::DrawElements(gl::TRIANGLES,
-                                             self.mesh.with_borrow(|m| m.num_pts()) as GLint,
-                                             gl::UNSIGNED_INT,
-                                             ptr::null()));
+                verify!(gl::DrawElements(gl::TRIANGLES,
+                                         mesh.num_pts() as GLint,
+                                         gl::UNSIGNED_INT,
+                                         ptr::null()));
 
-                    self.mesh.with_borrow(|m| m.unbind());
-                }
+                mesh.unbind();
             }
         }
     }
 
     /// Sets the visible state of this object. An invisible object does not draw itself.
     pub fn set_visible(&mut self, visible: bool) {
-        self.data.with_mut_borrow(|d| d.visible = visible)
+        self.data.borrow().borrow_mut().get().visible = visible
     }
 
     /// Returns true if this object can be visible.
     pub fn visible(&self) -> bool {
-        self.data.with_borrow(|d| d.visible)
+        self.data.borrow().borrow().get().visible
     }
 
     /// Sets the local scaling factor of the object.
     pub fn set_scale(&mut self, sx: f32, sy: f32, sz: f32) {
-        do self.data.with_mut_borrow |d| {
-            d.scale = Mat3::new(
-                sx, 0.0, 0.0,
-                0.0, sy, 0.0,
-                0.0, 0.0, sz)
-        }
+        self.data.borrow().borrow_mut().get().scale = Mat3::new(sx, 0.0, 0.0,
+                                                                0.0, sy, 0.0,
+                                                                0.0, 0.0, sz)
     }
 
     /// Get a write access to the geometry mesh. Return true if the geometry needs to be
     /// re-uploaded to the GPU.
     pub fn modify_mesh(&mut self, f: &fn(&mut Mesh) -> bool) {
-        do self.mesh.with_mut_borrow |m| {
-            if f(m) {
-                // FIXME: find a way to upload only the modified parts.
-                m.upload()
-            }
+        let mut m = self.mesh.borrow().borrow_mut();
+        let m = m.get();
+        
+        if f(m) {
+            // FIXME: find a way to upload only the modified parts.
+            m.upload()
         }
     }
 
     /// Sets the color of the object. Colors components must be on the range `[0.0, 1.0]`.
     pub fn set_color(&mut self, r: f32, g: f32, b: f32) {
-        do self.data.with_mut_borrow |d| {
-            d.color.x = r;
-            d.color.y = g;
-            d.color.z = b;
-        }
+        let mut d = self.data.borrow().borrow_mut();
+        let d = d.get();
+
+        d.color.x = r;
+        d.color.y = g;
+        d.color.z = b;
     }
 
     /// Sets the texture of the object.
@@ -147,33 +149,38 @@ impl Object {
     /// # Arguments
     ///   * `path` - relative path of the texture on the disk
     pub fn set_texture(&mut self, path: &str) {
-        self.data.with_mut_borrow(|d| d.texture = textures_manager::singleton().add(path));
+        self.data.borrow().borrow_mut().get().texture = textures_manager::singleton().add(path);
     }
 
     /// Move and orient the object such that it is placed at the point `eye` and have its `x` axis
     /// oriented toward `at`.
     pub fn look_at(&mut self, eye: &Vec3<f32>, at: &Vec3<f32>, up: &Vec3<f32>) {
-        self.data.with_mut_borrow(|d| d.transform.look_at(eye, at, up))
+        let mut data = self.data.borrow().borrow_mut();
+        data.get().transform.look_at(eye, at, up)
     }
 
     /// Move and orient the object such that it is placed at the point `eye` and have its `z` axis
     /// oriented toward `at`.
     pub fn look_at_z(&mut self, eye: &Vec3<f32>, at: &Vec3<f32>, up: &Vec3<f32>) {
-        self.data.with_mut_borrow(|d| d.transform.look_at_z(eye, at, up))
+        let mut data = self.data.borrow().borrow_mut();
+        data.get().transform.look_at_z(eye, at, up)
     }
 }
 
 impl Transformation<Transform3d> for Object {
     fn transformation(&self) -> Transform3d {
-        self.data.with_borrow(|d| d.transform.clone())
+        let data = self.data.borrow().borrow();
+        data.get().transform.clone()
     }
 
     fn inv_transformation(&self) -> Transform3d {
-        self.data.with_borrow(|d| d.transform.inv_transformation())
+        let data = self.data.borrow().borrow();
+        data.get().transform.inv_transformation()
     }
 
     fn append_transformation(&mut self, t: &Transform3d) {
-        self.data.with_mut_borrow(|d| d.transform.append_transformation(t))
+        let mut data = self.data.borrow().borrow_mut();
+        data.get().transform.append_transformation(t)
     }
 
     fn append_transformation_cpy(_: &Object, _: &Transform3d) -> Object {
@@ -181,7 +188,8 @@ impl Transformation<Transform3d> for Object {
     }
 
     fn prepend_transformation(&mut self, t: &Transform3d) {
-        self.data.with_mut_borrow(|d| d.transform.prepend_transformation(t))
+        let mut data = self.data.borrow().borrow_mut();
+        data.get().transform.prepend_transformation(t)
     }
 
     fn prepend_transformation_cpy(_: &Object, _: &Transform3d) -> Object {
@@ -189,31 +197,37 @@ impl Transformation<Transform3d> for Object {
     }
 
     fn set_transformation(&mut self, t: Transform3d) {
-        self.data.with_mut_borrow(|d| d.transform.set_transformation(t))
+        let mut data = self.data.borrow().borrow_mut();
+        data.get().transform.set_transformation(t)
     }
 }
 
 impl na::Transform<Vec3<f32>> for Object {
     fn transform(&self, v: &Vec3<f32>) -> Vec3<f32> {
-        self.data.with_borrow(|d| d.transform.transform(v))
+        let data = self.data.borrow().borrow();;
+        data.get().transform.transform(v)
     }
 
     fn inv_transform(&self, v: &Vec3<f32>) -> Vec3<f32> {
-        self.data.with_borrow(|d| d.transform.inv_transform(v))
+        let data = self.data.borrow().borrow();
+        data.get().transform.inv_transform(v)
     }
 } 
 
 impl Rotation<Vec3<f32>> for Object {
     fn rotation(&self) -> Vec3<f32> {
-        self.data.with_borrow(|d| d.transform.rotation())
+        let data = self.data.borrow().borrow();
+        data.get().transform.rotation()
     }
 
     fn inv_rotation(&self) -> Vec3<f32> {
-        self.data.with_borrow(|d| d.transform.inv_rotation())
+        let data = self.data.borrow().borrow();
+        data.get().transform.inv_rotation()
     }
 
     fn append_rotation(&mut self, t: &Vec3<f32>) {
-        self.data.with_mut_borrow(|d| d.transform.append_rotation(t))
+        let mut data = self.data.borrow().borrow_mut();
+        data.get().transform.append_rotation(t)
     }
 
     fn append_rotation_cpy(_: &Object, _: &Vec3<f32>) -> Object {
@@ -221,7 +235,8 @@ impl Rotation<Vec3<f32>> for Object {
     }
 
     fn prepend_rotation(&mut self, t: &Vec3<f32>) {
-        self.data.with_mut_borrow(|d| d.transform.prepend_rotation(t))
+        let mut data = self.data.borrow().borrow_mut();
+        data.get().transform.prepend_rotation(t)
     }
 
     fn prepend_rotation_cpy(_: &Object, _: &Vec3<f32>) -> Object {
@@ -229,31 +244,37 @@ impl Rotation<Vec3<f32>> for Object {
     }
 
     fn set_rotation(&mut self, r: Vec3<f32>) {
-        self.data.with_mut_borrow(|d| d.transform.set_rotation(r))
+        let mut data = self.data.borrow().borrow_mut();
+        data.get().transform.set_rotation(r)
     }
 }
 
 impl Rotate<Vec3<f32>> for Object {
     fn rotate(&self, v: &Vec3<f32>) -> Vec3<f32> {
-        self.data.with_borrow(|d| d.transform.rotate(v))
+        let data = self.data.borrow().borrow();
+        data.get().transform.rotate(v)
     }
 
     fn inv_rotate(&self, v: &Vec3<f32>) -> Vec3<f32> {
-        self.data.with_borrow(|d| d.transform.inv_rotate(v))
+        let data = self.data.borrow().borrow();
+        data.get().transform.inv_rotate(v)
     }
 } 
 
 impl Translation<Vec3<f32>> for Object {
     fn translation(&self) -> Vec3<f32> {
-        self.data.with_borrow(|d| d.transform.translation())
+        let data = self.data.borrow().borrow();
+        data.get().transform.translation()
     }
 
     fn inv_translation(&self) -> Vec3<f32> {
-        self.data.with_borrow(|d| d.transform.inv_translation())
+        let data = self.data.borrow().borrow();
+        data.get().transform.inv_translation()
     }
 
     fn append_translation(&mut self, t: &Vec3<f32>) {
-        self.data.with_mut_borrow(|d| d.transform.append_translation(t))
+        let mut data = self.data.borrow().borrow_mut();
+        data.get().transform.append_translation(t)
     }
 
     fn append_translation_cpy(_: &Object, _: &Vec3<f32>) -> Object {
@@ -261,7 +282,8 @@ impl Translation<Vec3<f32>> for Object {
     }
 
     fn prepend_translation(&mut self, t: &Vec3<f32>) {
-        self.data.with_mut_borrow(|d| d.transform.prepend_translation(t))
+        let mut data = self.data.borrow().borrow_mut();
+        data.get().transform.prepend_translation(t)
     }
 
     fn prepend_translation_cpy(_: &Object, _: &Vec3<f32>) -> Object {
@@ -269,12 +291,16 @@ impl Translation<Vec3<f32>> for Object {
     }
 
     fn set_translation(&mut self, t: Vec3<f32>) {
-        self.data.with_mut_borrow(|d| d.transform.set_translation(t))
+        let mut data = self.data.borrow().borrow_mut();
+        data.get().transform.set_translation(t)
     }
 }
 
 impl Eq for Object {
     fn eq(&self, other: &Object) -> bool {
-        self.data.with_borrow(|d1| other.data.with_borrow(|d2| borrow::ref_eq(d1, d2)))
+        let d1 = self.data.borrow().borrow();
+        let d2 = other.data.borrow().borrow();
+
+        borrow::ref_eq(d1.get(), d2.get())
     }
 }

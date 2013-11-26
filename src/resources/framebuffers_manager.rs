@@ -127,7 +127,7 @@ impl FramebuffersManager {
         }
         verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
-        Offscreen(OffscreenBuffers { texture: fbo_texture, depth: fbo_depth, ncpy: NonCopyable::new() })
+        Offscreen(OffscreenBuffers { texture: fbo_texture, depth: fbo_depth, ncpy: NonCopyable })
     }
 
     /// Returns the render target associated with the screen.

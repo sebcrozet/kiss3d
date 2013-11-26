@@ -4,10 +4,12 @@
  */
 
 use glfw;
+use std::libc;
 use std::io::timer::Timer;
 use std::num::Zero;
 use std::hashmap::HashMap;
-use std::rc::{RcMut, Rc};
+use std::cell::RefCell;
+use std::rc::Rc;
 use extra::time;
 use extra::arc::RWArc;
 use gl;
@@ -49,7 +51,7 @@ pub struct Window {
     priv camera:                     @mut Camera,
     priv light_mode:                 Light,
     priv wireframe_mode:             bool,
-    priv geometries:                 HashMap<~str, RcMut<Mesh>>,
+    priv geometries:                 HashMap<~str, Rc<RefCell<Mesh>>>,
     priv background:                 Vec3<GLfloat>,
     priv lines_manager:              LinesManager,
     priv shaders_manager:            ShadersManager,
@@ -160,7 +162,7 @@ impl Window {
                 match self.geometries.find(&key) {
                     Some(m) => (false, m.clone()),
                     None    => {
-                        let m = RcMut::from_send(obj::parse_file(path));
+                        let m = Rc::from_mut(RefCell::new(obj::parse_file(path)));
 
                         (true, m)
                     },
@@ -366,7 +368,7 @@ impl Window {
         let res = {
             let tex = textures_manager::singleton().get("default").unwrap();
             Object::new(
-                RcMut::from_send(mesh),
+                Rc::from_mut(RefCell::new(mesh)),
                 1.0, 1.0, 1.0,
                 tex,
                 1.0, 1.0, 1.0)
@@ -515,7 +517,7 @@ impl Window {
     /// # Arguments
     ///   * `title` - the window title
     ///   * `callback` - a callback called once the window has been created
-    pub fn spawn_hidden(title: &str, callback: ~fn(&mut Window)) {
+    pub fn spawn_hidden(title: &str, callback: proc(&mut Window)) {
         Window::do_spawn(title.to_owned(), true, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
     }
 
@@ -527,17 +529,17 @@ impl Window {
     /// # Arguments
     ///   * `title` - the window title
     ///   * `callback` - a callback called once the window has been created
-    pub fn spawn(title: &str, callback: ~fn(&mut Window)) {
+    pub fn spawn(title: &str, callback: proc(&mut Window)) {
         Window::do_spawn(title.to_owned(), false, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
     }
 
     /// spawn with window size
-    pub fn spawn_size(title: &str, width: uint, height: uint, callback: ~fn(&mut Window)) {
+    pub fn spawn_size(title: &str, width: uint, height: uint, callback: proc(&mut Window)) {
         Window::do_spawn(title.to_owned(), false, width, height, callback)
     }
 
-    fn do_spawn(title: ~str, hide: bool, width: uint, height: uint, callback: ~fn(&mut Window)) {
-        glfw::set_error_callback(error_callback);
+    fn do_spawn(title: ~str, hide: bool, width: uint, height: uint, callback: proc(&mut Window)) {
+        glfw::set_error_callback(~ErrorCallback);
 
         do glfw::start {
             textures_manager::init_singleton();
@@ -576,39 +578,19 @@ impl Window {
 
             // setup callbacks
             let collector = usr_window.events.clone();
-            do usr_window.window.set_framebuffer_size_callback |_, w, h| {
-                collector.write(|c| c.push(event::FramebufferSize(w as f32, h as f32)))
-            }
+            usr_window.window.set_framebuffer_size_callback(~FramebufferSizeCallback::new(collector));
 
             let collector = usr_window.events.clone();
-            do usr_window.window.set_key_callback |_, key, _, action, _| {
-                if action == glfw::Press {
-                    collector.write(|c| c.push(event::KeyPressed(key)))
-                }
-                else {
-                    collector.write(|c| c.push(event::KeyReleased(key)))
-                }
-            }
+            usr_window.window.set_key_callback(~KeyCallback::new(collector));
 
             let collector = usr_window.events.clone();
-            do usr_window.window.set_mouse_button_callback |_, button, action, mods| {
-                if action == glfw::Press {
-                    collector.write(|c| c.push(event::ButtonPressed(button, mods)))
-                }
-                else {
-                    collector.write(|c| c.push(event::ButtonReleased(button, mods)))
-                }
-            }
+            usr_window.window.set_mouse_button_callback(~MouseButtonCallback::new(collector));
 
             let collector = usr_window.events.clone();
-            do usr_window.window.set_cursor_pos_callback |_, x, y| {
-                collector.write(|c| c.push(event::CursorPos(x as f32, y as f32)))
-            }
+            usr_window.window.set_cursor_pos_callback(~CursorPosCallback::new(collector));
 
             let collector = usr_window.events.clone();
-            do usr_window.window.set_scroll_callback |_, x, y| {
-                collector.write(|c| c.push(event::Scroll(x as f32, y as f32)))
-            }
+            usr_window.window.set_scroll_callback(~ScrollCallback::new(collector));
 
             let (w, h) = usr_window.window.get_size();
             usr_window.camera.handle_event(
@@ -734,10 +716,6 @@ impl Window {
     }
 }
 
-fn error_callback(_: glfw::Error, description: ~str) {
-    println(format!("Kiss3d Error: {}", description));
-}
-
 fn init_gl() {
     /*
      * Misc configurations
@@ -746,4 +724,138 @@ fn init_gl() {
     verify!(gl::Enable(gl::DEPTH_TEST));
     verify!(gl::Enable(gl::SCISSOR_TEST));
     verify!(gl::DepthFunc(gl::LEQUAL));
+}
+
+//
+// Cursor Pos Callback
+//
+struct ScrollCallback {
+    collector: RWArc<~[event::Event]>
+}
+
+impl ScrollCallback {
+    pub fn new(collector: RWArc<~[event::Event]>) -> ScrollCallback {
+        ScrollCallback {
+            collector: collector
+        }
+    }
+}
+
+impl glfw::ScrollCallback for ScrollCallback {
+    fn call(&self, _: &glfw::Window, x: f64, y: f64) {
+        self.collector.write(|c| c.push(event::Scroll(x as f32, y as f32)))
+    }
+}
+
+//
+// Cursor Pos Callback
+//
+struct CursorPosCallback {
+    collector: RWArc<~[event::Event]>
+}
+
+impl CursorPosCallback {
+    pub fn new(collector: RWArc<~[event::Event]>) -> CursorPosCallback {
+        CursorPosCallback {
+            collector: collector
+        }
+    }
+}
+
+impl glfw::CursorPosCallback for CursorPosCallback {
+    fn call(&self, _: &glfw::Window, x: f64, y: f64) {
+        self.collector.write(|c| c.push(event::CursorPos(x as f32, y as f32)))
+    }
+}
+
+//
+// Mouse Button Callback
+//
+struct MouseButtonCallback {
+    collector: RWArc<~[event::Event]>
+}
+
+impl MouseButtonCallback {
+    pub fn new(collector: RWArc<~[event::Event]>) -> MouseButtonCallback {
+        MouseButtonCallback {
+            collector: collector
+        }
+    }
+}
+
+impl glfw::MouseButtonCallback for MouseButtonCallback {
+    fn call(&self,
+            _:      &glfw::Window,
+            button: glfw::MouseButton,
+            action: glfw::Action,
+            mods:   glfw::Modifiers) {
+        if action == glfw::Press {
+            self.collector.write(|c| c.push(event::ButtonPressed(button, mods)))
+        }
+        else {
+            self.collector.write(|c| c.push(event::ButtonReleased(button, mods)))
+        }
+    }
+}
+
+//
+// Key callback
+//
+struct KeyCallback {
+    collector: RWArc<~[event::Event]>
+}
+
+impl KeyCallback {
+    pub fn new(collector: RWArc<~[event::Event]>) -> KeyCallback {
+        KeyCallback {
+            collector: collector
+        }
+    }
+}
+
+impl glfw::KeyCallback for KeyCallback {
+    fn call(&self,
+            _:      &glfw::Window,
+            key:    glfw::Key,
+            _:      libc::c_int,
+            action: glfw::Action,
+            _:      glfw::Modifiers) {
+        if action == glfw::Press {
+            self.collector.write(|c| c.push(event::KeyPressed(key)))
+        }
+        else {
+            self.collector.write(|c| c.push(event::KeyReleased(key)))
+        }
+    }
+}
+
+//
+// Framebuffer callback
+//
+struct FramebufferSizeCallback {
+    collector: RWArc<~[event::Event]>
+}
+
+impl FramebufferSizeCallback {
+    pub fn new(collector: RWArc<~[event::Event]>) -> FramebufferSizeCallback {
+        FramebufferSizeCallback {
+            collector: collector
+        }
+    }
+}
+
+impl glfw::FramebufferSizeCallback for FramebufferSizeCallback {
+    fn call(&self, _: &glfw::Window, w: int, h: int) {
+        self.collector.write(|c| c.push(event::FramebufferSize(w as f32, h as f32)))
+    }
+}
+
+//
+// Error callback
+//
+struct ErrorCallback;
+impl glfw::ErrorCallback for ErrorCallback {
+    fn call(&self, _: glfw::Error, description: ~str) {
+        println(format!("Kiss3d Error: {}", description));
+    }
 }

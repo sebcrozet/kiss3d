@@ -1,6 +1,7 @@
 use std::cast;
 use std::hashmap::HashMap;
-use std::rc::RcMut;
+use std::cell::RefCell;
+use std::rc::Rc;
 use gl;
 use gl::types::*;
 use resources::shaders_manager::ObjectShaderContext;
@@ -16,7 +17,7 @@ use mesh::Mesh;
 #[path = "../error.rs"]
 mod error;
 
-pub fn load(ctxt: &ObjectShaderContext) -> HashMap<~str, RcMut<Mesh>> {
+pub fn load(ctxt: &ObjectShaderContext) -> HashMap<~str, Rc<RefCell<Mesh>>> {
     unsafe {
         // create white texture
         // Black/white checkerboard
@@ -42,7 +43,7 @@ pub fn load(ctxt: &ObjectShaderContext) -> HashMap<~str, RcMut<Mesh>> {
     }
 }
 
-fn parse_builtins() -> HashMap<~str, RcMut<Mesh>> {
+fn parse_builtins() -> HashMap<~str, Rc<RefCell<Mesh>>> {
     // load
     let m_cube     = obj::parse(cube_obj::CUBE_OBJ);
     let m_sphere   = obj::parse(sphere_obj::SPHERE_OBJ);
@@ -53,11 +54,11 @@ fn parse_builtins() -> HashMap<~str, RcMut<Mesh>> {
     // register draw informations
     let mut hmap = HashMap::new();
 
-    hmap.insert(~"cube", RcMut::from_send(m_cube));
-    hmap.insert(~"sphere", RcMut::from_send(m_sphere));
-    hmap.insert(~"cone", RcMut::from_send(m_cone));
-    hmap.insert(~"cylinder", RcMut::from_send(m_cylinder));
-    hmap.insert(~"capsule", RcMut::from_send(m_capsule));
+    hmap.insert(~"cube", Rc::from_mut(RefCell::new(m_cube)));
+    hmap.insert(~"sphere", Rc::from_mut(RefCell::new(m_sphere)));
+    hmap.insert(~"cone", Rc::from_mut(RefCell::new(m_cone)));
+    hmap.insert(~"cylinder", Rc::from_mut(RefCell::new(m_cylinder)));
+    hmap.insert(~"capsule", Rc::from_mut(RefCell::new(m_capsule)));
 
     hmap
 }
