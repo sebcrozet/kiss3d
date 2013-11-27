@@ -17,8 +17,8 @@ fn main() {
 
         window.set_light(window::StickToCamera);
 
-        do window.render_loop |_| {
+        window.render_loop(|_| {
             c.append_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
-        }
+        })
     }
 }

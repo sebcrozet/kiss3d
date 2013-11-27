@@ -50,7 +50,7 @@ fn main() {
         let mut time    = 0u;
         let mut counter = 0u;
 
-        do window.render_loop |w| {
+        window.render_loop(|w| {
             if time % 200 == 0 {
                 w.set_post_processing_effect(effects[counter]);
                 time    = 0;
@@ -58,6 +58,6 @@ fn main() {
             }
 
             time = time + 1;
-        }
+        })
     }
 }

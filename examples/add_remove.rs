@@ -15,7 +15,7 @@ fn main() {
 
         window.set_light(window::StickToCamera);
 
-        do window.render_loop |w| {
+        window.render_loop(|w| {
             if added {
                 w.remove(c.clone());
             }
@@ -25,6 +25,6 @@ fn main() {
             }
 
             added = !added;
-        }
+        });
     }
 }

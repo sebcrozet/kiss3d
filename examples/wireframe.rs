@@ -21,7 +21,7 @@ fn main() {
         let mut time = 0u;
         let mut on   = true;
 
-        do window.render_loop |w| {
+        window.render_loop(|w| {
             if time % 200 == 0 {
                 // Toogle the wireframe mode.
                 w.set_wireframe_mode(on);
@@ -31,6 +31,6 @@ fn main() {
             time = time + 1;
 
             c.append_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
-        }
+        })
     }
 }

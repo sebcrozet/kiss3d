@@ -101,7 +101,7 @@ impl Window {
 
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
     pub fn set_framerate_limit(&mut self, fps: Option<u64>) {
-        self.max_ms_per_frame = do fps.map |f| { assert!(f != 0); 1000 / f }
+        self.max_ms_per_frame = fps.map(|f| { assert!(f != 0); 1000 / f })
     }
 
     /// Closes the window.
@@ -337,9 +337,9 @@ impl Window {
         }
 
         // create the normals
-        do ((hsubdivs + 1) * (wsubdivs + 1)).times {
+        ((hsubdivs + 1) * (wsubdivs + 1)).times(|| {
             { normals.push(Vec3::new(1.0, 0.0, 0.0)) }
-        }
+        });
 
         // create triangles
         fn dl_triangle(i: u32, j: u32, ws: u32) -> Vec3<GLuint> {
@@ -439,10 +439,10 @@ impl Window {
     /// `false`, the default engine event handler is not executed. Return `false` if you want to
     /// override the default engine behaviour.
     #[inline(always)]
-    pub fn poll_events(&mut self, events_handler: &fn(&mut Window, &event::Event) -> bool) {
+    pub fn poll_events(&mut self, events_handler: |&mut Window, &event::Event| -> bool) {
         // redispatch them
         let events = self.events.clone();
-        do events.read |es| {
+        events.read(|es| {
             for e in es.iter() {
                 if events_handler(self, e) {
                     match *e {
@@ -461,7 +461,7 @@ impl Window {
                     self.camera.handle_event(&self.window, e);
                 }
             }
-        }
+        });
 
         // clear the events collector
         self.events.write(|c| c.clear());
@@ -469,7 +469,7 @@ impl Window {
 
     /// Starts an infinite loop polling events, calling an user-defined callback, and drawing the
     /// scene.
-    pub fn render_loop(&mut self, callback: &fn(&mut Window)) {
+    pub fn render_loop(&mut self, callback: |&mut Window| -> ()) {
         let mut timer = Timer::new().unwrap();
         let mut curr  = time::precise_time_ns();
 

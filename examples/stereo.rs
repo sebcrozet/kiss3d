@@ -42,7 +42,7 @@ fn main() {
         window.set_post_processing_effect(effect);
         let mut using_shader = true;
 
-        do window.render_loop |w| {
+        window.render_loop(|w| {
             //c.rotate_by(&Vec3::new(0.0f32, 0.014, 0.0))
             fn update_ipd(camera: @mut FirstPersonStereo, val: f32) -> bool {
                 //  cannot borrow `*camera` as immutable because it is also borrowed as mutable
@@ -51,7 +51,8 @@ fn main() {
 
                 true
             }
-            do w.poll_events |w, event| {
+
+            w.poll_events(|w, event| {
                 match *event {
                     KeyReleased(key) => {
                         match key {
@@ -81,7 +82,7 @@ fn main() {
                     }
                     _ => { true }
                 }
-            }
-        }
+            })
+        })
     }
 }

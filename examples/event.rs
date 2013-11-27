@@ -11,9 +11,9 @@ fn start(argc: int, argv: **u8) -> int {
 
 fn main() {
     do Window::spawn("Kiss3d: events") |window| {
-        do window.render_loop |w| {
+        window.render_loop(|w| {
             w.poll_events(event_handler);
-        }
+        })
     }
 }
 
@@ -28,13 +28,11 @@ fn event_handler(_: &mut Window, event: &event::Event) -> bool {
             println("You released the key with code: " + code.to_str());
             println("Do not try to press escape: the callback returns `false` (does not propagate events)!");
             false // override the default keyboard handler
-
         },
         event::ButtonPressed(button, mods) => {
             println("You pressed the mouse button with code: "      + button.to_str());
             println("You pressed the mouse button with modifiers: " + mods.to_str());
             true // dont override the default mouse handler
-
         },
         event::ButtonReleased(button, mods) => {
             println("You released the mouse button with code: "      + button.to_str());

@@ -30,8 +30,8 @@ fn main()
 
         window.set_camera(arc_ball as @mut Camera);
 
-        do window.render_loop |w| {
-            do w.poll_events |w, event| {
+        window.render_loop(|w| {
+            w.poll_events(|w, event| {
                 match *event {
                     KeyReleased(key) => {
                         if key == glfw::Key1 {
@@ -44,7 +44,7 @@ fn main()
                     _ => { }
                 }
                 true
-            }
+            });
 
             w.draw_line(&na::zero(), &Vec3::x(), &Vec3::x());
             w.draw_line(&na::zero(), &Vec3::y(), &Vec3::y());
@@ -54,6 +54,6 @@ fn main()
 
             // rotate the arc-ball camera
             arc_ball.set_yaw(curr_yaw + 0.05);
-        }
+        });
     }
 }

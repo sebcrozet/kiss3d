@@ -37,14 +37,14 @@ pub fn parse(string: &str) -> Mesh {
     let mut mesh:    ~[Vec3<GLuint>] = ~[];
     let mut uvs:     ~[UV]           = ~[];
 
-    for (l, line) in string.any_line_iter().enumerate() {
+    for (l, line) in string.lines_any().enumerate() {
         let mut mode       = Unknown;
         let mut num_parsed = 0u;
         let mut curr_coords: Coord  = Zero::zero();
         let mut curr_normal: Normal = Zero::zero();
         let mut curr_tex:    UV     = Zero::zero();
 
-        for (i, word) in line.word_iter().enumerate() {
+        for (i, word) in line.words().enumerate() {
             if i == 0 {
                 match word {
                     &"v"  => mode = V,
@@ -95,7 +95,7 @@ pub fn parse(string: &str) -> Mesh {
                         // instead: they will be dealt with later.
                         let mut curr_ids: Vec3<GLuint> = Bounded::max_value();
 
-                        for (i, w) in word.split_iter('/').enumerate() {
+                        for (i, w) in word.split('/').enumerate() {
                             if i == 0 || w.len() != 0 {
                                 let idx: Option<GLuint> = FromStr::from_str(w);
                                 match idx {
@@ -208,7 +208,7 @@ fn reformat(coords:  ~[Coord],
 
     let mut resf = vec::with_capacity(vertex_ids.len() / 3);
 
-    for f in vertex_ids.chunk_iter(3) {
+    for f in vertex_ids.chunks(3) {
         resf.push(Vec3::new(f[0], f[1], f[2]))
     }
 

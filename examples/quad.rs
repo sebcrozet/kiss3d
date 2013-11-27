@@ -19,8 +19,8 @@ fn main() {
 
         window.set_light(window::StickToCamera);
 
-        do window.render_loop |_| {
-            do c.modify_mesh |m| {
+        window.render_loop(|_| {
+            c.modify_mesh(|m| {
                 for v in m.mut_coords().mut_iter() {
                     v.z = time.sin() * (((v.x + time) * 4.0).cos() +
                           time.sin() * ((v.y + time) * 4.0 + time).cos()) / 2.0
@@ -29,9 +29,9 @@ fn main() {
                 m.recompute_normals();
 
                 true
-            }
+            });
 
             time = time + 0.016;
-        }
+        })
     }
 }

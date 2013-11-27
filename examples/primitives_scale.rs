@@ -40,10 +40,10 @@ fn main() {
 
         window.set_light(StickToCamera);
 
-        do window.render_loop |w| {
+        window.render_loop(|w| {
             for o in w.objects_mut().mut_iter() {
                 o.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
             }
-        };
+        });
     };
 }

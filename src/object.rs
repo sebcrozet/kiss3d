@@ -124,7 +124,7 @@ impl Object {
 
     /// Get a write access to the geometry mesh. Return true if the geometry needs to be
     /// re-uploaded to the GPU.
-    pub fn modify_mesh(&mut self, f: &fn(&mut Mesh) -> bool) {
+    pub fn modify_mesh(&mut self, f: |&mut Mesh| -> bool) {
         let mut m = self.mesh.borrow().borrow_mut();
         let m = m.get();
         

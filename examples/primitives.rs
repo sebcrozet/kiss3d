@@ -32,12 +32,12 @@ fn main() {
 
         window.set_light(StickToCamera);
 
-        do window.render_loop |_| {
+        window.render_loop(|_| {
             c.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
             b.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
             p.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
             y.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
             a.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
-        };
+        });
     };
 }
