@@ -7,7 +7,7 @@ gl_lib_path=lib/gl-rs/src/gl
 nalgebra_lib_path=lib/nalgebra/lib
 stb_image_lib_path=lib/rust-stb-image/
 libs=-L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
-build_cmd= rustc -Llib  $(libs) --opt-level 3 --out-dir $(kiss3d_bin_path)
+build_cmd= rustc -Llib  $(libs) --opt-level 3 --out-dir $(kiss3d_bin_path) --link-args -lm
 
 all:
 	mkdir -p $(kiss3d_lib_path)
@@ -18,8 +18,8 @@ test: examples
 
 examples:
 	mkdir -p $(kiss3d_bin_path)
-	$(build_cmd) ./examples/lines.rs 
 	$(build_cmd) ./examples/quad.rs 
+	$(build_cmd) ./examples/lines.rs 
 	$(build_cmd) ./examples/obj.rs 
 	$(build_cmd) ./examples/primitives.rs 
 	$(build_cmd) ./examples/primitives_scale.rs 
