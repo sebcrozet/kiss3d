@@ -45,11 +45,11 @@ pub fn load(ctxt: &ObjectShaderContext) -> HashMap<~str, Rc<RefCell<Mesh>>> {
 
 fn parse_builtins() -> HashMap<~str, Rc<RefCell<Mesh>>> {
     // load
-    let m_cube     = obj::parse(cube_obj::CUBE_OBJ);
-    let m_sphere   = obj::parse(sphere_obj::SPHERE_OBJ);
-    let m_cone     = obj::parse(cone_obj::CONE_OBJ);
-    let m_cylinder = obj::parse(cylinder_obj::CYLINDER_OBJ);
-    let m_capsule  = obj::parse(capsule_obj::CAPSULE_OBJ);
+    let m_cube     = obj::parse(cube_obj::CUBE_OBJ, true);
+    let m_sphere   = obj::parse(sphere_obj::SPHERE_OBJ, true);
+    let m_cone     = obj::parse(cone_obj::CONE_OBJ, true);
+    let m_cylinder = obj::parse(cylinder_obj::CYLINDER_OBJ, true);
+    let m_capsule  = obj::parse(capsule_obj::CAPSULE_OBJ, true);
 
     // register draw informations
     let mut hmap = HashMap::new();

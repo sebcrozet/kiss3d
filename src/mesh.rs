@@ -1,5 +1,6 @@
 //! Data structure of a scene node geometry.
 
+use extra::arc::Arc;
 use std::ptr;
 use std::vec;
 use std::mem;
@@ -18,13 +19,59 @@ pub type Face   = Vec3<Vertex>;
 #[path = "error.rs"]
 mod error;
 
+pub enum StorageLocation<T> {
+    SharedImmutable(Arc<T>),
+    NotShared(T)
+    // FIXME: add a GPU-only storage location
+    // FIXME: add SharedMutable
+}
+
+impl<T: Send + Freeze> StorageLocation<T> {
+    pub fn new(t: T, shared: bool) -> StorageLocation<T> {
+        if shared {
+            SharedImmutable(Arc::new(t))
+        }
+        else {
+            NotShared(t)
+        }
+    }
+
+    pub fn get<'r>(&'r self) -> &'r T {
+        match *self {
+            SharedImmutable(ref s) => s.get(),
+            NotShared(ref s)     => s
+        }
+    }
+
+    pub fn is_shared(&self) -> bool {
+        match *self {
+            SharedImmutable(_) => true,
+            NotShared(_)       => false
+        }
+    }
+}
+
+impl<T: Send + Freeze + Clone> StorageLocation<T> {
+    pub fn write_cow<'r>(&'r mut self, f: |&mut T| -> ()) {
+        match *self {
+            SharedImmutable(ref mut s) => {
+                let mut cpy = s.get().clone();
+                f(&mut cpy);
+
+                *s = Arc::new(cpy);
+            },
+            NotShared(ref mut s) => f(s)
+        }
+    }
+}
+
 /// A Mesh contains all geometric data of a mesh: vertex buffer, index buffer, normals and uvs.
 /// It also contains the GPU location of those buffers.
 pub struct Mesh {
-    priv coords:  ~[Coord],
-    priv faces:   ~[Face],
-    priv normals: ~[Normal],
-    priv uvs:     ~[UV],
+    priv coords:  StorageLocation<~[Coord]>,
+    priv faces:   StorageLocation<~[Face]>,
+    priv normals: StorageLocation<~[Normal]>,
+    priv uvs:     StorageLocation<~[UV]>,
     priv ebuf:    GLuint,
     priv nbuf:    GLuint,
     priv vbuf:    GLuint,
@@ -33,28 +80,34 @@ pub struct Mesh {
 
 impl Mesh {
     /// Creates a new mesh. Arguments set to `None` are automatically computed.
-    pub fn new(coords:          ~[Coord],
-               faces:           ~[Face],
-               normals:         Option<~[Normal]>,
-               uvs:             Option<~[UV]>,
+    pub fn new(coords:          StorageLocation<~[Coord]>,
+               faces:           StorageLocation<~[Face]>,
+               normals:         Option<StorageLocation<~[Normal]>>,
+               uvs:             Option<StorageLocation<~[UV]>>,
                fast_modifiable: bool)
                -> Mesh {
         let normals = match normals {
             Some(ns) => ns,
-            None     => compute_normals_array(coords, faces)
+            None     => {
+                let normals = compute_normals_array(*coords.get(), *faces.get());
+                StorageLocation::new(normals, coords.is_shared())
+            }
         };
 
         let uvs = match uvs {
             Some(us) => us,
-            None     => vec::from_elem(coords.len(), na::zero()) // dummy uvs
+            None     => {
+                let uvs = vec::from_elem(coords.get().len(), na::zero());
+                StorageLocation::new(uvs, coords.is_shared())
+            }
         };
 
         let draw_location = if fast_modifiable { DynamicDraw } else { StaticDraw };
         Mesh {
-            ebuf:    load_buffer(faces, ElementArrayBuffer, draw_location),
-            nbuf:    load_buffer(normals, ArrayBuffer, draw_location),
-            vbuf:    load_buffer(coords, ArrayBuffer, draw_location),
-            tbuf:    load_buffer(uvs, ArrayBuffer, draw_location),
+            ebuf:    load_buffer(*faces.get(), ElementArrayBuffer, draw_location),
+            nbuf:    load_buffer(*normals.get(), ArrayBuffer, draw_location),
+            vbuf:    load_buffer(*coords.get(), ArrayBuffer, draw_location),
+            tbuf:    load_buffer(*uvs.get(), ArrayBuffer, draw_location),
             coords:  coords,
             faces:   faces,
             normals: normals,
@@ -64,10 +117,10 @@ impl Mesh {
 
     /// Upload this mesh datas to the GPU.
     pub fn upload(&self) {
-        upload_buffer(self.faces, self.ebuf, ElementArrayBuffer, StaticDraw);
-        upload_buffer(self.normals, self.nbuf, ArrayBuffer, StaticDraw);
-        upload_buffer(self.coords, self.vbuf, ArrayBuffer, StaticDraw);
-        upload_buffer(self.uvs, self.tbuf, ArrayBuffer, StaticDraw);
+        upload_buffer(*self.faces.get(), self.ebuf, ElementArrayBuffer, StaticDraw);
+        upload_buffer(*self.normals.get(), self.nbuf, ArrayBuffer, StaticDraw);
+        upload_buffer(*self.coords.get(), self.vbuf, ArrayBuffer, StaticDraw);
+        upload_buffer(*self.uvs.get(), self.tbuf, ArrayBuffer, StaticDraw);
     }
 
     /// Binds this mesh buffers to vertex attributes.
@@ -94,68 +147,62 @@ impl Mesh {
 
     /// Number of points needed to draw this mesh.
     pub fn num_pts(&self) -> uint {
-        self.faces.len() * 3
+        self.faces.get().len() * 3
     }
 
     /// Recompute this mesh normals.
     pub fn recompute_normals(&mut self) {
-        compute_normals(self.coords, self.faces, &mut self.normals);
+        self.normals.write_cow(
+            |normals| compute_normals(*self.coords.get(), *self.faces.get(), normals)
+        )
     }
 
     /// This mesh faces.
     pub fn faces<'r>(&'r self) -> &'r [Face] {
-        let res: &'r [Face] = self.faces;
+        let res: &'r [Face] = *self.faces.get();
 
         res
     }
 
     /// This mesh faces.
-    pub fn mut_faces<'r>(&'r mut self) -> &'r mut [Face] {
-        let res: &'r mut [Face] = self.faces;
-
-        res
+    pub fn mut_faces<'r>(&'r mut self) -> &'r mut StorageLocation<~[Face]> {
+        &'r mut self.faces
     }
 
     /// This mesh normals.
     pub fn normals<'r>(&'r self) -> &'r [Normal] {
-        let res: &'r [Normal] = self.normals;
+        let res: &'r [Normal] = *self.normals.get();
 
         res
     }
 
     /// This mesh normals.
-    pub fn mut_normals<'r>(&'r mut self) -> &'r mut [Normal] {
-        let res: &'r mut [Normal] = self.normals;
-
-        res
+    pub fn mut_normals<'r>(&'r mut self) -> &'r mut StorageLocation<~[Normal]> {
+        &'r mut self.normals
     }
 
     /// This mesh vertices coordinates.
     pub fn coords<'r>(&'r self) -> &'r [Coord] {
-        let res: &'r [Coord] = self.coords;
+        let res: &'r [Coord] = *self.coords.get();
 
         res
     }
 
     /// This mesh vertices coordinates.
-    pub fn mut_coords<'r>(&'r mut self) -> &'r mut [Coord] {
-        let res: &'r mut [Coord] = self.coords;
-
-        res
+    pub fn mut_coords<'r>(&'r mut self) -> &'r mut StorageLocation<~[Coord]> {
+        &'r mut self.coords
     }
 
     /// This mesh texture coordinates.
     pub fn uvs<'r>(&'r self) -> &'r [UV] {
-        let res: &'r [UV] = self.uvs;
+        let res: &'r [UV] = *self.uvs.get();
 
         res
     }
 
     /// This mesh texture coordinates.
-    pub fn uvs_mut<'r>(&'r mut self) -> &'r mut [UV] {
-        let res: &'r mut [UV] = self.uvs;
-
-        res
+    pub fn uvs_mut<'r>(&'r mut self) -> &'r mut StorageLocation<~[UV]> {
+        &'r mut self.uvs
     }
 }
 

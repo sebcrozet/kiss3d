@@ -17,7 +17,7 @@ mod error;
 
 fn load_file(path: &str) -> ~str {
     
-    let s   = File::open(&Path::init(path)).expect("Cannot open the file: " + path).read_to_end();
+    let s   = File::open(&Path::new(path)).expect("Cannot open the file: " + path).read_to_end();
     str::from_utf8_owned(s)
 }
 

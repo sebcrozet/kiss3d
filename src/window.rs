@@ -27,7 +27,7 @@ use resources::textures_manager;
 use resources::framebuffers_manager::{FramebuffersManager, RenderTarget};
 use builtins::loader;
 use event;
-use mesh::Mesh;
+use mesh::{Mesh, StorageLocation};
 use obj;
 
 mod error;
@@ -153,7 +153,7 @@ impl Window {
     /// # Arguments
     ///     * `path`  - relative path to the obj file.
     ///     * `scale` - uniform scale to apply to the model.
-    pub fn add_obj(&mut self, path: &str, scale: GLfloat) -> Object {
+    pub fn add_obj(&mut self, path: &str, scale: GLfloat, shared: bool) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
             let tex  = textures_manager::singleton().get("default").unwrap();
@@ -162,7 +162,7 @@ impl Window {
                 match self.geometries.find(&key) {
                     Some(m) => (false, m.clone()),
                     None    => {
-                        let m = Rc::from_mut(RefCell::new(obj::parse_file(path)));
+                        let m = Rc::from_mut(RefCell::new(obj::parse_file(path, shared)));
 
                         (true, m)
                     },
@@ -308,11 +308,14 @@ impl Window {
     ///   which will be placed horizontally on each line. Must not be `0`
     ///   * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
     ///   which will be placed vertically on each line. Must not be `0`
+    ///   * `shared` - whether or not the mesh datas can be shared. Shared datas are slower to
+    ///   update.
     pub fn add_quad(&mut self,
                      w:        f32,
                      h:        f32,
                      wsubdivs: uint,
-                     hsubdivs: uint)
+                     hsubdivs: uint,
+                     shared:   bool)
                      -> Object {
         assert!(wsubdivs > 0 && hsubdivs > 0, "The number of subdivisions cannot be zero");
 
@@ -362,7 +365,11 @@ impl Window {
             }
         }
 
-        let mesh = Mesh::new(vertices, triangles, Some(normals), Some(tex_coords), true);
+        let mesh = Mesh::new(StorageLocation::new(vertices, shared),
+                             StorageLocation::new(triangles, shared),
+                             Some(StorageLocation::new(normals, shared)),
+                             Some(StorageLocation::new(tex_coords, shared)),
+                             true);
 
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {

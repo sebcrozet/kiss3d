@@ -7,9 +7,10 @@ use std::str;
 use std::num::Zero;
 use std::from_str::FromStr;
 use std::hashmap::HashMap;
+use extra::arc::Arc;
 use gl::types::*;
 use nalgebra::na::{Vec3, Indexable};
-use mesh::{Mesh, Coord, Vertex, Normal, UV};
+use mesh::{Mesh, Coord, Vertex, Normal, UV, SharedImmutable, NotShared};
 
 enum Mode {
     V,
@@ -24,14 +25,14 @@ fn error(line: uint, err: &str) -> ! {
 }
 
 /// Parses an obj file.
-pub fn parse_file(path: &str) -> Mesh {
-    let s   = File::open(&Path::init(path)).expect("Cannot open the file: " + path).read_to_end();
+pub fn parse_file(path: &str, shared: bool) -> Mesh {
+    let s   = File::open(&Path::new(path)).expect("Cannot open the file: " + path).read_to_end();
     let obj = str::from_utf8_owned(s);
-    parse(obj)
+    parse(obj, shared)
 }
 
 /// Parses a string representing an obj file and returns (vertices, normals, texture coordinates, indices)
-pub fn parse(string: &str) -> Mesh {
+pub fn parse(string: &str, shared: bool) -> Mesh {
     let mut coords:  ~[Coord]        = ~[];
     let mut normals: ~[Normal]       = ~[];
     let mut mesh:    ~[Vec3<GLuint>] = ~[];
@@ -175,13 +176,15 @@ pub fn parse(string: &str) -> Mesh {
         coords,
         if ignore_normals { None } else { Some(normals) },
         if ignore_uvs { None } else { Some(uvs) },
-        mesh)
+        mesh,
+        shared)
 }
 
 fn reformat(coords:  ~[Coord],
             normals: Option<~[Normal]>,
             uvs:     Option<~[UV]>,
-            mesh:    ~[Vec3<GLuint>]) -> Mesh {
+            mesh:    ~[Vec3<GLuint>],
+            shared:  bool) -> Mesh {
     let mut map:  HashMap<Vec3<GLuint>, GLuint> = HashMap::new();
     let mut vertex_ids: ~[Vertex]   = ~[];
     let mut resc: ~[Coord]          = ~[];
@@ -212,5 +215,18 @@ fn reformat(coords:  ~[Coord],
         resf.push(Vec3::new(f[0], f[1], f[2]))
     }
 
-    Mesh::new(resc, resf, resn, resu, false)
+    if shared {
+        Mesh::new(SharedImmutable(Arc::new(resc)),
+                  SharedImmutable(Arc::new(resf)),
+                  resn.map(|n| SharedImmutable(Arc::new(n))),
+                  resu.map(|u| SharedImmutable(Arc::new(u))),
+                  false)
+    }
+    else {
+        Mesh::new(NotShared(resc),
+                  NotShared(resf),
+                  resn.map(|n| NotShared(n)),
+                  resu.map(|u| NotShared(u)),
+                  false)
+    }
 }
