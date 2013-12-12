@@ -40,8 +40,8 @@ pub enum Light {
     StickToCamera
 }
 
-static DEFAULT_WIDTH: uint =  800u;
-static DEFAULT_HEIGHT: uint = 600u;
+static DEFAULT_WIDTH:  u32 = 800u32;
+static DEFAULT_HEIGHT: u32 = 600u32;
 
 /// Structure representing a window and a 3D scene. It is the main interface with the 3d engine.
 pub struct Window {
@@ -541,11 +541,11 @@ impl Window {
     }
 
     /// spawn with window size
-    pub fn spawn_size(title: &str, width: uint, height: uint, callback: proc(&mut Window)) {
+    pub fn spawn_size(title: &str, width: u32, height: u32, callback: proc(&mut Window)) {
         Window::do_spawn(title.to_owned(), false, width, height, callback)
     }
 
-    fn do_spawn(title: ~str, hide: bool, width: uint, height: uint, callback: proc(&mut Window)) {
+    fn do_spawn(title: ~str, hide: bool, width: u32, height: u32, callback: proc(&mut Window)) {
         glfw::set_error_callback(~ErrorCallback);
 
         do glfw::start {
@@ -578,7 +578,7 @@ impl Window {
                 lines_manager:         LinesManager::new(),
                 shaders_manager:       shaders,
                 post_processing:       None,
-                post_process_render_target: FramebuffersManager::new_render_target(width, height),
+                post_process_render_target: FramebuffersManager::new_render_target(width as uint, height as uint),
                 framebuffers_manager:  FramebuffersManager::new(),
                 events:                RWArc::new(~[])
             };
@@ -852,7 +852,7 @@ impl FramebufferSizeCallback {
 }
 
 impl glfw::FramebufferSizeCallback for FramebufferSizeCallback {
-    fn call(&self, _: &glfw::Window, w: int, h: int) {
+    fn call(&self, _: &glfw::Window, w: i32, h: i32) {
         self.collector.write(|c| c.push(event::FramebufferSize(w as f32, h as f32)))
     }
 }

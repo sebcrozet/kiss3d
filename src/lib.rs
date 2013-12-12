@@ -3,6 +3,7 @@
        , vers       = "0.0"
        , author     = "Sébastien Crozet"
        , uuid       = "0914a60f-37cd-40dc-9779-d72f237d99cc")];
+#[pkgid = "github.com/sebcrozet/kiss3d"];
 #[crate_type = "lib"];
 #[deny(non_camel_case_types)];
 #[deny(non_uppercase_statics)];
@@ -14,9 +15,9 @@
 
 extern mod std;
 extern mod extra;
-extern mod glfw;
-extern mod gl;
-extern mod nalgebra;
+extern mod glfw     = "github.com/bjz/glfw-rs";
+extern mod gl       = "github.com/bjz/gl-rs";
+extern mod nalgebra = "github.com/sebcrozet/nalgebra";
 extern mod stb_image;
 
 pub mod window;
