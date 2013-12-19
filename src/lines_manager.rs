@@ -10,7 +10,7 @@ use resources::shaders_manager::LinesShaderContext;
 mod error;
 
 /// Structure which manages the display of short-living lines.
-struct LinesManager {
+pub struct LinesManager {
     priv lines:     ~[(Vec3<GLfloat>, Vec3<GLfloat>, Vec3<GLfloat>, Vec3<GLfloat>)],
     priv vbuf:      GLuint,
     priv max_lines: uint

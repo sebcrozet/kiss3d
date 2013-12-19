@@ -1,6 +1,6 @@
 #[feature(managed_boxes)];
 
-extern mod glfw = "glfw-rs";
+extern mod glfw;
 extern mod kiss3d;
 extern mod nalgebra;
 

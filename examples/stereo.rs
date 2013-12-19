@@ -2,7 +2,7 @@
 
 extern mod kiss3d;
 extern mod nalgebra;
-extern mod glfw = "glfw-rs";
+extern mod glfw;
 
 //use nalgebra::mat::Rotation;
 use nalgebra::na::Vec3;

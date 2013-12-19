@@ -15,9 +15,9 @@
 
 extern mod std;
 extern mod extra;
-extern mod glfw     = "github.com/bjz/glfw-rs";
-extern mod gl       = "github.com/bjz/gl-rs";
-extern mod nalgebra = "github.com/sebcrozet/nalgebra";
+extern mod glfw;
+extern mod gl;
+extern mod nalgebra;
 extern mod stb_image;
 
 pub mod window;
