@@ -204,6 +204,21 @@ impl Window {
         res
     }
 
+    /// Adds an unnamed mesh to the scene.
+    pub fn add_mesh(&mut self, mesh: Mesh, scale: GLfloat) -> Object {
+        let tex = textures_manager::singleton().get("default").unwrap();
+
+        let res = Object::new(
+                    Rc::from_mut(RefCell::new(mesh)),
+                    1.0, 1.0, 1.0,
+                    tex,
+                    scale, scale, scale);
+
+        self.objects.push(res.clone());
+
+        res
+    }
+
     /// Creates and adds a new object using the geometry registered as `geometry_name`.
     pub fn add(&mut self, geometry_name: &str, scale: GLfloat) -> Option<Object> {
         self.geometries.find(&geometry_name.to_owned()).map(|m| {

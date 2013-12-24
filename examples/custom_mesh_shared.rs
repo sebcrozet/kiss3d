@@ -21,14 +21,19 @@ fn main() {
 
         let mesh = Mesh::new(vertices, indices, None, None, false);
 
-        let mut c = window.add_mesh(mesh, 1.0);
+        window.register_mesh("custom_mesh", mesh);
 
-        c.set_color(1.0, 0.0, 0.0);
+        let mut c1 = window.add("custom_mesh", 1.0).unwrap();
+        let mut c2 = window.add("custom_mesh", 1.0).unwrap();
+
+        c1.set_color(1.0, 0.0, 0.0);
+        c2.set_color(0.0, 1.0, 0.0);
 
         window.set_light(window::StickToCamera);
 
         window.render_loop(|_| {
-            c.prepend_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
+            c1.prepend_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
+            c2.prepend_rotation(&Vec3::new(0.0f32, -0.014, 0.0))
         })
     }
 }

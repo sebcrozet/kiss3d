@@ -19,6 +19,7 @@ test: examples
 examples:
 	mkdir -p $(kiss3d_bin_path)
 	$(build_cmd) ./examples/custom_mesh.rs 
+	$(build_cmd) ./examples/custom_mesh_shared.rs 
 	$(build_cmd) ./examples/quad.rs 
 	$(build_cmd) ./examples/lines.rs 
 	$(build_cmd) ./examples/obj.rs 
