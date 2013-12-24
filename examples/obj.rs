@@ -11,7 +11,7 @@ fn start(argc: int, argv: **u8) -> int {
 
 fn main() {
     do window::Window::spawn("Kiss3d: obj") |window| {
-        let mut c = window.add_obj("media/monkey.obj", 1.0, false);
+        let mut c = window.add_obj("media/Great Hall Model.obj", 1.0, false);
 
         c.set_color(1.0, 0.0, 0.0);
 
