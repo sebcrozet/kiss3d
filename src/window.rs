@@ -148,6 +148,26 @@ impl Window {
         }
     }
 
+    /// Loads a mesh from an obj file located at `path` and registers its geometry as
+    /// `geometry_name`.
+    pub fn load_obj(&mut self, path: &str, geometry_name: &str, shared: bool) -> Rc<RefCell<Mesh>> {
+        let m = Rc::from_mut(RefCell::new(obj::parse_file(path, shared)));
+
+        self.geometries.insert(geometry_name.to_owned(), m.clone());
+
+        m
+    }
+
+    /// Gets the geometry named `geometry_name` if it has been already registered.
+    pub fn get_mesh(&mut self, geometry_name: &str) -> Option<Rc<RefCell<Mesh>>> {
+        self.geometries.find(&geometry_name.to_owned()).map(|m| m.clone())
+    }
+
+    /// Registers the geometry `mesh` with the name `geometry_name`.
+    pub fn register_mesh(&mut self, geometry_name: &str, mesh: Mesh) {
+        self.geometries.insert(geometry_name.to_owned(), Rc::from_mut(RefCell::new(mesh)));
+    }
+
     /// Adds an obj model to the scene.
     ///
     /// # Arguments
@@ -156,8 +176,8 @@ impl Window {
     pub fn add_obj(&mut self, path: &str, scale: GLfloat, shared: bool) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::singleton().get("default").unwrap();
-            let key  = path.to_owned();
+            let tex = textures_manager::singleton().get("default").unwrap();
+            let key = path.to_owned();
             let (insert, mesh) =
                 match self.geometries.find(&key) {
                     Some(m) => (false, m.clone()),
@@ -182,6 +202,20 @@ impl Window {
         self.objects.push(res.clone());
 
         res
+    }
+
+    /// Creates and adds a new object using the geometry registered as `geometry_name`.
+    pub fn add(&mut self, geometry_name: &str, scale: GLfloat) -> Option<Object> {
+        self.geometries.find(&geometry_name.to_owned()).map(|m| {
+            let res = Object::new(
+                        m.clone(),
+                        1.0, 1.0, 1.0,
+                        textures_manager::singleton().get("default").unwrap(),
+                        scale, scale, scale);
+            self.objects.push(res.clone());
+
+            res
+        })
     }
 
     /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
@@ -351,10 +385,6 @@ impl Window {
 
         fn ur_triangle(i: u32, j: u32, ws: u32) -> Vec3<GLuint> {
             Vec3::new(i * ws + j, i * ws + (j + 1), (i + 1) * ws + j + 1)
-        }
-
-        fn inv_wind(t: &Vec3<GLuint>) -> Vec3<GLuint> {
-            Vec3::new(t.y, t.x, t.z)
         }
 
         for i in range(0u, hsubdivs) {

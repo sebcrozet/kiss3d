@@ -19,14 +19,18 @@ pub type Face   = Vec3<Vertex>;
 #[path = "error.rs"]
 mod error;
 
+/// Enumeration of different storage type: shared or note.
 pub enum StorageLocation<T> {
+    /// The stored data is shared on an Arc.
     SharedImmutable(Arc<T>),
+    /// The stored data is not shared.
     NotShared(T)
     // FIXME: add a GPU-only storage location
     // FIXME: add SharedMutable
 }
 
 impl<T: Send + Freeze> StorageLocation<T> {
+    /// Wraps a new data on the relevant storage location.
     pub fn new(t: T, shared: bool) -> StorageLocation<T> {
         if shared {
             SharedImmutable(Arc::new(t))
@@ -36,6 +40,7 @@ impl<T: Send + Freeze> StorageLocation<T> {
         }
     }
 
+    /// Reads the stored data.
     pub fn get<'r>(&'r self) -> &'r T {
         match *self {
             SharedImmutable(ref s) => s.get(),
@@ -43,6 +48,7 @@ impl<T: Send + Freeze> StorageLocation<T> {
         }
     }
 
+    /// Indicates whether or not the stored data is shared.
     pub fn is_shared(&self) -> bool {
         match *self {
             SharedImmutable(_) => true,
@@ -52,6 +58,7 @@ impl<T: Send + Freeze> StorageLocation<T> {
 }
 
 impl<T: Send + Freeze + Clone> StorageLocation<T> {
+    /// Applies a function to the wrapped data. If it is shared, then the data is copied.
     pub fn write_cow<'r>(&'r mut self, f: |&mut T| -> ()) {
         match *self {
             SharedImmutable(ref mut s) => {
@@ -201,7 +208,7 @@ impl Mesh {
     }
 
     /// This mesh texture coordinates.
-    pub fn uvs_mut<'r>(&'r mut self) -> &'r mut StorageLocation<~[UV]> {
+    pub fn mut_uvs<'r>(&'r mut self) -> &'r mut StorageLocation<~[UV]> {
         &'r mut self.uvs
     }
 }
