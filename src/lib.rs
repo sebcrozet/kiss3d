@@ -86,13 +86,7 @@ I’d love to see people improving this library for their own needs.  However, k
   - **bjz** for his awesome [glfw](https://github.com/bjz/glfw-rs.git) and [opengl](https://github.com/bjz/gl-rs.git) bindings.
 */
 
-
-#[link(name         = "kiss3d"
-       , package_id = "kiss3d"
-       , vers       = "0.0"
-       , author     = "Sébastien Crozet"
-       , uuid       = "0914a60f-37cd-40dc-9779-d72f237d99cc")];
-#[crate_id = "github.com/sebcrozet/kiss3d"];
+#[crate_id = "kiss3d#0.1"];
 #[crate_type = "lib"];
 #[deny(non_camel_case_types)];
 #[deny(non_uppercase_statics)];
