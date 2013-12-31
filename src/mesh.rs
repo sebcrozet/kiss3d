@@ -29,6 +29,15 @@ pub enum StorageLocation<T> {
     // FIXME: add SharedMutable
 }
 
+impl<T: Send + Freeze + Clone> Clone for StorageLocation<T> {
+    fn clone(&self) -> StorageLocation<T> {
+        match *self {
+            SharedImmutable(ref t) => SharedImmutable(t.clone()),
+            NotShared(ref t)       => NotShared(t.clone())
+        }
+    }
+}
+
 impl<T: Send + Freeze> StorageLocation<T> {
     /// Wraps a new data on the relevant storage location.
     pub fn new(t: T, shared: bool) -> StorageLocation<T> {

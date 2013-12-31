@@ -29,6 +29,7 @@ use builtins::loader;
 use event;
 use mesh::{Mesh, StorageLocation};
 use obj;
+use mtl::MtlMaterial;
 
 mod error;
 
@@ -150,12 +151,19 @@ impl Window {
 
     /// Loads a mesh from an obj file located at `path` and registers its geometry as
     /// `geometry_name`.
-    pub fn load_obj(&mut self, path: &str, geometry_name: &str, shared: bool) -> Rc<RefCell<Mesh>> {
-        let m = Rc::from_mut(RefCell::new(obj::parse_file(path, shared)));
+    pub fn load_obj(&mut self, path: &Path, mtl_dir: &Path, geometry_name: &str) -> ~[(~str, Rc<RefCell<Mesh>>, Option<MtlMaterial>)] {
+        let ms = obj::parse_file(path, mtl_dir, geometry_name).expect("Unable to parse the obj file: " + path.as_str().unwrap());
 
-        self.geometries.insert(geometry_name.to_owned(), m.clone());
+        let mut res = ~[];
 
-        m
+        for (n, m, mat) in ms.move_iter() {
+            let m = Rc::from_mut(RefCell::new(m));
+            self.geometries.insert(geometry_name.to_owned(), m.clone());
+
+            res.push((n, m, mat));
+        }
+
+        res
     }
 
     /// Gets the geometry named `geometry_name` if it has been already registered.
@@ -173,40 +181,50 @@ impl Window {
     /// # Arguments
     ///     * `path`  - relative path to the obj file.
     ///     * `scale` - uniform scale to apply to the model.
-    pub fn add_obj(&mut self, path: &str, scale: GLfloat, shared: bool) -> Object {
-        // FIXME: this weird block indirection are here because of Rust issue #6248
-        let res = {
-            let tex = textures_manager::singleton().get("default").unwrap();
-            let key = path.to_owned();
-            let (insert, mesh) =
-                match self.geometries.find(&key) {
-                    Some(m) => (false, m.clone()),
-                    None    => {
-                        let m = Rc::from_mut(RefCell::new(obj::parse_file(path, shared)));
+    pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: GLfloat) -> ~[Object] {
+        let tex  = textures_manager::singleton().get_default();
+        let objs = self.load_obj(path, mtl_dir, path.as_str().unwrap());
+        println!("Parsing complete.");
 
-                        (true, m)
-                    },
-                };
+        let mut res = ~[];
 
-            if insert {
-                self.geometries.insert(key, mesh.clone());
-            }
-
-            Object::new(
+        for (_, mesh, mtl) in objs.move_iter() {
+            let mut object = Object::new(
                 mesh,
                 1.0, 1.0, 1.0,
-                tex,
-                scale, scale, scale)
-        };
+                tex.clone(),
+                scale, scale, scale
+                );
 
-        self.objects.push(res.clone());
+            match mtl {
+                None      => { },
+                Some(mtl) => {
+                    object.set_color(mtl.diffuse.x, mtl.diffuse.y, mtl.diffuse.z);
+
+                    mtl.diffuse_texture.as_ref().map(|t| {
+                        let mut tpath = mtl_dir.clone();
+                        tpath.push(t.as_slice());
+                        object.set_texture(&tpath, tpath.as_str().unwrap())
+                    });
+
+                    mtl.ambiant_texture.map(|t| {
+                        let mut tpath = mtl_dir.clone();
+                        tpath.push(t.as_slice());
+                        object.set_texture(&tpath, tpath.as_str().unwrap())
+                    });
+                }
+            }
+
+            res.push(object.clone());
+            self.objects.push(object);
+        }
 
         res
     }
 
     /// Adds an unnamed mesh to the scene.
     pub fn add_mesh(&mut self, mesh: Mesh, scale: GLfloat) -> Object {
-        let tex = textures_manager::singleton().get("default").unwrap();
+        let tex = textures_manager::singleton().get_default();
 
         let res = Object::new(
                     Rc::from_mut(RefCell::new(mesh)),
@@ -225,7 +243,7 @@ impl Window {
             let res = Object::new(
                         m.clone(),
                         1.0, 1.0, 1.0,
-                        textures_manager::singleton().get("default").unwrap(),
+                        textures_manager::singleton().get_default(),
                         scale, scale, scale);
             self.objects.push(res.clone());
 
@@ -242,7 +260,7 @@ impl Window {
     pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::singleton().get("default").unwrap();
+            let tex  = textures_manager::singleton().get_default();
             let geom = self.geometries.find(&~"cube").unwrap();
             Object::new(
                 geom.clone(),
@@ -263,7 +281,7 @@ impl Window {
     pub fn add_sphere(&mut self, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::singleton().get("default").unwrap();
+            let tex  = textures_manager::singleton().get_default();
             let geom = self.geometries.find(&~"sphere").unwrap();
             Object::new(
                 geom.clone(),
@@ -286,7 +304,7 @@ impl Window {
     pub fn add_cone(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::singleton().get("default").unwrap();
+            let tex  = textures_manager::singleton().get_default();
             let geom = self.geometries.find(&~"cone").unwrap();
             Object::new(
                 geom.clone(),
@@ -309,7 +327,7 @@ impl Window {
     pub fn add_cylinder(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::singleton().get("default").unwrap();
+            let tex  = textures_manager::singleton().get_default();
             let geom = self.geometries.find(&~"cylinder").unwrap();
             Object::new(
                 geom.clone(),
@@ -332,7 +350,7 @@ impl Window {
     pub fn add_capsule(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::singleton().get("default").unwrap();
+            let tex  = textures_manager::singleton().get_default();
             let geom = self.geometries.find(&~"capsule").unwrap();
             Object::new(
                 geom.clone(),
@@ -418,7 +436,7 @@ impl Window {
 
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex = textures_manager::singleton().get("default").unwrap();
+            let tex = textures_manager::singleton().get_default();
             Object::new(
                 Rc::from_mut(RefCell::new(mesh)),
                 1.0, 1.0, 1.0,
@@ -432,8 +450,8 @@ impl Window {
     }
 
     #[doc(hidden)]
-    pub fn add_texture(&mut self, path: &str) -> Rc<Texture> {
-        textures_manager::singleton().add(path)
+    pub fn add_texture(&mut self, path: &Path, name: &str) -> Rc<Texture> {
+        textures_manager::singleton().add(path, name)
     }
 
     /// Converts a 3d point to 2d screen coordinates.
@@ -556,10 +574,10 @@ impl Window {
         // FIXME: select the LinesShader too ?
     }
 
-    // FIXME /// The camera used to render the scene.
-    // FIXME pub fn camera(&self) -> &Camera {
-    // FIXME     self.camera.clone()
-    // FIXME }
+    // FIXME /// The camera used to render the scene.
+    // FIXME pub fn camera(&self) -> &Camera {
+    // FIXME     self.camera.clone()
+    // FIXME }
 
     /// Opens a window and hide it. Once the window is created and before any event pooling, a
     /// user-defined callback is called once.
@@ -594,18 +612,16 @@ impl Window {
         glfw::set_error_callback(~ErrorCallback);
 
         do glfw::start {
-            textures_manager::init_singleton();
-
             let window = glfw::Window::create(width, height, title, glfw::Windowed)
                          .expect("Unable to open a glfw window.");
 
             window.make_context_current();
 
             verify!(gl::load_with(glfw::get_proc_address));
-
             init_gl();
+            textures_manager::init_singleton();
 
-            // FIXME: load that iff the user really uses post-processing
+            // FIXME: load that iff the user really uses post-processing
             let mut shaders  = ShadersManager::new();
             shaders.select(ObjectShader);
             let builtins     = loader::load(shaders.object_context());

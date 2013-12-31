@@ -1,5 +1,5 @@
 /*!
-# kiss3d  [![Build Status](https://travis-ci.org/sebcrozet/kiss3d.png?branch=master)](https://travis-ci.org/sebcrozet/kiss3d)
+# kiss3d
 
 Keep It Simple, Stupid 3d graphics engine.
 
@@ -107,6 +107,7 @@ pub mod window;
 pub mod event;
 pub mod object;
 pub mod obj;
+pub mod mtl;
 pub mod mesh;
 pub mod camera;
 

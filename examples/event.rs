@@ -4,11 +4,6 @@ extern mod nalgebra;
 use kiss3d::window::Window;
 use kiss3d::event;
 
-#[start]
-fn start(argc: int, argv: **u8) -> int {
-    std::rt::start_on_main_thread(argc, argv, main)
-}
-
 fn main() {
     do Window::spawn("Kiss3d: events") |window| {
         window.render_loop(|w| {

@@ -22,9 +22,9 @@ type Scale3d     = Mat3<GLfloat>;
 
 /// Set of datas identifying a scene node.
 pub struct ObjectData {
-    priv texture:   Rc<Texture>,
     priv scale:     Scale3d,
     priv transform: Transform3d,
+    priv texture:   Rc<Texture>,
     priv color:     Vec3<f32>,
     priv visible:   bool
 }
@@ -148,8 +148,20 @@ impl Object {
     ///
     /// # Arguments
     ///   * `path` - relative path of the texture on the disk
-    pub fn set_texture(&mut self, path: &str) {
-        self.data.borrow().borrow_mut().get().texture = textures_manager::singleton().add(path);
+    pub fn set_texture(&mut self, path: &Path, name: &str) {
+        let texture = textures_manager::singleton().add(path, name);
+
+        self.data.borrow().borrow_mut().get().texture = texture;
+    }
+
+    /// Sets the texture of the object.
+    ///
+    /// The texture must already have been registered as `name`.
+    pub fn set_texture_with_name(&mut self, name: &str) {
+        let texture = textures_manager::singleton().get(name).unwrap_or_else(
+            || fail!("Invalid attempt to use the unregistered texture: " + name));
+
+        self.data.borrow().borrow_mut().get().texture = texture;
     }
 
     /// Move and orient the object such that it is placed at the point `eye` and have its `x` axis

@@ -55,20 +55,43 @@ pub fn singleton() -> @mut TexturesManager {
 
 /// The textures manager. It keeps a cache of already-loaded textures, and can load new textures.
 pub struct TexturesManager {
-    priv textures: HashMap<~str, Rc<Texture>>,
+    priv default_texture: Rc<Texture>,
+    priv textures:        HashMap<~str, Rc<Texture>>,
 }
 
 impl TexturesManager {
     /// Creates a new texture manager.
     pub fn new() -> TexturesManager {
+        let default_tex = Texture::new();
+        let default_tex_pixels: [ GLfloat, ..3 ] = [ 1.0, 1.0, 1.0 ];
+        verify!(gl::ActiveTexture(gl::TEXTURE0));
+        verify!(gl::BindTexture(gl::TEXTURE_2D, default_tex.borrow().id()));
+        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_BASE_LEVEL, 0));
+        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAX_LEVEL, 0));
+        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT as i32));
+        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT as i32));
+        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32));
+        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR as i32));
+
+        unsafe {
+            verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, 1, 1, 0, gl::RGB, gl::FLOAT,
+                                   cast::transmute(&default_tex_pixels[0])));
+        }
+
         TexturesManager {
-            textures: HashMap::new()
+            textures:        HashMap::new(),
+            default_texture: default_tex
         }
     }
 
+    /// Gets the default, completely white, texture.
+    pub fn get_default(&self) -> Rc<Texture> {
+        self.default_texture.clone()
+    }
+
     /// Get a texture with the specified path. Returns `None` if the texture is not loaded.
-    pub fn get(&mut self, path: &str) -> Option<Rc<Texture>> {
-        self.textures.find(&path.to_owned()).map(|t| t.clone())
+    pub fn get(&mut self, name: &str) -> Option<Rc<Texture>> {
+        self.textures.find(&name.to_owned()).map(|t| t.clone())
     }
 
     /// Allocates a new unconfigured texture. If a texture with same name exists, nothing is
@@ -79,12 +102,12 @@ impl TexturesManager {
 
     /// Allocates a new texture read from a file. If a texture with same name exists, nothing is
     /// created and the old texture is returned.
-    pub fn add(&mut self, path: &str) -> Rc<Texture> {
-        let tex = self.textures.find_or_insert_with(path.to_owned(), |_| Texture::new());
+    pub fn add(&mut self, path: &Path, name: &str) -> Rc<Texture> {
+        let tex = self.textures.find_or_insert_with(name.to_owned(), |_| Texture::new());
 
         // FIXME: dont re-load the texture if it already exists!
         unsafe {
-            match image::load_with_depth(path.to_owned(), 3, false) {
+            match image::load_with_depth(path.as_str().unwrap().to_owned(), 3, false) {
                 ImageU8(image) => {
                     verify!(gl::ActiveTexture(gl::TEXTURE0));
                     verify!(gl::BindTexture(gl::TEXTURE_2D, tex.borrow().id()));
@@ -103,7 +126,7 @@ impl TexturesManager {
                     verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
                 }
                 _ => {
-                    fail!("Failed to load texture " + path);
+                    fail!("Failed to load texture " + path.as_str().unwrap());
                 }
             }
         }

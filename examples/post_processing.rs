@@ -11,11 +11,6 @@ use kiss3d::post_processing::waves::Waves;
 use kiss3d::post_processing::grayscales::Grayscales;
 use kiss3d::post_processing::sobel_edge_highlight::SobelEdgeHighlight;
 
-#[start]
-fn start(argc: int, argv: **u8) -> int {
-    std::rt::start_on_main_thread(argc, argv, main)
-}
-
 fn main() {
     do window::Window::spawn("Kiss3d: cube") |window| {
         let mut c = window.add_cube(1.0, 1.0, 1.0);

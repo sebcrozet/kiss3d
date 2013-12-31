@@ -11,11 +11,6 @@ use kiss3d::window;
 use kiss3d::event::KeyReleased;
 use kiss3d::camera::{Camera, ArcBall, FirstPerson};
 
-#[start]
-fn start(argc: int, argv: **u8) -> int {
-    std::rt::start_on_main_thread(argc, argv, main)
-}
-
 fn main()
 {
     do window::Window::spawn("Kiss3d: camera") |window|

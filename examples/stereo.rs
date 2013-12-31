@@ -13,11 +13,6 @@ use kiss3d::post_processing::post_processing_effect::PostProcessingEffect;
 use kiss3d::post_processing::oculus_stereo::OculusStereo;
 //use kiss3d::post_processing::grayscales::Grayscales;
 
-#[start]
-fn start(argc: int, argv: **u8) -> int {
-    std::rt::start_on_main_thread(argc, argv, main)
-}
-
 fn main() {
     do window::Window::spawn_size("kiss3d_stereo", 1280, 800) |window| {
         let mut c = window.add_cube(1.0, 1.0, 1.0);

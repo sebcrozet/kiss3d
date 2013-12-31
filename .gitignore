@@ -17,3 +17,5 @@ bin/post_processing
 bin/wireframe
 bin/add_remove
 bin/obj
+bin/custom_mesh
+bin/custom_mesh_shared

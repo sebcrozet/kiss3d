@@ -5,11 +5,6 @@ use nalgebra::na::{Vec3, Rotation};
 use kiss3d::window;
 use kiss3d::mesh::{Mesh, StorageLocation};
 
-#[start]
-fn start(argc: int, argv: **u8) -> int {
-    std::rt::start_on_main_thread(argc, argv, main)
-}
-
 fn main() {
     do window::Window::spawn("Kiss3d: cube") |window| {
         let a = Vec3::new(-1.0, -1.0, 0.0);

@@ -4,11 +4,6 @@ extern mod nalgebra;
 use std::rand::random;
 use kiss3d::window;
 
-#[start]
-fn start(argc: int, argv: **u8) -> int {
-    std::rt::start_on_main_thread(argc, argv, main)
-}
-
 fn main() {
     do window::Window::spawn("Kiss3d: quad waves") |window| {
         let mut c = window.add_quad(5.0, 4.0, 500, 400, false);
