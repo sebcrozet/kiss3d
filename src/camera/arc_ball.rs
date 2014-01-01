@@ -63,7 +63,7 @@ impl ArcBall {
             fov:             fov,
             znear:           znear,
             zfar:            zfar,
-            projection:      Mat4::new_perspective(800.0, 600.0, fov, znear, zfar),
+            projection:      na::perspective3d(800.0, 600.0, fov, znear, zfar),
             proj_view:       na::zero(),
             inv_proj_view:   na::zero(),
             last_cursor_pos: na::zero()
@@ -221,7 +221,7 @@ impl Camera for ArcBall {
             },
             event::Scroll(_, off) => self.handle_scroll(off),
             event::FramebufferSize(w, h) => {
-                self.projection = Mat4::new_perspective(w, h, self.fov, self.znear, self.zfar);
+                self.projection = na::perspective3d(w, h, self.fov, self.znear, self.zfar);
                 self.update_projviews();
             },
             _ => { }
