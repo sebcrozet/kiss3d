@@ -39,18 +39,16 @@ impl Drop for Texture {
     }
 }
 
-local_data_key!(KEY_TEXTURE_MANAGER: @mut TexturesManager)
-
-/// Inits the texture manager, and put in on TLS.
-pub fn init_singleton() {
-    if local_data::get(KEY_TEXTURE_MANAGER, |tm| tm.is_none()) {
-        local_data::set(KEY_TEXTURE_MANAGER, @mut TexturesManager::new())
-    }
-}
+// FIXME: why is this on TLS?
+local_data_key!(KEY_TEXTURE_MANAGER: TexturesManager)
 
 /// Gets the texture manager.
-pub fn singleton() -> @mut TexturesManager {
-    local_data::get(KEY_TEXTURE_MANAGER, |tm| *tm.unwrap())
+pub fn get<T>(f: |&mut TexturesManager| -> T) -> T {
+    if local_data::get(KEY_TEXTURE_MANAGER, |tm| tm.is_none()) {
+        local_data::set(KEY_TEXTURE_MANAGER, TexturesManager::new())
+    }
+
+    local_data::get_mut(KEY_TEXTURE_MANAGER, |tm| f(tm.unwrap()))
 }
 
 /// The textures manager. It keeps a cache of already-loaded textures, and can load new textures.

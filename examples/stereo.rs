@@ -1,5 +1,3 @@
-#[feature(managed_boxes)];
-
 extern mod kiss3d;
 extern mod nalgebra;
 extern mod glfw;
@@ -16,13 +14,11 @@ use kiss3d::post_processing::oculus_stereo::OculusStereo;
 fn main() {
     do window::Window::spawn_size("kiss3d_stereo", 1280, 800) |window| {
         let mut c = window.add_cube(1.0, 1.0, 1.0);
-        //c.position(
 
-        let eye = Vec3::new(00.0f32, 0.0, 10.0);
-        let at  = Vec3::new(00.0f32, 0.0, 0.0);
-        let first_person_stereo = @mut FirstPersonStereo::new(eye, at, 0.3f32);
-        let camera = first_person_stereo as @mut Camera;
-        window.set_camera(camera);
+        let     eye                 = Vec3::new(0.0f32, 0.0, 10.0);
+        let     at                  = Vec3::new(0.0f32, 0.0, 0.0);
+        let mut first_person_stereo = FirstPersonStereo::new(eye, at, 0.3f32);
+        window.set_camera(&mut first_person_stereo as &mut Camera);
 
         // Position the window correctly. -6/-26 takes care of icewm default
         // window decoration. Should probably just disable decorations (since
@@ -32,15 +28,12 @@ fn main() {
 
         window.set_light(window::StickToCamera);
 
-        let effect = Some(@mut OculusStereo::new() as @mut PostProcessingEffect);
-        //let effect = Some(@mut Grayscales::new() as @mut PostProcessingEffect);
-        window.set_post_processing_effect(effect);
+        let mut oculus_stereo = OculusStereo::new();
+        window.set_post_processing_effect(Some(&mut oculus_stereo as &mut PostProcessingEffect));
         let mut using_shader = true;
 
         window.render_loop(|w| {
-            //c.rotate_by(&Vec3::new(0.0f32, 0.014, 0.0))
-            fn update_ipd(camera: @mut FirstPersonStereo, val: f32) -> bool {
-                //  cannot borrow `*camera` as immutable because it is also borrowed as mutable
+            fn update_ipd(camera: &mut FirstPersonStereo, val: f32) -> bool {
                 let ipd = camera.ipd();
                 camera.set_ipd(ipd + val);
 
@@ -52,15 +45,15 @@ fn main() {
                     KeyReleased(key) => {
                         match key {
                             glfw::Key1 => {
-                                update_ipd(first_person_stereo, 0.1f32)
+                                update_ipd(&mut first_person_stereo, 0.1f32)
                             },
                             glfw::Key2 => {
-                                update_ipd(first_person_stereo, -0.1f32)
+                                update_ipd(&mut first_person_stereo, -0.1f32)
                             },
                             glfw::KeyS => {
                                 using_shader = match using_shader {
                                     false =>  {
-                                        w.set_post_processing_effect(effect);
+                                        w.set_post_processing_effect(Some(&mut oculus_stereo as &mut PostProcessingEffect));
                                         true
                                     },
                                     true => {

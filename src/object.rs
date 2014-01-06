@@ -149,7 +149,7 @@ impl Object {
     /// # Arguments
     ///   * `path` - relative path of the texture on the disk
     pub fn set_texture(&mut self, path: &Path, name: &str) {
-        let texture = textures_manager::singleton().add(path, name);
+        let texture = textures_manager::get(|tm| tm.add(path, name));
 
         self.data.borrow().borrow_mut().get().texture = texture;
     }
@@ -158,8 +158,8 @@ impl Object {
     ///
     /// The texture must already have been registered as `name`.
     pub fn set_texture_with_name(&mut self, name: &str) {
-        let texture = textures_manager::singleton().get(name).unwrap_or_else(
-            || fail!("Invalid attempt to use the unregistered texture: " + name));
+        let texture = textures_manager::get(|tm| tm.get(name).unwrap_or_else(
+            || fail!("Invalid attempt to use the unregistered texture: " + name)));
 
         self.data.borrow().borrow_mut().get().texture = texture;
     }

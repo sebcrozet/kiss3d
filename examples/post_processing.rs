@@ -1,5 +1,3 @@
-#[feature(managed_boxes)];
-
 extern mod kiss3d;
 extern mod nalgebra;
 
@@ -31,12 +29,9 @@ fn main() {
         y.set_color(random(), random(), random());
         a.set_color(random(), random(), random());
 
-        let effects = [
-            Some(@mut SobelEdgeHighlight::new(4.0) as @mut PostProcessingEffect),
-            Some(@mut Waves::new()                 as @mut PostProcessingEffect),
-            Some(@mut Grayscales::new()            as @mut PostProcessingEffect),
-            None
-        ];
+        let mut sobel = SobelEdgeHighlight::new(4.0);
+        let mut waves = Waves::new();
+        let mut grays = Grayscales::new();
 
         window.set_background_color(1.0, 1.0, 1.0);
         window.set_light(window::StickToCamera);
@@ -47,9 +42,16 @@ fn main() {
 
         window.render_loop(|w| {
             if time % 200 == 0 {
-                w.set_post_processing_effect(effects[counter]);
+                match counter {
+                    0 => w.set_post_processing_effect(None),
+                    1 => w.set_post_processing_effect(Some(&mut sobel as &mut PostProcessingEffect)),
+                    2 => w.set_post_processing_effect(Some(&mut waves as &mut PostProcessingEffect)),
+                    3 => w.set_post_processing_effect(Some(&mut grays as &mut PostProcessingEffect)),
+                    _ => unreachable!()
+                }
+
                 time    = 0;
-                counter = (counter + 1) % effects.len();
+                counter = (counter + 1) % 4;
             }
 
             time = time + 1;

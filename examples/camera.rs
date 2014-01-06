@@ -1,5 +1,3 @@
-#[feature(managed_boxes)];
-
 extern mod glfw;
 extern mod kiss3d;
 extern mod nalgebra;
@@ -18,22 +16,22 @@ fn main()
         window.set_light(window::StickToCamera);
 
         // Replace the default arc-ball camera so that we can control it
-        let eye = Vec3::new(10.0f32, 10.0, 10.0);
-        let at  = na::zero();
-        let arc_ball     = @mut ArcBall::new(eye, at);
-        let first_person = @mut FirstPerson::new(eye, at);
+        let eye              = Vec3::new(10.0f32, 10.0, 10.0);
+        let at               = na::zero();
+        let mut arc_ball     = ArcBall::new(eye, at);
+        let mut first_person = FirstPerson::new(eye, at);
 
-        window.set_camera(arc_ball as @mut Camera);
+        window.set_camera(&mut arc_ball as &mut Camera);
 
         window.render_loop(|w| {
             w.poll_events(|w, event| {
                 match *event {
                     KeyReleased(key) => {
                         if key == glfw::Key1 {
-                            w.set_camera(arc_ball as @mut Camera)
+                            w.set_camera(&mut arc_ball as &mut Camera)
                         }
                         else {
-                            w.set_camera(first_person as @mut Camera)
+                            w.set_camera(&mut first_person as &mut Camera)
                         }
                     }
                     _ => { }

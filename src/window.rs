@@ -45,11 +45,11 @@ static DEFAULT_WIDTH:  u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
 
 /// Structure representing a window and a 3D scene. It is the main interface with the 3d engine.
-pub struct Window {
+pub struct Window<'a> {
     priv window:                     glfw::Window,
     priv max_ms_per_frame:           Option<u64>,
     priv objects:                    ~[Object],
-    priv camera:                     @mut Camera,
+    priv camera:                     &'a mut Camera,
     priv light_mode:                 Light,
     priv wireframe_mode:             bool,
     priv geometries:                 HashMap<~str, Rc<RefCell<Mesh>>>,
@@ -57,19 +57,19 @@ pub struct Window {
     priv lines_manager:              LinesManager,
     priv shaders_manager:            ShadersManager,
     priv framebuffers_manager:       FramebuffersManager,
-    priv post_processing:            Option<@mut PostProcessingEffect>,
+    priv post_processing:            Option<&'a mut PostProcessingEffect>,
     priv post_process_render_target: RenderTarget,
     priv events:                     RWArc<~[event::Event]>
 }
 
-impl Window {
+impl<'a> Window<'a> {
     /// Access the glfw window.
     pub fn glfw_window<'r>(&'r self) -> &'r glfw::Window {
         &self.window
     }
 
     /// Sets the current processing effect.
-    pub fn set_post_processing_effect(&mut self, effect: Option<@mut PostProcessingEffect>) {
+    pub fn set_post_processing_effect(&mut self, effect: Option<&'a mut PostProcessingEffect>) {
         self.post_processing = effect;
     }
 
@@ -88,12 +88,12 @@ impl Window {
     }
 
     /// The current camera.
-    pub fn camera(&self) -> @mut Camera {
-        self.camera
+    pub fn camera<'b>(&'b self) -> &'b &'a mut Camera {
+        &'b self.camera
     }
 
     /// The current camera.
-    pub fn set_camera(&mut self, camera: @mut Camera) {
+    pub fn set_camera(&mut self, camera: &'a mut Camera) {
         let (w, h) = self.window.get_size();
 
         self.camera = camera;
@@ -182,7 +182,7 @@ impl Window {
     ///     * `path`  - relative path to the obj file.
     ///     * `scale` - uniform scale to apply to the model.
     pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: GLfloat) -> ~[Object] {
-        let tex  = textures_manager::singleton().get_default();
+        let tex  = textures_manager::get(|tm| tm.get_default());
         let objs = self.load_obj(path, mtl_dir, path.as_str().unwrap());
         println!("Parsing complete.");
 
@@ -224,7 +224,7 @@ impl Window {
 
     /// Adds an unnamed mesh to the scene.
     pub fn add_mesh(&mut self, mesh: Mesh, scale: GLfloat) -> Object {
-        let tex = textures_manager::singleton().get_default();
+        let tex  = textures_manager::get(|tm| tm.get_default());
 
         let res = Object::new(
                     Rc::from_mut(RefCell::new(mesh)),
@@ -243,7 +243,7 @@ impl Window {
             let res = Object::new(
                         m.clone(),
                         1.0, 1.0, 1.0,
-                        textures_manager::singleton().get_default(),
+                        textures_manager::get(|tm| tm.get_default()),
                         scale, scale, scale);
             self.objects.push(res.clone());
 
@@ -260,7 +260,7 @@ impl Window {
     pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::singleton().get_default();
+            let tex  = textures_manager::get(|tm| tm.get_default());
             let geom = self.geometries.find(&~"cube").unwrap();
             Object::new(
                 geom.clone(),
@@ -281,7 +281,7 @@ impl Window {
     pub fn add_sphere(&mut self, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::singleton().get_default();
+            let tex  = textures_manager::get(|tm| tm.get_default());
             let geom = self.geometries.find(&~"sphere").unwrap();
             Object::new(
                 geom.clone(),
@@ -304,7 +304,7 @@ impl Window {
     pub fn add_cone(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::singleton().get_default();
+            let tex  = textures_manager::get(|tm| tm.get_default());
             let geom = self.geometries.find(&~"cone").unwrap();
             Object::new(
                 geom.clone(),
@@ -327,7 +327,7 @@ impl Window {
     pub fn add_cylinder(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::singleton().get_default();
+            let tex  = textures_manager::get(|tm| tm.get_default());
             let geom = self.geometries.find(&~"cylinder").unwrap();
             Object::new(
                 geom.clone(),
@@ -350,7 +350,7 @@ impl Window {
     pub fn add_capsule(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::singleton().get_default();
+            let tex  = textures_manager::get(|tm| tm.get_default());
             let geom = self.geometries.find(&~"capsule").unwrap();
             Object::new(
                 geom.clone(),
@@ -436,7 +436,7 @@ impl Window {
 
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex = textures_manager::singleton().get_default();
+            let tex  = textures_manager::get(|tm| tm.get_default());
             Object::new(
                 Rc::from_mut(RefCell::new(mesh)),
                 1.0, 1.0, 1.0,
@@ -451,7 +451,7 @@ impl Window {
 
     #[doc(hidden)]
     pub fn add_texture(&mut self, path: &Path, name: &str) -> Rc<Texture> {
-        textures_manager::singleton().add(path, name)
+        textures_manager::get(|tm| tm.add(path, name))
     }
 
     /// Converts a 3d point to 2d screen coordinates.
@@ -619,19 +619,18 @@ impl Window {
 
             verify!(gl::load_with(glfw::get_proc_address));
             init_gl();
-            textures_manager::init_singleton();
 
             // FIXME: load that iff the user really uses post-processing
             let mut shaders  = ShadersManager::new();
             shaders.select(ObjectShader);
             let builtins     = loader::load(shaders.object_context());
-            let camera       = @mut ArcBall::new(-Vec3::z(), Zero::zero());
+            let mut camera   = ArcBall::new(-Vec3::z(), Zero::zero());
 
             let mut usr_window = Window {
                 max_ms_per_frame:      None,
                 window:                window,
                 objects:               ~[],
-                camera:                camera as @mut Camera,
+                camera:                &mut camera as &mut Camera,
                 light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
                 wireframe_mode:        false,
                 geometries:            builtins,
