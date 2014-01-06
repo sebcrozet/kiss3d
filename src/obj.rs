@@ -39,7 +39,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> ~[(~str, Mesh
     let mut normals:    ~[Normal]           = ~[];
     let mut uvs:        ~[UV]               = ~[];
     let mut groups:     HashMap<~str, uint> = HashMap::new();
-    let mut groups_ids: ~[~[Vec3<u32>]]     = ~[];
+    let mut groups_ids: ~[~[Vec3<i32>]]     = ~[];
     let mut curr_group: uint                = 0;
     let mut ignore_normals                  = false;
     let mut ignore_uvs                      = false;
@@ -97,7 +97,7 @@ fn parse_usemtl<'a>(l:          uint,
                     mtllib:     &HashMap<~str, MtlMaterial>,
                     group2mtl:  &mut HashMap<uint, MtlMaterial>,
                     groups:     &mut HashMap<~str, uint>,
-                    groups_ids: &mut ~[~[Vec3<u32>]])
+                    groups_ids: &mut ~[~[Vec3<i32>]])
                     -> uint {
     let mname = ws.to_owned_vec().connect(" ");
     let none  = "None";
@@ -172,18 +172,18 @@ fn parse_f<'a>(l:              uint,
                ws:             WordIterator<'a>,
                ignore_uvs:     &mut bool,
                ignore_normals: &mut bool,
-               groups_ids:     &mut ~[~[Vec3<u32>]],
+               groups_ids:     &mut ~[~[Vec3<i32>]],
                curr_group:     uint) {
     // Four formats possible: v   v/t   v//n   v/t/n
     for (i, word) in ws.enumerate() {
-        let mut curr_ids: Vec3<u32> = Bounded::max_value();
+        let mut curr_ids: Vec3<i32> = Bounded::max_value();
 
         for (i, w) in word.split('/').enumerate() {
             if i == 0 || w.len() != 0 {
-                let idx: Option<u32> = FromStr::from_str(w);
+                let idx: Option<i32> = FromStr::from_str(w);
                 match idx {
                     Some(id) => curr_ids.set(i, id - 1),
-                    None     => error(l, "failed to parse `" + w + "' as a u32.")
+                    None     => error(l, "failed to parse `" + w + "' as a i32.")
                 }
             }
         }
@@ -229,7 +229,7 @@ fn parse_g<'a>(_:          uint,
                mut ws:     WordIterator<'a>,
                prefix:     &str,
                groups:     &mut HashMap<~str, uint>,
-               groups_ids: &mut ~[~[Vec3<u32>]])
+               groups_ids: &mut ~[~[Vec3<i32>]])
                -> uint {
     let suffix = ws.to_owned_vec().connect(" ");
     let name   = if suffix.len() == 0 { prefix.to_owned() } else { prefix + "/" + suffix };
@@ -240,10 +240,10 @@ fn parse_g<'a>(_:          uint,
 fn reformat(coords:     ~[Coord],
             normals:    Option<~[Normal]>,
             uvs:        Option<~[UV]>,
-            groups_ids: ~[~[Vec3<u32>]],
+            groups_ids: ~[~[Vec3<i32>]],
             groups:     HashMap<~str, uint>,
             group2mtl:  HashMap<uint, MtlMaterial>) -> ~[(~str, Mesh, Option<MtlMaterial>)] {
-    let mut vt2id:  HashMap<Vec3<u32>, u32> = HashMap::new();
+    let mut vt2id:  HashMap<Vec3<i32>, u32> = HashMap::new();
     let mut vertex_ids: ~[u32]      = ~[];
     let mut resc: ~[Coord]          = ~[];
     let mut resn: Option<~[Normal]> = normals.as_ref().map(|_| ~[]);
@@ -257,13 +257,20 @@ fn reformat(coords:     ~[Coord],
         mtls.push(group2mtl.find(&i).map(|m| m.clone()));
 
         for point in groups_ids[i].iter() {
-            let idx = match vt2id.find(point) {
+            let mut abs_point = *point;
+            if abs_point.x < 0 { abs_point.x = coords.len() as i32 + abs_point.x + 1 };
+            uvs.as_ref().map(|uvs| if abs_point.y < 0
+                    { abs_point.y = uvs.len() as i32 + abs_point.y + 1 });
+            normals.as_ref().map(|normals| if abs_point.z < 0
+                        { abs_point.z = normals.len() as i32 + abs_point.z + 1 });
+
+            let idx = match vt2id.find(&abs_point) {
                 Some(i) => { vertex_ids.push(*i); None },
                 None    => {
                     let idx = resc.len() as u32;
-                    resc.push(coords[point.x]);
-                    resu.as_mut().map(|l| l.push(uvs.get_ref()[point.y]));
-                    resn.as_mut().map(|l| l.push(normals.get_ref()[point.z]));
+                    resc.push(coords[abs_point.x]);
+                    resu.as_mut().map(|l| l.push(uvs.get_ref()[abs_point.y]));
+                    resn.as_mut().map(|l| l.push(normals.get_ref()[abs_point.z]));
 
                     vertex_ids.push(idx);
 
@@ -271,7 +278,7 @@ fn reformat(coords:     ~[Coord],
                 }
             };
 
-            idx.map(|i| vt2id.insert(*point, i));
+            idx.map(|i| vt2id.insert(abs_point, i));
         }
 
         let mut resf = vec::with_capacity(vertex_ids.len() / 3);

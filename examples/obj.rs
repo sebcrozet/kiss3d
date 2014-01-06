@@ -6,9 +6,9 @@ use kiss3d::window;
 
 fn main() {
     do window::Window::spawn("Kiss3d: obj") |window| {
-        let obj_path = Path::new("media/cube/cube.obj");
-        let mtl_path = Path::new("media/cube");
-        let mut cs   = window.add_obj(&obj_path, &mtl_path, 1.0);
+        let obj_path = Path::new("media/teapot/teapot.obj");
+        let mtl_path = Path::new("media/teapot");
+        let mut cs   = window.add_obj(&obj_path, &mtl_path, 0.001);
 
         window.set_light(window::StickToCamera);
 

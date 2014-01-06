@@ -105,18 +105,39 @@ impl TexturesManager {
 
         // FIXME: dont re-load the texture if it already exists!
         unsafe {
-            match image::load_with_depth(path.as_str().unwrap().to_owned(), 3, false) {
-                ImageU8(image) => {
+            match image::load(path.as_str().unwrap().to_owned()) {
+                ImageU8(mut image) => {
                     verify!(gl::ActiveTexture(gl::TEXTURE0));
                     verify!(gl::BindTexture(gl::TEXTURE_2D, tex.borrow().id()));
 
-                    verify!(gl::TexImage2D(
-                            gl::TEXTURE_2D, 0,
-                            gl::RGB as GLint,
-                            image.width as GLsizei,
-                            image.height as GLsizei,
-                            0, gl::RGB, gl::UNSIGNED_BYTE,
-                            cast::transmute(&image.data[0])));
+                    // Flip the y axis
+                    let elt_per_row = image.width * image.depth;
+                    for j in range(0u, image.height / 2) {
+                        for i in range(0u, elt_per_row) {
+                            image.data.swap(
+                                (image.height - j - 1) * elt_per_row + i, 
+                                j * elt_per_row + i)
+                        }
+                    }
+
+                    if image.depth == 3 {
+                        verify!(gl::TexImage2D(
+                                gl::TEXTURE_2D, 0,
+                                gl::RGB as GLint,
+                                image.width as GLsizei,
+                                image.height as GLsizei,
+                                0, gl::RGB, gl::UNSIGNED_BYTE,
+                                cast::transmute(&image.data[0])));
+                    }
+                    else {
+                        verify!(gl::TexImage2D(
+                                gl::TEXTURE_2D, 0,
+                                gl::RGBA as GLint,
+                                image.width as GLsizei,
+                                image.height as GLsizei,
+                                0, gl::RGBA, gl::UNSIGNED_BYTE,
+                                cast::transmute(&image.data[0])));
+                    }
 
                     verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));
                     verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
