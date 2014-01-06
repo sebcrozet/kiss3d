@@ -45,6 +45,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> ~[(~str, Mesh
     let mut ignore_uvs                      = false;
     let mut mtllib                          = HashMap::new();
     let mut group2mtl                       = HashMap::new();
+    let mut curr_mtl                        = None::<MtlMaterial>;
 
     groups_ids.push(~[]);
     groups.insert(basename.to_owned(), 0);
@@ -61,9 +62,12 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> ~[(~str, Mesh
                         &"vn"     => if !ignore_normals { normals.push(parse_v_or_vn(l, words)) },
                         &"f"      => parse_f(l, words, &mut ignore_uvs, &mut ignore_normals, &mut groups_ids, curr_group),
                         &"vt"     => if !ignore_uvs { uvs.push(parse_vt(l, words)) },
-                        &"g"      => curr_group = parse_g(l, words, basename, &mut groups, &mut groups_ids),
+                        &"g"      => {
+                            curr_group = parse_g(l, words, basename, &mut groups, &mut groups_ids);
+                            curr_mtl.as_ref().map(|mtl| group2mtl.insert(curr_group, mtl.clone()));
+                        },
                         &"mtllib" => parse_mtllib(l, words, mtl_base_dir, &mut mtllib),
-                        &"usemtl" => curr_group = parse_usemtl(l, words, curr_group, &mtllib, &mut group2mtl, &mut groups, &mut groups_ids),
+                        &"usemtl" => curr_group = parse_usemtl(l, words, curr_group, &mtllib, &mut group2mtl, &mut groups, &mut groups_ids, &mut curr_mtl),
                         _         => {
                             println("Warning: unknown line " + l.to_str() + " ignored: `" + line + "'");
                         }
@@ -97,13 +101,15 @@ fn parse_usemtl<'a>(l:          uint,
                     mtllib:     &HashMap<~str, MtlMaterial>,
                     group2mtl:  &mut HashMap<uint, MtlMaterial>,
                     groups:     &mut HashMap<~str, uint>,
-                    groups_ids: &mut ~[~[Vec3<i32>]])
+                    groups_ids: &mut ~[~[Vec3<i32>]],
+                    curr_mtl:   &mut Option<MtlMaterial>)
                     -> uint {
     let mname = ws.to_owned_vec().connect(" ");
     let none  = "None";
     if mname.as_slice() != none.as_slice() {
         match mtllib.find(&mname) {
             None    => {
+                *curr_mtl = None;
                 warn(l, "could not find the material " + mname);
 
                 curr_group
@@ -111,6 +117,7 @@ fn parse_usemtl<'a>(l:          uint,
             Some(m) => {
                 if !group2mtl.contains_key(&curr_group) {
                     group2mtl.insert(curr_group, m.clone());
+                    *curr_mtl = Some(m.clone());
                     curr_group
                 }
                 else {
@@ -120,6 +127,7 @@ fn parse_usemtl<'a>(l:          uint,
                     let new_group = parse_g(l, g.words(), "auto_generated_group_", groups, groups_ids);
 
                     group2mtl.insert(new_group, m.clone());
+                    *curr_mtl = Some(m.clone());
 
                     new_group
                 }
@@ -127,6 +135,7 @@ fn parse_usemtl<'a>(l:          uint,
         }
     }
     else {
+        *curr_mtl = None;
         curr_group
     }
 }
