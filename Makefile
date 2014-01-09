@@ -2,7 +2,8 @@ tmp=_git_distcheck
 kiss3d_lib_path=lib
 kiss3d_bin_path=bin
 kiss3d_doc_path=doc
-glfw_lib_path=lib/glfw-rs
+glfw_path=lib/glfw-rs
+glfw_lib_path=lib/glfw-rs/lib
 gl_lib_path=lib/gl-rs/src/gl
 nalgebra_lib_path=lib/nalgebra/lib
 stb_image_lib_path=lib/rust-stb-image/
@@ -18,8 +19,8 @@ test: examples
 
 examples:
 	mkdir -p $(kiss3d_bin_path)
-	$(build_cmd) ./examples/texturing.rs 
 	$(build_cmd) ./examples/obj.rs 
+	$(build_cmd) ./examples/texturing.rs 
 	$(build_cmd) ./examples/post_processing.rs 
 	$(build_cmd) ./examples/stereo.rs 
 	$(build_cmd) ./examples/camera.rs 
@@ -48,7 +49,7 @@ distcheck:
 	rm -rf $(tmp)
 
 deps:
-	rustc --out-dir $(glfw_lib_path) --opt-level=3 lib/glfw-rs/src/glfw/lib.rs
+	cd $(glfw_path); cmake .; make lib
 	make -C lib/nalgebra
 	cd lib/gl-rs; rustc --opt-level=3 src/gl/lib.rs
 	cd lib/rust-stb-image; ./configure

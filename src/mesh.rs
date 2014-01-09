@@ -1,6 +1,7 @@
 //! Data structure of a scene node geometry.
 
 use extra::arc::Arc;
+use std::num::Zero;
 use std::ptr;
 use std::vec;
 use std::mem;
@@ -256,7 +257,15 @@ pub fn compute_normals(coordinates: &[Coord],
     for f in faces.iter() {
         let edge1  = coordinates[f.y] - coordinates[f.x];
         let edge2  = coordinates[f.z] - coordinates[f.x];
-        let normal = na::normalize(&na::cross(&edge1, &edge2));
+        let cross  = na::cross(&edge1, &edge2);
+        let normal;
+
+        if !cross.is_zero() {
+            normal = na::normalize(&cross)
+        }
+        else {
+            normal = cross
+        }
 
         normals[f.x] = normals[f.x] + normal;
         normals[f.y] = normals[f.y] + normal;

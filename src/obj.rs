@@ -9,7 +9,9 @@ use std::from_str::FromStr;
 use std::hashmap::HashMap;
 use extra::arc::Arc;
 use nalgebra::na::{Vec3, Vec2, Indexable};
+use nalgebra::na;
 use mesh::{Mesh, Coord, Normal, UV, SharedImmutable};
+use mesh;
 use mtl::MtlMaterial;
 use mtl;
 
@@ -258,6 +260,7 @@ fn reformat(coords:     ~[Coord],
     let mut resn: Option<~[Normal]> = normals.as_ref().map(|_| ~[]);
     let mut resu: Option<~[UV]>     = uvs.as_ref().map(|_| ~[]);
     let mut resfs: ~[~[Vec3<u32>]]  = ~[];
+    let mut allfs: ~[Vec3<u32>]     = ~[];
     let mut names: ~[~str]          = ~[];
     let mut mtls:  ~[Option<MtlMaterial>] = ~[];
 
@@ -295,22 +298,25 @@ fn reformat(coords:     ~[Coord],
         assert!(vertex_ids.len() % 3 == 0);
 
         for f in vertex_ids.chunks(3) {
-            resf.push(Vec3::new(f[0], f[1], f[2]))
+            resf.push(Vec3::new(f[0], f[1], f[2]));
+            allfs.push(Vec3::new(f[0], f[1], f[2]));
         }
 
         resfs.push(resf);
         vertex_ids.clear();
     }
 
+    let resn = resn.unwrap_or_else(|| mesh::compute_normals_array(resc, allfs));
+    let resn = SharedImmutable(Arc::new(resn));
+    let resu = resu.unwrap_or_else(|| vec::from_elem(resc.len(), na::zero()));
+    let resu = SharedImmutable(Arc::new(resu));
     let resc = SharedImmutable(Arc::new(resc));
-    let resn = resn.map(|n| SharedImmutable(Arc::new(n)));
-    let resu = resu.map(|u| SharedImmutable(Arc::new(u)));
 
     let mut meshes = ~[];
     for ((fs, name), mtl) in resfs.move_iter().zip(names.move_iter()).zip(mtls.move_iter()) {
         if fs.len() != 0 {
             let fs   = SharedImmutable(Arc::new(fs));
-            let mesh = Mesh::new(resc.clone(), fs, resn.clone(), resu.clone(), false);
+            let mesh = Mesh::new(resc.clone(), fs, Some(resn.clone()), Some(resu.clone()), false);
             meshes.push((name, mesh, mtl))
         }
     }
