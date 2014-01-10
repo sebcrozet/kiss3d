@@ -58,7 +58,7 @@ impl Object {
         };
 
         Object {
-            data:    Rc::from_mut(RefCell::new(data)),
+            data:    Rc::new(RefCell::new(data)),
             mesh:    mesh,
         }
     }

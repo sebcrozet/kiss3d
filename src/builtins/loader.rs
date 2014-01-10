@@ -37,11 +37,11 @@ fn parse_builtins() -> HashMap<~str, Rc<RefCell<Mesh>>> {
     // register draw informations
     let mut hmap = HashMap::new();
 
-    hmap.insert(~"cube", Rc::from_mut(RefCell::new(m_cube)));
-    hmap.insert(~"sphere", Rc::from_mut(RefCell::new(m_sphere)));
-    hmap.insert(~"cone", Rc::from_mut(RefCell::new(m_cone)));
-    hmap.insert(~"cylinder", Rc::from_mut(RefCell::new(m_cylinder)));
-    hmap.insert(~"capsule", Rc::from_mut(RefCell::new(m_capsule)));
+    hmap.insert(~"cube", Rc::new(RefCell::new(m_cube)));
+    hmap.insert(~"sphere", Rc::new(RefCell::new(m_sphere)));
+    hmap.insert(~"cone", Rc::new(RefCell::new(m_cone)));
+    hmap.insert(~"cylinder", Rc::new(RefCell::new(m_cylinder)));
+    hmap.insert(~"capsule", Rc::new(RefCell::new(m_capsule)));
 
     hmap
 }

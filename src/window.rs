@@ -157,7 +157,7 @@ impl<'a> Window<'a> {
         let mut res = ~[];
 
         for (n, m, mat) in ms.move_iter() {
-            let m = Rc::from_mut(RefCell::new(m));
+            let m = Rc::new(RefCell::new(m));
             self.geometries.insert(geometry_name.to_owned(), m.clone());
 
             res.push((n, m, mat));
@@ -173,7 +173,7 @@ impl<'a> Window<'a> {
 
     /// Registers the geometry `mesh` with the name `geometry_name`.
     pub fn register_mesh(&mut self, geometry_name: &str, mesh: Mesh) {
-        self.geometries.insert(geometry_name.to_owned(), Rc::from_mut(RefCell::new(mesh)));
+        self.geometries.insert(geometry_name.to_owned(), Rc::new(RefCell::new(mesh)));
     }
 
     /// Adds an obj model to the scene.
@@ -227,7 +227,7 @@ impl<'a> Window<'a> {
         let tex  = textures_manager::get(|tm| tm.get_default());
 
         let res = Object::new(
-                    Rc::from_mut(RefCell::new(mesh)),
+                    Rc::new(RefCell::new(mesh)),
                     1.0, 1.0, 1.0,
                     tex,
                     scale, scale, scale);
@@ -438,7 +438,7 @@ impl<'a> Window<'a> {
         let res = {
             let tex  = textures_manager::get(|tm| tm.get_default());
             Object::new(
-                Rc::from_mut(RefCell::new(mesh)),
+                Rc::new(RefCell::new(mesh)),
                 1.0, 1.0, 1.0,
                 tex,
                 1.0, 1.0, 1.0)
