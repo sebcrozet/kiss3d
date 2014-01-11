@@ -210,7 +210,7 @@ fn check_shader_error(shader: GLuint) {
         gl::GetShaderiv(shader, gl::COMPILE_STATUS, &mut compiles);
 
         if(compiles == 0) {
-            println("Shader compilation failed.");
+            println!("Shader compilation failed.");
             let mut info_log_len = 0;
 
             gl::GetShaderiv(shader, gl::INFO_LOG_LENGTH, &mut info_log_len);

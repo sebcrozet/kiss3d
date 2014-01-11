@@ -67,7 +67,7 @@ pub fn parse(string: &str) -> ~[MtlMaterial] {
                             // specular texture map
                             &"map_Ks"      => curr_material.specular_texture = Some(parse_name(l, words)),
                             _     => {
-                                println("Warning: unknown line " + l.to_str() + " ignored: `" + line + "'");
+                                println!("Warning: unknown line {} ignored: `{:s}'", l, line);
                             }
                     }
                 }

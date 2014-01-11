@@ -20,7 +20,7 @@ fn error(line: uint, err: &str) -> ! {
 }
 
 fn warn(line: uint, err: &str) {
-    println("At line " + line.to_str() + ": " + err)
+    println!("At line {}: {:s}", line, err)
 }
 
 /// Parses an obj file.
@@ -71,7 +71,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> ~[(~str, Mesh
                         &"mtllib" => parse_mtllib(l, words, mtl_base_dir, &mut mtllib),
                         &"usemtl" => curr_group = parse_usemtl(l, words, curr_group, &mtllib, &mut group2mtl, &mut groups, &mut groups_ids, &mut curr_mtl),
                         _         => {
-                            println("Warning: unknown line " + l.to_str() + " ignored: `" + line + "'");
+                            println!("Warning: unknown line {} ignored: `{:s}'", l, line);
                         }
                     }
                 }
@@ -80,12 +80,11 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> ~[(~str, Mesh
     }
 
     if !uvs.is_empty() && ignore_uvs {
-        println("Warning: some texture coordinates are missing. Dropping texture coordinates"
-                + " infos for every vertex.");
+        println!("Warning: some texture coordinates are missing. Dropping texture coordinates infos for every vertex.");
     }
 
     if !normals.is_empty() && ignore_normals {
-        println("Warning: some normals are missing. Dropping normals infos for every vertex.");
+        println!("Warning: some normals are missing. Dropping normals infos for every vertex.");
     }
 
     reformat(

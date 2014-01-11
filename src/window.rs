@@ -923,6 +923,6 @@ impl glfw::FramebufferSizeCallback for FramebufferSizeCallback {
 struct ErrorCallback;
 impl glfw::ErrorCallback for ErrorCallback {
     fn call(&self, _: glfw::Error, description: ~str) {
-        println(format!("Kiss3d Error: {}", description));
+        println!("Kiss3d Error: {}", description);
     }
 }
