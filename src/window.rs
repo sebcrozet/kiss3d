@@ -179,8 +179,8 @@ impl<'a> Window<'a> {
     /// Adds an obj model to the scene.
     ///
     /// # Arguments
-    ///     * `path`  - relative path to the obj file.
-    ///     * `scale` - uniform scale to apply to the model.
+    /// * `path`  - relative path to the obj file.
+    /// * `scale` - uniform scale to apply to the model.
     pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: GLfloat) -> ~[Object] {
         let tex  = textures_manager::get(|tm| tm.get_default());
         let objs = self.load_obj(path, mtl_dir, path.as_str().unwrap());
@@ -254,9 +254,9 @@ impl<'a> Window<'a> {
     /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
     ///
     /// # Arguments
-    ///   * `wx` - the cube extent along the z axis
-    ///   * `wy` - the cube extent along the y axis
-    ///   * `wz` - the cube extent along the z axis
+    /// * `wx` - the cube extent along the z axis
+    /// * `wy` - the cube extent along the y axis
+    /// * `wz` - the cube extent along the z axis
     pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
@@ -277,7 +277,7 @@ impl<'a> Window<'a> {
     /// Adds a sphere to the scene. The sphere is initially centered at (0, 0, 0).
     ///
     /// # Arguments
-    ///   * `r` - the sphere radius
+    /// * `r` - the sphere radius
     pub fn add_sphere(&mut self, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
@@ -299,8 +299,8 @@ impl<'a> Window<'a> {
     /// positive `y` axis.
     ///
     /// # Arguments
-    ///   * `h` - the cone height
-    ///   * `r` - the cone base radius
+    /// * `h` - the cone height
+    /// * `r` - the cone base radius
     pub fn add_cone(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
@@ -322,8 +322,8 @@ impl<'a> Window<'a> {
     /// principal axis aligned with the `y` axis.
     ///
     /// # Arguments
-    ///   * `h` - the cylinder height
-    ///   * `r` - the cylinder base radius
+    /// * `h` - the cylinder height
+    /// * `r` - the cylinder base radius
     pub fn add_cylinder(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
@@ -345,8 +345,8 @@ impl<'a> Window<'a> {
     /// principal axis aligned with the `y` axis.
     ///
     /// # Arguments
-    ///   * `h` - the capsule height
-    ///   * `r` - the capsule caps radius
+    /// * `h` - the capsule height
+    /// * `r` - the capsule caps radius
     pub fn add_capsule(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
@@ -369,14 +369,14 @@ impl<'a> Window<'a> {
     /// This is the main way to draw height maps.
     ///
     /// # Arguments
-    ///   * `w` - the quad width
-    ///   * `h` - the quad height
-    ///   * `wsubdivs` - number of horizontal subdivisions. This correspond to the number of squares
-    ///   which will be placed horizontally on each line. Must not be `0`
-    ///   * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
-    ///   which will be placed vertically on each line. Must not be `0`
-    ///   * `shared` - whether or not the mesh datas can be shared. Shared datas are slower to
-    ///   update.
+    /// * `w` - the quad width
+    /// * `h` - the quad height
+    /// * `wsubdivs` - number of horizontal subdivisions. This correspond to the number of squares
+    /// which will be placed horizontally on each line. Must not be `0`
+    /// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
+    /// which will be placed vertically on each line. Must not be `0`
+    /// * `shared` - whether or not the mesh datas can be shared. Shared datas are slower to
+    /// update.
     pub fn add_quad(&mut self,
                      w:        f32,
                      h:        f32,
@@ -585,25 +585,32 @@ impl<'a> Window<'a> {
     /// This method contains an infinite loop and returns when the window is closed.
     ///
     /// # Arguments
-    ///   * `title` - the window title
-    ///   * `callback` - a callback called once the window has been created
+    /// * `title` - the window title
+    /// * `callback` - a callback called once the window has been created
     pub fn spawn_hidden(title: &str, callback: proc(&mut Window)) {
         Window::do_spawn(title.to_owned(), true, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
     }
 
-    /// Opens a window. Once the window is created and before any event pooling, a user-defined
-    /// callback is called once.
+    /// Opens a window. Once the window is created and before any event pooling,
+    /// a user-defined callback is called once.
     ///
     /// This method contains an infinite loop and returns when the window is closed.
     ///
     /// # Arguments
-    ///   * `title` - the window title
-    ///   * `callback` - a callback called once the window has been created
+    /// * `title` - the window title
+    /// * `callback` - a callback called once the window has been created
     pub fn spawn(title: &str, callback: proc(&mut Window)) {
         Window::do_spawn(title.to_owned(), false, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
     }
 
-    /// spawn with window size
+    /// Opens a window with a custom size. Once the window is created and before any event pooling,
+    /// a user-defined callback is called once.
+    ///
+    /// This method contains an infinite loop and returns when the window is closed.
+    ///
+    /// # Arguments
+    /// * `title` - the window title
+    /// * `callback` - a callback called once the window has been created
     pub fn spawn_size(title: &str, width: u32, height: u32, callback: proc(&mut Window)) {
         Window::do_spawn(title.to_owned(), false, width, height, callback)
     }
@@ -612,8 +619,7 @@ impl<'a> Window<'a> {
         glfw::set_error_callback(~ErrorCallback);
 
         do glfw::start {
-            let window = glfw::Window::create(width, height, title, glfw::Windowed)
-                         .expect("Unable to open a glfw window.");
+            let window = glfw::Window::create(width, height, title, glfw::Windowed).expect("Unable to open a glfw window.");
 
             window.make_context_current();
 

@@ -26,17 +26,13 @@ Most features are one-liners.
   - create basic post-processing effects.
 
 As an example, having a red, rotating cube with the light attached to the camera is as simple as:
+
 ```rust
 extern mod kiss3d;
 extern mod nalgebra;
 
 use nalgebra::na::{Vec3, Rotation};
 use kiss3d::window;
-
-#[start]
-fn start(argc: int, argv: **u8) -> int {
-    std::rt::start_on_main_thread(argc, argv, main)
-}
 
 fn main() {
     do window::Window::spawn("Kiss3d: cube") |window| {
@@ -46,18 +42,19 @@ fn main() {
 
         window.set_light(window::StickToCamera);
 
-        do window.render_loop |_| {
+        window.render_loop(|_| {
             c.prepend_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
-        }
+        })
     }
 }
 ```
 
 Some controls are handled by default by the engine (they can be overridden by the user):
-  - `scroll`: zoom in / zoom out.
-  - `left click + drag`: look around.
-  - `right click + drag`: translate the view point.
-  - `enter`: look at the origin (0.0, 0.0, 0.0).
+
+* `scroll`: zoom in / zoom out.
+* `left click + drag`: look around.
+* `right click + drag`: translate the view point.
+* `enter`: look at the origin (0.0, 0.0, 0.0).
 
 ## Compilation
 You will need the last rust compiler from the `master` branch.
