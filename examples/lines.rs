@@ -3,11 +3,12 @@ extern mod nalgebra;
 
 use nalgebra::na::Vec3;
 use kiss3d::window;
+use kiss3d::light;
 
 fn main() {
     do window::Window::spawn("Kiss3d: lines") |window| {
 
-        window.set_light(window::StickToCamera);
+        window.set_light(light::StickToCamera);
 
         window.render_loop(|w| {
             let a = Vec3::new(-0.5, -0.5, 0.0);

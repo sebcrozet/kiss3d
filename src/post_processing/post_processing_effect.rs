@@ -1,7 +1,6 @@
 //! Trait implemented by every post-processing effect.
 
 use resources::framebuffers_manager::RenderTarget;
-use resources::shader_manager::ShaderManager;
 
 /// Trait of post processing effect. One post-processing effect can be used at a time. It is
 /// executed once the scene has been rendered on a texture.
@@ -14,5 +13,5 @@ pub trait PostProcessingEffect {
     ///     * `shader_manager` - manager to switch between the different shaders.
     ///     * `fbo_texture` - id to the texture containing the last scene drawn.
     ///     * `fbo_depth` - the depth buffer as a texture.
-    fn draw(&self, shader_manager: &mut ShaderManager, target: &RenderTarget);
+    fn draw(&self, target: &RenderTarget);
 }

@@ -3,7 +3,8 @@ extern mod nalgebra;
 
 use std::rand::random;
 use nalgebra::na::{Vec3, Translation, RotationWithTranslation};
-use kiss3d::window::{Window, StickToCamera};
+use kiss3d::window::Window;
+use kiss3d::light;
 
 fn main() {
     do Window::spawn("Kiss3d: primitives") |window| {
@@ -25,7 +26,7 @@ fn main() {
         y.append_translation(&Vec3::new(-4.0, 0.0, 0.0));
         a.append_translation(&Vec3::new(0.0, 0.0, 0.0));
 
-        window.set_light(StickToCamera);
+        window.set_light(light::StickToCamera);
 
         window.render_loop(|_| {
             c.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));

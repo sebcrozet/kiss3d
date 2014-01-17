@@ -81,6 +81,7 @@ I’d love to see people improving this library for their own needs.  However, k
 ## Acknowledgements
 
   - **bjz** for his awesome [glfw](https://github.com/bjz/glfw-rs.git) and [opengl](https://github.com/bjz/gl-rs.git) bindings.
+
 */
 
 #[crate_id = "kiss3d#0.1"];
@@ -109,13 +110,11 @@ pub mod mesh;
 pub mod camera;
 pub mod gpu_vector;
 pub mod gl_primitive;
+pub mod light;
 
 /*
  * the user should not see/use the following modules
  */
-#[doc(hidden)]
-pub mod shaders;
-
 #[doc(hidden)]
 pub mod lines_manager;
 
@@ -128,6 +127,8 @@ pub mod builtins
     pub mod cone_obj;
     pub mod cylinder_obj;
     pub mod capsule_obj;
+    pub mod lines_material;
+    pub mod object_material;
 }
 
 /// A bunch of post-processing effects.
@@ -143,7 +144,7 @@ pub mod post_processing {
 pub mod resources {
     pub mod framebuffers_manager;
     pub mod textures_manager;
-    pub mod shader_manager;
+    pub mod material;
 }
 
 // pub mod draw {

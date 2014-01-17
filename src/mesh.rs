@@ -69,12 +69,32 @@ impl Mesh {
         }
     }
 
+    /// Binds this mesh vertex coordinates buffer to a vertex attribute.
+    pub fn bind_coords(&mut self, coords: GLuint) {
+        self.coords.write(|c| c.bind(Some(coords)));
+    }
+
+    /// Binds this mesh vertex normals buffer to a vertex attribute.
+    pub fn bind_normals(&mut self, normals: GLuint) {
+        self.normals.write(|c| c.bind(Some(normals)));
+    }
+
+    /// Binds this mesh vertex uvs buffer to a vertex attribute.
+    pub fn bind_uvs(&mut self, uvs: GLuint) {
+        self.uvs.write(|c| c.bind(Some(uvs)));
+    }
+
+    /// Binds this mesh vertex uvs buffer to a vertex attribute.
+    pub fn bind_faces(&mut self) {
+        self.faces.write(|c| c.bind(None));
+    }
+
     /// Binds this mesh buffers to vertex attributes.
     pub fn bind(&mut self, coords: GLuint, normals: GLuint, uvs: GLuint) {
-        self.coords.write(|c| c.bind(Some(coords)));
-        self.normals.write(|c| c.bind(Some(normals)));
-        self.uvs.write(|c| c.bind(Some(uvs)));
-        self.faces.write(|c| c.bind(None));
+        self.bind_coords(coords);
+        self.bind_normals(normals);
+        self.bind_uvs(uvs);
+        self.bind_faces();
     }
 
     /// Unbind this mesh buffers to vertex attributes.

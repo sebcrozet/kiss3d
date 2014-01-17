@@ -3,7 +3,8 @@ extern mod nalgebra;
 
 use std::rand::random;
 use nalgebra::na::{Vec3, Translation, RotationWithTranslation};
-use kiss3d::window::{Window, StickToCamera};
+use kiss3d::window::Window;
+use kiss3d::light::StickToCamera;
 
 fn main() {
     do Window::spawn("Kiss3d: scaled primitives") |window| {

@@ -3,6 +3,7 @@ extern mod nalgebra;
 
 use nalgebra::na::{Vec3, Rotation};
 use kiss3d::window;
+use kiss3d::light;
 
 fn main() {
     do window::Window::spawn("Kiss3d: wireframe") |window| {
@@ -10,7 +11,7 @@ fn main() {
 
         c.set_color(1.0, 0.0, 0.0);
 
-        window.set_light(window::StickToCamera);
+        window.set_light(light::StickToCamera);
         window.set_framerate_limit(Some(60));
 
         let mut time = 0u;

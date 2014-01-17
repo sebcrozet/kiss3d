@@ -1,0 +1,13 @@
+//! Lights.
+
+use nalgebra::na::Vec3;
+use gl::types::GLfloat;
+
+/// The light configuration.
+pub enum Light {
+    /// A light with an absolute world position.
+    Absolute(Vec3<GLfloat>),
+    /// A light superimposed with the camera position.
+    StickToCamera
+}
+

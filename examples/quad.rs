@@ -3,6 +3,7 @@ extern mod nalgebra;
 
 use std::rand::random;
 use kiss3d::window;
+use kiss3d::light;
 
 fn main() {
     do window::Window::spawn("Kiss3d: quad waves") |window| {
@@ -12,7 +13,7 @@ fn main() {
 
         let mut time = 0.016f32;
 
-        window.set_light(window::StickToCamera);
+        window.set_light(light::StickToCamera);
 
         window.render_loop(|_| {
             c.modify_vertices(|coords| {

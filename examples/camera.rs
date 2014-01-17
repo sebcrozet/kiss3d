@@ -8,12 +8,13 @@ use nalgebra::na;
 use kiss3d::window;
 use kiss3d::event::KeyReleased;
 use kiss3d::camera::{Camera, ArcBall, FirstPerson};
+use kiss3d::light;
 
 fn main()
 {
     do window::Window::spawn("Kiss3d: camera") |window|
     {
-        window.set_light(window::StickToCamera);
+        window.set_light(light::StickToCamera);
 
         // Replace the default arc-ball camera so that we can control it
         let eye              = Vec3::new(10.0f32, 10.0, 10.0);

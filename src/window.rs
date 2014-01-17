@@ -21,25 +21,19 @@ use camera::{Camera, ArcBall};
 use object::Object;
 use lines_manager::LinesManager;
 use post_processing::post_processing_effect::PostProcessingEffect;
-use resources::shader_manager::{ShaderManager, ObjectShader, LinesShader};
 use resources::textures_manager::Texture;
 use resources::textures_manager;
 use resources::framebuffers_manager::{FramebuffersManager, RenderTarget};
+use builtins::object_material::ObjectMaterial;
 use builtins::loader;
 use event;
 use mesh::Mesh;
 use obj;
 use mtl::MtlMaterial;
+use light::{Light, Absolute, StickToCamera};
+use resources::material::Material;
 
 mod error;
-
-/// The light configuration.
-pub enum Light {
-    /// A light with an absolute world position.
-    Absolute(Vec3<GLfloat>),
-    /// A light superimposed with the camera position.
-    StickToCamera
-}
 
 static DEFAULT_WIDTH:  u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
@@ -55,11 +49,11 @@ pub struct Window<'a> {
     priv geometries:                 HashMap<~str, Rc<RefCell<Mesh>>>,
     priv background:                 Vec3<GLfloat>,
     priv lines_manager:              LinesManager,
-    priv shader_manager:            ShaderManager,
     priv framebuffers_manager:       FramebuffersManager,
     priv post_processing:            Option<&'a mut PostProcessingEffect>,
     priv post_process_render_target: RenderTarget,
-    priv events:                     RWArc<~[event::Event]>
+    priv events:                     RWArc<~[event::Event]>,
+    priv object_material:            Rc<RefCell<~Material>>
 }
 
 impl<'a> Window<'a> {
@@ -193,7 +187,8 @@ impl<'a> Window<'a> {
                 mesh,
                 1.0, 1.0, 1.0,
                 tex.clone(),
-                scale, scale, scale
+                scale, scale, scale,
+                self.object_material.clone()
                 );
 
             match mtl {
@@ -230,7 +225,8 @@ impl<'a> Window<'a> {
                     Rc::new(RefCell::new(mesh)),
                     1.0, 1.0, 1.0,
                     tex,
-                    scale, scale, scale);
+                    scale, scale, scale,
+                    self.object_material.clone());
 
         self.objects.push(res.clone());
 
@@ -244,7 +240,8 @@ impl<'a> Window<'a> {
                         m.clone(),
                         1.0, 1.0, 1.0,
                         textures_manager::get(|tm| tm.get_default()),
-                        scale, scale, scale);
+                        scale, scale, scale,
+                        self.object_material.clone());
             self.objects.push(res.clone());
 
             res
@@ -266,7 +263,8 @@ impl<'a> Window<'a> {
                 geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
-                wx, wy, wz)
+                wx, wy, wz,
+                self.object_material.clone())
         };
 
         self.objects.push(res.clone());
@@ -287,7 +285,8 @@ impl<'a> Window<'a> {
                 geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
-                r / 0.5, r / 0.5, r / 0.5)
+                r / 0.5, r / 0.5, r / 0.5,
+                self.object_material.clone())
         };
 
         self.objects.push(res.clone());
@@ -310,7 +309,8 @@ impl<'a> Window<'a> {
                 geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
-                r / 0.5, h, r / 0.5)
+                r / 0.5, h, r / 0.5,
+                self.object_material.clone())
         };
 
         self.objects.push(res.clone());
@@ -333,7 +333,8 @@ impl<'a> Window<'a> {
                 geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
-                r / 0.5, h, r / 0.5)
+                r / 0.5, h, r / 0.5,
+                self.object_material.clone())
         };
 
         self.objects.push(res.clone());
@@ -356,7 +357,8 @@ impl<'a> Window<'a> {
                 geom.clone(),
                 1.0, 1.0, 1.0,
                 tex,
-                r / 0.5, h, r / 0.5)
+                r / 0.5, h, r / 0.5,
+                self.object_material.clone())
         };
 
         self.objects.push(res.clone());
@@ -430,7 +432,8 @@ impl<'a> Window<'a> {
                 Rc::new(RefCell::new(mesh)),
                 1.0, 1.0, 1.0,
                 tex,
-                1.0, 1.0, 1.0)
+                1.0, 1.0, 1.0,
+                self.object_material.clone())
         };
 
         self.objects.push(res.clone());
@@ -546,21 +549,7 @@ impl<'a> Window<'a> {
 
     /// Sets the light mode. Only one light is supported.
     pub fn set_light(&mut self, pos: Light) {
-        match pos {
-            Absolute(p)   => self.set_light_pos(&p),
-            StickToCamera => {
-                let camera_pos = self.camera.eye();
-                self.set_light_pos(&camera_pos)
-            }
-        }
-
         self.light_mode = pos;
-    }
-
-    fn set_light_pos(&mut self, pos: &Vec3<GLfloat>) {
-        self.shader_manager.select(ObjectShader);
-        verify!(gl::Uniform3f(self.shader_manager.object_context().light, pos.x, pos.y, pos.z));
-        // FIXME: select the LinesShader too ?
     }
 
     // FIXME /// The camera used to render the scene.
@@ -615,10 +604,7 @@ impl<'a> Window<'a> {
             verify!(gl::load_with(glfw::get_proc_address));
             init_gl();
 
-            // FIXME: load that iff the user really uses post-processing
-            let mut shaders  = ShaderManager::new();
-            shaders.select(ObjectShader);
-            let builtins     = loader::load(shaders.object_context());
+            let builtins     = loader::load();
             let mut camera   = ArcBall::new(-Vec3::z(), Zero::zero());
 
             let mut usr_window = Window {
@@ -631,11 +617,11 @@ impl<'a> Window<'a> {
                 geometries:            builtins,
                 background:            Vec3::new(0.0, 0.0, 0.0),
                 lines_manager:         LinesManager::new(),
-                shader_manager:       shaders,
                 post_processing:       None,
                 post_process_render_target: FramebuffersManager::new_render_target(width as uint, height as uint),
                 framebuffers_manager:  FramebuffersManager::new(),
-                events:                RWArc::new(~[])
+                events:                RWArc::new(~[]),
+                object_material:       Rc::new(RefCell::new(~ObjectMaterial::new() as ~Material))
             };
 
             // setup callbacks
@@ -689,16 +675,7 @@ impl<'a> Window<'a> {
         // TODO: change to pass_iter when I learn the lingo
         for pass in range(0u, self.camera.num_passes()) {
             self.camera.start_pass(pass, &self.window);
-
-            self.shader_manager.select(LinesShader);
-            let view_location2 = self.shader_manager.lines_context().view;
-            self.camera.upload(pass, view_location2);
-
-            self.shader_manager.select(ObjectShader);
-            let view_location1 = self.shader_manager.object_context().view;
-            self.camera.upload(pass, view_location1);
-
-            self.render_scene();
+            self.render_scene(pass);
         }
         self.camera.render_complete(&self.window);
 
@@ -718,7 +695,7 @@ impl<'a> Window<'a> {
                 // … and execute the post-process
                 // FIXME: use the real time value instead of 0.016!
                 p.update(0.016, w, h, znear, zfar);
-                p.draw(&mut self.shader_manager, &self.post_process_render_target);
+                p.draw(&self.post_process_render_target);
             },
             None => { }
         }
@@ -743,7 +720,7 @@ impl<'a> Window<'a> {
         // self.opaque_objects.clear();
     }
 
-    fn render_scene(&mut self) {
+    fn render_scene(&mut self, pass: uint) {
         // Activate the default texture
         verify!(gl::ActiveTexture(gl::TEXTURE0));
         // Clear the screen to black
@@ -752,9 +729,7 @@ impl<'a> Window<'a> {
         verify!(gl::Clear(gl::DEPTH_BUFFER_BIT));
 
         if self.lines_manager.needs_rendering() {
-            self.shader_manager.select(LinesShader);
-            self.lines_manager.upload(self.shader_manager.lines_context());
-            self.shader_manager.select(ObjectShader);
+            self.lines_manager.render(pass, self.camera);
         }
 
         if self.wireframe_mode {
@@ -765,7 +740,7 @@ impl<'a> Window<'a> {
         }
 
         for o in self.objects.iter() {
-            o.upload(self.shader_manager.object_context())
+            o.render(pass, self.camera, &self.light_mode)
         }
     }
 

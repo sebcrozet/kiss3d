@@ -4,13 +4,15 @@ use std::mem;
 use gl;
 use gl::types::*;
 use nalgebra::na::Vec3;
-use resources::shader_manager::LinesShaderContext;
+use builtins::lines_material::LinesMaterial;
+use camera::Camera;
 
 #[path = "error.rs"]
 mod error;
 
 /// Structure which manages the display of short-living lines.
 pub struct LinesManager {
+    priv material:  LinesMaterial,
     priv lines:     ~[(Vec3<GLfloat>, Vec3<GLfloat>, Vec3<GLfloat>, Vec3<GLfloat>)],
     priv vbuf:      GLuint,
     priv max_lines: uint
@@ -26,7 +28,8 @@ impl LinesManager {
         LinesManager {
             lines:     ~[],
             vbuf:      vbuf,
-            max_lines: 0
+            max_lines: 0,
+            material:  LinesMaterial::new()
         }
     }
  
@@ -42,10 +45,24 @@ impl LinesManager {
     }
 
     /// Actually draws the lines.
-    pub fn upload(&mut self, context: &LinesShaderContext) {
+    pub fn render(&mut self, pass: uint, camera: &mut Camera) {
         if self.lines.len() == 0 { return }
 
         unsafe {
+            self.material.activate();
+
+            /*
+             *
+             * Setup camera
+             *
+             */
+            camera.upload(pass, self.material.view);
+
+            /*
+             *
+             * Setup line-related stuffs.
+             *
+             */
             verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.vbuf));
 
             if self.lines.len() > self.max_lines {
@@ -67,7 +84,7 @@ impl LinesManager {
             }
 
             verify!(gl::VertexAttribPointer(
-                context.color,
+                self.material.color,
                 3,
                 gl::FLOAT,
                 gl::FALSE as u8,
@@ -75,7 +92,7 @@ impl LinesManager {
                 cast::transmute(3 * mem::size_of::<GLfloat>())));
 
             verify!(gl::VertexAttribPointer(
-                context.pos,
+                self.material.pos,
                 3,
                 gl::FLOAT,
                 gl::FALSE as u8,
@@ -83,6 +100,8 @@ impl LinesManager {
                 ptr::null()));
 
             verify!(gl::DrawArrays(gl::LINES, 0, (self.lines.len() * 2) as i32));
+
+            self.material.deactivate();
         }
 
         self.lines.clear();

@@ -4,6 +4,7 @@ extern mod nalgebra;
 use std::rand::random;
 use nalgebra::na::{Vec3, Translation};
 use kiss3d::window;
+use kiss3d::light;
 use kiss3d::post_processing::post_processing_effect::PostProcessingEffect;
 use kiss3d::post_processing::waves::Waves;
 use kiss3d::post_processing::grayscales::Grayscales;
@@ -34,7 +35,7 @@ fn main() {
         let mut grays = Grayscales::new();
 
         window.set_background_color(1.0, 1.0, 1.0);
-        window.set_light(window::StickToCamera);
+        window.set_light(light::StickToCamera);
         window.set_framerate_limit(Some(60));
 
         let mut time    = 0u;

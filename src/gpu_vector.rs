@@ -147,8 +147,7 @@ impl<T: GLPrimitive> GPUVector<T> {
     pub fn unbind(&mut self) {
         if self.is_on_gpu() {
             unsafe {
-                let handle = self.handle.as_ref().map(|h| h.handle()).unwrap();
-                verify!(gl::BindBuffer(self.buf_type.to_gl(), handle));
+                verify!(gl::BindBuffer(self.buf_type.to_gl(), 0));
             }
         }
     }

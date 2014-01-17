@@ -5,6 +5,7 @@ extern mod glfw;
 //use nalgebra::mat::Rotation;
 use nalgebra::na::Vec3;
 use kiss3d::window;
+use kiss3d::light;
 use kiss3d::event::KeyReleased;
 use kiss3d::camera::{Camera, FirstPersonStereo};
 use kiss3d::post_processing::post_processing_effect::PostProcessingEffect;
@@ -26,7 +27,7 @@ fn main() {
         window.glfw_window().set_pos(-6, -26);
         c.set_color(1.0, 0.0, 0.0);
 
-        window.set_light(window::StickToCamera);
+        window.set_light(light::StickToCamera);
 
         let mut oculus_stereo = OculusStereo::new();
         window.set_post_processing_effect(Some(&mut oculus_stereo as &mut PostProcessingEffect));

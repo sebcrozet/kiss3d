@@ -6,7 +6,7 @@ use std::mem;
 use gl;
 use gl::types::*;
 use resources::framebuffers_manager::RenderTarget;
-use resources::shader_manager::{ShaderManager, Other};
+use resources::material;
 use post_processing::post_processing_effect::PostProcessingEffect;
 
 #[path = "../error.rs"]
@@ -68,7 +68,7 @@ impl Grayscales {
             verify!(gl::BindBuffer(gl::ARRAY_BUFFER, 0));
 
             let (program, vshader, fshader) =
-                ShaderManager::load_shader_program(VERTEX_SHADER, FRAGMENT_SHADER);
+                material::load_shader_program(VERTEX_SHADER, FRAGMENT_SHADER);
 
             verify!(gl::UseProgram(program));
 
@@ -91,9 +91,7 @@ impl PostProcessingEffect for Grayscales {
     fn update(&mut self, _: f32, _: f32, _: f32, _: f32, _: f32) {
     }
 
-    fn draw(&self, shader_manager: &mut ShaderManager, target: &RenderTarget) {
-        shader_manager.select(Other);
-
+    fn draw(&self, target: &RenderTarget) {
         verify!(gl::EnableVertexAttribArray(self.v_coord as GLuint));
 
         /*

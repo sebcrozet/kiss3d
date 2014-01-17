@@ -1,8 +1,6 @@
 use std::hashmap::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
-use gl;
-use resources::shader_manager::ObjectShaderContext;
 use obj;
 use builtins::cube_obj;
 use builtins::sphere_obj;
@@ -14,17 +12,7 @@ use mesh::Mesh;
 #[path = "../error.rs"]
 mod error;
 
-pub fn load(ctxt: &ObjectShaderContext) -> HashMap<~str, Rc<RefCell<Mesh>>> {
-    unsafe {
-        // create white texture
-        // Black/white checkerboard
-        verify!(gl::Uniform1i(ctxt.tex, 0));
-
-        parse_builtins()
-    }
-}
-
-fn parse_builtins() -> HashMap<~str, Rc<RefCell<Mesh>>> {
+pub fn load() -> HashMap<~str, Rc<RefCell<Mesh>>> {
     let emptypath = Path::new("");
 
     // load
