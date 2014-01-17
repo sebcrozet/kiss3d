@@ -55,22 +55,22 @@ pub struct LinesShaderContext {
 
 /// The shaders manager can load the default shaders and user-provided shaders. It is the main path
 /// to select a specific shader befor rendering.
-pub struct ShadersManager {
+pub struct ShaderManager {
     priv object_context: ObjectShaderContext,
     priv lines_context:  LinesShaderContext,
     priv shader:         Shader
 }
 
-impl ShadersManager {
+impl ShaderManager {
     /// Creates a new shaders manager.
-    pub fn new() -> ShadersManager {
-        let object_context = ShadersManager::load_object_shader();
+    pub fn new() -> ShaderManager {
+        let object_context = ShaderManager::load_object_shader();
 
         verify!(gl::UseProgram(object_context.program));
 
-        ShadersManager {
+        ShaderManager {
             object_context: object_context,
-            lines_context:  ShadersManager::load_lines_shader(),
+            lines_context:  ShaderManager::load_lines_shader(),
             shader:         Other
         }
     }
@@ -124,7 +124,7 @@ impl ShadersManager {
         unsafe {
             // load the shader
             let (program, vshader, fshader) =
-                ShadersManager::load_shader_program(shaders::OBJECT_VERTEX_SRC,
+                ShaderManager::load_shader_program(shaders::OBJECT_VERTEX_SRC,
                                                     shaders::OBJECT_FRAGMENT_SRC);
 
             verify!(gl::UseProgram(program));
@@ -154,7 +154,7 @@ impl ShadersManager {
         unsafe {
             // load the shader
             let (program, vshader, fshader) =
-                ShadersManager::load_shader_program(
+                ShaderManager::load_shader_program(
                     shaders::LINES_VERTEX_SRC,
                     shaders::LINES_FRAGMENT_SRC);
 
@@ -234,7 +234,7 @@ fn check_shader_error(shader: GLuint) {
     }
 }
 
-impl Drop for ShadersManager {
+impl Drop for ShaderManager {
     fn drop(&mut self) {
         gl::DeleteProgram(self.object_context.program);
         gl::DeleteShader(self.object_context.fshader);

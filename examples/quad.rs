@@ -15,23 +15,13 @@ fn main() {
         window.set_light(window::StickToCamera);
 
         window.render_loop(|_| {
-            let     m  = c.mesh();
-            let mut bm = m.borrow().borrow_mut();
-
-            {
-                let coords = bm.get().coords();
-
-                coords.write(|coords|
-                    coords.write(|coords| {
-                        for v in coords.mut_iter() {
-                            v.z = time.sin() * (((v.x + time) * 4.0).cos() +
-                                  time.sin() * ((v.y + time) * 4.0 + time).cos()) / 2.0
-                        }
-                    })
-                );
-            }
-
-            bm.get().recompute_normals();
+            c.modify_vertices(|coords| {
+                for v in coords.mut_iter() {
+                    v.z = time.sin() * (((v.x + time) * 4.0).cos() +
+                          time.sin() * ((v.y + time) * 4.0 + time).cos()) / 2.0
+                }
+            });
+            c.recompute_normals();
 
             time = time + 0.016;
         })

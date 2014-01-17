@@ -21,7 +21,7 @@ use camera::{Camera, ArcBall};
 use object::Object;
 use lines_manager::LinesManager;
 use post_processing::post_processing_effect::PostProcessingEffect;
-use resources::shaders_manager::{ShadersManager, ObjectShader, LinesShader};
+use resources::shader_manager::{ShaderManager, ObjectShader, LinesShader};
 use resources::textures_manager::Texture;
 use resources::textures_manager;
 use resources::framebuffers_manager::{FramebuffersManager, RenderTarget};
@@ -55,7 +55,7 @@ pub struct Window<'a> {
     priv geometries:                 HashMap<~str, Rc<RefCell<Mesh>>>,
     priv background:                 Vec3<GLfloat>,
     priv lines_manager:              LinesManager,
-    priv shaders_manager:            ShadersManager,
+    priv shader_manager:            ShaderManager,
     priv framebuffers_manager:       FramebuffersManager,
     priv post_processing:            Option<&'a mut PostProcessingEffect>,
     priv post_process_render_target: RenderTarget,
@@ -558,8 +558,8 @@ impl<'a> Window<'a> {
     }
 
     fn set_light_pos(&mut self, pos: &Vec3<GLfloat>) {
-        self.shaders_manager.select(ObjectShader);
-        verify!(gl::Uniform3f(self.shaders_manager.object_context().light, pos.x, pos.y, pos.z));
+        self.shader_manager.select(ObjectShader);
+        verify!(gl::Uniform3f(self.shader_manager.object_context().light, pos.x, pos.y, pos.z));
         // FIXME: select the LinesShader too ?
     }
 
@@ -616,7 +616,7 @@ impl<'a> Window<'a> {
             init_gl();
 
             // FIXME: load that iff the user really uses post-processing
-            let mut shaders  = ShadersManager::new();
+            let mut shaders  = ShaderManager::new();
             shaders.select(ObjectShader);
             let builtins     = loader::load(shaders.object_context());
             let mut camera   = ArcBall::new(-Vec3::z(), Zero::zero());
@@ -631,7 +631,7 @@ impl<'a> Window<'a> {
                 geometries:            builtins,
                 background:            Vec3::new(0.0, 0.0, 0.0),
                 lines_manager:         LinesManager::new(),
-                shaders_manager:       shaders,
+                shader_manager:       shaders,
                 post_processing:       None,
                 post_process_render_target: FramebuffersManager::new_render_target(width as uint, height as uint),
                 framebuffers_manager:  FramebuffersManager::new(),
@@ -690,12 +690,12 @@ impl<'a> Window<'a> {
         for pass in range(0u, self.camera.num_passes()) {
             self.camera.start_pass(pass, &self.window);
 
-            self.shaders_manager.select(LinesShader);
-            let view_location2 = self.shaders_manager.lines_context().view;
+            self.shader_manager.select(LinesShader);
+            let view_location2 = self.shader_manager.lines_context().view;
             self.camera.upload(pass, view_location2);
 
-            self.shaders_manager.select(ObjectShader);
-            let view_location1 = self.shaders_manager.object_context().view;
+            self.shader_manager.select(ObjectShader);
+            let view_location1 = self.shader_manager.object_context().view;
             self.camera.upload(pass, view_location1);
 
             self.render_scene();
@@ -718,7 +718,7 @@ impl<'a> Window<'a> {
                 // … and execute the post-process
                 // FIXME: use the real time value instead of 0.016!
                 p.update(0.016, w, h, znear, zfar);
-                p.draw(&mut self.shaders_manager, &self.post_process_render_target);
+                p.draw(&mut self.shader_manager, &self.post_process_render_target);
             },
             None => { }
         }
@@ -752,9 +752,9 @@ impl<'a> Window<'a> {
         verify!(gl::Clear(gl::DEPTH_BUFFER_BIT));
 
         if self.lines_manager.needs_rendering() {
-            self.shaders_manager.select(LinesShader);
-            self.lines_manager.upload(self.shaders_manager.lines_context());
-            self.shaders_manager.select(ObjectShader);
+            self.shader_manager.select(LinesShader);
+            self.lines_manager.upload(self.shader_manager.lines_context());
+            self.shader_manager.select(ObjectShader);
         }
 
         if self.wireframe_mode {
@@ -765,7 +765,7 @@ impl<'a> Window<'a> {
         }
 
         for o in self.objects.iter() {
-            o.upload(self.shaders_manager.object_context())
+            o.upload(self.shader_manager.object_context())
         }
     }
 

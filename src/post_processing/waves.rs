@@ -10,7 +10,7 @@ use std::mem;
 use gl;
 use gl::types::*;
 use resources::framebuffers_manager::RenderTarget;
-use resources::shaders_manager::{ShadersManager, Other};
+use resources::shader_manager::{ShaderManager, Other};
 use post_processing::post_processing_effect::PostProcessingEffect;
 
 #[path = "../error.rs"]
@@ -76,7 +76,7 @@ impl Waves {
             gl::BindBuffer(gl::ARRAY_BUFFER, 0);
 
             let (program, vshader, fshader) =
-                ShadersManager::load_shader_program(VERTEX_SHADER, FRAGMENT_SHADER);
+                ShaderManager::load_shader_program(VERTEX_SHADER, FRAGMENT_SHADER);
 
             verify!(gl::UseProgram(program));
 
@@ -101,8 +101,8 @@ impl PostProcessingEffect for Waves {
         self.time = self.time + dt;
     }
 
-    fn draw(&self, shaders_manager: &mut ShadersManager, target: &RenderTarget) {
-        shaders_manager.select(Other);
+    fn draw(&self, shader_manager: &mut ShaderManager, target: &RenderTarget) {
+        shader_manager.select(Other);
 
         verify!(gl::EnableVertexAttribArray(self.v_coord as GLuint));
         /*

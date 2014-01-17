@@ -143,7 +143,7 @@ pub mod post_processing {
 pub mod resources {
     pub mod framebuffers_manager;
     pub mod textures_manager;
-    pub mod shaders_manager;
+    pub mod shader_manager;
 }
 
 // pub mod draw {

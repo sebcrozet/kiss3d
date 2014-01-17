@@ -7,9 +7,9 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use gl;
 use gl::types::*;
-use nalgebra::na::{Mat3, Mat4, Vec3, Iso3, Rotation, Rotate, Translation, Transformation};
+use nalgebra::na::{Mat3, Mat4, Vec2, Vec3, Iso3, Rotation, Rotate, Translation, Transformation};
 use nalgebra::na;
-use resources::shaders_manager::ObjectShaderContext;
+use resources::shader_manager::ObjectShaderContext;
 use resources::textures_manager;
 use resources::textures_manager::Texture;
 use mesh::Mesh;
@@ -126,6 +126,95 @@ impl Object {
     pub fn mesh<'a>(&'a self) -> &'a Rc<RefCell<Mesh>> {
         &'a self.mesh
     }
+
+    /// Mutably access the object's vertices.
+    pub fn modify_vertices(&mut self, f: |&mut ~[Vec3<GLfloat>]| -> ()) {
+        let     m  = self.mesh();
+        let mut bm = m.borrow().borrow_mut();
+
+        let coords = bm.get().coords();
+
+        coords.write(|coords| coords.write(|coords| { f(coords) }));
+    }
+
+    /// Access the object's vertices.
+    pub fn read_vertices(&self, f: |&[Vec3<GLfloat>]| -> ()) {
+        let m  = self.mesh();
+        let bm = m.borrow().borrow();
+
+        let coords = bm.get().coords();
+
+        coords.read(|coords| coords.read(|coords| { f(coords) }));
+    }
+
+    /// Recomputes the normals of this object's mesh.
+    pub fn recompute_normals(&mut self) {
+        let     m  = self.mesh();
+        let mut bm = m.borrow().borrow_mut();
+
+        bm.get().recompute_normals();
+    }
+
+    /// Mutably access the object's normals.
+    pub fn modify_normals(&mut self, f: |&mut ~[Vec3<GLfloat>]| -> ()) {
+        let     m  = self.mesh();
+        let mut bm = m.borrow().borrow_mut();
+
+        let normals = bm.get().normals();
+
+        normals.write(|normals| normals.write(|normals| { f(normals) }));
+    }
+
+    /// Access the object's normals.
+    pub fn read_normals(&self, f: |&[Vec3<GLfloat>]| -> ()) {
+        let m  = self.mesh();
+        let bm = m.borrow().borrow();
+
+        let normals = bm.get().normals();
+
+        normals.read(|normals| normals.read(|normals| { f(normals) }));
+    }
+
+    /// Mutably access the object's faces.
+    pub fn modify_faces(&mut self, f: |&mut ~[Vec3<GLuint>]| -> ()) {
+        let     m  = self.mesh();
+        let mut bm = m.borrow().borrow_mut();
+
+        let faces = bm.get().faces();
+
+        faces.write(|faces| faces.write(|faces| { f(faces) }));
+    }
+
+    /// Access the object's faces.
+    pub fn read_faces(&self, f: |&[Vec3<GLuint>]| -> ()) {
+        let m  = self.mesh();
+        let bm = m.borrow().borrow();
+
+        let faces = bm.get().faces();
+
+        faces.read(|faces| faces.read(|faces| { f(faces) }));
+    }
+
+    /// Mutably access the object's uvs.
+    pub fn modify_uvs(&mut self, f: |&mut ~[Vec2<GLfloat>]| -> ()) {
+        let     m  = self.mesh();
+        let mut bm = m.borrow().borrow_mut();
+
+        let uvs = bm.get().uvs();
+
+        uvs.write(|uvs| uvs.write(|uvs| { f(uvs) }));
+    }
+
+    /// Access the object's uvs.
+    pub fn read_uvs(&self, f: |&[Vec2<GLfloat>]| -> ()) {
+        let m  = self.mesh();
+        let bm = m.borrow().borrow();
+
+        let uvs = bm.get().uvs();
+
+        uvs.read(|uvs| uvs.read(|uvs| { f(uvs) }));
+    }
+
 
     /// Sets the color of the object. Colors components must be on the range `[0.0, 1.0]`.
     pub fn set_color(&mut self, r: f32, g: f32, b: f32) {

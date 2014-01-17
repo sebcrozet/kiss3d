@@ -9,7 +9,7 @@ use std::str;
 use gl;
 use gl::types::*;
 use resources::framebuffers_manager::RenderTarget;
-use resources::shaders_manager::{ShadersManager, Other};
+use resources::shader_manager::{ShaderManager, Other};
 use post_processing::post_processing_effect::PostProcessingEffect;
 
 #[path = "../error.rs"]
@@ -64,7 +64,7 @@ impl OculusStereo {
             gl::BindBuffer(gl::ARRAY_BUFFER, 0);
 
             let (program, vshader, fshader) =
-                ShadersManager::load_shader_program(
+                ShaderManager::load_shader_program(
                     load_file("oculus_vertex_shader.glsl"),
                     load_file("oculus_fragment_shader.glsl"));
 
@@ -99,8 +99,8 @@ impl PostProcessingEffect for OculusStereo {
         self.h = h;
     }
 
-    fn draw(&self, shaders_manager: &mut ShadersManager, target: &RenderTarget) {
-        shaders_manager.select(Other);
+    fn draw(&self, shader_manager: &mut ShaderManager, target: &RenderTarget) {
+        shader_manager.select(Other);
         let scaleFactor = 0.9f32; // firebox: in Oculus SDK example it's "1.0f/Distortion.Scale"
         let aspect = (self.w / 2.0f32) / (self.h); // firebox: rift's "half screen aspect ratio"
 

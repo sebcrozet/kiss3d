@@ -4,7 +4,7 @@ use std::mem;
 use gl;
 use gl::types::*;
 use nalgebra::na::Vec3;
-use resources::shaders_manager::LinesShaderContext;
+use resources::shader_manager::LinesShaderContext;
 
 #[path = "error.rs"]
 mod error;

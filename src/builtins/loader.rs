@@ -2,7 +2,7 @@ use std::hashmap::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
 use gl;
-use resources::shaders_manager::ObjectShaderContext;
+use resources::shader_manager::ObjectShaderContext;
 use obj;
 use builtins::cube_obj;
 use builtins::sphere_obj;
