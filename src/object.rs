@@ -88,7 +88,7 @@ impl Object {
                 verify!(gl::Uniform3f(context.color, data.color.x, data.color.y, data.color.z));
 
                 // FIXME: we should not switch the buffers if the last drawn shape uses the same.
-                let mesh = self.mesh.borrow().borrow();
+                let mut mesh = self.mesh.borrow().borrow_mut();
                 let mesh = mesh.get();
                 mesh.bind(context.pos, context.normal, context.tex_coord);
 
@@ -122,16 +122,9 @@ impl Object {
                                                                 0.0, 0.0, sz)
     }
 
-    /// Get a write access to the geometry mesh. Return true if the geometry needs to be
-    /// re-uploaded to the GPU.
-    pub fn modify_mesh(&mut self, f: |&mut Mesh| -> bool) {
-        let mut m = self.mesh.borrow().borrow_mut();
-        let m = m.get();
-        
-        if f(m) {
-            // FIXME: find a way to upload only the modified parts.
-            m.upload()
-        }
+    /// This object's mesh.
+    pub fn mesh<'a>(&'a self) -> &'a Rc<RefCell<Mesh>> {
+        &'a self.mesh
     }
 
     /// Sets the color of the object. Colors components must be on the range `[0.0, 1.0]`.

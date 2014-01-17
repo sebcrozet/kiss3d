@@ -8,13 +8,14 @@ use std::str;
 use std::str::WordIterator;
 use std::from_str::FromStr;
 use std::hashmap::HashMap;
-use extra::arc::Arc;
+use extra::arc::RWArc;
 use nalgebra::na::{Vec3, Vec2, Indexable};
 use nalgebra::na;
-use mesh::{Mesh, Coord, Normal, UV, SharedImmutable};
+use mesh::{Mesh, Coord, Normal, UV};
 use mesh;
 use mtl::MtlMaterial;
 use mtl;
+use gpu_vector::{GPUVector, StaticDraw, ArrayBuffer, ElementArrayBuffer};
 
 fn error(line: uint, err: &str) -> ! {
     fail!("At line " + line.to_str() + ": " + err)
@@ -341,16 +342,16 @@ fn reformat(coords:     ~[Coord],
     }
 
     let resn = resn.unwrap_or_else(|| mesh::compute_normals_array(resc, allfs));
-    let resn = SharedImmutable(Arc::new(resn));
+    let resn = RWArc::new(GPUVector::new(resn, ArrayBuffer, StaticDraw));
     let resu = resu.unwrap_or_else(|| vec::from_elem(resc.len(), na::zero()));
-    let resu = SharedImmutable(Arc::new(resu));
-    let resc = SharedImmutable(Arc::new(resc));
+    let resu = RWArc::new(GPUVector::new(resu, ArrayBuffer, StaticDraw));
+    let resc = RWArc::new(GPUVector::new(resc, ArrayBuffer, StaticDraw));
 
     let mut meshes = ~[];
     for ((fs, name), mtl) in resfs.move_iter().zip(names.move_iter()).zip(mtls.move_iter()) {
         if fs.len() != 0 {
-            let fs   = SharedImmutable(Arc::new(fs));
-            let mesh = Mesh::new(resc.clone(), fs, Some(resn.clone()), Some(resu.clone()), false);
+            let fs   = RWArc::new(GPUVector::new(fs, ElementArrayBuffer, StaticDraw));
+            let mesh = Mesh::new_with_gpu_vectors(resc.clone(), fs, resn.clone(), resu.clone());
             meshes.push((name, mesh, mtl))
         }
     }

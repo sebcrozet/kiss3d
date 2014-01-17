@@ -27,7 +27,7 @@ use resources::textures_manager;
 use resources::framebuffers_manager::{FramebuffersManager, RenderTarget};
 use builtins::loader;
 use event;
-use mesh::{Mesh, StorageLocation};
+use mesh::Mesh;
 use obj;
 use mtl::MtlMaterial;
 
@@ -375,15 +375,8 @@ impl<'a> Window<'a> {
     /// which will be placed horizontally on each line. Must not be `0`
     /// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
     /// which will be placed vertically on each line. Must not be `0`
-    /// * `shared` - whether or not the mesh datas can be shared. Shared datas are slower to
     /// update.
-    pub fn add_quad(&mut self,
-                     w:        f32,
-                     h:        f32,
-                     wsubdivs: uint,
-                     hsubdivs: uint,
-                     shared:   bool)
-                     -> Object {
+    pub fn add_quad(&mut self, w: f32, h: f32, wsubdivs: uint, hsubdivs: uint) -> Object {
         assert!(wsubdivs > 0 && hsubdivs > 0, "The number of subdivisions cannot be zero");
 
         let wstep    = w / (wsubdivs as GLfloat);
@@ -428,11 +421,7 @@ impl<'a> Window<'a> {
             }
         }
 
-        let mesh = Mesh::new(StorageLocation::new(vertices, shared),
-                             StorageLocation::new(triangles, shared),
-                             Some(StorageLocation::new(normals, shared)),
-                             Some(StorageLocation::new(tex_coords, shared)),
-                             true);
+        let mesh = Mesh::new(vertices, triangles, Some(normals), Some(tex_coords), true);
 
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {

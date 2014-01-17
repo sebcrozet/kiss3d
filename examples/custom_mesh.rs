@@ -3,7 +3,7 @@ extern mod nalgebra;
 
 use nalgebra::na::{Vec3, Rotation};
 use kiss3d::window;
-use kiss3d::mesh::{Mesh, StorageLocation};
+use kiss3d::mesh::Mesh;
 
 fn main() {
     do window::Window::spawn("Kiss3d: cube") |window| {
@@ -11,8 +11,8 @@ fn main() {
         let b = Vec3::new(1.0, -1.0, 0.0);
         let c = Vec3::new(0.0, 1.0, 0.0);
 
-        let vertices = StorageLocation::new(~[a, b, c], false);
-        let indices  = StorageLocation::new(~[Vec3::new(0u32, 1, 2)], false);
+        let vertices = ~[a, b, c];
+        let indices  = ~[Vec3::new(0u32, 1, 2)];
 
         let mesh = Mesh::new(vertices, indices, None, None, false);
 

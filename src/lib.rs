@@ -107,6 +107,8 @@ pub mod obj;
 pub mod mtl;
 pub mod mesh;
 pub mod camera;
+pub mod gpu_vector;
+pub mod gl_primitive;
 
 /*
  * the user should not see/use the following modules

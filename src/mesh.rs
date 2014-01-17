@@ -1,15 +1,12 @@
 //! Data structure of a scene node geometry.
 
-use extra::arc::Arc;
+use extra::arc::RWArc;
 use std::num::Zero;
-use std::ptr;
 use std::vec;
-use std::mem;
-use std::cast;
-use gl;
 use gl::types::*;
 use nalgebra::na::{Vec2, Vec3};
 use nalgebra::na;
+use gpu_vector::{GPUVector, DynamicDraw, StaticDraw, ArrayBuffer, ElementArrayBuffer};
 
 pub type Coord  = Vec3<GLfloat>;
 pub type Normal = Vec3<GLfloat>;
@@ -20,111 +17,51 @@ pub type Face   = Vec3<Vertex>;
 #[path = "error.rs"]
 mod error;
 
-/// Enumeration of different storage type: shared or note.
-pub enum StorageLocation<T> {
-    /// The stored data is shared on an Arc.
-    SharedImmutable(Arc<T>),
-    /// The stored data is not shared.
-    NotShared(T)
-    // FIXME: add a GPU-only storage location
-    // FIXME: add SharedMutable
-}
-
-impl<T: Send + Freeze + Clone> Clone for StorageLocation<T> {
-    fn clone(&self) -> StorageLocation<T> {
-        match *self {
-            SharedImmutable(ref t) => SharedImmutable(t.clone()),
-            NotShared(ref t)       => NotShared(t.clone())
-        }
-    }
-}
-
-impl<T: Send + Freeze> StorageLocation<T> {
-    /// Wraps a new data on the relevant storage location.
-    pub fn new(t: T, shared: bool) -> StorageLocation<T> {
-        if shared {
-            SharedImmutable(Arc::new(t))
-        }
-        else {
-            NotShared(t)
-        }
-    }
-
-    /// Reads the stored data.
-    pub fn get<'r>(&'r self) -> &'r T {
-        match *self {
-            SharedImmutable(ref s) => s.get(),
-            NotShared(ref s)     => s
-        }
-    }
-
-    /// Indicates whether or not the stored data is shared.
-    pub fn is_shared(&self) -> bool {
-        match *self {
-            SharedImmutable(_) => true,
-            NotShared(_)       => false
-        }
-    }
-}
-
-impl<T: Send + Freeze + Clone> StorageLocation<T> {
-    /// Applies a function to the wrapped data. If it is shared, then the data is copied.
-    pub fn write_cow<'r>(&'r mut self, f: |&mut T| -> ()) {
-        match *self {
-            SharedImmutable(ref mut s) => {
-                let mut cpy = s.get().clone();
-                f(&mut cpy);
-
-                *s = Arc::new(cpy);
-            },
-            NotShared(ref mut s) => f(s)
-        }
-    }
-}
-
 /// A Mesh contains all geometric data of a mesh: vertex buffer, index buffer, normals and uvs.
 /// It also contains the GPU location of those buffers.
 pub struct Mesh {
-    priv coords:  StorageLocation<~[Coord]>,
-    priv faces:   StorageLocation<~[Face]>,
-    priv normals: StorageLocation<~[Normal]>,
-    priv uvs:     StorageLocation<~[UV]>,
-    priv ebuf:    GLuint,
-    priv nbuf:    GLuint,
-    priv vbuf:    GLuint,
-    priv tbuf:    GLuint
+    priv coords:  RWArc<GPUVector<Coord>>,
+    priv faces:   RWArc<GPUVector<Face>>,
+    priv normals: RWArc<GPUVector<Normal>>,
+    priv uvs:     RWArc<GPUVector<UV>>
 }
 
 impl Mesh {
-    /// Creates a new mesh. Arguments set to `None` are automatically computed.
-    pub fn new(coords:          StorageLocation<~[Coord]>,
-               faces:           StorageLocation<~[Face]>,
-               normals:         Option<StorageLocation<~[Normal]>>,
-               uvs:             Option<StorageLocation<~[UV]>>,
-               fast_modifiable: bool)
+    /// Creates a new mesh.
+    ///
+    /// If the normals and uvs are not given, they are automatically computed.
+    pub fn new(coords:       ~[Coord],
+               faces:        ~[Face],
+               normals:      Option<~[Normal]>,
+               uvs:          Option<~[UV]>,
+               dynamic_draw: bool)
                -> Mesh {
         let normals = match normals {
             Some(ns) => ns,
-            None     => {
-                let normals = compute_normals_array(*coords.get(), *faces.get());
-                StorageLocation::new(normals, coords.is_shared())
-            }
+            None     => compute_normals_array(coords, faces)
         };
 
         let uvs = match uvs {
             Some(us) => us,
-            None     => {
-                let uvs = vec::from_elem(coords.get().len(), na::zero());
-                StorageLocation::new(uvs, coords.is_shared())
-            }
+            None     => vec::from_elem(coords.len(), na::zero())
         };
 
-        let draw_location = if fast_modifiable { DynamicDraw } else { StaticDraw };
+        let location = if dynamic_draw { DynamicDraw } else { StaticDraw };
+        let cs = RWArc::new(GPUVector::new(coords, ArrayBuffer, location));
+        let fs = RWArc::new(GPUVector::new(faces, ElementArrayBuffer, location));
+        let ns = RWArc::new(GPUVector::new(normals, ArrayBuffer, location));
+        let us = RWArc::new(GPUVector::new(uvs, ArrayBuffer, location));
+
+        Mesh::new_with_gpu_vectors(cs, fs, ns, us)
+    }
+
+    /// Creates a new mesh. Arguments set to `None` are automatically computed.
+    pub fn new_with_gpu_vectors(coords:  RWArc<GPUVector<Coord>>,
+                                faces:   RWArc<GPUVector<Face>>,
+                                normals: RWArc<GPUVector<Normal>>,
+                                uvs:     RWArc<GPUVector<UV>>)
+                                -> Mesh {
         Mesh {
-            ebuf:    load_buffer(*faces.get(), ElementArrayBuffer, draw_location),
-            nbuf:    load_buffer(*normals.get(), ArrayBuffer, draw_location),
-            vbuf:    load_buffer(*coords.get(), ArrayBuffer, draw_location),
-            tbuf:    load_buffer(*uvs.get(), ArrayBuffer, draw_location),
             coords:  coords,
             faces:   faces,
             normals: normals,
@@ -132,101 +69,65 @@ impl Mesh {
         }
     }
 
-    /// Upload this mesh datas to the GPU.
-    pub fn upload(&self) {
-        upload_buffer(*self.faces.get(), self.ebuf, ElementArrayBuffer, StaticDraw);
-        upload_buffer(*self.normals.get(), self.nbuf, ArrayBuffer, StaticDraw);
-        upload_buffer(*self.coords.get(), self.vbuf, ArrayBuffer, StaticDraw);
-        upload_buffer(*self.uvs.get(), self.tbuf, ArrayBuffer, StaticDraw);
-    }
-
     /// Binds this mesh buffers to vertex attributes.
-    pub fn bind(&self, coords: GLuint, normals: GLuint, uvs: GLuint) {
-        unsafe {
-            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.vbuf));
-            verify!(gl::VertexAttribPointer(coords, 3, gl::FLOAT, gl::FALSE as u8, 0, ptr::null()));
-
-            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.nbuf));
-            verify!(gl::VertexAttribPointer(normals, 3, gl::FLOAT, gl::FALSE as u8, 0, ptr::null()));
-
-            verify!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.ebuf));
-
-            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.tbuf));
-            verify!(gl::VertexAttribPointer(uvs, 2, gl::FLOAT, gl::FALSE as u8, 0, ptr::null()));
-        }
+    pub fn bind(&mut self, coords: GLuint, normals: GLuint, uvs: GLuint) {
+        self.coords.write(|c| c.bind(Some(coords)));
+        self.normals.write(|c| c.bind(Some(normals)));
+        self.uvs.write(|c| c.bind(Some(uvs)));
+        self.faces.write(|c| c.bind(None));
     }
 
     /// Unbind this mesh buffers to vertex attributes.
     pub fn unbind(&self) {
-        verify!(gl::BindBuffer(gl::ARRAY_BUFFER, 0));
-        verify!(gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0));
+        self.coords.write(|c| c.unbind());
+        self.normals.write(|c| c.unbind());
+        self.uvs.write(|c| c.unbind());
+        self.faces.write(|c| c.unbind());
     }
 
     /// Number of points needed to draw this mesh.
     pub fn num_pts(&self) -> uint {
-        self.faces.get().len() * 3
+        self.faces.read(|f| f.len() * 3)
     }
 
     /// Recompute this mesh normals.
     pub fn recompute_normals(&mut self) {
-        self.normals.write_cow(
-            |normals| compute_normals(*self.coords.get(), *self.faces.get(), normals)
+        self.normals.write(|ns|
+            ns.write(
+                |normals| {
+                    self.coords.read(|cs| cs.read(|cs|
+                       self.faces.read(|fs| fs.read(|fs|
+                           compute_normals(cs, fs, normals)
+                       ))
+                    ))
+                }
+            )
         )
     }
 
     /// This mesh faces.
-    pub fn faces<'r>(&'r self) -> &'r [Face] {
-        let res: &'r [Face] = *self.faces.get();
-
-        res
-    }
-
-    /// This mesh faces.
-    pub fn mut_faces<'r>(&'r mut self) -> &'r mut StorageLocation<~[Face]> {
-        &'r mut self.faces
+    pub fn faces<'a>(&'a self) -> &'a RWArc<GPUVector<Face>> {
+        &'a self.faces
     }
 
     /// This mesh normals.
-    pub fn normals<'r>(&'r self) -> &'r [Normal] {
-        let res: &'r [Normal] = *self.normals.get();
-
-        res
+    pub fn normals<'a>(&'a self) -> &'a RWArc<GPUVector<Normal>> {
+        &'a self.normals
     }
 
-    /// This mesh normals.
-    pub fn mut_normals<'r>(&'r mut self) -> &'r mut StorageLocation<~[Normal]> {
-        &'r mut self.normals
-    }
-
-    /// This mesh vertices coordinates.
-    pub fn coords<'r>(&'r self) -> &'r [Coord] {
-        let res: &'r [Coord] = *self.coords.get();
-
-        res
-    }
-
-    /// This mesh vertices coordinates.
-    pub fn mut_coords<'r>(&'r mut self) -> &'r mut StorageLocation<~[Coord]> {
-        &'r mut self.coords
+    /// This mesh vertex coordinates.
+    pub fn coords<'a>(&'a self) -> &'a RWArc<GPUVector<Coord>> {
+        &'a self.coords
     }
 
     /// This mesh texture coordinates.
-    pub fn uvs<'r>(&'r self) -> &'r [UV] {
-        let res: &'r [UV] = *self.uvs.get();
-
-        res
-    }
-
-    /// This mesh texture coordinates.
-    pub fn mut_uvs<'r>(&'r mut self) -> &'r mut StorageLocation<~[UV]> {
-        &'r mut self.uvs
+    pub fn uvs<'a>(&'a self) -> &'a RWArc<GPUVector<UV>> {
+        &'a self.uvs
     }
 }
 
 /// Comutes normals from a set of faces.
-pub fn compute_normals_array(coordinates: &[Coord],
-                             faces:       &[Face])
-                             -> ~[Normal] {
+pub fn compute_normals_array(coordinates: &[Coord], faces: &[Face]) -> ~[Normal] {
     let mut res = ~[];
 
     compute_normals(coordinates, faces, &mut res);
@@ -279,78 +180,5 @@ pub fn compute_normals(coordinates: &[Coord],
     // ... and compute the mean
     for (n, divisor) in normals.mut_iter().zip(divisor.iter()) {
         *n = *n / *divisor
-    }
-}
-
-/// Type of gpu buffer.
-pub enum BufferType {
-    /// An array buffer bindable to a gl::ARRAY_BUFFER.
-    ArrayBuffer,
-    /// An array buffer bindable to a gl::ELEMENT_ARRAY_BUFFER.
-    ElementArrayBuffer
-}
-
-impl BufferType {
-    fn to_gl(&self) -> GLuint {
-        match *self {
-            ArrayBuffer        => gl::ARRAY_BUFFER,
-            ElementArrayBuffer => gl::ELEMENT_ARRAY_BUFFER
-        }
-    }
-}
-
-/// Allocation type of gpu buffers.
-pub enum AllocationType {
-    /// STATIC_DRAW allocation type.
-    StaticDraw,
-    /// DYNAMIC_DRAW allocation type.
-    DynamicDraw,
-    /// STREAM_DRAW allocation type.
-    StreamDraw
-}
-
-impl AllocationType {
-    fn to_gl(&self) -> GLuint {
-        match *self {
-            StaticDraw  => gl::STATIC_DRAW,
-            DynamicDraw => gl::DYNAMIC_DRAW,
-            StreamDraw  => gl::STREAM_DRAW
-        }
-    }
-}
-
-/// Allocates and uploads a buffer to the gpu.
-pub fn load_buffer<T>(buf: &[T], buf_type: BufferType, allocation_type: AllocationType) -> GLuint {
-    // Upload values of vertices
-    let mut buf_id: GLuint = 0;
-
-    unsafe {
-        verify!(gl::GenBuffers(1, &mut buf_id));
-        upload_buffer(buf, buf_id, buf_type, allocation_type);
-    }
-
-    buf_id
-}
-
-/// Allocates and uploads a buffer to the gpu.
-pub fn upload_buffer<T>(buf: &[T], buf_id: GLuint, buf_type: BufferType, allocation_type: AllocationType) {
-    unsafe {
-        verify!(gl::BindBuffer(buf_type.to_gl(), buf_id));
-        verify!(gl::BufferData(
-                buf_type.to_gl(),
-                (buf.len() * mem::size_of::<T>()) as GLsizeiptr,
-                cast::transmute(&buf[0]),
-                allocation_type.to_gl()));
-    }
-}
-
-impl Drop for Mesh {
-    fn drop(&mut self) {
-        unsafe {
-            verify!(gl::DeleteBuffers(1, &self.ebuf));
-            verify!(gl::DeleteBuffers(1, &self.nbuf));
-            verify!(gl::DeleteBuffers(1, &self.vbuf));
-            verify!(gl::DeleteBuffers(1, &self.tbuf));
-        }
     }
 }
