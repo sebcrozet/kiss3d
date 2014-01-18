@@ -5,14 +5,16 @@ use nalgebra::na;
 use camera::Camera;
 use event;
 
-/// Arc-ball camera mode. An arc-ball camera is a camera rotating around a fixed point (the focus
-/// point) and always looking at it. The following inputs are handled:
+/// Arc-ball camera mode.
 ///
-///   * Left button press + drag - rotates the camera around the focus point
-///   * Right button press + drag - translates the focus point on the plane orthogonal to the view
-///   direction
-///   * Scroll in/out - zoom in/out
-///   * Enter key - set the focus point to the origin
+/// An arc-ball camera is a camera rotating around a fixed point (the focus point) and always
+/// looking at it. The following inputs are handled:
+///
+/// * Left button press + drag - rotates the camera around the focus point
+/// * Right button press + drag - translates the focus point on the plane orthogonal to the view
+/// direction
+/// * Scroll in/out - zoom in/out
+/// * Enter key - set the focus point to the origin
 #[deriving(Clone, ToStr)]
 pub struct ArcBall {
     /// The focus point.

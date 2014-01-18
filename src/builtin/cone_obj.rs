@@ -1,4 +1,7 @@
-pub static CONE_OBJ: &'static str =
+/// The obj representation of a cone as a string.
+pub static CONE_OBJ: &'static str = A_VERY_LONG_STRING;
+
+static A_VERY_LONG_STRING: &'static str =
 "v 0.000000 -0.500000 -0.500000
 v 0.000000 0.500000 0.000000
 v 0.097545 -0.500000 -0.490393

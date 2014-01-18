@@ -1,17 +1,20 @@
+//! Builtin mesh loader.
+
 use std::hashmap::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
-use obj;
-use builtins::cube_obj;
-use builtins::sphere_obj;
-use builtins::cone_obj;
-use builtins::cylinder_obj;
-use builtins::capsule_obj;
-use mesh::Mesh;
+use loader::obj;
+use builtin::cube_obj;
+use builtin::sphere_obj;
+use builtin::cone_obj;
+use builtin::cylinder_obj;
+use builtin::capsule_obj;
+use resource::Mesh;
 
 #[path = "../error.rs"]
 mod error;
 
+/// Loades the builtin meshes for the: cube, sphere, cone, cylinder and capsule.
 pub fn load() -> HashMap<~str, Rc<RefCell<Mesh>>> {
     let emptypath = Path::new("");
 

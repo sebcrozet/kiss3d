@@ -19,6 +19,10 @@ test: examples
 
 examples:
 	mkdir -p $(kiss3d_bin_path)
+	$(build_cmd) ./examples/custom_mesh.rs 
+	$(build_cmd) ./examples/custom_mesh_shared.rs 
+	$(build_cmd) ./examples/lines.rs 
+	$(build_cmd) ./examples/primitives_scale.rs 
 	$(build_cmd) ./examples/custom_material.rs 
 	$(build_cmd) ./examples/wireframe.rs 
 	$(build_cmd) ./examples/window.rs 
@@ -32,10 +36,6 @@ examples:
 	$(build_cmd) ./examples/stereo.rs 
 	$(build_cmd) ./examples/camera.rs 
 	$(build_cmd) ./examples/cube.rs 
-	$(build_cmd) ./examples/custom_mesh.rs 
-	$(build_cmd) ./examples/custom_mesh_shared.rs 
-	$(build_cmd) ./examples/lines.rs 
-	$(build_cmd) ./examples/primitives_scale.rs 
 
 doc:
 	mkdir -p $(kiss3d_doc_path)

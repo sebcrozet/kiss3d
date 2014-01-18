@@ -14,9 +14,8 @@ use kiss3d::window;
 use kiss3d::object::ObjectData;
 use kiss3d::camera::Camera;
 use kiss3d::light::Light;
-use kiss3d::mesh::Mesh;
-use kiss3d::resources::material::Material;
-use kiss3d::resources::material;
+use kiss3d::resource::{Material, Mesh};
+use kiss3d::resource;
 
 fn main() {
     do window::Window::spawn("Kiss3d: cube") |window| {
@@ -47,19 +46,19 @@ impl NormalMaterial {
     pub fn new() -> NormalMaterial {
         unsafe {
             let (program, vshader, fshader) =
-                material::load_shader_program(NORMAL_VERTEX_SRC, NORMAL_FRAGMENT_SRC);
+                resource::load_shader_program(NORMAL_VERTEX_SRC, NORMAL_FRAGMENT_SRC);
 
             gl::UseProgram(program);
 
             NormalMaterial {
-                program: program,
-                vshader: vshader,
-                fshader: fshader,
-                position:   gl::GetAttribLocation(program, "position".to_c_str().unwrap()) as GLuint,
-                normal:     gl::GetAttribLocation(program, "normal".to_c_str().unwrap()) as GLuint,
-                transform:  gl::GetUniformLocation(program, "transform".to_c_str().unwrap()),
-                scale:      gl::GetUniformLocation(program, "scale".to_c_str().unwrap()),
-                view:       gl::GetUniformLocation(program, "view".to_c_str().unwrap()),
+                program:   program,
+                vshader:   vshader,
+                fshader:   fshader,
+                position:  gl::GetAttribLocation(program, "position".to_c_str().unwrap()) as GLuint,
+                normal:    gl::GetAttribLocation(program, "normal".to_c_str().unwrap()) as GLuint,
+                transform: gl::GetUniformLocation(program, "transform".to_c_str().unwrap()),
+                scale:     gl::GetUniformLocation(program, "scale".to_c_str().unwrap()),
+                view:      gl::GetUniformLocation(program, "view".to_c_str().unwrap()),
             }
         }
     }

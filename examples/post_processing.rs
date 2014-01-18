@@ -5,10 +5,7 @@ use std::rand::random;
 use nalgebra::na::{Vec3, Translation};
 use kiss3d::window;
 use kiss3d::light;
-use kiss3d::post_processing::post_processing_effect::PostProcessingEffect;
-use kiss3d::post_processing::waves::Waves;
-use kiss3d::post_processing::grayscales::Grayscales;
-use kiss3d::post_processing::sobel_edge_highlight::SobelEdgeHighlight;
+use kiss3d::post_processing::{PostProcessingEffect, Waves, Grayscales, SobelEdgeHighlight};
 
 fn main() {
     do window::Window::spawn("Kiss3d: cube") |window| {

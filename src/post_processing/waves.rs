@@ -9,8 +9,8 @@ use std::ptr;
 use std::mem;
 use gl;
 use gl::types::*;
-use resources::framebuffers_manager::RenderTarget;
-use resources::material;
+use resource::RenderTarget;
+use resource;
 use post_processing::post_processing_effect::PostProcessingEffect;
 
 #[path = "../error.rs"]
@@ -40,6 +40,7 @@ static FRAGMENT_SHADER: &'static str =
     }";
 
 /// An useless post-processing effect mainly to test that everything works correctly.
+///
 /// It deforms the displayed scene with a wave effect.
 pub struct Waves {
     priv vshader:      GLuint,
@@ -76,7 +77,7 @@ impl Waves {
             gl::BindBuffer(gl::ARRAY_BUFFER, 0);
 
             let (program, vshader, fshader) =
-                material::load_shader_program(VERTEX_SHADER, FRAGMENT_SHADER);
+                resource::load_shader_program(VERTEX_SHADER, FRAGMENT_SHADER);
 
             verify!(gl::UseProgram(program));
 

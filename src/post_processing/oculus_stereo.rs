@@ -8,8 +8,8 @@ use std::io::Reader;
 use std::str;
 use gl;
 use gl::types::*;
-use resources::framebuffers_manager::RenderTarget;
-use resources::material;
+use resource::RenderTarget;
+use resource;
 use post_processing::post_processing_effect::PostProcessingEffect;
 
 #[path = "../error.rs"]
@@ -64,7 +64,7 @@ impl OculusStereo {
             gl::BindBuffer(gl::ARRAY_BUFFER, 0);
 
             let (program, vshader, fshader) =
-                material::load_shader_program(
+                resource::load_shader_program(
                     load_file("oculus_vertex_shader.glsl"),
                     load_file("oculus_fragment_shader.glsl"));
 

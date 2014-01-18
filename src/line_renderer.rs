@@ -1,31 +1,33 @@
+//! A batched line renderer.
+
 use std::ptr;
 use std::cast;
 use std::mem;
 use gl;
 use gl::types::*;
 use nalgebra::na::Vec3;
-use builtins::lines_material::LinesMaterial;
+use builtin::LinesMaterial;
 use camera::Camera;
 
 #[path = "error.rs"]
 mod error;
 
 /// Structure which manages the display of short-living lines.
-pub struct LinesManager {
+pub struct LineRenderer {
     priv material:  LinesMaterial,
     priv lines:     ~[(Vec3<GLfloat>, Vec3<GLfloat>, Vec3<GLfloat>, Vec3<GLfloat>)],
     priv vbuf:      GLuint,
     priv max_lines: uint
 }
 
-impl LinesManager {
+impl LineRenderer {
     /// Creates a new lines manager.
-    pub fn new() -> LinesManager {
+    pub fn new() -> LineRenderer {
         let mut vbuf: GLuint = 0;
         
         unsafe { verify!(gl::GenBuffers(1, &mut vbuf)) };
 
-        LinesManager {
+        LineRenderer {
             lines:     ~[],
             vbuf:      vbuf,
             max_lines: 0,

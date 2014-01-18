@@ -1,27 +1,36 @@
 use std::util::NonCopyable;
 use gl;
 use gl::types::*;
-use resources::material;
+use resource;
 
 #[path = "../error.rs"]
 mod error;
 
+/// Material used to display lines.
 pub struct LinesMaterial {
+    #[doc(hidden)]
     program:   GLuint,
+    #[doc(hidden)]
     vshader:   GLuint,
+    #[doc(hidden)]
     fshader:   GLuint,
+    #[doc(hidden)]
     pos:       GLuint,
+    #[doc(hidden)]
     color:     GLuint,
+    #[doc(hidden)]
     view:      GLint,
+    #[doc(hidden)]
     ncopy:     NonCopyable
 }
 
 impl LinesMaterial {
+    /// Creates a new `LinesMaterial`.
     pub fn new() -> LinesMaterial {
         unsafe {
             // load the shader
             let (program, vshader, fshader) =
-                material::load_shader_program(LINES_VERTEX_SRC, LINES_FRAGMENT_SRC);
+                resource::load_shader_program(LINES_VERTEX_SRC, LINES_FRAGMENT_SRC);
 
             verify!(gl::UseProgram(program));
 
@@ -37,12 +46,14 @@ impl LinesMaterial {
         }
     }
 
+    /// Makes active the shader program used by this material.
     pub fn activate(&mut self) {
         verify!(gl::UseProgram(self.program));
         verify!(gl::EnableVertexAttribArray(self.pos));
         verify!(gl::EnableVertexAttribArray(self.color));
     }
 
+    /// Makes inactive the shader program used by this material.
     pub fn deactivate(&mut self) {
         verify!(gl::DisableVertexAttribArray(self.pos));
         verify!(gl::DisableVertexAttribArray(self.color));
@@ -57,7 +68,12 @@ impl Drop for LinesMaterial {
     }
 }
 
-pub static LINES_VERTEX_SRC: &'static str =
+/// Vertex shader used by the material to display line.
+pub static LINES_VERTEX_SRC:   &'static str = A_VERY_LONG_STRING;
+/// Fragment shader used by the material to display line.
+pub static LINES_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
+
+static A_VERY_LONG_STRING: &'static str =
    "#version 120
     attribute vec3 position;
     attribute vec3 color;
@@ -70,7 +86,7 @@ pub static LINES_VERTEX_SRC: &'static str =
 
 // phong lighting (heavily) inspired
 // by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
-pub static LINES_FRAGMENT_SRC: &'static str =
+static ANOTHER_VERY_LONG_STRING: &'static str =
    "#version 120
     varying vec3 Color;
     void main() {

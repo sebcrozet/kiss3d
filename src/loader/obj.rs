@@ -9,13 +9,17 @@ use std::str::Words;
 use std::from_str::FromStr;
 use std::hashmap::HashMap;
 use extra::arc::RWArc;
+use gl::types::GLfloat;
 use nalgebra::na::{Vec3, Vec2, Indexable};
 use nalgebra::na;
-use mesh::{Mesh, Coord, Normal, UV};
-use mesh;
-use mtl::MtlMaterial;
-use mtl;
-use gpu_vector::{GPUVector, StaticDraw, ArrayBuffer, ElementArrayBuffer};
+use resource::Mesh;
+use loader::mtl::MtlMaterial;
+use loader::mtl;
+use resource::{GPUVector, StaticDraw, ArrayBuffer, ElementArrayBuffer};
+
+pub type Coord  = Vec3<GLfloat>;
+pub type Normal = Vec3<GLfloat>;
+pub type UV     = Vec2<GLfloat>;
 
 fn error(line: uint, err: &str) -> ! {
     fail!("At line " + line.to_str() + ": " + err)
@@ -341,7 +345,7 @@ fn reformat(coords:     ~[Coord],
         vertex_ids.clear();
     }
 
-    let resn = resn.unwrap_or_else(|| mesh::compute_normals_array(resc, allfs));
+    let resn = resn.unwrap_or_else(|| Mesh::compute_normals_array(resc, allfs));
     let resn = RWArc::new(GPUVector::new(resn, ArrayBuffer, StaticDraw));
     let resu = resu.unwrap_or_else(|| vec::from_elem(resc.len(), na::zero()));
     let resu = RWArc::new(GPUVector::new(resu, ArrayBuffer, StaticDraw));

@@ -1,4 +1,7 @@
-pub static SPHERE_OBJ: &'static str =
+/// The obj representation of a sphere as a string.
+pub static SPHERE_OBJ: &'static str = A_VERY_LONG_STRING;
+
+static A_VERY_LONG_STRING: &'static str =
 "v -0.097545 0.490393 0.000000
 v -0.191342 0.461940 0.000000
 v -0.277785 0.415735 0.000000

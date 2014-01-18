@@ -1,4 +1,5 @@
 use std::num::{Zero, One, atan2};
+use std::cast;
 use glfw;
 use gl;
 use nalgebra::na::{Vec2, Vec3, Mat4, Iso3, Rotate};
@@ -294,7 +295,15 @@ impl Camera for FirstPersonStereo {
     }
 
     fn upload(&self, pass: uint, view_location: i32) {
-        self.upload_mat(view_location, &self.transformation_eye(pass));
+        let homo = self.transformation_eye(pass);;
+
+        unsafe {
+            gl::UniformMatrix4fv(
+                view_location,
+                1,
+                gl::FALSE as u8,
+                cast::transmute(&homo));
+        }
     }
 
     fn num_passes(&self) -> uint { 2u }

@@ -6,10 +6,7 @@ use std::rc::Rc;
 use gl::types::*;
 use nalgebra::na::{Mat3, Vec2, Vec3, Iso3, Rotation, Rotate, Translation, Transformation};
 use nalgebra::na;
-use resources::textures_manager;
-use resources::textures_manager::Texture;
-use resources::material::Material;
-use mesh::Mesh;
+use resource::{Texture, TextureManager, Material, Mesh};
 use camera::Camera;
 use light::Light;
 
@@ -65,8 +62,9 @@ impl ObjectData {
     }
 }
 
-/// Structure of all 3d objects on the scene. This is the only interface to manipulate the object
-/// position, color, vertices and texture.
+/// A 3d objects on the scene.
+///
+/// This is the only interface to manipulate the object position, color, vertices and texture.
 #[deriving(Clone)]
 pub struct Object {
     priv material: Rc<RefCell<Rc<RefCell<~Material>>>>,
@@ -282,7 +280,7 @@ impl Object {
     ///   * `path` - relative path of the texture on the disk
     #[inline]
     pub fn set_texture(&mut self, path: &Path, name: &str) {
-        let texture = textures_manager::get(|tm| tm.add(path, name));
+        let texture = TextureManager::get_global_manager(|tm| tm.add(path, name));
 
         self.data.borrow().borrow_mut().get().texture = texture;
     }
@@ -292,7 +290,7 @@ impl Object {
     /// The texture must already have been registered as `name`.
     #[inline]
     pub fn set_texture_with_name(&mut self, name: &str) {
-        let texture = textures_manager::get(|tm| tm.get(name).unwrap_or_else(
+        let texture = TextureManager::get_global_manager(|tm| tm.get(name).unwrap_or_else(
             || fail!("Invalid attempt to use the unregistered texture: " + name)));
 
         self.data.borrow().borrow_mut().get().texture = texture;

@@ -38,10 +38,7 @@ pub trait Camera {
     /// Upload the camera transfomation to the gpu. This cam be called multiple times on the render
     /// loop.
     fn upload(&self, _pass: uint, view_location: i32) {
-        self.upload_mat(view_location, &self.transformation());
-    }
-
-    fn upload_mat(&self, view_location: i32, homo: &Mat4<f32>) {
+        let homo = &self.transformation();
         unsafe {
             gl::UniformMatrix4fv(
                 view_location,
@@ -51,9 +48,12 @@ pub trait Camera {
         }
     }
 
+    /// The number of passes required by this camera.
     fn num_passes(&self) -> uint { 1u }
 
-    fn start_pass(&self, _pass: uint, _window: &glfw::Window) { }
+    /// Indicates that a pass will begin.
+    fn start_pass(&self, uint, &glfw::Window) { }
 
-    fn render_complete(&self, _window: &glfw::Window) { }
+    /// Indicates that the scene has been rendered and the post-processing is being run.
+    fn render_complete(&self, &glfw::Window) { }
 }

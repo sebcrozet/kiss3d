@@ -4,16 +4,17 @@ use gl;
 use gl::types::*;
 use nalgebra::na::{Mat3, Mat4};
 use nalgebra::na;
-use resources::material::Material;
-use resources::material;
+use resource::Material;
+use resource;
 use object::ObjectData;
 use light::{Light, Absolute, StickToCamera};
 use camera::Camera;
-use mesh::Mesh;
+use resource::Mesh;
 
 #[path = "../error.rs"]
 mod error;
 
+/// The default material used to draw objects.
 pub struct ObjectMaterial {
     priv program:    GLuint,
     priv vshader:    GLuint,
@@ -31,11 +32,12 @@ pub struct ObjectMaterial {
 }
 
 impl ObjectMaterial {
+    /// Creates a new `ObjectMaterial`.
     pub fn new() -> ObjectMaterial {
         unsafe {
             // load the shader
             let (program, vshader, fshader) =
-                material::load_shader_program(OBJECT_VERTEX_SRC, OBJECT_FRAGMENT_SRC);
+                resource::load_shader_program(OBJECT_VERTEX_SRC, OBJECT_FRAGMENT_SRC);
 
             verify!(gl::UseProgram(program));
 
@@ -142,7 +144,12 @@ impl Drop for ObjectMaterial {
     }
 }
 
-pub static OBJECT_VERTEX_SRC: &'static str =
+/// Vertex shader of the default object material.
+pub static OBJECT_VERTEX_SRC:   &'static str = A_VERY_LONG_STRING;
+/// Fragment shader of the default object material.
+pub static OBJECT_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
+
+static A_VERY_LONG_STRING: &'static str =
    "#version 120
     attribute vec3 position;
     attribute vec3 normal;
@@ -166,7 +173,7 @@ pub static OBJECT_VERTEX_SRC: &'static str =
 
 // phong lighting (heavily) inspired
 // by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
-pub static OBJECT_FRAGMENT_SRC: &'static str =
+static ANOTHER_VERY_LONG_STRING: &'static str =
    "#version 120
     uniform vec3      color;
     uniform vec3      light_position;

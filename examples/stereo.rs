@@ -8,8 +8,7 @@ use kiss3d::window;
 use kiss3d::light;
 use kiss3d::event::KeyReleased;
 use kiss3d::camera::{Camera, FirstPersonStereo};
-use kiss3d::post_processing::post_processing_effect::PostProcessingEffect;
-use kiss3d::post_processing::oculus_stereo::OculusStereo;
+use kiss3d::post_processing::{PostProcessingEffect, OculusStereo};
 //use kiss3d::post_processing::grayscales::Grayscales;
 
 fn main() {

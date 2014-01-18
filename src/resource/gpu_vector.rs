@@ -7,9 +7,9 @@ use std::vec;
 use gl;
 use gl::types::*;
 use std::util::NonCopyable;
-use gl_primitive::GLPrimitive;
+use resource::gl_primitive::GLPrimitive;
 
-#[path = "error.rs"]
+#[path = "../error.rs"]
 mod error;
 
 struct GLHandle {

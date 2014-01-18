@@ -19,19 +19,15 @@ use nalgebra::na::{Vec2, Vec3, Vec4};
 use nalgebra::na;
 use camera::{Camera, ArcBall};
 use object::Object;
-use lines_manager::LinesManager;
-use post_processing::post_processing_effect::PostProcessingEffect;
-use resources::textures_manager::Texture;
-use resources::textures_manager;
-use resources::framebuffers_manager::{FramebuffersManager, RenderTarget};
-use builtins::object_material::ObjectMaterial;
-use builtins::loader;
+use line_renderer::LineRenderer;
+use post_processing::PostProcessingEffect;
+use resource::{FramebufferManager, RenderTarget, Texture, TextureManager, Mesh, Material};
+use builtin::ObjectMaterial;
+use builtin::loader;
 use event;
-use mesh::Mesh;
-use obj;
-use mtl::MtlMaterial;
+use loader::obj;
+use loader::mtl::MtlMaterial;
 use light::{Light, Absolute, StickToCamera};
-use resources::material::Material;
 
 mod error;
 
@@ -48,8 +44,8 @@ pub struct Window<'a> {
     priv wireframe_mode:             bool,
     priv geometries:                 HashMap<~str, Rc<RefCell<Mesh>>>,
     priv background:                 Vec3<GLfloat>,
-    priv lines_manager:              LinesManager,
-    priv framebuffers_manager:       FramebuffersManager,
+    priv line_renderer:              LineRenderer,
+    priv framebuffer_manager:       FramebufferManager,
     priv post_processing:            Option<&'a mut PostProcessingEffect>,
     priv post_process_render_target: RenderTarget,
     priv events:                     RWArc<~[event::Event]>,
@@ -129,7 +125,7 @@ impl<'a> Window<'a> {
 
     /// Adds a line to be drawn during the next frame.
     pub fn draw_line(&mut self, a: &Vec3<f32>, b: &Vec3<f32>, color: &Vec3<f32>) {
-        self.lines_manager.draw_line(a.clone(), b.clone(), color.clone());
+        self.line_renderer.draw_line(a.clone(), b.clone(), color.clone());
     }
 
     /// Removes an object from the scene.
@@ -176,7 +172,7 @@ impl<'a> Window<'a> {
     /// * `path`  - relative path to the obj file.
     /// * `scale` - uniform scale to apply to the model.
     pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: GLfloat) -> ~[Object] {
-        let tex  = textures_manager::get(|tm| tm.get_default());
+        let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
         let objs = self.load_obj(path, mtl_dir, path.as_str().unwrap());
         println!("Parsing complete.");
 
@@ -219,7 +215,7 @@ impl<'a> Window<'a> {
 
     /// Adds an unnamed mesh to the scene.
     pub fn add_mesh(&mut self, mesh: Mesh, scale: GLfloat) -> Object {
-        let tex  = textures_manager::get(|tm| tm.get_default());
+        let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
 
         let res = Object::new(
                     Rc::new(RefCell::new(mesh)),
@@ -239,7 +235,7 @@ impl<'a> Window<'a> {
             let res = Object::new(
                         m.clone(),
                         1.0, 1.0, 1.0,
-                        textures_manager::get(|tm| tm.get_default()),
+                        TextureManager::get_global_manager(|tm| tm.get_default()),
                         scale, scale, scale,
                         self.object_material.clone());
             self.objects.push(res.clone());
@@ -257,7 +253,7 @@ impl<'a> Window<'a> {
     pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::get(|tm| tm.get_default());
+            let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
             let geom = self.geometries.find(&~"cube").unwrap();
             Object::new(
                 geom.clone(),
@@ -279,7 +275,7 @@ impl<'a> Window<'a> {
     pub fn add_sphere(&mut self, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::get(|tm| tm.get_default());
+            let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
             let geom = self.geometries.find(&~"sphere").unwrap();
             Object::new(
                 geom.clone(),
@@ -303,7 +299,7 @@ impl<'a> Window<'a> {
     pub fn add_cone(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::get(|tm| tm.get_default());
+            let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
             let geom = self.geometries.find(&~"cone").unwrap();
             Object::new(
                 geom.clone(),
@@ -327,7 +323,7 @@ impl<'a> Window<'a> {
     pub fn add_cylinder(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::get(|tm| tm.get_default());
+            let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
             let geom = self.geometries.find(&~"cylinder").unwrap();
             Object::new(
                 geom.clone(),
@@ -351,7 +347,7 @@ impl<'a> Window<'a> {
     pub fn add_capsule(&mut self, h: GLfloat, r: GLfloat) -> Object {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::get(|tm| tm.get_default());
+            let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
             let geom = self.geometries.find(&~"capsule").unwrap();
             Object::new(
                 geom.clone(),
@@ -427,7 +423,7 @@ impl<'a> Window<'a> {
 
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
-            let tex  = textures_manager::get(|tm| tm.get_default());
+            let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
             Object::new(
                 Rc::new(RefCell::new(mesh)),
                 1.0, 1.0, 1.0,
@@ -443,7 +439,7 @@ impl<'a> Window<'a> {
 
     #[doc(hidden)]
     pub fn add_texture(&mut self, path: &Path, name: &str) -> Rc<Texture> {
-        textures_manager::get(|tm| tm.add(path, name))
+        TextureManager::get_global_manager(|tm| tm.add(path, name))
     }
 
     /// Converts a 3d point to 2d screen coordinates.
@@ -616,10 +612,10 @@ impl<'a> Window<'a> {
                 wireframe_mode:        false,
                 geometries:            builtins,
                 background:            Vec3::new(0.0, 0.0, 0.0),
-                lines_manager:         LinesManager::new(),
+                line_renderer:         LineRenderer::new(),
                 post_processing:       None,
-                post_process_render_target: FramebuffersManager::new_render_target(width as uint, height as uint),
-                framebuffers_manager:  FramebuffersManager::new(),
+                post_process_render_target: FramebufferManager::new_render_target(width as uint, height as uint),
+                framebuffer_manager:  FramebufferManager::new(),
                 events:                RWArc::new(~[]),
                 object_material:       Rc::new(RefCell::new(~ObjectMaterial::new() as ~Material))
             };
@@ -666,10 +662,10 @@ impl<'a> Window<'a> {
 
         if self.post_processing.is_some() {
             // if we need post-processing, render to our own frame buffer
-            self.framebuffers_manager.select(&self.post_process_render_target);
+            self.framebuffer_manager.select(&self.post_process_render_target);
         }
         else {
-            self.framebuffers_manager.select(&FramebuffersManager::screen());
+            self.framebuffer_manager.select(&FramebufferManager::screen());
         }
 
         // TODO: change to pass_iter when I learn the lingo
@@ -691,7 +687,7 @@ impl<'a> Window<'a> {
                 }
 
                 // switch back to the screen framebuffer …
-                self.framebuffers_manager.select(&FramebuffersManager::screen());
+                self.framebuffer_manager.select(&FramebufferManager::screen());
                 // … and execute the post-process
                 // FIXME: use the real time value instead of 0.016!
                 p.update(0.016, w, h, znear, zfar);
@@ -728,8 +724,8 @@ impl<'a> Window<'a> {
         verify!(gl::Clear(gl::COLOR_BUFFER_BIT));
         verify!(gl::Clear(gl::DEPTH_BUFFER_BIT));
 
-        if self.lines_manager.needs_rendering() {
-            self.lines_manager.render(pass, self.camera);
+        if self.line_renderer.needs_rendering() {
+            self.line_renderer.render(pass, self.camera);
         }
 
         if self.wireframe_mode {
@@ -748,7 +744,7 @@ impl<'a> Window<'a> {
     fn update_viewport(&mut self, w: f32, h: f32) {
         // Update the viewport
         verify!(gl::Scissor(0 as i32, 0 as i32, w as i32, h as i32));
-        FramebuffersManager::screen().resize(w, h);
+        FramebufferManager::screen().resize(w, h);
         self.post_process_render_target.resize(w, h);
     }
 }

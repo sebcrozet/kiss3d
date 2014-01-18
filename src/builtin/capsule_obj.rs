@@ -1,4 +1,7 @@
-pub static CAPSULE_OBJ: &'static str =
+/// The obj representation of a capsule as a string.
+pub static CAPSULE_OBJ: &'static str = A_VERY_LONG_STRING;
+
+static A_VERY_LONG_STRING: &'static str =
 "v 0.000000 1.000000 0.000000
 v 0.000000 0.992404 -0.086824
 v 0.033226 0.992404 -0.080215

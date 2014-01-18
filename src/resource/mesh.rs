@@ -6,18 +6,19 @@ use std::vec;
 use gl::types::*;
 use nalgebra::na::{Vec2, Vec3};
 use nalgebra::na;
-use gpu_vector::{GPUVector, DynamicDraw, StaticDraw, ArrayBuffer, ElementArrayBuffer};
+use resource::gpu_vector::{GPUVector, DynamicDraw, StaticDraw, ArrayBuffer, ElementArrayBuffer};
 
-pub type Coord  = Vec3<GLfloat>;
-pub type Normal = Vec3<GLfloat>;
-pub type UV     = Vec2<GLfloat>;
-pub type Vertex = GLuint;
-pub type Face   = Vec3<Vertex>;
+type Coord  = Vec3<GLfloat>;
+type Normal = Vec3<GLfloat>;
+type UV     = Vec2<GLfloat>;
+type Vertex = GLuint;
+type Face   = Vec3<Vertex>;
 
-#[path = "error.rs"]
+#[path = "../error.rs"]
 mod error;
 
-/// A Mesh contains all geometric data of a mesh: vertex buffer, index buffer, normals and uvs.
+/// Aggregation of vertices, indices, normals and texture coordinates.
+///
 /// It also contains the GPU location of those buffers.
 pub struct Mesh {
     priv coords:  RWArc<GPUVector<Coord>>,
@@ -38,7 +39,7 @@ impl Mesh {
                -> Mesh {
         let normals = match normals {
             Some(ns) => ns,
-            None     => compute_normals_array(coords, faces)
+            None     => Mesh::compute_normals_array(coords, faces)
         };
 
         let uvs = match uvs {
@@ -117,7 +118,7 @@ impl Mesh {
                 |normals| {
                     self.coords.read(|cs| cs.read(|cs|
                        self.faces.read(|fs| fs.read(|fs|
-                           compute_normals(cs, fs, normals)
+                           Mesh::compute_normals(cs, fs, normals)
                        ))
                     ))
                 }
@@ -144,61 +145,61 @@ impl Mesh {
     pub fn uvs<'a>(&'a self) -> &'a RWArc<GPUVector<UV>> {
         &'a self.uvs
     }
-}
 
-/// Comutes normals from a set of faces.
-pub fn compute_normals_array(coordinates: &[Coord], faces: &[Face]) -> ~[Normal] {
-    let mut res = ~[];
-
-    compute_normals(coordinates, faces, &mut res);
-
-    res
-}
-
-/// Comutes normals from a set of faces.
-pub fn compute_normals(coordinates: &[Coord],
-                       faces:       &[Face],
-                       normals:     &mut ~[Normal]) {
-    let mut divisor = vec::from_elem(coordinates.len(), 0f32);
-
-    // Shrink the output buffer if it is too big.
-    if normals.len() > coordinates.len() {
-        normals.truncate(coordinates.len())
+    /// Computes normals from a set of faces.
+    pub fn compute_normals_array(coordinates: &[Coord], faces: &[Face]) -> ~[Normal] {
+        let mut res = ~[];
+    
+        Mesh::compute_normals(coordinates, faces, &mut res);
+    
+        res
     }
-
-    // Reinit all normals to zero.
-    for n in normals.mut_iter() {
-        *n = na::zero()
-    }
-
-    // Grow the output buffer if it is too small.
-    normals.grow_set(coordinates.len() - 1, &na::zero(), na::zero());
-
-    // Accumulate normals ...
-    for f in faces.iter() {
-        let edge1  = coordinates[f.y] - coordinates[f.x];
-        let edge2  = coordinates[f.z] - coordinates[f.x];
-        let cross  = na::cross(&edge1, &edge2);
-        let normal;
-
-        if !cross.is_zero() {
-            normal = na::normalize(&cross)
+    
+    /// Computes normals from a set of faces.
+    pub fn compute_normals(coordinates: &[Coord],
+                           faces:       &[Face],
+                           normals:     &mut ~[Normal]) {
+        let mut divisor = vec::from_elem(coordinates.len(), 0f32);
+    
+        // Shrink the output buffer if it is too big.
+        if normals.len() > coordinates.len() {
+            normals.truncate(coordinates.len())
         }
-        else {
-            normal = cross
+    
+        // Reinit all normals to zero.
+        for n in normals.mut_iter() {
+            *n = na::zero()
         }
-
-        normals[f.x] = normals[f.x] + normal;
-        normals[f.y] = normals[f.y] + normal;
-        normals[f.z] = normals[f.z] + normal;
-
-        divisor[f.x] = divisor[f.x] + 1.0;
-        divisor[f.y] = divisor[f.y] + 1.0;
-        divisor[f.z] = divisor[f.z] + 1.0;
-    }
-
-    // ... and compute the mean
-    for (n, divisor) in normals.mut_iter().zip(divisor.iter()) {
-        *n = *n / *divisor
+    
+        // Grow the output buffer if it is too small.
+        normals.grow_set(coordinates.len() - 1, &na::zero(), na::zero());
+    
+        // Accumulate normals ...
+        for f in faces.iter() {
+            let edge1  = coordinates[f.y] - coordinates[f.x];
+            let edge2  = coordinates[f.z] - coordinates[f.x];
+            let cross  = na::cross(&edge1, &edge2);
+            let normal;
+    
+            if !cross.is_zero() {
+                normal = na::normalize(&cross)
+            }
+            else {
+                normal = cross
+            }
+    
+            normals[f.x] = normals[f.x] + normal;
+            normals[f.y] = normals[f.y] + normal;
+            normals[f.z] = normals[f.z] + normal;
+    
+            divisor[f.x] = divisor[f.x] + 1.0;
+            divisor[f.y] = divisor[f.y] + 1.0;
+            divisor[f.z] = divisor[f.z] + 1.0;
+        }
+    
+        // ... and compute the mean
+        for (n, divisor) in normals.mut_iter().zip(divisor.iter()) {
+            *n = *n / *divisor
+        }
     }
 }

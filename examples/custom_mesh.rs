@@ -3,7 +3,7 @@ extern mod nalgebra;
 
 use nalgebra::na::{Vec3, Rotation};
 use kiss3d::window;
-use kiss3d::mesh::Mesh;
+use kiss3d::resource::Mesh;
 use kiss3d::light;
 
 fn main() {

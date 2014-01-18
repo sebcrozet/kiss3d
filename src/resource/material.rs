@@ -7,7 +7,7 @@ use gl::types::*;
 use camera::Camera;
 use light::Light;
 use object::ObjectData;
-use mesh::Mesh;
+use resource::mesh::Mesh;
 
 #[path = "../error.rs"]
 mod error;

@@ -67,16 +67,16 @@ impl RenderTarget {
 
 /// A framebuffer manager. It is a simple to to switch between an offscreen framebuffer and the
 /// default (window) framebuffer.
-pub struct FramebuffersManager {
+pub struct FramebufferManager {
     priv curr_fbo:   GLuint,
     priv curr_color: GLuint,
     priv curr_depth: GLuint,
     priv fbo:        GLuint
 }
 
-impl FramebuffersManager {
+impl FramebufferManager {
     /// Creates a new framebuffer manager.
-    pub fn new() -> FramebuffersManager {
+    pub fn new() -> FramebufferManager {
         // create an off-screen framebuffer
         let mut fbo: GLuint = 0;
 
@@ -85,7 +85,7 @@ impl FramebuffersManager {
         // ensure that the current framebuffer is the screen
         verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
 
-        FramebuffersManager {
+        FramebufferManager {
             curr_fbo:   0,
             curr_color: 0,
             curr_depth: 0,
@@ -177,7 +177,7 @@ impl FramebuffersManager {
     }
 }
 
-impl Drop for FramebuffersManager {
+impl Drop for FramebufferManager {
     fn drop(&mut self) {
         verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
         unsafe { verify!(gl::DeleteFramebuffers(1, &self.fbo)); }

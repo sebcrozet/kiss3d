@@ -40,26 +40,18 @@ impl Drop for Texture {
 }
 
 // FIXME: why is this on TLS?
-local_data_key!(KEY_TEXTURE_MANAGER: TexturesManager)
+local_data_key!(KEY_TEXTURE_MANAGER: TextureManager)
 
-/// Gets the texture manager.
-pub fn get<T>(f: |&mut TexturesManager| -> T) -> T {
-    if local_data::get(KEY_TEXTURE_MANAGER, |tm| tm.is_none()) {
-        local_data::set(KEY_TEXTURE_MANAGER, TexturesManager::new())
-    }
-
-    local_data::get_mut(KEY_TEXTURE_MANAGER, |tm| f(tm.unwrap()))
-}
 
 /// The textures manager. It keeps a cache of already-loaded textures, and can load new textures.
-pub struct TexturesManager {
+pub struct TextureManager {
     priv default_texture: Rc<Texture>,
     priv textures:        HashMap<~str, Rc<Texture>>,
 }
 
-impl TexturesManager {
+impl TextureManager {
     /// Creates a new texture manager.
-    pub fn new() -> TexturesManager {
+    pub fn new() -> TextureManager {
         let default_tex = Texture::new();
         let default_tex_pixels: [ GLfloat, ..3 ] = [ 1.0, 1.0, 1.0 ];
         verify!(gl::ActiveTexture(gl::TEXTURE0));
@@ -76,10 +68,19 @@ impl TexturesManager {
                                    cast::transmute(&default_tex_pixels[0])));
         }
 
-        TexturesManager {
+        TextureManager {
             textures:        HashMap::new(),
             default_texture: default_tex
         }
+    }
+
+    /// Mutably applies a function to the texture manager.
+    pub fn get_global_manager<T>(f: |&mut TextureManager| -> T) -> T {
+        if local_data::get(KEY_TEXTURE_MANAGER, |tm| tm.is_none()) {
+            local_data::set(KEY_TEXTURE_MANAGER, TextureManager::new())
+        }
+    
+        local_data::get_mut(KEY_TEXTURE_MANAGER, |tm| f(tm.unwrap()))
     }
 
     /// Gets the default, completely white, texture.

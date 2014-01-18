@@ -33,6 +33,7 @@ extern mod nalgebra;
 
 use nalgebra::na::{Vec3, Rotation};
 use kiss3d::window;
+use kiss3d::light;
 
 fn main() {
     do window::Window::spawn("Kiss3d: cube") |window| {
@@ -40,7 +41,7 @@ fn main() {
 
         c.set_color(1.0, 0.0, 0.0);
 
-        window.set_light(window::StickToCamera);
+        window.set_light(light::StickToCamera);
 
         window.render_loop(|_| {
             c.prepend_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
@@ -75,8 +76,8 @@ The last command will compile examples on the `bin` folder.
 Use `make doc` to compile the documentation on the `doc` folder.
 
 ## Contributions
-I’d love to see people improving this library for their own needs.  However, keep in mind that
-**kiss3d** is KISS.  One-liner features (from the user point of view) are preferred.
+I’d love to see people improving this library for their own needs. However, keep in mind that
+**kiss3d** is KISS. One-liner features (from the user point of view) are preferred.
 
 ## Acknowledgements
 
@@ -89,10 +90,11 @@ I’d love to see people improving this library for their own needs.  However, k
 #[deny(non_camel_case_types)];
 #[deny(non_uppercase_statics)];
 #[deny(unnecessary_qualification)];
-#[warn(missing_doc)];
+#[deny(missing_doc)];
 #[feature(globs)];
 #[feature(macro_rules)];
 #[feature(managed_boxes)];
+#[doc(html_root_url = "http://crozet.re/kiss3d/doc")];
 
 extern mod std;
 extern mod extra;
@@ -104,49 +106,10 @@ extern mod stb_image;
 pub mod window;
 pub mod event;
 pub mod object;
-pub mod obj;
-pub mod mtl;
-pub mod mesh;
 pub mod camera;
-pub mod gpu_vector;
-pub mod gl_primitive;
 pub mod light;
-
-/*
- * the user should not see/use the following modules
- */
-#[doc(hidden)]
-pub mod lines_manager;
-
-#[doc(hidden)]
-pub mod builtins
-{
-    pub mod loader;
-    pub mod sphere_obj;
-    pub mod cube_obj;
-    pub mod cone_obj;
-    pub mod cylinder_obj;
-    pub mod capsule_obj;
-    pub mod lines_material;
-    pub mod object_material;
-}
-
-/// A bunch of post-processing effects.
-pub mod post_processing {
-    pub mod post_processing_effect;
-    pub mod waves;
-    pub mod grayscales;
-    pub mod sobel_edge_highlight;
-    pub mod oculus_stereo;
-}
-
-/// GPU resource managers.
-pub mod resources {
-    pub mod framebuffers_manager;
-    pub mod textures_manager;
-    pub mod material;
-}
-
-// pub mod draw {
-//     pub mod depth_peeling;
-// }
+pub mod loader;
+pub mod line_renderer;
+pub mod builtin;
+pub mod post_processing;
+pub mod resource;
