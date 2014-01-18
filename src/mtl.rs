@@ -4,7 +4,7 @@ use std::util;
 use std::io::fs::File;
 use std::io::Reader;
 use std::str;
-use std::str::WordIterator;
+use std::str::Words;
 use std::from_str::FromStr;
 use nalgebra::na::Vec3;
 
@@ -82,11 +82,11 @@ pub fn parse(string: &str) -> ~[MtlMaterial] {
     res
 }
 
-fn parse_name<'a>(_: uint, mut ws: WordIterator<'a>) -> ~str {
+fn parse_name<'a>(_: uint, mut ws: Words<'a>) -> ~str {
     ws.to_owned_vec().connect(" ")
 }
 
-fn parse_color<'a>(l: uint, mut ws: WordIterator<'a>) -> Vec3<f32> {
+fn parse_color<'a>(l: uint, mut ws: Words<'a>) -> Vec3<f32> {
     let sx = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 0."));
     let sy = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 1."));
     let sz = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 2."));
@@ -102,7 +102,7 @@ fn parse_color<'a>(l: uint, mut ws: WordIterator<'a>) -> Vec3<f32> {
     Vec3::new(x, y, z)
 }
 
-fn parse_shininess<'a>(l: uint, mut ws: WordIterator<'a>) -> f32 {
+fn parse_shininess<'a>(l: uint, mut ws: Words<'a>) -> f32 {
     let sx = ws.next().unwrap_or_else(|| error(l, "1 component was expected, found 0."));
 
     let x: Option<f32> = FromStr::from_str(sx);

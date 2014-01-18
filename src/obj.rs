@@ -5,7 +5,7 @@ use std::io::fs::File;
 use std::io::Reader;
 use std::vec;
 use std::str;
-use std::str::WordIterator;
+use std::str::Words;
 use std::from_str::FromStr;
 use std::hashmap::HashMap;
 use extra::arc::RWArc;
@@ -99,7 +99,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> ~[(~str, Mesh
 }
 
 fn parse_usemtl<'a>(l:          uint,
-                    mut ws:     WordIterator<'a>,
+                    mut ws:     Words<'a>,
                     curr_group: uint,
                     mtllib:     &HashMap<~str, MtlMaterial>,
                     group2mtl:  &mut HashMap<uint, MtlMaterial>,
@@ -144,7 +144,7 @@ fn parse_usemtl<'a>(l:          uint,
 }
 
 fn parse_mtllib<'a>(l:            uint,
-                    mut ws:       WordIterator<'a>,
+                    mut ws:       Words<'a>,
                     mtl_base_dir: &Path,
                     mtllib:       &mut HashMap<~str, MtlMaterial>) {
     let filename = ws.to_owned_vec().connect(" ");
@@ -164,7 +164,7 @@ fn parse_mtllib<'a>(l:            uint,
     }
 }
 
-fn parse_v_or_vn<'a>(l: uint, mut ws: WordIterator<'a>) -> Vec3<f32> {
+fn parse_v_or_vn<'a>(l: uint, mut ws: Words<'a>) -> Vec3<f32> {
     let sx = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 0."));
     let sy = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 1."));
     let sz = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 2."));
@@ -181,7 +181,7 @@ fn parse_v_or_vn<'a>(l: uint, mut ws: WordIterator<'a>) -> Vec3<f32> {
 }
 
 fn parse_f<'a>(l:              uint,
-               mut ws:         WordIterator<'a>,
+               mut ws:         Words<'a>,
                coords:         &[Vec3<f32>],
                uvs:            &[Vec2<f32>],
                normals:        &[Vec3<f32>],
@@ -261,7 +261,7 @@ fn parse_f<'a>(l:              uint,
     }
 }
 
-fn parse_vt<'a>(l: uint, mut ws: WordIterator<'a>) -> UV {
+fn parse_vt<'a>(l: uint, mut ws: Words<'a>) -> UV {
     let _0 = "0.0";
     let sx  = ws.next().unwrap_or_else(|| error(l, "at least 2 components were expected, found 0."));
     let sy  = ws.next().unwrap_or_else(|| error(l, "at least 2 components were expected, found 1."));
@@ -279,7 +279,7 @@ fn parse_vt<'a>(l: uint, mut ws: WordIterator<'a>) -> UV {
 }
 
 fn parse_g<'a>(_:          uint,
-               mut ws:     WordIterator<'a>,
+               mut ws:     Words<'a>,
                prefix:     &str,
                groups:     &mut HashMap<~str, uint>,
                groups_ids: &mut ~[~[Vec3<u32>]])
