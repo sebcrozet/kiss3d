@@ -181,6 +181,16 @@ impl<T: GLPrimitive> GPUVector<T> {
     }
 }
 
+impl<T: Clone + GLPrimitive> GPUVector<T> {
+    /// Returns this vector as an owned vector if it is available on RAM.
+    ///
+    /// If it has been uploaded to the GPU, and unloaded from the RAM, call `load_to_ram` first to
+    /// make the data accessible.
+    pub fn to_owned(&self) -> Option<~[T]> {
+        self.data.as_ref().map(|d| d.clone())
+    }
+}
+
 /// Type of gpu buffer.
 pub enum BufferType {
     /// An array buffer bindable to a gl::ARRAY_BUFFER.
