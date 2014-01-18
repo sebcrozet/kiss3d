@@ -122,7 +122,7 @@ impl Mesh {
                     ))
                 }
             )
-        )
+        );
     }
 
     /// This mesh faces.

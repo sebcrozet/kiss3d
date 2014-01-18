@@ -69,26 +69,22 @@ impl<T: GLPrimitive> GPUVector<T> {
 
     /// Modifies this vector.
     ///
-    /// This will do nothing if the vector os not available on RAM.
-    pub fn write(&mut self, f: |&mut ~[T]| -> ()) {
-        match self.data {
-            None            => { }
-            Some(ref mut d) => {
-                f(d)
-            }
-        }
+    /// This does not calls `f` and returns `None` if the vector data is not available on RAM.
+    pub fn write<U>(&mut self, f: |&mut ~[T]| -> U) -> Option<U> {
+        let res = self.data.as_mut().map(|d| f(d));
 
         if self.is_on_gpu() {
             self.reload_to_gpu();
         }
+
+        res
     }
 
     /// Immutably accesses the vector.
-    pub fn read(&self, f: |&[T]| -> ()) {
-        match self.data {
-            None            => { }
-            Some(ref d) => { f(*d) }
-        }
+    ///
+    /// This does not calls `f` and returns `None` if the vector data is not available on RAM.
+    pub fn read<U>(&self, f: |&[T]| -> U) -> Option<U> {
+        self.data.as_ref().map(|d| f(*d))
     }
 
     /// Returns `true` if this vector is already uploaded to the GPU.
