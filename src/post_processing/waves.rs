@@ -1,4 +1,4 @@
-//! An useless post-processe effect: waves deformations.
+//! An useless post-process effect: waves deformations.
 
 // This a simple post-process. I do this only to learn how works post-processing; so it might be
 // useless for anybody else.

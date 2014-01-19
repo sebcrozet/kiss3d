@@ -117,13 +117,13 @@ fn parse_shininess<'a>(l: uint, mut ws: Words<'a>) -> f32 {
 pub struct MtlMaterial {
     /// Name of the material.
     name:             ~str,
-    /// Path to the ambiant texture.
+    /// Path to the ambient texture.
     ambiant_texture:  Option<~str>,
     /// Path to the diffuse texture.
     diffuse_texture:  Option<~str>,
     /// Path to the specular texture.
     specular_texture: Option<~str>,
-    /// The ambiant color.
+    /// The ambient color.
     ambiant:          Vec3<f32>,
     /// The diffuse color.
     diffuse:          Vec3<f32>,

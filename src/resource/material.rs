@@ -87,4 +87,3 @@ pub fn check_shader_error(shader: GLuint) {
         }
     }
 }
-

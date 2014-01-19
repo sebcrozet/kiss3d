@@ -35,8 +35,8 @@ pub trait Camera {
     /// Update the camera. This is called once at the beginning of the render loop.
     fn update(&mut self, window: &glfw::Window);
 
-    /// Upload the camera transfomation to the gpu. This cam be called multiple times on the render
-    /// loop.
+    /// Upload the camera transformation to the gpu. This cam be called multiple times on the
+    /// render loop.
     fn upload(&self, _pass: uint, view_location: i32) {
         let homo = &self.transformation();
         unsafe {

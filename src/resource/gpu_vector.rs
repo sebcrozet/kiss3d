@@ -51,7 +51,7 @@ pub struct GPUVector<T> {
 // FIXME: implement Clone
 
 impl<T: GLPrimitive> GPUVector<T> {
-    /// Creates a new `GpuVector` that is not yet uploaded to the GPU.
+    /// Creates a new `GPUVector` that is not yet uploaded to the GPU.
     pub fn new(data: ~[T], buf_type: BufferType, alloc_type: AllocationType) -> GPUVector<T> {
         GPUVector {
             len:        data.len(),
@@ -92,9 +92,9 @@ impl<T: GLPrimitive> GPUVector<T> {
         self.handle.is_some()
     }
 
-    /// Retuns `true` if this vector is available on RAM.
+    /// Returns `true` if this vector is available on RAM.
     ///
-    /// Note that a GPUVector may be both on RAM and on the GPU.
+    /// Note that a `GPUVector` may be both on RAM and on the GPU.
     pub fn is_on_ram(&self) -> bool {
         self.data.is_some()
     }
@@ -163,7 +163,7 @@ impl<T: GLPrimitive> GPUVector<T> {
         }
     }
 
-    /// Unloads this resourse from the GPU.
+    /// Unloads this resource from the GPU.
     pub fn unload_from_gpu(&mut self) {
         self.handle.as_ref().map(|h| unsafe { verify!(gl::DeleteBuffers(1, &h.handle())) });
         self.handle = None;

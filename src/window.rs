@@ -34,7 +34,9 @@ mod error;
 static DEFAULT_WIDTH:  u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
 
-/// Structure representing a window and a 3D scene. It is the main interface with the 3d engine.
+/// Structure representing a window and a 3D scene.
+///
+/// This is the main interface with the 3d engine.
 pub struct Window<'a> {
     priv window:                     glfw::Window,
     priv max_ms_per_frame:           Option<u64>,
@@ -615,7 +617,7 @@ impl<'a> Window<'a> {
                 line_renderer:         LineRenderer::new(),
                 post_processing:       None,
                 post_process_render_target: FramebufferManager::new_render_target(width as uint, height as uint),
-                framebuffer_manager:  FramebufferManager::new(),
+                framebuffer_manager:   FramebufferManager::new(),
                 events:                RWArc::new(~[]),
                 object_material:       Rc::new(RefCell::new(~ObjectMaterial::new() as ~Material))
             };

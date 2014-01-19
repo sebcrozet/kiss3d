@@ -43,7 +43,9 @@ impl Drop for Texture {
 local_data_key!(KEY_TEXTURE_MANAGER: TextureManager)
 
 
-/// The textures manager. It keeps a cache of already-loaded textures, and can load new textures.
+/// The texture manager.
+///
+/// It keeps a cache of already-loaded textures, and can load new textures.
 pub struct TextureManager {
     priv default_texture: Rc<Texture>,
     priv textures:        HashMap<~str, Rc<Texture>>,
@@ -93,8 +95,9 @@ impl TextureManager {
         self.textures.find(&name.to_owned()).map(|t| t.clone())
     }
 
-    /// Allocates a new unconfigured texture. If a texture with same name exists, nothing is
-    /// created and the old texture is returned.
+    /// Allocates a new texture that is not yet configured.
+    ///
+    /// If a texture with same name exists, nothing is created and the old texture is returned.
     pub fn add_empty(&mut self, name: &str) -> Rc<Texture> {
         self.textures.find_or_insert_with(name.to_owned(), |_| Texture::new()).clone()
     }

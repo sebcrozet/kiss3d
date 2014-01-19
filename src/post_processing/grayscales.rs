@@ -35,7 +35,7 @@ static FRAGMENT_SHADER: &'static str =
       gl_FragColor  = vec4(gray, gray, gray, color.a);
     }";
 
-/// Post processing effect which turns everything in grayscales.
+/// Post processing effect which turns everything in gray scales.
 pub struct Grayscales {
     priv vshader:      GLuint,
     priv fshader:      GLuint,
@@ -46,7 +46,7 @@ pub struct Grayscales {
 }
 
 impl Grayscales {
-    /// Creates a new Grayscales post processing effect.
+    /// Creates a new `Grayscales` post processing effect.
     pub fn new() -> Grayscales {
         unsafe {
             /* Global */

@@ -14,7 +14,7 @@ use resource::Mesh;
 #[path = "../error.rs"]
 mod error;
 
-/// Loades the builtin meshes for the: cube, sphere, cone, cylinder and capsule.
+/// Loads the built-in meshes for the: cube, sphere, cone, cylinder and capsule.
 pub fn load() -> HashMap<~str, Rc<RefCell<Mesh>>> {
     let emptypath = Path::new("");
 

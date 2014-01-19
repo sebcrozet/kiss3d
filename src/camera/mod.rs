@@ -1,4 +1,4 @@
-//! Camera trait with some commonimplementations.
+//! Camera trait with some common implementations.
 
 pub use camera::camera::Camera;
 pub use camera::arc_ball::ArcBall;

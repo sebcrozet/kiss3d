@@ -8,8 +8,8 @@ use event;
 /// First-person camera mode.
 ///
 ///   * Left button press + drag - look around
-///   * Right button press + drag - translates the camera position on the plane orthogonal to the view
-///   direction
+///   * Right button press + drag - translates the camera position on the plane orthogonal to the
+///   view direction
 ///   * Scroll in/out - zoom in/out
 #[deriving(ToStr)]
 pub struct FirstPerson {

@@ -1,4 +1,4 @@
-//! GPU resourse managers
+//! GPU resource managers
 
 pub use resource::framebuffer_manager::{FramebufferManager, RenderTarget};
 pub use resource::texture_manager::{Texture, TextureManager};

@@ -12,7 +12,7 @@ mod error;
 pub enum RenderTarget {
     /// The screen (main framebuffer).
     priv Screen,
-    /// An offscreen buffer.
+    /// An off-screen buffer.
     priv Offscreen(OffscreenBuffers)
 }
 
@@ -23,7 +23,7 @@ struct OffscreenBuffers {
 }
 
 impl RenderTarget {
-    /// Returns an opengl handle to the offscreen texture buffer.
+    /// Returns an opengl handle to the off-screen texture buffer.
     pub fn texture_id(&self) -> GLuint {
         match *self {
             Screen           => 0,
@@ -31,7 +31,7 @@ impl RenderTarget {
         }
     }
 
-    /// Returns an opengl handle to the offscreen depth buffer.
+    /// Returns an opengl handle to the off-screen depth buffer.
     pub fn depth_id(&self) -> GLuint {
         match *self {
             Screen           => 0,
@@ -65,7 +65,7 @@ impl RenderTarget {
     }
 }
 
-/// A framebuffer manager. It is a simple to to switch between an offscreen framebuffer and the
+/// A framebuffer manager. It is a simple to to switch between an off-screen framebuffer and the
 /// default (window) framebuffer.
 pub struct FramebufferManager {
     priv curr_fbo:   GLuint,

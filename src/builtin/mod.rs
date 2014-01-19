@@ -1,4 +1,4 @@
-//! Builtin geometries, shaders and effects.
+//! Built-in geometries, shaders and effects.
 
 pub use builtin::sphere_obj::SPHERE_OBJ;
 pub use builtin::cube_obj::CUBE_OBJ;

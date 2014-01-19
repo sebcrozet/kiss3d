@@ -16,7 +16,7 @@ mod error;
 type Transform3d = Iso3<f32>;
 type Scale3d     = Mat3<GLfloat>;
 
-/// Set of datas identifying a scene node.
+/// Set of data identifying a scene node.
 pub struct ObjectData {
     priv scale:     Scale3d,
     priv transform: Transform3d,
@@ -47,14 +47,14 @@ impl ObjectData {
         &'a self.color
     }
 
-    /// Checks whether this objet is visible or not.
+    /// Checks whether this object is visible or not.
     pub fn visible(&self) -> bool {
         self.visible
     }
 
     /// An user-defined data.
     ///
-    /// Use dynamic typing capabilities of the `Any` type to recover the actual datas.
+    /// Use dynamic typing capabilities of the `Any` type to recover the actual data.
     pub fn user_data<'a>(&'a self) -> &'a Any {
         let res: &'a Any = self.user_data;
 
@@ -121,7 +121,7 @@ impl Object {
         &'a self.data
     }
 
-    /// Attaches user-defined datas to this object.
+    /// Attaches user-defined data to this object.
     #[inline]
     pub fn set_user_data(&mut self, user_data: ~Any) {
         self.data.borrow().borrow_mut().get().user_data = user_data;
@@ -139,7 +139,9 @@ impl Object {
         *self.material.borrow().borrow_mut().get() = material;
     }
 
-    /// Sets the visible state of this object. An invisible object does not draw itself.
+    /// Sets the visible state of this object.
+    ///
+    /// An invisible object is not drawn.
     #[inline]
     pub fn set_visible(&mut self, visible: bool) {
         self.data.borrow().borrow_mut().get().visible = visible
@@ -240,7 +242,7 @@ impl Object {
         faces.read(|faces| faces.read(|faces| { f(faces) }));
     }
 
-    /// Mutably access the object's uvs.
+    /// Mutably access the object's texture coordinates.
     #[inline(always)]
     pub fn modify_uvs(&mut self, f: |&mut ~[Vec2<GLfloat>]| -> ()) {
         let     m  = self.mesh();
@@ -251,7 +253,7 @@ impl Object {
         uvs.write(|uvs| uvs.write(|uvs| { f(uvs) }));
     }
 
-    /// Access the object's uvs.
+    /// Access the object's texture coordinates.
     #[inline(always)]
     pub fn read_uvs(&self, f: |&[Vec2<GLfloat>]| -> ()) {
         let m  = self.mesh();
@@ -263,7 +265,9 @@ impl Object {
     }
 
 
-    /// Sets the color of the object. Colors components must be on the range `[0.0, 1.0]`.
+    /// Sets the color of the object.
+    ///
+    /// Colors components must be on the range `[0.0, 1.0]`.
     #[inline]
     pub fn set_color(&mut self, r: f32, g: f32, b: f32) {
         let mut d = self.data.borrow().borrow_mut();
