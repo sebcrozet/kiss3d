@@ -555,10 +555,7 @@ impl<'a> Window<'a> {
     // FIXME     self.camera.clone()
     // FIXME }
 
-    /// Opens a window and hide it. Once the window is created and before any event pooling, a
-    /// user-defined callback is called once.
-    ///
-    /// This method contains an infinite loop and returns when the window is closed.
+    /// Opens a window, hide it then calls a user-defined procedure.
     ///
     /// # Arguments
     /// * `title` - the window title
@@ -567,10 +564,7 @@ impl<'a> Window<'a> {
         Window::do_spawn(title.to_owned(), true, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
     }
 
-    /// Opens a window. Once the window is created and before any event pooling,
-    /// a user-defined callback is called once.
-    ///
-    /// This method contains an infinite loop and returns when the window is closed.
+    /// Opens a window then calls a user-defined procedure.
     ///
     /// # Arguments
     /// * `title` - the window title
@@ -579,10 +573,7 @@ impl<'a> Window<'a> {
         Window::do_spawn(title.to_owned(), false, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
     }
 
-    /// Opens a window with a custom size. Once the window is created and before any event pooling,
-    /// a user-defined callback is called once.
-    ///
-    /// This method contains an infinite loop and returns when the window is closed.
+    /// Opens a window with a custom size then calls a user-defined procedure.
     ///
     /// # Arguments
     /// * `title` - the window title
