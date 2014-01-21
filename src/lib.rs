@@ -16,7 +16,7 @@ graphics library are:
 It is designed to be able to draw simple geometric figures and play with them
 with one-liners.
 
-An on-line version of this documentation is available [here](http://crozet.re/kiss3d/doc/kiss3d/index.html).
+An on-line version of this documentation is available [here](http://www.rust-ci.org/sebcrozet/kiss3d/doc/kiss3d/index.html).
 
 ## Features
 Most features are one-liners.
@@ -98,7 +98,7 @@ I’d love to see people improving this library for their own needs. However, ke
 #[feature(globs)];
 #[feature(macro_rules)];
 #[feature(managed_boxes)];
-#[doc(html_root_url = "http://crozet.re/kiss3d/doc")];
+#[doc(html_root_url = "http://www.rust-ci.org/kiss3d/nalgebra/doc")];
 
 extern mod std;
 extern mod extra;

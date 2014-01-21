@@ -15,7 +15,7 @@ graphics library are:
 It is designed to be able to draw simple geometric figures and play with them
 with one-liners.
 
-An on-line version of this documentation is available [here](http://crozet.re/kiss3d/doc/kiss3d/index.html).
+An on-line version of this documentation is available [here](http://www.rust-ci.org/sebcrozet/kiss3d/doc/kiss3d/index.html).
 
 ## Features
 Most features are one-liners.
