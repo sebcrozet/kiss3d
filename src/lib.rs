@@ -92,6 +92,7 @@ I’d love to see people improving this library for their own needs. However, ke
 #[crate_id = "kiss3d#0.1"];
 #[crate_type = "lib"];
 #[deny(non_camel_case_types)];
+#[deny(unnecessary_parens)];
 #[deny(non_uppercase_statics)];
 #[deny(unnecessary_qualification)];
 #[deny(missing_doc)];

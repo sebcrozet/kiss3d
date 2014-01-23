@@ -63,13 +63,13 @@ pub fn check_shader_error(shader: GLuint) {
     unsafe{
         gl::GetShaderiv(shader, gl::COMPILE_STATUS, &mut compiles);
 
-        if(compiles == 0) {
+        if compiles == 0 {
             println!("Shader compilation failed.");
             let mut info_log_len = 0;
 
             gl::GetShaderiv(shader, gl::INFO_LOG_LENGTH, &mut info_log_len);
 
-            if (info_log_len > 0) {
+            if info_log_len > 0 {
                 // error check for fail to allocate memory omitted
                 let mut chars_written = 0;
                 let info_log = " ".repeat(info_log_len as uint);
@@ -82,7 +82,7 @@ pub fn check_shader_error(shader: GLuint) {
 
                 let bytes = c_str.as_bytes();
                 let bytes = bytes.slice_to(bytes.len() - 1);
-                fail!("Shader compilation failed: " + str::from_utf8(bytes));
+                fail!("Shader compilation failed: " + str::from_utf8(bytes).unwrap());
             }
         }
     }

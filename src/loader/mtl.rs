@@ -19,7 +19,7 @@ pub fn parse_file(path: &Path) -> Option<~[MtlMaterial]> {
     }
     else {
         let s   = File::open(path).expect("Cannot open the file: " + path.as_str().unwrap()).read_to_end();
-        let obj = str::from_utf8_owned(s);
+        let obj = str::from_utf8_owned(s).unwrap();
         Some(parse(obj))
     }
 }

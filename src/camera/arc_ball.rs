@@ -135,16 +135,16 @@ impl ArcBall {
 
     /// Transformation applied by the camera without perspective.
     fn update_restrictions(&mut self) {
-        if (self.dist < 0.00001) {
+        if self.dist < 0.00001 {
             self.dist = 0.00001
         }
 
-        if (self.pitch <= 0.0001) {
+        if self.pitch <= 0.0001 {
             self.pitch = 0.0001
         }
 
         let _pi: f32 = Real::pi();
-        if (self.pitch > _pi - 0.0001) {
+        if self.pitch > _pi - 0.0001 {
             self.pitch = _pi - 0.0001
         }
     }

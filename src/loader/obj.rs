@@ -36,7 +36,7 @@ pub fn parse_file(path: &Path, mtl_base_dir: &Path, basename: &str) -> Option<~[
     }
     else {
         let s   = File::open(path).expect("Cannot open the file: " + path.as_str().unwrap()).read_to_end();
-        let obj = str::from_utf8_owned(s);
+        let obj = str::from_utf8_owned(s).unwrap();
         Some(parse(obj, mtl_base_dir, basename))
     }
 }
@@ -259,7 +259,7 @@ fn parse_f<'a>(l:              uint,
     // there is not enough vertex to form a triangle. Complete it.
     if i < 2 {
         for _ in range(0u, 3 - i) {
-            let last = groups_ids[curr_group].last().clone();
+            let last = groups_ids[curr_group].last().unwrap().clone();
             groups_ids[curr_group].push(last);
         }
     }

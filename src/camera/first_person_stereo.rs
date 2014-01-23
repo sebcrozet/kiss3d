@@ -114,12 +114,12 @@ impl FirstPersonStereo {
     }
 
     fn update_restrictions(&mut self) {
-        if (self.pitch <= 0.0001) {
+        if self.pitch <= 0.0001 {
             self.pitch = 0.0001
         }
 
         let _pi: f32 = Real::pi();
-        if (self.pitch > _pi - 0.0001) {
+        if self.pitch > _pi - 0.0001 {
             self.pitch = _pi - 0.0001
         }
     }
