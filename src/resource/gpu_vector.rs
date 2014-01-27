@@ -13,8 +13,8 @@ use resource::gl_primitive::GLPrimitive;
 mod error;
 
 struct GLHandle {
-    priv handle: GLuint,
-    priv nocpy:  NonCopyable
+    handle: GLuint,
+    nocpy:  NonCopyable
 }
 
 impl GLHandle {

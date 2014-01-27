@@ -31,7 +31,7 @@ fn main() {
 }
 
 // A material that draws normals
-struct NormalMaterial {
+pub struct NormalMaterial {
     priv program:    GLuint,
     priv vshader:    GLuint,
     priv fshader:    GLuint,

@@ -66,6 +66,8 @@ pub fn parse(string: &str) -> ~[MtlMaterial] {
                             &"map_Kd"      => curr_material.diffuse_texture = Some(parse_name(l, words)),
                             // specular texture map
                             &"map_Ks"      => curr_material.specular_texture = Some(parse_name(l, words)),
+                            // specular texture map
+                            &"map_d" | &"map_opacity" => curr_material.opacity_map = Some(parse_name(l, words)),
                             _     => {
                                 println!("Warning: unknown line {} ignored: `{:s}'", l, line);
                             }
@@ -117,13 +119,15 @@ fn parse_shininess<'a>(l: uint, mut ws: Words<'a>) -> f32 {
 pub struct MtlMaterial {
     /// Name of the material.
     name:             ~str,
-    /// Path to the ambient texture.
+    /// Path to the ambiant texture.
     ambiant_texture:  Option<~str>,
     /// Path to the diffuse texture.
     diffuse_texture:  Option<~str>,
     /// Path to the specular texture.
     specular_texture: Option<~str>,
-    /// The ambient color.
+    /// Path to the opacity map.
+    opacity_map:      Option<~str>,
+    /// The ambiant color.
     ambiant:          Vec3<f32>,
     /// The diffuse color.
     diffuse:          Vec3<f32>,
@@ -142,6 +146,7 @@ impl MtlMaterial {
             ambiant_texture:  None,
             diffuse_texture:  None,
             specular_texture: None,
+            opacity_map:      None,
             ambiant:          Vec3::new(1.0, 1.0, 1.0),
             diffuse:          Vec3::new(1.0, 1.0, 1.0),
             specular:         Vec3::new(1.0, 1.0, 1.0),
@@ -156,7 +161,8 @@ impl MtlMaterial {
                specular:         Vec3<f32>,
                ambiant_texture:  Option<~str>,
                diffuse_texture:  Option<~str>,
-               specular_texture: Option<~str>)
+               specular_texture: Option<~str>,
+               opacity_map:      Option<~str>)
                -> MtlMaterial {
         MtlMaterial {
             name:             name,
@@ -166,6 +172,7 @@ impl MtlMaterial {
             ambiant_texture:  ambiant_texture,
             diffuse_texture:  diffuse_texture,
             specular_texture: specular_texture,
+            opacity_map:      opacity_map,
             shininess:        shininess
         }
     }
