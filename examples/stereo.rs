@@ -4,7 +4,7 @@ extern mod glfw;
 
 //use nalgebra::mat::Rotation;
 use nalgebra::na::Vec3;
-use kiss3d::window;
+use kiss3d::window::Window;
 use kiss3d::light;
 use kiss3d::event::KeyReleased;
 use kiss3d::camera::{Camera, FirstPersonStereo};
@@ -12,7 +12,7 @@ use kiss3d::post_processing::{PostProcessingEffect, OculusStereo};
 //use kiss3d::post_processing::grayscales::Grayscales;
 
 fn main() {
-    do window::Window::spawn_size("kiss3d_stereo", 1280, 800) |window| {
+    Window::spawn_size("kiss3d_stereo", 1280, 800, proc(window) {
         let mut c = window.add_cube(1.0, 1.0, 1.0);
 
         let     eye                 = Vec3::new(0.0f32, 0.0, 10.0);
@@ -72,5 +72,5 @@ fn main() {
                 }
             })
         })
-    }
+    })
 }

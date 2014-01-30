@@ -400,9 +400,9 @@ impl<'a> Window<'a> {
         }
 
         // create the normals
-        ((hsubdivs + 1) * (wsubdivs + 1)).times(|| {
+        for _ in range(0, (hsubdivs + 1) * (wsubdivs + 1)) {
             { normals.push(Vec3::new(1.0, 0.0, 0.0)) }
-        });
+        }
 
         // create triangles
         fn dl_triangle(i: u32, j: u32, ws: u32) -> Vec3<GLuint> {
@@ -585,7 +585,7 @@ impl<'a> Window<'a> {
     fn do_spawn(title: ~str, hide: bool, width: u32, height: u32, callback: proc(&mut Window)) {
         glfw::set_error_callback(~ErrorCallback);
 
-        do glfw::start {
+        glfw::start(proc() {
             let window = glfw::Window::create(width, height, title, glfw::Windowed).expect("Unable to open a glfw window.");
 
             window.make_context_current();
@@ -642,7 +642,7 @@ impl<'a> Window<'a> {
             usr_window.set_light(usr_window.light_mode);
 
             callback(&mut usr_window);
-        }
+        })
     }
 
     fn draw(&mut self, curr: &mut u64, timer: &mut Timer) {

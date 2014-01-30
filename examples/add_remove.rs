@@ -1,11 +1,11 @@
 extern mod kiss3d;
 extern mod nalgebra;
 
-use kiss3d::window;
+use kiss3d::window::Window;
 use kiss3d::light;
 
 fn main() {
-    do window::Window::spawn("Kiss3d: cube") |window| {
+    Window::spawn("Kiss3d: cube", proc(window) {
         let mut c     = window.add_cube(1.0, 1.0, 1.0);
         let mut added = true;
 
@@ -22,5 +22,5 @@ fn main() {
 
             added = !added;
         });
-    }
+    })
 }

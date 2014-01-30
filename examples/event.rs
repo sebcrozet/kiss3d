@@ -5,11 +5,11 @@ use kiss3d::window::Window;
 use kiss3d::event;
 
 fn main() {
-    do Window::spawn("Kiss3d: events") |window| {
+    Window::spawn("Kiss3d: events", proc(window) {
         window.render_loop(|w| {
             w.poll_events(event_handler);
         })
-    }
+    })
 }
 
 fn event_handler(_: &mut Window, event: &event::Event) -> bool {

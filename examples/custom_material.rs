@@ -10,7 +10,7 @@ use std::cell::RefCell;
 use gl::types::{GLuint, GLint};
 use nalgebra::na::{Vec3, Mat4, Rotation};
 use nalgebra::na;
-use kiss3d::window;
+use kiss3d::window::Window;
 use kiss3d::object::ObjectData;
 use kiss3d::camera::Camera;
 use kiss3d::light::Light;
@@ -18,7 +18,7 @@ use kiss3d::resource::{Material, Mesh};
 use kiss3d::resource;
 
 fn main() {
-    do window::Window::spawn("Kiss3d: cube") |window| {
+    Window::spawn("Kiss3d: cube", proc(window) {
         let mut c        = window.add_sphere(1.0);
         let     material = Rc::new(RefCell::new(~NormalMaterial::new() as ~Material));
 
@@ -27,7 +27,7 @@ fn main() {
         window.render_loop(|_| {
             c.prepend_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
         })
-    }
+    })
 }
 
 // A material that draws normals

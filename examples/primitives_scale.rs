@@ -7,7 +7,7 @@ use kiss3d::window::Window;
 use kiss3d::light::StickToCamera;
 
 fn main() {
-    do Window::spawn("Kiss3d: scaled primitives") |window| {
+    Window::spawn("Kiss3d: scaled primitives", proc(window) {
         // NOTE: scaling is not possible.
         for i in range(0u, 11) {
             let dim: f32 = random::<f32>() / 2.0;
@@ -41,5 +41,5 @@ fn main() {
                 o.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
             }
         });
-    };
+    })
 }

@@ -3,12 +3,12 @@ extern mod nalgebra;
 
 use std::rand::random;
 use nalgebra::na::{Vec3, Translation};
-use kiss3d::window;
+use kiss3d::window::Window;
 use kiss3d::light;
 use kiss3d::post_processing::{PostProcessingEffect, Waves, Grayscales, SobelEdgeHighlight};
 
 fn main() {
-    do window::Window::spawn("Kiss3d: cube") |window| {
+    Window::spawn("Kiss3d: cube", proc(window) {
         let mut c = window.add_cube(1.0, 1.0, 1.0);
         let mut b = window.add_sphere(0.5);
         let mut p = window.add_cone(1.0, 0.5);
@@ -54,5 +54,5 @@ fn main() {
 
             time = time + 1;
         })
-    }
+    })
 }

@@ -7,7 +7,7 @@ use kiss3d::window::Window;
 use kiss3d::light;
 
 fn main() {
-    do Window::spawn("Kiss3d: primitives") |window| {
+    Window::spawn("Kiss3d: primitives", proc(window) {
         let mut c = window.add_cube(1.0, 1.0, 1.0);
         let mut b = window.add_sphere(0.5);
         let mut p = window.add_cone(1.0, 0.5);
@@ -35,5 +35,5 @@ fn main() {
             y.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
             a.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
         });
-    };
+    })
 }

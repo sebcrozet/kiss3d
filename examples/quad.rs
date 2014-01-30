@@ -2,11 +2,11 @@ extern mod kiss3d;
 extern mod nalgebra;
 
 use std::rand::random;
-use kiss3d::window;
+use kiss3d::window::Window;
 use kiss3d::light;
 
 fn main() {
-    do window::Window::spawn("Kiss3d: quad waves") |window| {
+    Window::spawn("Kiss3d: quad waves", proc(window) {
         let mut c = window.add_quad(5.0, 4.0, 500, 400);
         
         c.set_color(random(), random(), random());
@@ -26,5 +26,5 @@ fn main() {
 
             time = time + 0.016;
         })
-    }
+    })
 }

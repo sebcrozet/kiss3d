@@ -59,7 +59,9 @@ pub fn parse(string: &str) -> ~[MtlMaterial] {
                             // specular color
                             &"Ks"          => curr_material.specular = parse_color(l, words),
                             // shininess
-                            &"Ns"          => curr_material.shininess = parse_shininess(l, words),
+                            &"Ns"          => curr_material.shininess = parse_scalar(l, words),
+                            // alpha
+                            &"d"           => curr_material.alpha = parse_scalar(l, words),
                             // ambiant map
                             &"map_Ka"      => curr_material.ambiant_texture = Some(parse_name(l, words)),
                             // diffuse texture map
@@ -104,7 +106,7 @@ fn parse_color<'a>(l: uint, mut ws: Words<'a>) -> Vec3<f32> {
     Vec3::new(x, y, z)
 }
 
-fn parse_shininess<'a>(l: uint, mut ws: Words<'a>) -> f32 {
+fn parse_scalar<'a>(l: uint, mut ws: Words<'a>) -> f32 {
     let sx = ws.next().unwrap_or_else(|| error(l, "1 component was expected, found 0."));
 
     let x: Option<f32> = FromStr::from_str(sx);
@@ -135,6 +137,8 @@ pub struct MtlMaterial {
     specular:         Vec3<f32>,
     /// The shininess.
     shininess:        f32,
+    /// Alpha blending.
+    alpha:            f32,
 }
 
 impl MtlMaterial {
@@ -142,7 +146,8 @@ impl MtlMaterial {
     pub fn new_default(name: ~str) -> MtlMaterial {
         MtlMaterial {
             name:             name,
-            shininess:        0.0,
+            shininess:        60.0,
+            alpha:            1.0,
             ambiant_texture:  None,
             diffuse_texture:  None,
             specular_texture: None,
@@ -156,6 +161,7 @@ impl MtlMaterial {
     /// Creates a new mtl material.
     pub fn new(name:             ~str,
                shininess:        f32,
+               alpha:            f32,
                ambiant:          Vec3<f32>,
                diffuse:          Vec3<f32>,
                specular:         Vec3<f32>,
@@ -173,7 +179,8 @@ impl MtlMaterial {
             diffuse_texture:  diffuse_texture,
             specular_texture: specular_texture,
             opacity_map:      opacity_map,
-            shininess:        shininess
+            shininess:        shininess,
+            alpha:            alpha
         }
     }
 }

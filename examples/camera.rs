@@ -5,15 +5,14 @@ extern mod nalgebra;
 
 use nalgebra::na::Vec3;
 use nalgebra::na;
-use kiss3d::window;
+use kiss3d::window::Window;
 use kiss3d::event::KeyReleased;
 use kiss3d::camera::{Camera, ArcBall, FirstPerson};
 use kiss3d::light;
 
 fn main()
 {
-    do window::Window::spawn("Kiss3d: camera") |window|
-    {
+    Window::spawn("Kiss3d: camera", proc(window) {
         window.set_light(light::StickToCamera);
 
         // Replace the default arc-ball camera so that we can control it
@@ -49,5 +48,5 @@ fn main()
             // rotate the arc-ball camera
             arc_ball.set_yaw(curr_yaw + 0.05);
         });
-    }
+    })
 }

@@ -2,11 +2,11 @@ extern mod kiss3d;
 extern mod nalgebra;
 
 use nalgebra::na::Vec3;
-use kiss3d::window;
+use kiss3d::window::Window;
 use kiss3d::light;
 
 fn main() {
-    do window::Window::spawn("Kiss3d: lines") |window| {
+    Window::spawn("Kiss3d: lines", proc(window) {
 
         window.set_light(light::StickToCamera);
 
@@ -19,5 +19,5 @@ fn main() {
             w.draw_line(&b, &c, &Vec3::new(0.0, 1.0, 0.0));
             w.draw_line(&c, &a, &Vec3::new(0.0, 0.0, 1.0));
         })
-    }
+    })
 }
