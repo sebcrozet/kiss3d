@@ -38,7 +38,8 @@ pub fn parse(string: &str) -> ~[MtlMaterial] {
             Some(w) => {
                 if w.len() != 0 && w[0] != ('#' as u8) {
                     let mut p = line.words().peekable();
-                    p.next();
+                    let     _ = p.next();
+
                     if p.peek().is_none() {
                         continue
                     }

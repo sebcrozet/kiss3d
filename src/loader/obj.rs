@@ -72,7 +72,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> ~[(~str, Mesh
                         &"vt"     => if !ignore_uvs { uvs.push(parse_vt(l, words)) },
                         &"g"      => {
                             curr_group = parse_g(l, words, basename, &mut groups, &mut groups_ids);
-                            curr_mtl.as_ref().map(|mtl| group2mtl.insert(curr_group, mtl.clone()));
+                            let _ = curr_mtl.as_ref().map(|mtl| group2mtl.insert(curr_group, mtl.clone()));
                         },
                         &"mtllib" => parse_mtllib(l, words, mtl_base_dir, &mut mtllib),
                         &"usemtl" => curr_group = parse_usemtl(l, words, curr_group, &mtllib, &mut group2mtl, &mut groups, &mut groups_ids, &mut curr_mtl),
@@ -319,9 +319,11 @@ fn reformat(coords:     ~[Coord],
                 Some(i) => { vertex_ids.push(*i); None },
                 None    => {
                     let idx = resc.len() as u32;
+
                     resc.push(coords[point.x]);
-                    resu.as_mut().map(|l| l.push(uvs.get_ref()[point.y]));
-                    resn.as_mut().map(|l| l.push(normals.get_ref()[point.z]));
+
+                    let _ = resu.as_mut().map(|l| l.push(uvs.get_ref()[point.y]));
+                    let _ = resn.as_mut().map(|l| l.push(normals.get_ref()[point.z]));
 
                     vertex_ids.push(idx);
 
@@ -329,7 +331,7 @@ fn reformat(coords:     ~[Coord],
                 }
             };
 
-            idx.map(|i| vt2id.insert(point.clone(), i));
+            let _ = idx.map(|i| vt2id.insert(point.clone(), i));
         }
 
         let mut resf = vec::with_capacity(vertex_ids.len() / 3);

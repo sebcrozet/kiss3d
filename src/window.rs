@@ -47,7 +47,7 @@ pub struct Window<'a> {
     priv geometries:                 HashMap<~str, Rc<RefCell<Mesh>>>,
     priv background:                 Vec3<GLfloat>,
     priv line_renderer:              LineRenderer,
-    priv framebuffer_manager:       FramebufferManager,
+    priv framebuffer_manager:        FramebufferManager,
     priv post_processing:            Option<&'a mut PostProcessingEffect>,
     priv post_process_render_target: RenderTarget,
     priv events:                     RWArc<~[event::Event]>,
@@ -134,8 +134,7 @@ impl<'a> Window<'a> {
     pub fn remove(&mut self, o: Object) {
         match self.objects.iter().rposition(|e| o == *e) {
             Some(i) => {
-                // XXX: release textures and buffers if nobody else use them
-                self.objects.swap_remove(i);
+                let _ = self.objects.swap_remove(i);
             },
             None => { }
         }
@@ -194,17 +193,17 @@ impl<'a> Window<'a> {
                 Some(mtl) => {
                     object.set_color(mtl.diffuse.x, mtl.diffuse.y, mtl.diffuse.z);
 
-                    mtl.diffuse_texture.as_ref().map(|t| {
+                    for t in mtl.diffuse_texture.iter() {
                         let mut tpath = mtl_dir.clone();
                         tpath.push(t.as_slice());
                         object.set_texture(&tpath, tpath.as_str().unwrap())
-                    });
+                    }
 
-                    mtl.ambiant_texture.map(|t| {
+                    for t in mtl.ambiant_texture.iter() {
                         let mut tpath = mtl_dir.clone();
                         tpath.push(t.as_slice());
                         object.set_texture(&tpath, tpath.as_str().unwrap())
-                    });
+                    }
                 }
             }
 

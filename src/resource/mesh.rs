@@ -113,7 +113,7 @@ impl Mesh {
 
     /// Recompute this mesh normals.
     pub fn recompute_normals(&mut self) {
-        self.normals.write(|ns|
+        let _ = self.normals.write(|ns|
             ns.write(
                 |normals| {
                     self.coords.read(|cs| cs.read(|cs|

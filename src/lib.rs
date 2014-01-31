@@ -96,6 +96,7 @@ I’d love to see people improving this library for their own needs. However, ke
 #[deny(non_uppercase_statics)];
 #[deny(unnecessary_qualification)];
 #[deny(missing_doc)];
+#[deny(unused_result)];
 #[feature(globs)];
 #[feature(macro_rules)];
 #[feature(managed_boxes)];

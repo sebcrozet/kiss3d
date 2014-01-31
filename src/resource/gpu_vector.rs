@@ -115,9 +115,9 @@ impl<T: GLPrimitive> GPUVector<T> {
         if self.is_on_gpu() {
             let handle = self.handle.as_ref().map(|h| h.handle()).unwrap();
 
-            self.data.as_ref().map(|d| {
+            for d in self.data.iter() {
                 update_buffer(*d, handle, self.buf_type, self.alloc_type)
-            });
+            }
         }
     }
 
@@ -128,14 +128,16 @@ impl<T: GLPrimitive> GPUVector<T> {
         unsafe {
             let handle = self.handle.as_ref().map(|h| h.handle()).unwrap();
             verify!(gl::BindBuffer(self.buf_type.to_gl(), handle));
-            attribute.map(|attr|
+
+            for attr in attribute.move_iter() {
                 verify!(gl::VertexAttribPointer(
                         attr,
                         GLPrimitive::size(None::<T>) as i32,
                         GLPrimitive::gl_type(None::<T>),
                         gl::FALSE as u8,
                         0,
-                        ptr::null())));
+                        ptr::null()))
+            }
         }
     }
 
@@ -165,7 +167,7 @@ impl<T: GLPrimitive> GPUVector<T> {
 
     /// Unloads this resource from the GPU.
     pub fn unload_from_gpu(&mut self) {
-        self.handle.as_ref().map(|h| unsafe { verify!(gl::DeleteBuffers(1, &h.handle())) });
+        let _ = self.handle.as_ref().map(|h| unsafe { verify!(gl::DeleteBuffers(1, &h.handle())) });
         self.handle = None;
     }
 
