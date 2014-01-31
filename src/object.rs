@@ -1,6 +1,5 @@
 //! Data structure of a scene node.
 
-use std::borrow;
 use std::cell::RefCell;
 use std::rc::Rc;
 use gl::types::*;
@@ -456,6 +455,6 @@ impl Eq for Object {
         let d1 = self.data.borrow().borrow();
         let d2 = other.data.borrow().borrow();
 
-        borrow::ref_eq(d1.get(), d2.get())
+        d1.get() as *ObjectData == d2.get() as *ObjectData
     }
 }
