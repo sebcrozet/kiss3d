@@ -30,7 +30,7 @@ fn main()
                         if key == glfw::Key1 {
                             w.set_camera(&mut arc_ball as &mut Camera)
                         }
-                        else {
+                        else if key == glfw::Key2 {
                             w.set_camera(&mut first_person as &mut Camera)
                         }
                     }

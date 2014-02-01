@@ -1,7 +1,6 @@
-use std::cast;
 use glfw;
-use gl;
 use nalgebra::na::{Vec3, Mat4, Iso3};
+use resource::ShaderUniform;
 use event;
 
 /// Trait every camera must implement.
@@ -35,17 +34,11 @@ pub trait Camera {
     /// Update the camera. This is called once at the beginning of the render loop.
     fn update(&mut self, window: &glfw::Window);
 
-    /// Upload the camera transformation to the gpu. This cam be called multiple times on the
+    /// Upload the camera transformation to the gpu. This can be called multiple times on the
     /// render loop.
-    fn upload(&self, _pass: uint, view_location: i32) {
-        let homo = &self.transformation();
-        unsafe {
-            gl::UniformMatrix4fv(
-                view_location,
-                1,
-                gl::FALSE as u8,
-                cast::transmute(homo));
-        }
+    #[inline]
+    fn upload(&self, _pass: uint, uniform: &mut ShaderUniform<Mat4<f32>>) {
+        uniform.upload(&self.transformation());
     }
 
     /// The number of passes required by this camera.

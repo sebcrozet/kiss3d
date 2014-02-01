@@ -10,3 +10,6 @@
 [submodule "lib/gl-rs"]
 	path = lib/gl-rs
 	url = git://github.com/sebcrozet/gl-rs.git
+[submodule "lib/rust-freetype"]
+	path = lib/rust-freetype
+	url = git://github.com/sebcrozet/rust-freetype.git

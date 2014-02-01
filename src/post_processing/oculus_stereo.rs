@@ -1,41 +1,27 @@
 //! Post processing effect to support the Oculus Rift.
 
-use std::io::fs::File;
-use std::cast;
-use std::ptr;
-use std::mem;
-use std::io::Reader;
-use std::str;
 use gl;
 use gl::types::*;
-use resource::RenderTarget;
-use resource;
+use nalgebra::na::Vec2;
+use resource::{Shader, ShaderUniform, ShaderAttribute, RenderTarget, GPUVector, ArrayBuffer, StaticDraw};
 use post_processing::post_processing_effect::PostProcessingEffect;
 
 #[path = "../error.rs"]
 mod error;
 
-fn load_file(path: &str) -> ~str {
-    
-    let s = File::open(&Path::new(path)).expect("Cannot open the file: " + path).read_to_end();
-    str::from_utf8_owned(s).unwrap()
-}
-
 /// An post-processing effect to support the oculus rift.
 pub struct OculusStereo {
-    priv vshader:      GLuint,
-    priv fshader:      GLuint,
-    priv program:      GLuint,
+    priv shader:       Shader,
     priv time:         f32,
-    priv fbo_texture:  GLuint,
-    priv fbo_vertices: GLuint,
-    priv v_coord:      GLint,
-    priv kappa_0:      GLuint,
-    priv kappa_1:      GLuint,
-    priv kappa_2:      GLuint,
-    priv kappa_3:      GLuint,
-    priv scale:        GLuint,
-    priv scale_in:     GLuint,
+    priv fbo_vertices: GPUVector<Vec2<f32>>,
+    priv fbo_texture:  ShaderUniform<GLint>,
+    priv v_coord:      ShaderAttribute<Vec2<GLfloat>>,
+    priv kappa_0:      ShaderUniform<GLfloat>,
+    priv kappa_1:      ShaderUniform<GLfloat>,
+    priv kappa_2:      ShaderUniform<GLfloat>,
+    priv kappa_3:      ShaderUniform<GLfloat>,
+    priv scale:        ShaderUniform<Vec2<GLfloat>>,
+    priv scale_in:     ShaderUniform<Vec2<GLfloat>>,
     priv w:            f32,
     priv h:            f32
 }
@@ -43,52 +29,34 @@ pub struct OculusStereo {
 impl OculusStereo {
     /// Creates a new OculusStereo post processing effect.
     pub fn new() -> OculusStereo {
-        unsafe {
-            /* Global */
-            let mut vbo_fbo_vertices: GLuint = 0;;
-            /* init_resources */
-            let fbo_vertices: [GLfloat, ..8] = [
-                -1.0, -1.0,
-                1.0, -1.0,
-                -1.0,  1.0,
-                1.0,  1.0,
-                ];
+        let fbo_vertices: ~[Vec2<GLfloat>]  = ~[
+            Vec2::new(-1.0, -1.0),
+            Vec2::new(1.0, -1.0),
+            Vec2::new(-1.0,  1.0),
+            Vec2::new(1.0,  1.0)];
 
-            gl::GenBuffers(1, &mut vbo_fbo_vertices);
-            gl::BindBuffer(gl::ARRAY_BUFFER, vbo_fbo_vertices);
-            gl::BufferData(
-                gl::ARRAY_BUFFER,
-                (fbo_vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-                cast::transmute(&fbo_vertices[0]),
-                gl::STATIC_DRAW);
-            gl::BindBuffer(gl::ARRAY_BUFFER, 0);
+        let mut fbo_vertices = GPUVector::new(fbo_vertices, ArrayBuffer, StaticDraw);
+        fbo_vertices.load_to_gpu();
+        fbo_vertices.unload_from_ram();
 
-            let (program, vshader, fshader) =
-                resource::load_shader_program(
-                    load_file("oculus_vertex_shader.glsl"),
-                    load_file("oculus_fragment_shader.glsl"));
+        let mut shader = Shader::new_from_str(VERTEX_SHADER, FRAGMENT_SHADER);
 
-            verify!(gl::UseProgram(program));
+        shader.use_program();
 
-            let v_coord = gl::GetAttribLocation(program, "v_coord".to_c_str().unwrap());
-
-            OculusStereo {
-                vshader:      vshader,
-                fshader:      fshader,
-                program:      program,
-                time:         0.0,
-                fbo_texture:  gl::GetUniformLocation(program, "fbo_texture".to_c_str().unwrap()) as GLuint,
-                fbo_vertices: vbo_fbo_vertices,
-                v_coord:      v_coord,
-                kappa_0:  gl::GetUniformLocation(program, "kappa_0".to_c_str().unwrap()) as GLuint,
-                kappa_1:  gl::GetUniformLocation(program, "kappa_1".to_c_str().unwrap()) as GLuint,
-                kappa_2:  gl::GetUniformLocation(program, "kappa_2".to_c_str().unwrap()) as GLuint,
-                kappa_3:  gl::GetUniformLocation(program, "kappa_3".to_c_str().unwrap()) as GLuint,
-                scale:    gl::GetUniformLocation(program, "Scale".to_c_str().unwrap()) as GLuint,
-                scale_in: gl::GetUniformLocation(program, "ScaleIn".to_c_str().unwrap()) as GLuint,
-                h:  1f32, // will be updated in the first update
-                w:  1f32, // ditto
-            }
+        OculusStereo {
+            time:         0.0,
+            fbo_texture:  shader.get_uniform("fbo_texture").unwrap(),
+            fbo_vertices: fbo_vertices,
+            v_coord:      shader.get_attrib("v_coord").unwrap(),
+            kappa_0:      shader.get_uniform("kappa_0").unwrap(),
+            kappa_1:      shader.get_uniform("kappa_1").unwrap(),
+            kappa_2:      shader.get_uniform("kappa_2").unwrap(),
+            kappa_3:      shader.get_uniform("kappa_3").unwrap(),
+            scale:        shader.get_uniform("Scale").unwrap(),
+            scale_in:     shader.get_uniform("ScaleIn").unwrap(),
+            shader:       shader,
+            h:            1f32, // will be updated in the first update
+            w:            1f32, // ditto
         }
     }
 }
@@ -99,25 +67,24 @@ impl PostProcessingEffect for OculusStereo {
         self.h = h;
     }
 
-    fn draw(&self, target: &RenderTarget) {
+    fn draw(&mut self, target: &RenderTarget) {
         let scaleFactor = 0.9f32; // firebox: in Oculus SDK example it's "1.0f/Distortion.Scale"
         let aspect      = (self.w / 2.0f32) / (self.h); // firebox: rift's "half screen aspect ratio"
 
-        let scale    = [0.5f32, aspect];
-        let scale_in = [2.0f32 * scaleFactor, 1.0f32 / aspect * scaleFactor];
+        self.shader.use_program();
 
-        verify!(gl::EnableVertexAttribArray(self.v_coord as GLuint));
+        self.v_coord.enable();
+
         /*
          * Configure the post-process effect.
          */
-        gl::UseProgram(self.program);
         let kappa = [1.0, 1.7, 0.7, 15.0];
-        gl::Uniform1f(self.kappa_0 as GLint, kappa[0]);
-        gl::Uniform1f(self.kappa_1 as GLint, kappa[1]);
-        gl::Uniform1f(self.kappa_2 as GLint, kappa[2]);
-        gl::Uniform1f(self.kappa_3 as GLint, kappa[3]);
-        gl::Uniform2f(self.scale as GLint, scale[0], scale[1]);
-        gl::Uniform2f(self.scale_in as GLint, scale_in[0], scale_in[1]);
+        self.kappa_0.upload(&kappa[0]);
+        self.kappa_1.upload(&kappa[1]);
+        self.kappa_2.upload(&kappa[2]);
+        self.kappa_3.upload(&kappa[3]);
+        self.scale.upload(&Vec2::new(0.5f32, aspect));
+        self.scale_in.upload(&Vec2::new(2.0f32 * scaleFactor, 1.0f32 / aspect * scaleFactor));
 
         /*
          * Finalize draw
@@ -125,30 +92,81 @@ impl PostProcessingEffect for OculusStereo {
         gl::ClearColor(0.0, 0.0, 0.0, 1.0);
         gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
-        gl::UseProgram(self.program);
         gl::BindTexture(gl::TEXTURE_2D, target.texture_id());
-        gl::Uniform1i(self.fbo_texture as GLint, /* gl::TEXTURE*/0);
 
-        gl::BindBuffer(gl::ARRAY_BUFFER, self.fbo_vertices);
-        unsafe {
-            gl::VertexAttribPointer(
-                self.v_coord as GLuint,
-                2,
-                gl::FLOAT,
-                gl::FALSE as u8,
-                0,
-                ptr::null());
-        }
+        self.fbo_texture.upload(&0);
+
+        self.v_coord.bind(&mut self.fbo_vertices);
+
         gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4);
-        verify!(gl::DisableVertexAttribArray(self.v_coord as GLuint));
+
+        self.v_coord.disable();
     }
 }
 
-impl Drop for OculusStereo {
-    fn drop(&mut self) {
-        gl::DeleteProgram(self.program);
-        gl::DeleteShader(self.vshader);
-        gl::DeleteShader(self.fshader);
-        unsafe { gl::DeleteBuffers(1, &self.fbo_vertices); }
-    }
+static VERTEX_SHADER: &'static str =
+"
+#version 120
+attribute vec2    v_coord;
+uniform sampler2D fbo_texture;
+varying vec2      f_texcoord;
+ 
+void main(void) {
+  gl_Position = vec4(v_coord, 0.0, 1.0);
+  f_texcoord  = (v_coord + 1.0) / 2.0;
 }
+";
+
+static FRAGMENT_SHADER: &'static str =
+"
+#version 120
+uniform sampler2D fbo_texture;
+uniform float kappa_0;
+uniform float kappa_1;
+uniform float kappa_2;
+uniform float kappa_3;
+const vec2 LensCenterLeft = vec2(0.25, 0.5);
+const vec2 LensCenterRight = vec2(0.75, 0.5);
+uniform vec2 Scale;
+uniform vec2 ScaleIn;
+
+varying vec2 v_coord;
+varying vec2 f_texcoord;
+
+void main()
+{
+    vec2 theta;
+    float rSq;
+    vec2 rvector;
+    vec2 tc;
+    bool left_eye;
+
+    if (f_texcoord.x < 0.5) {
+        left_eye = true;
+    } else {
+        left_eye = false;
+    }
+
+    if (left_eye) {
+        theta = (f_texcoord - LensCenterLeft) * ScaleIn; 
+    } else {
+        theta = (f_texcoord - LensCenterRight) * ScaleIn; 
+    }
+    rSq = theta.x * theta.x + theta.y * theta.y;
+    rvector = theta * (kappa_0 + kappa_1 * rSq + kappa_2 * rSq * rSq + kappa_3 * rSq * rSq * rSq);
+    if (left_eye) {
+        tc = LensCenterLeft + Scale * rvector;
+    } else {
+        tc = LensCenterRight + Scale * rvector;
+    }
+
+    //keep within bounds of texture 
+    if ((left_eye && (tc.x < 0.0 || tc.x > 0.5)) ||   
+        (!left_eye && (tc.x < 0.5 || tc.x > 1.0)) ||
+        tc.y < 0.0 || tc.y > 1.0) {
+        discard;
+    }
+
+    gl_FragColor = texture2D(fbo_texture, tc); 
+}
+";

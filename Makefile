@@ -7,7 +7,8 @@ glfw_lib_path=lib/glfw-rs/lib
 gl_lib_path=lib/gl-rs/src/gl
 nalgebra_lib_path=lib/nalgebra/lib
 stb_image_lib_path=lib/rust-stb-image/
-libs=-L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path)
+freetype_path=lib/rust-freetype/
+libs=-L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path) -L$(freetype_path)
 build_cmd= rustc --link-args=-lglfw -Llib  $(libs) --opt-level 3 --out-dir $(kiss3d_bin_path)
 
 all:
@@ -19,11 +20,11 @@ test: examples
 
 examples:
 	mkdir -p $(kiss3d_bin_path)
+	$(build_cmd) ./examples/custom_material.rs 
 	$(build_cmd) ./examples/custom_mesh.rs 
 	$(build_cmd) ./examples/custom_mesh_shared.rs 
 	$(build_cmd) ./examples/lines.rs 
 	$(build_cmd) ./examples/primitives_scale.rs 
-	$(build_cmd) ./examples/custom_material.rs 
 	$(build_cmd) ./examples/wireframe.rs 
 	$(build_cmd) ./examples/window.rs 
 	$(build_cmd) ./examples/add_remove.rs 
@@ -56,6 +57,9 @@ deps:
 	cd lib/rust-stb-image; ./configure
 	make clean -C lib/rust-stb-image
 	make -C lib/rust-stb-image
+	cd lib/rust-freetype; ./configure
+	make clean -C lib/rust-freetype
+	make -C lib/rust-freetype
 
 .PHONY:doc
 .PHONY:examples

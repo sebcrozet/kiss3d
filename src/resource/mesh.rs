@@ -6,6 +6,7 @@ use std::vec;
 use gl::types::*;
 use nalgebra::na::{Vec2, Vec3};
 use nalgebra::na;
+use resource::ShaderAttribute;
 use resource::gpu_vector::{GPUVector, DynamicDraw, StaticDraw, ArrayBuffer, ElementArrayBuffer};
 
 type Coord  = Vec3<GLfloat>;
@@ -71,27 +72,30 @@ impl Mesh {
     }
 
     /// Binds this mesh vertex coordinates buffer to a vertex attribute.
-    pub fn bind_coords(&mut self, coords: GLuint) {
-        self.coords.write(|c| c.bind(Some(coords)));
+    pub fn bind_coords(&mut self, coords: &mut ShaderAttribute<Coord>) {
+        self.coords.write(|c| coords.bind(c));
     }
 
     /// Binds this mesh vertex normals buffer to a vertex attribute.
-    pub fn bind_normals(&mut self, normals: GLuint) {
-        self.normals.write(|c| c.bind(Some(normals)));
+    pub fn bind_normals(&mut self, normals: &mut ShaderAttribute<Normal>) {
+        self.normals.write(|n| normals.bind(n));
     }
 
     /// Binds this mesh vertex uvs buffer to a vertex attribute.
-    pub fn bind_uvs(&mut self, uvs: GLuint) {
-        self.uvs.write(|c| c.bind(Some(uvs)));
+    pub fn bind_uvs(&mut self, uvs: &mut ShaderAttribute<UV>) {
+        self.uvs.write(|u| uvs.bind(u));
     }
 
     /// Binds this mesh vertex uvs buffer to a vertex attribute.
     pub fn bind_faces(&mut self) {
-        self.faces.write(|c| c.bind(None));
+        self.faces.write(|c| c.bind());
     }
 
     /// Binds this mesh buffers to vertex attributes.
-    pub fn bind(&mut self, coords: GLuint, normals: GLuint, uvs: GLuint) {
+    pub fn bind(&mut self,
+                coords:  &mut ShaderAttribute<Coord>,
+                normals: &mut ShaderAttribute<Normal>,
+                uvs:     &mut ShaderAttribute<UV>) {
         self.bind_coords(coords);
         self.bind_normals(normals);
         self.bind_uvs(uvs);
@@ -113,17 +117,14 @@ impl Mesh {
 
     /// Recompute this mesh normals.
     pub fn recompute_normals(&mut self) {
-        let _ = self.normals.write(|ns|
-            ns.write(
-                |normals| {
-                    self.coords.read(|cs| cs.read(|cs|
-                       self.faces.read(|fs| fs.read(|fs|
-                           Mesh::compute_normals(cs, fs, normals)
-                       ))
-                    ))
-                }
-            )
-        );
+        let _ =
+            self.normals.write(|ns|
+                self.coords.read(|cs|
+                   self.faces.read(|fs|
+                       Mesh::compute_normals(*cs.data().get_ref(), *fs.data().get_ref(), ns.data_mut().get_mut_ref())
+                   )
+                )
+            );
     }
 
     /// This mesh faces.

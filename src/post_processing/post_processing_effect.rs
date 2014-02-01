@@ -15,5 +15,5 @@ pub trait PostProcessingEffect {
     /// * `shader_manager` - manager to switch between the different shaders.
     /// * `fbo_texture` - id to the texture containing the last scene drawn.
     /// * `fbo_depth` - the depth buffer as a texture.
-    fn draw(&self, target: &RenderTarget);
+    fn draw(&mut self, target: &RenderTarget);
 }

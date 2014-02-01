@@ -1,7 +1,6 @@
 use std::util::NonCopyable;
-use gl;
-use gl::types::*;
-use resource;
+use nalgebra::na::{Vec3, Mat4};
+use resource::{Shader, ShaderAttribute, ShaderUniform};
 
 #[path = "../error.rs"]
 mod error;
@@ -9,17 +8,13 @@ mod error;
 /// Material used to display lines.
 pub struct LinesMaterial {
     #[doc(hidden)]
-    program:   GLuint,
+    shader:    Shader,
     #[doc(hidden)]
-    vshader:   GLuint,
+    pos:       ShaderAttribute<Vec3<f32>>,
     #[doc(hidden)]
-    fshader:   GLuint,
+    color:     ShaderAttribute<Vec3<f32>>,
     #[doc(hidden)]
-    pos:       GLuint,
-    #[doc(hidden)]
-    color:     GLuint,
-    #[doc(hidden)]
-    view:      GLint,
+    view:      ShaderUniform<Mat4<f32>>,
     #[doc(hidden)]
     ncopy:     NonCopyable
 }
@@ -27,44 +22,30 @@ pub struct LinesMaterial {
 impl LinesMaterial {
     /// Creates a new `LinesMaterial`.
     pub fn new() -> LinesMaterial {
-        unsafe {
-            // load the shader
-            let (program, vshader, fshader) =
-                resource::load_shader_program(LINES_VERTEX_SRC, LINES_FRAGMENT_SRC);
+        let mut shader = Shader::new_from_str(LINES_VERTEX_SRC, LINES_FRAGMENT_SRC);
 
-            verify!(gl::UseProgram(program));
+        shader.use_program();
 
-            LinesMaterial {
-                program: program,
-                vshader: vshader,
-                fshader: fshader,
-                pos:     gl::GetAttribLocation(program,  "position".to_c_str().unwrap()) as GLuint,
-                color:   gl::GetAttribLocation(program,  "color".to_c_str().unwrap()) as GLuint,
-                view:    gl::GetUniformLocation(program, "view".to_c_str().unwrap()),
-                ncopy:   NonCopyable
-            }
+        LinesMaterial {
+            pos:    shader.get_attrib::<Vec3<f32>>("position").unwrap(),
+            color:  shader.get_attrib::<Vec3<f32>>("color").unwrap(),
+            view:   shader.get_uniform::<Mat4<f32>>("view").unwrap(),
+            shader: shader,
+            ncopy:  NonCopyable
         }
     }
 
     /// Makes active the shader program used by this material.
     pub fn activate(&mut self) {
-        verify!(gl::UseProgram(self.program));
-        verify!(gl::EnableVertexAttribArray(self.pos));
-        verify!(gl::EnableVertexAttribArray(self.color));
+        self.shader.use_program();
+        self.pos.enable();
+        self.color.enable();
     }
 
     /// Makes inactive the shader program used by this material.
     pub fn deactivate(&mut self) {
-        verify!(gl::DisableVertexAttribArray(self.pos));
-        verify!(gl::DisableVertexAttribArray(self.color));
-    }
-}
-
-impl Drop for LinesMaterial {
-    fn drop(&mut self) {
-        gl::DeleteProgram(self.program);
-        gl::DeleteShader(self.fshader);
-        gl::DeleteShader(self.vshader);
+        self.pos.disable();
+        self.color.disable();
     }
 }
 

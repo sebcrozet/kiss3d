@@ -1,76 +1,67 @@
-use std::cast;
 use std::ptr;
 use gl;
 use gl::types::*;
-use nalgebra::na::{Mat3, Mat4};
+use nalgebra::na::{Vec2, Vec3, Mat3, Mat4};
 use nalgebra::na;
 use resource::Material;
-use resource;
 use object::ObjectData;
 use light::{Light, Absolute, StickToCamera};
 use camera::Camera;
-use resource::Mesh;
+use resource::{Mesh, Shader, ShaderAttribute, ShaderUniform};
 
 #[path = "../error.rs"]
 mod error;
 
 /// The default material used to draw objects.
 pub struct ObjectMaterial {
-    priv program:    GLuint,
-    priv vshader:    GLuint,
-    priv fshader:    GLuint,
-    priv pos:        GLuint,
-    priv normal:     GLuint,
-    priv tex_coord:  GLuint,
-    priv light:      GLint,
-    priv color:      GLint,
-    priv transform:  GLint,
-    priv scale:      GLint,
-    priv ntransform: GLint,
-    priv view:       GLint,
-    priv tex:        GLint
+    priv shader:     Shader,
+    priv pos:        ShaderAttribute<Vec3<f32>>,
+    priv normal:     ShaderAttribute<Vec3<f32>>,
+    priv tex_coord:  ShaderAttribute<Vec2<f32>>,
+    priv light:      ShaderUniform<Vec3<f32>>,
+    priv color:      ShaderUniform<Vec3<f32>>,
+    priv transform:  ShaderUniform<Mat4<f32>>,
+    priv scale:      ShaderUniform<Mat3<f32>>,
+    priv ntransform: ShaderUniform<Mat3<f32>>,
+    priv view:       ShaderUniform<Mat4<f32>>,
+    priv tex:        ShaderUniform<GLuint>
 }
 
 impl ObjectMaterial {
     /// Creates a new `ObjectMaterial`.
     pub fn new() -> ObjectMaterial {
-        unsafe {
-            // load the shader
-            let (program, vshader, fshader) =
-                resource::load_shader_program(OBJECT_VERTEX_SRC, OBJECT_FRAGMENT_SRC);
+        // load the shader
+        let mut shader = Shader::new_from_str(OBJECT_VERTEX_SRC, OBJECT_FRAGMENT_SRC);
 
-            verify!(gl::UseProgram(program));
+        shader.use_program();
 
-            // get the variables locations
-            ObjectMaterial {
-                program:    program,
-                vshader:    vshader,
-                fshader:    fshader,
-                pos:        gl::GetAttribLocation(program, "position".to_c_str().unwrap()) as GLuint,
-                normal:     gl::GetAttribLocation(program, "normal".to_c_str().unwrap()) as GLuint,
-                tex_coord:  gl::GetAttribLocation(program, "tex_coord_v".to_c_str().unwrap()) as GLuint,
-                light:      gl::GetUniformLocation(program, "light_position".to_c_str().unwrap()),
-                color:      gl::GetUniformLocation(program, "color".to_c_str().unwrap()),
-                transform:  gl::GetUniformLocation(program, "transform".to_c_str().unwrap()),
-                scale:      gl::GetUniformLocation(program, "scale".to_c_str().unwrap()),
-                ntransform: gl::GetUniformLocation(program, "ntransform".to_c_str().unwrap()),
-                view:       gl::GetUniformLocation(program, "view".to_c_str().unwrap()),
-                tex:        gl::GetUniformLocation(program, "tex".to_c_str().unwrap())
-            }
+        // get the variables locations
+        ObjectMaterial {
+            pos:        shader.get_attrib("position").unwrap(),
+            normal:     shader.get_attrib("normal").unwrap(),
+            tex_coord:  shader.get_attrib("tex_coord_v").unwrap(),
+            light:      shader.get_uniform("light_position").unwrap(),
+            color:      shader.get_uniform("color").unwrap(),
+            transform:  shader.get_uniform("transform").unwrap(),
+            scale:      shader.get_uniform("scale").unwrap(),
+            ntransform: shader.get_uniform("ntransform").unwrap(),
+            view:       shader.get_uniform("view").unwrap(),
+            tex:        shader.get_uniform("tex").unwrap(),
+            shader:     shader
         }
     }
 
     fn activate(&mut self) {
-        verify!(gl::UseProgram(self.program));
-        verify!(gl::EnableVertexAttribArray(self.pos));
-        verify!(gl::EnableVertexAttribArray(self.normal));
-        verify!(gl::EnableVertexAttribArray(self.tex_coord));
+        self.shader.use_program();
+        self.pos.enable();
+        self.normal.enable();
+        self.tex_coord.enable();
     }
 
     fn deactivate(&mut self) {
-        verify!(gl::DisableVertexAttribArray(self.pos));
-        verify!(gl::DisableVertexAttribArray(self.normal));
-        verify!(gl::DisableVertexAttribArray(self.tex_coord));
+        self.pos.disable();
+        self.normal.disable();
+        self.tex_coord.disable();
     }
 }
 
@@ -89,13 +80,14 @@ impl Material for ObjectMaterial {
          * Setup camera and light.
          *
          */
-        camera.upload(pass, self.view);
+        camera.upload(pass, &mut self.view);
 
         let pos = match *light {
             Absolute(ref p) => p.clone(),
             StickToCamera   => camera.eye()
         };
-        verify!(gl::Uniform3f(self.light, pos.x, pos.y, pos.z));
+
+        self.light.upload(&pos);
 
         /*
          *
@@ -106,21 +98,12 @@ impl Material for ObjectMaterial {
         let formated_ntransform: Mat3<f32> = *data.transform().rotation.submat();
 
         unsafe {
-            verify!(gl::UniformMatrix4fv(self.transform,
-                                         1,
-                                         gl::FALSE as u8,
-                                         cast::transmute(&formated_transform)));
+            self.transform.upload(&formated_transform);
+            self.ntransform.upload(&formated_ntransform);
+            self.scale.upload(data.scale());
+            self.color.upload(data.color());
 
-            verify!(gl::UniformMatrix3fv(self.ntransform,
-                                         1,
-                                         gl::FALSE as u8,
-                                         cast::transmute(&formated_ntransform)));
-
-            verify!(gl::UniformMatrix3fv(self.scale, 1, gl::FALSE as u8, cast::transmute(data.scale())));
-
-            verify!(gl::Uniform3f(self.color, data.color().x, data.color().y, data.color().z));
-
-            mesh.bind(self.pos, self.normal, self.tex_coord);
+            mesh.bind(&mut self.pos, &mut self.normal, &mut self.tex_coord);
 
             verify!(gl::ActiveTexture(gl::TEXTURE0));
             verify!(gl::BindTexture(gl::TEXTURE_2D, data.texture().borrow().id()));
@@ -133,14 +116,6 @@ impl Material for ObjectMaterial {
 
         mesh.unbind();
         self.deactivate();
-    }
-}
-
-impl Drop for ObjectMaterial {
-    fn drop(&mut self) {
-        gl::DeleteProgram(self.program);
-        gl::DeleteShader(self.fshader);
-        gl::DeleteShader(self.vshader);
     }
 }
 

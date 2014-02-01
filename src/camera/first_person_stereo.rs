@@ -1,9 +1,9 @@
 use std::num::{Zero, One, atan2};
-use std::cast;
 use glfw;
 use gl;
 use nalgebra::na::{Vec2, Vec3, Mat4, Iso3, Rotate};
 use nalgebra::na;
+use resource::ShaderUniform;
 use camera::Camera;
 use event;
 
@@ -294,16 +294,8 @@ impl Camera for FirstPersonStereo {
         self.update_projviews();
     }
 
-    fn upload(&self, pass: uint, view_location: i32) {
-        let homo = self.transformation_eye(pass);;
-
-        unsafe {
-            gl::UniformMatrix4fv(
-                view_location,
-                1,
-                gl::FALSE as u8,
-                cast::transmute(&homo));
-        }
+    fn upload(&self, pass: uint, uniform: &mut ShaderUniform<Mat4<f32>>) {
+        uniform.upload(&self.transformation_eye(pass));
     }
 
     fn num_passes(&self) -> uint { 2u }

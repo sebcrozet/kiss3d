@@ -42,9 +42,9 @@ fn main() {
             if time % 200 == 0 {
                 match counter {
                     0 => w.set_post_processing_effect(None),
-                    1 => w.set_post_processing_effect(Some(&mut sobel as &mut PostProcessingEffect)),
+                    3 => w.set_post_processing_effect(Some(&mut sobel as &mut PostProcessingEffect)),
                     2 => w.set_post_processing_effect(Some(&mut waves as &mut PostProcessingEffect)),
-                    3 => w.set_post_processing_effect(Some(&mut grays as &mut PostProcessingEffect)),
+                    1 => w.set_post_processing_effect(Some(&mut grays as &mut PostProcessingEffect)),
                     _ => unreachable!()
                 }
 

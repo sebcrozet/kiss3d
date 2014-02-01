@@ -1,16 +1,112 @@
 //! A post-processing effect to highlight edges.
 
-use std::cast;
-use std::ptr;
-use std::mem;
 use gl;
 use gl::types::*;
-use resource::RenderTarget;
-use resource;
+use nalgebra::na::Vec2;
+use resource::{Shader, ShaderUniform, ShaderAttribute, RenderTarget, GPUVector, ArrayBuffer, StaticDraw};
 use post_processing::post_processing_effect::PostProcessingEffect;
 
 #[path = "../error.rs"]
 mod error;
+
+/// Post processing effect which turns everything in grayscales.
+pub struct SobelEdgeHighlight {
+    priv shiftx:          f32,
+    priv shifty:          f32,
+    priv zn:              f32,
+    priv zf:              f32,
+    priv threshold:       f32,
+    priv shader:          Shader,
+    priv gl_nx:           ShaderUniform<GLfloat>,
+    priv gl_ny:           ShaderUniform<GLfloat>,
+    priv gl_fbo_depth:    ShaderUniform<GLint>,
+    priv gl_fbo_texture:  ShaderUniform<GLint>,
+    priv gl_znear:        ShaderUniform<GLfloat>,
+    priv gl_zfar:         ShaderUniform<GLfloat>,
+    priv gl_threshold:    ShaderUniform<GLfloat>,
+    priv gl_v_coord:      ShaderAttribute<Vec2<f32>>,
+    priv gl_fbo_vertices: GPUVector<Vec2<f32>>
+}
+
+impl SobelEdgeHighlight {
+    /// Creates a new SobelEdgeHighlight post processing effect.
+    pub fn new(threshold: f32) -> SobelEdgeHighlight {
+        let fbo_vertices: ~[Vec2<GLfloat>]  = ~[
+            Vec2::new(-1.0, -1.0),
+            Vec2::new(1.0, -1.0),
+            Vec2::new(-1.0,  1.0),
+            Vec2::new(1.0,  1.0)];
+
+        let mut fbo_vertices = GPUVector::new(fbo_vertices, ArrayBuffer, StaticDraw);
+        fbo_vertices.load_to_gpu();
+        fbo_vertices.unload_from_ram();
+
+        let mut shader = Shader::new_from_str(VERTEX_SHADER, FRAGMENT_SHADER);
+
+        shader.use_program();
+
+        SobelEdgeHighlight {
+            shiftx:          0.0,
+            shifty:          0.0,
+            zn:              0.0,
+            zf:              0.0,
+            threshold:       threshold,
+            gl_nx:           shader.get_uniform("nx").unwrap(),
+            gl_ny:           shader.get_uniform("ny").unwrap(),
+            gl_fbo_depth:    shader.get_uniform("fbo_depth").unwrap(),
+            gl_fbo_texture:  shader.get_uniform("fbo_texture").unwrap(),
+            gl_znear:        shader.get_uniform("znear").unwrap(),
+            gl_zfar:         shader.get_uniform("zfar").unwrap(),
+            gl_threshold:    shader.get_uniform("threshold").unwrap(),
+            gl_v_coord:      shader.get_attrib("v_coord").unwrap(),
+            gl_fbo_vertices: fbo_vertices,
+            shader:          shader,
+        }
+    }
+}
+
+impl PostProcessingEffect for SobelEdgeHighlight {
+    fn update(&mut self, _: f32, w: f32, h: f32, znear: f32, zfar: f32) {
+        self.shiftx = 2.0 / w;
+        self.shifty = 2.0 / h;
+        self.zn     = znear;
+        self.zf     = zfar;
+    }
+
+    fn draw(&mut self, target: &RenderTarget) {
+        self.gl_v_coord.enable();
+
+        /*
+         * Finalize draw
+         */
+        verify!(gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT));
+
+        self.shader.use_program();
+
+        self.gl_threshold.upload(&self.threshold);
+        self.gl_nx.upload(&self.shiftx);
+        self.gl_ny.upload(&self.shifty);
+        self.gl_znear.upload(&self.zn);
+        self.gl_zfar.upload(&self.zf);
+
+        verify!(gl::ActiveTexture(gl::TEXTURE0));
+        verify!(gl::BindTexture(gl::TEXTURE_2D, target.texture_id()));
+
+        self.gl_fbo_texture.upload(&0);
+
+        verify!(gl::ActiveTexture(gl::TEXTURE1));
+        verify!(gl::BindTexture(gl::TEXTURE_2D, target.depth_id()));
+
+        self.gl_fbo_depth.upload(&1);
+
+
+        self.gl_v_coord.bind(&mut self.gl_fbo_vertices);
+
+        verify!(gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4));
+
+        self.gl_v_coord.disable();
+    }
+}
 
 static VERTEX_SHADER: &'static str =
     "#version 120
@@ -91,133 +187,3 @@ static FRAGMENT_SHADER: &'static str =
         gl_FragColor = vec4(edge * color.xyz, 1.0);
     }";
 
-/// Post processing effect which turns everything in grayscales.
-pub struct SobelEdgeHighlight {
-    priv shiftx:          f32,
-    priv shifty:          f32,
-    priv zn:              f32,
-    priv zf:              f32,
-    priv threshold:       f32,
-    priv gl_vshader:      GLuint,
-    priv gl_fshader:      GLuint,
-    priv gl_program:      GLuint,
-    priv gl_nx:           GLuint,
-    priv gl_ny:           GLuint,
-    priv gl_fbo_depth:    GLuint,
-    priv gl_fbo_texture:  GLuint,
-    priv gl_fbo_vertices: GLuint,
-    priv gl_znear:        GLuint,
-    priv gl_zfar:         GLuint,
-    priv gl_threshold:    GLuint,
-    priv gl_v_coord:      GLint
-}
-
-impl SobelEdgeHighlight {
-    /// Creates a new SobelEdgeHighlight post processing effect.
-    pub fn new(threshold: f32) -> SobelEdgeHighlight {
-        unsafe {
-            /* Global */
-            let mut vbo_fbo_vertices: GLuint = 0;;
-            /* init_resources */
-            let fbo_vertices: [GLfloat, ..8] = [
-                -1.0, -1.0,
-                1.0, -1.0,
-                -1.0,  1.0,
-                1.0,  1.0];
-
-            verify!(gl::GenBuffers(1, &mut vbo_fbo_vertices));
-            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, vbo_fbo_vertices));
-            verify!(gl::BufferData(
-                gl::ARRAY_BUFFER,
-                (fbo_vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-                cast::transmute(&fbo_vertices[0]),
-                gl::STATIC_DRAW));
-            verify!(gl::BindBuffer(gl::ARRAY_BUFFER, 0));
-
-            let (program, vshader, fshader) =
-                resource::load_shader_program(VERTEX_SHADER, FRAGMENT_SHADER);
-
-            verify!(gl::UseProgram(program));
-
-            let v_coord = gl::GetAttribLocation(program, "v_coord".to_c_str().unwrap());
-
-            SobelEdgeHighlight {
-                gl_vshader:      vshader,
-                gl_fshader:      fshader,
-                gl_program:      program,
-                shiftx:          0.0,
-                shifty:          0.0,
-                zn:              0.0,
-                zf:              0.0,
-                threshold:       threshold,
-                gl_nx:           gl::GetUniformLocation(program, "nx".to_c_str().unwrap()) as GLuint,
-                gl_ny:           gl::GetUniformLocation(program, "ny".to_c_str().unwrap()) as GLuint,
-                gl_fbo_depth:    gl::GetUniformLocation(program, "fbo_depth".to_c_str().unwrap()) as GLuint,
-                gl_fbo_texture:  gl::GetUniformLocation(program, "fbo_texture".to_c_str().unwrap()) as GLuint,
-                gl_znear:        gl::GetUniformLocation(program, "znear".to_c_str().unwrap()) as GLuint,
-                gl_zfar:         gl::GetUniformLocation(program, "zfar".to_c_str().unwrap()) as GLuint,
-                gl_threshold:    gl::GetUniformLocation(program, "threshold".to_c_str().unwrap()) as GLuint,
-                gl_fbo_vertices: vbo_fbo_vertices,
-                gl_v_coord:      v_coord
-            }
-        }
-    }
-}
-
-impl PostProcessingEffect for SobelEdgeHighlight {
-    fn update(&mut self, _: f32, w: f32, h: f32, znear: f32, zfar: f32) {
-        self.shiftx = 2.0 / w;
-        self.shifty = 2.0 / h;
-        self.zn     = znear;
-        self.zf     = zfar;
-    }
-
-    fn draw(&self, target: &RenderTarget) {
-        verify!(gl::EnableVertexAttribArray(self.gl_v_coord as GLuint));
-        /*
-         * Finalize draw
-         */
-        verify!(gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT));
-
-        verify!(gl::UseProgram(self.gl_program));
-
-        verify!(gl::Uniform1f(self.gl_threshold as GLint, self.threshold));
-        verify!(gl::Uniform1f(self.gl_nx as GLint, self.shiftx));
-        verify!(gl::Uniform1f(self.gl_ny as GLint, self.shifty));
-        verify!(gl::Uniform1f(self.gl_znear as GLint, self.zn ));
-        verify!(gl::Uniform1f(self.gl_zfar  as GLint, self.zf ));
-
-        verify!(gl::ActiveTexture(gl::TEXTURE0));
-        verify!(gl::BindTexture(gl::TEXTURE_2D, target.texture_id()));
-        verify!(gl::Uniform1i(self.gl_fbo_texture as GLint, 0));
-
-        verify!(gl::ActiveTexture(gl::TEXTURE1));
-        verify!(gl::BindTexture(gl::TEXTURE_2D, target.depth_id()));
-        verify!(gl::Uniform1i(self.gl_fbo_depth as GLint, 1));
-
-
-        verify!(gl::BindBuffer(gl::ARRAY_BUFFER, self.gl_fbo_vertices));
-
-        unsafe {
-            gl::VertexAttribPointer(
-                self.gl_v_coord as GLuint,
-                2,
-                gl::FLOAT,
-                gl::FALSE as u8,
-                0,
-                ptr::null());
-        }
-
-        verify!(gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4));
-        verify!(gl::DisableVertexAttribArray(self.gl_v_coord as GLuint));
-    }
-}
-
-impl Drop for SobelEdgeHighlight {
-    fn drop(&mut self) {
-        gl::DeleteProgram(self.gl_program);
-        gl::DeleteShader(self.gl_vshader);
-        gl::DeleteShader(self.gl_fshader);
-        unsafe { gl::DeleteBuffers(1, &self.gl_fbo_vertices); }
-    }
-}

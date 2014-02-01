@@ -4,17 +4,86 @@
 // useless for anybody else.
 // This is inspired _a lot_ by: http://en.wikibooks.org/wiki/Opengl::Programming/Post-Processing
 
-use std::cast;
-use std::ptr;
-use std::mem;
 use gl;
 use gl::types::*;
-use resource::RenderTarget;
-use resource;
+use nalgebra::na::Vec2;
+use resource::{Shader, ShaderUniform, ShaderAttribute, RenderTarget, GPUVector, ArrayBuffer, StaticDraw};
 use post_processing::post_processing_effect::PostProcessingEffect;
 
 #[path = "../error.rs"]
 mod error;
+
+/// An useless post-processing effect mainly to test that everything works correctly.
+///
+/// It deforms the displayed scene with a wave effect.
+pub struct Waves {
+    priv shader:       Shader,
+    priv time:         f32,
+    priv offset:       ShaderUniform<GLfloat>,
+    priv fbo_texture:  ShaderUniform<GLint>,
+    priv v_coord:      ShaderAttribute<Vec2<f32>>,
+    priv fbo_vertices: GPUVector<Vec2<GLfloat>>
+}
+
+impl Waves {
+    /// Creates a new Waves post processing effect.
+    pub fn new() -> Waves {
+        let fbo_vertices: ~[Vec2<GLfloat>]  = ~[
+            Vec2::new(-1.0, -1.0),
+            Vec2::new(1.0, -1.0),
+            Vec2::new(-1.0,  1.0),
+            Vec2::new(1.0,  1.0)];
+
+        let mut fbo_vertices = GPUVector::new(fbo_vertices, ArrayBuffer, StaticDraw);
+        fbo_vertices.load_to_gpu();
+        fbo_vertices.unload_from_ram();
+
+        let mut shader = Shader::new_from_str(VERTEX_SHADER, FRAGMENT_SHADER);
+
+        shader.use_program();
+
+        Waves {
+            time:         0.0,
+            offset:       shader.get_uniform("offset").unwrap(),
+            fbo_texture:  shader.get_uniform("fbo_texture").unwrap(),
+            v_coord:      shader.get_attrib("v_coord").unwrap(),
+            fbo_vertices: fbo_vertices,
+            shader:       shader
+        }
+    }
+}
+
+impl PostProcessingEffect for Waves {
+    fn update(&mut self, dt: f32, _: f32, _: f32, _: f32, _: f32) {
+        self.time = self.time + dt;
+    }
+
+    fn draw(&mut self, target: &RenderTarget) {
+        /*
+         * Configure the post-process effect.
+         */
+        self.shader.use_program();
+
+        let move = self.time * 2.0 * 3.14159 * 0.75;  // 3/4 of a wave cycle per second
+
+        self.offset.upload(&move);
+
+        /*
+         * Finalize draw
+         */
+        verify!(gl::ClearColor(0.0, 0.0, 0.0, 1.0));
+        verify!(gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT));
+        verify!(gl::BindTexture(gl::TEXTURE_2D, target.texture_id()));
+
+        self.fbo_texture.upload(&0);
+        self.v_coord.enable();
+        self.v_coord.bind(&mut self.fbo_vertices);
+
+        verify!(gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4));
+
+        self.v_coord.disable();
+    }
+}
 
 static VERTEX_SHADER: &'static str =
     "#version 120
@@ -38,109 +107,3 @@ static FRAGMENT_SHADER: &'static str =
       texcoord.x    += sin(texcoord.y * 4 * 2 * 3.14159 + offset) / 100;
       gl_FragColor  =  texture2D(fbo_texture, texcoord);
     }";
-
-/// An useless post-processing effect mainly to test that everything works correctly.
-///
-/// It deforms the displayed scene with a wave effect.
-pub struct Waves {
-    priv vshader:      GLuint,
-    priv fshader:      GLuint,
-    priv program:      GLuint,
-    priv time:         f32,
-    priv offset:       GLuint,
-    priv fbo_texture:  GLuint,
-    priv fbo_vertices: GLuint,
-    priv v_coord:      GLint
-}
-
-impl Waves {
-    /// Creates a new Waves post processing effect.
-    pub fn new() -> Waves {
-        unsafe {
-            /* Global */
-            let mut vbo_fbo_vertices: GLuint = 0;;
-            /* init_resources */
-            let fbo_vertices: [GLfloat, ..8] = [
-                -1.0, -1.0,
-                1.0, -1.0,
-                -1.0,  1.0,
-                1.0,  1.0,
-                ];
-
-            gl::GenBuffers(1, &mut vbo_fbo_vertices);
-            gl::BindBuffer(gl::ARRAY_BUFFER, vbo_fbo_vertices);
-            gl::BufferData(
-                gl::ARRAY_BUFFER,
-                (fbo_vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-                cast::transmute(&fbo_vertices[0]),
-                gl::STATIC_DRAW);
-            gl::BindBuffer(gl::ARRAY_BUFFER, 0);
-
-            let (program, vshader, fshader) =
-                resource::load_shader_program(VERTEX_SHADER, FRAGMENT_SHADER);
-
-            verify!(gl::UseProgram(program));
-
-            let v_coord = gl::GetAttribLocation(program, "v_coord".to_c_str().unwrap());
-
-            Waves {
-                vshader:      vshader,
-                fshader:      fshader,
-                program:      program,
-                time:         0.0,
-                offset:       gl::GetUniformLocation(program, "offset".to_c_str().unwrap()) as GLuint,
-                fbo_texture:  gl::GetUniformLocation(program, "fbo_texture".to_c_str().unwrap()) as GLuint,
-                fbo_vertices: vbo_fbo_vertices,
-                v_coord:      v_coord
-            }
-        }
-    }
-}
-
-impl PostProcessingEffect for Waves {
-    fn update(&mut self, dt: f32, _: f32, _: f32, _: f32, _: f32) {
-        self.time = self.time + dt;
-    }
-
-    fn draw(&self, target: &RenderTarget) {
-        verify!(gl::EnableVertexAttribArray(self.v_coord as GLuint));
-        /*
-         * Configure the post-process effect.
-         */
-        gl::UseProgram(self.program);
-        let move = self.time * 2.0 * 3.14159 * 0.75;  // 3/4 of a wave cycle per second
-        gl::Uniform1f(self.offset as GLint, move);
-
-        /*
-         * Finalize draw
-         */
-        gl::ClearColor(0.0, 0.0, 0.0, 1.0);
-        gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
-
-        gl::UseProgram(self.program);
-        gl::BindTexture(gl::TEXTURE_2D, target.texture_id());
-        gl::Uniform1i(self.fbo_texture as GLint, /* gl::TEXTURE*/0);
-
-        gl::BindBuffer(gl::ARRAY_BUFFER, self.fbo_vertices);
-        unsafe {
-            gl::VertexAttribPointer(
-                self.v_coord as GLuint,
-                2,
-                gl::FLOAT,
-                gl::FALSE as u8,
-                0,
-                ptr::null());
-        }
-        gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4);
-        verify!(gl::DisableVertexAttribArray(self.v_coord as GLuint));
-    }
-}
-
-impl Drop for Waves {
-    fn drop(&mut self) {
-        gl::DeleteProgram(self.program);
-        gl::DeleteShader(self.vshader);
-        gl::DeleteShader(self.fshader);
-        unsafe { gl::DeleteBuffers(1, &self.fbo_vertices); }
-    }
-}

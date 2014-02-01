@@ -174,7 +174,7 @@ impl Object {
 
         let coords = bm.get().coords();
 
-        let _ = coords.write(|coords| coords.write(|coords| f(coords)));
+        let _ = coords.write(|coords| coords.data_mut().as_mut().map(|coords| f(coords)));
     }
 
     /// Access the object's vertices.
@@ -185,7 +185,7 @@ impl Object {
 
         let coords = bm.get().coords();
 
-        let _ = coords.read(|coords| coords.read(|coords| { f(coords) }));
+        let _ = coords.read(|coords| coords.data().as_ref().map(|coords| f(*coords)));
     }
 
     /// Recomputes the normals of this object's mesh.
@@ -205,7 +205,7 @@ impl Object {
 
         let normals = bm.get().normals();
 
-        let _ = normals.write(|normals| normals.write(|normals| { f(normals) }));
+        let _ = normals.write(|normals| normals.data_mut().as_mut().map(|normals| f(normals)));
     }
 
     /// Access the object's normals.
@@ -216,7 +216,7 @@ impl Object {
 
         let normals = bm.get().normals();
 
-        let _ = normals.read(|normals| normals.read(|normals| { f(normals) }));
+        let _ = normals.read(|normals| normals.data().as_ref().map(|normals| f(*normals)));
     }
 
     /// Mutably access the object's faces.
@@ -227,7 +227,7 @@ impl Object {
 
         let faces = bm.get().faces();
 
-        let _ = faces.write(|faces| faces.write(|faces| { f(faces) }));
+        let _ = faces.write(|faces| faces.data_mut().as_mut().map(|faces| f(faces)));
     }
 
     /// Access the object's faces.
@@ -238,7 +238,7 @@ impl Object {
 
         let faces = bm.get().faces();
 
-        let _ = faces.read(|faces| faces.read(|faces| { f(faces) }));
+        let _ = faces.read(|faces| faces.data().as_ref().map(|faces| f(*faces)));
     }
 
     /// Mutably access the object's texture coordinates.
@@ -249,7 +249,7 @@ impl Object {
 
         let uvs = bm.get().uvs();
 
-        let _ = uvs.write(|uvs| uvs.write(|uvs| { f(uvs) }));
+        let _ = uvs.write(|uvs| uvs.data_mut().as_mut().map(|uvs| f(uvs)));
     }
 
     /// Access the object's texture coordinates.
@@ -260,7 +260,7 @@ impl Object {
 
         let uvs = bm.get().uvs();
 
-        let _ = uvs.read(|uvs| uvs.read(|uvs| { f(uvs) }));
+        let _ = uvs.read(|uvs| uvs.data().as_ref().map(|uvs| f(*uvs)));
     }
 
 
