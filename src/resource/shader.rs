@@ -60,10 +60,10 @@ impl Shader {
 
     /// Gets a uniform variable from the shader program.
     pub fn get_uniform<T: GLPrimitive>(&self, name: &str) -> Option<ShaderUniform<T>> {
-        let location = unsafe { gl::GetUniformLocation(self.program, name.to_c_str().unwrap()) as GLuint };
+        let location = unsafe { gl::GetUniformLocation(self.program, name.to_c_str().unwrap()) };
 
-        if gl::GetError() == 0 {
-            Some(ShaderUniform { id: location })
+        if gl::GetError() == 0 && location != -1 {
+            Some(ShaderUniform { id: location as GLuint })
         }
         else {
             None
@@ -72,10 +72,10 @@ impl Shader {
 
     /// Gets an attribute from the shader program.
     pub fn get_attrib<T: GLPrimitive>(&self, name: &str) -> Option<ShaderAttribute<T>> {
-        let location = unsafe { gl::GetAttribLocation(self.program, name.to_c_str().unwrap()) as GLuint };
+        let location = unsafe { gl::GetAttribLocation(self.program, name.to_c_str().unwrap()) };
 
-        if gl::GetError() == 0 {
-            Some(ShaderAttribute { id: location })
+        if gl::GetError() == 0 && location != -1 {
+            Some(ShaderAttribute { id: location as GLuint })
         }
         else {
             None

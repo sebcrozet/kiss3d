@@ -120,4 +120,4 @@ pub mod line_renderer;
 pub mod builtin;
 pub mod post_processing;
 pub mod resource;
-// pub mod text;
+pub mod text;

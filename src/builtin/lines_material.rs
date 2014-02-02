@@ -65,11 +65,9 @@ static A_VERY_LONG_STRING: &'static str =
         Color = color;
     }";
 
-// phong lighting (heavily) inspired
-// by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
 static ANOTHER_VERY_LONG_STRING: &'static str =
    "#version 120
     varying vec3 Color;
     void main() {
-      gl_FragColor = vec4(Color, 1.0);
+        gl_FragColor = vec4(Color, 1.0);
     }";

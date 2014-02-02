@@ -28,6 +28,7 @@ use event;
 use loader::obj;
 use loader::mtl::MtlMaterial;
 use light::{Light, Absolute, StickToCamera};
+use text::{TextRenderer, Font};
 
 mod error;
 
@@ -47,6 +48,7 @@ pub struct Window<'a> {
     priv geometries:                 HashMap<~str, Rc<RefCell<Mesh>>>,
     priv background:                 Vec3<GLfloat>,
     priv line_renderer:              LineRenderer,
+    priv text_renderer:              TextRenderer,
     priv framebuffer_manager:        FramebufferManager,
     priv post_processing:            Option<&'a mut PostProcessingEffect>,
     priv post_process_render_target: RenderTarget,
@@ -128,6 +130,11 @@ impl<'a> Window<'a> {
     /// Adds a line to be drawn during the next frame.
     pub fn draw_line(&mut self, a: &Vec3<f32>, b: &Vec3<f32>, color: &Vec3<f32>) {
         self.line_renderer.draw_line(a.clone(), b.clone(), color.clone());
+    }
+
+    /// Adds a string to be drawn during the next frame.
+    pub fn draw_text(&mut self, text: &str, pos: &Vec2<f32>, font: &Rc<Font>, color: &Vec3<f32>) {
+        self.text_renderer.draw_text(text, pos, font, color);
     }
 
     /// Removes an object from the scene.
@@ -605,6 +612,7 @@ impl<'a> Window<'a> {
                 geometries:            builtins,
                 background:            Vec3::new(0.0, 0.0, 0.0),
                 line_renderer:         LineRenderer::new(),
+                text_renderer:         TextRenderer::new(),
                 post_processing:       None,
                 post_process_render_target: FramebufferManager::new_render_target(width as uint, height as uint),
                 framebuffer_manager:   FramebufferManager::new(),
@@ -660,7 +668,6 @@ impl<'a> Window<'a> {
             self.framebuffer_manager.select(&FramebufferManager::screen());
         }
 
-        // TODO: change to pass_iter when I learn the lingo
         for pass in range(0u, self.camera.num_passes()) {
             self.camera.start_pass(pass, &self.window);
             self.render_scene(pass);
@@ -687,6 +694,8 @@ impl<'a> Window<'a> {
             },
             None => { }
         }
+
+        self.text_renderer.render(w, h);
 
         // We are done: swap buffers
         self.window.swap_buffers();
