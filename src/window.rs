@@ -678,13 +678,13 @@ impl<'a> Window<'a> {
         let h = self.height();
         let (znear, zfar) = self.camera.clip_planes();
 
+        // swatch off the wireframe mode for post processing and text rendering.
+        if self.wireframe_mode {
+            verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
+        }
+
         match self.post_processing {
             Some(ref mut p) => {
-                // remove the wireframe mode
-                if self.wireframe_mode {
-                    verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
-                }
-
                 // switch back to the screen framebuffer …
                 self.framebuffer_manager.select(&FramebufferManager::screen());
                 // … and execute the post-process
