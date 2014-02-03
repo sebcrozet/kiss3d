@@ -20,6 +20,7 @@ test: examples
 
 examples:
 	mkdir -p $(kiss3d_bin_path)
+	$(build_cmd) ./examples/relativity.rs 
 	$(build_cmd) ./examples/text.rs 
 	$(build_cmd) ./examples/custom_material.rs 
 	$(build_cmd) ./examples/custom_mesh.rs 
