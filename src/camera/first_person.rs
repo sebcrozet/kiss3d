@@ -70,6 +70,48 @@ impl FirstPerson {
         res
     }
 
+    /// Sets the translational increment per arrow press.
+    ///
+    /// The default value is 0.5.
+    #[inline]
+    pub fn set_move_step(&mut self, step: f32) {
+        self.move_step = step;
+    }
+
+    /// Sets the pitch increment per mouse movement.
+    ///
+    /// The default value is 0.005.
+    #[inline]
+    pub fn set_pitch_step(&mut self, step: f32) {
+        self.pitch_step = step;
+    }
+
+
+    /// Sets the yaw increment per mouse movement.
+    ///
+    /// The default value is 0.005.
+    #[inline]
+    pub fn set_yaw_step(&mut self, step: f32) {
+        self.yaw_step = step;
+    }
+
+    /// Gets the translational increment per arrow press.
+    #[inline]
+    pub fn move_step(&self) -> f32 {
+        self.move_step
+    }
+
+    /// Gets the pitch increment per mouse movement.
+    #[inline]
+    pub fn pitch_step(&self) -> f32 {
+        self.pitch_step
+    }
+
+    /// Gets the yaw  increment per mouse movement.
+    #[inline]
+    pub fn yaw_step(&self) -> f32 {
+        self.yaw_step
+    }
 
     /// Changes the orientation and position of the camera to look at the specified point.
     pub fn look_at_z(&mut self, eye: Vec3<f32>, at: Vec3<f32>) {
