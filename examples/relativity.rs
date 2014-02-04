@@ -8,7 +8,7 @@ use std::ptr;
 use std::rc::Rc;
 use std::cell::RefCell;
 use extra::arc::RWArc;
-use gl::types::{GLint, GLuint};
+use gl::types::{GLint, GLuint, GLfloat};
 use nalgebra::na::{Vec2, Vec3, Mat3, Mat4, Rotation, Translation};
 use nalgebra::na;
 use kiss3d::window::Window;
@@ -26,8 +26,9 @@ fn main() {
         let fov                 = 45.0f32.to_radians();
         let font                = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
         let mut first_person    = FirstPerson::new_with_frustrum(fov, 0.1, 100000.0, eye, at);
-        let     context         = RWArc::new(Context::new(1.0, na::zero()));
+        let     context         = RWArc::new(Context::new(1.0, na::zero(), eye));
         let     acceleration    = 0.2f32;
+        let     deceleration    = -0.9f32;
         let     material        = Rc::new(RefCell::new(~RelativisticMaterial::new(context.clone()) as ~Material));
 
         window.set_camera(&mut first_person as &mut Camera);
@@ -89,20 +90,27 @@ fn main() {
                 w.draw_text(format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop),
                             &na::zero(), &font, &Vec3::new(1.0, 1.0, 1.0));
 
+                let curr_acceleration;
                 if w.glfw_window().get_key(glfw::KeyUp)    == glfw::Press ||
                    w.glfw_window().get_key(glfw::KeyDown)  == glfw::Press ||
                    w.glfw_window().get_key(glfw::KeyRight) == glfw::Press ||
                    w.glfw_window().get_key(glfw::KeyLeft)  == glfw::Press {
-                    let new_sop = (sop + acceleration / 60.0).min(&(c.speed_of_light - 0.001));
-                    first_person.set_move_step(new_sop * 60.0);
+                       curr_acceleration = acceleration;
                 }
                 else {
-                    first_person.set_move_step(0.0);
+                    curr_acceleration = deceleration;
                 }
 
-                // let eye = first_person.eye();
-                // let at  = first_person.at();
-                // c.speed_of_player = c.speed_of_player * new_sop;
+                let new_sop = (sop + curr_acceleration / 60.0).clamp(&0.0, &(c.speed_of_light - 0.001));
+
+                first_person.set_move_step(new_sop * 60.0);
+
+                let eye = first_person.eye();
+                let at  = first_person.at();
+                let dir = na::normalize(&(at - eye));
+
+                c.speed_of_player = dir * new_sop;
+                c.position        = first_person.eye();
             })
         })
     })
@@ -110,14 +118,16 @@ fn main() {
 
 struct Context {
     speed_of_light:  f32,
-    speed_of_player: Vec3<f32>
+    speed_of_player: Vec3<f32>,
+    position:        Vec3<f32>
 }
 
 impl Context {
-    pub fn new(speed_of_light: f32, speed_of_player: Vec3<f32>) -> Context {
+    pub fn new(speed_of_light: f32, speed_of_player: Vec3<f32>, position: Vec3<f32>) -> Context {
         Context {
             speed_of_light:  speed_of_light,
-            speed_of_player: speed_of_player
+            speed_of_player: speed_of_player,
+            position:        position
         }
     }
 }
@@ -135,7 +145,9 @@ pub struct RelativisticMaterial {
     priv scale:      ShaderUniform<Mat3<f32>>,
     priv ntransform: ShaderUniform<Mat3<f32>>,
     priv view:       ShaderUniform<Mat4<f32>>,
-    priv tex:        ShaderUniform<GLuint>
+    priv tex:        ShaderUniform<GLuint>,
+    priv light_vel:  ShaderUniform<GLfloat>,
+    priv rel_vel:    ShaderUniform<Vec3<f32>>
 }
 
 impl RelativisticMaterial {
@@ -153,6 +165,8 @@ impl RelativisticMaterial {
             normal:     shader.get_attrib("normal").unwrap(),
             tex_coord:  shader.get_attrib("tex_coord_v").unwrap(),
             light:      shader.get_uniform("light_position").unwrap(),
+            light_vel:  shader.get_uniform("light_vel").unwrap(),
+            rel_vel:    shader.get_uniform("rel_vel").unwrap(),
             color:      shader.get_uniform("color").unwrap(),
             transform:  shader.get_uniform("transform").unwrap(),
             scale:      shader.get_uniform("scale").unwrap(),
@@ -200,6 +214,11 @@ impl Material for RelativisticMaterial {
 
         self.light.upload(&pos);
 
+        self.context.read(|c| {
+            self.rel_vel.upload(&-c.speed_of_player);
+            self.light_vel.upload(&-c.speed_of_light);
+        });
+
         /*
          *
          * Setup object-related stuffs.
@@ -236,13 +255,15 @@ pub static RELATIVISTIC_VERTEX_SRC:   &'static str =
     attribute vec3 normal;
     attribute vec3 color;
     attribute vec2 tex_coord_v;
-    varying vec3 ws_normal;
-    varying vec3 ws_position;
-    varying vec2 tex_coord;
-    uniform mat4 view;
-    uniform mat4 transform;
-    uniform mat3 scale;
-    uniform mat3 ntransform;
+    varying vec3   ws_normal;
+    varying vec3   ws_position;
+    varying vec2   tex_coord;
+    uniform mat4   view;
+    uniform mat4   transform;
+    uniform mat3   scale;
+    uniform mat3   ntransform;
+    uniform float  light_vel;
+    uniform vec3   rel_vel;
     void main() {
         mat4 scale4 = mat4(scale);
         vec4 pos4   = transform * scale4 * vec4(position, 1.0);
@@ -257,6 +278,8 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
     uniform vec3      color;
     uniform vec3      light_position;
     uniform sampler2D tex;
+    uniform float     light_vel;
+    uniform vec3      rel_vel;
     varying vec2      tex_coord;
     varying vec3      ws_normal;
     varying vec3      ws_position;
@@ -269,12 +292,17 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
 
       //calculate Diffuse Term:
       vec4 Idiff1 = vec4(1.0, 1.0, 1.0, 1.0) * max(dot(ws_normal,L), 0.0);
-      Idiff1 = clamp(Idiff1, 0.0, 1.0);
+      Idiff1      = clamp(Idiff1, 0.0, 1.0);
 
       // double sided lighting:
       vec4 Idiff2 = vec4(1.0, 1.0, 1.0, 1.0) * max(dot(-ws_normal,L), 0.0);
-      Idiff2 = clamp(Idiff2, 0.0, 1.0);
+      Idiff2      = clamp(Idiff2, 0.0, 1.0);
 
-      vec4 tex_color = texture2D(tex, tex_coord);
-      gl_FragColor   = tex_color * (vec4(color, 1.0) + Iamb + (Idiff1 + Idiff2) / 2) / 3;
+      vec4 tex_color              = texture2D(tex, tex_coord);
+      vec4 non_relativistic_color = tex_color * (vec4(color, 1.0) + Iamb + (Idiff1 + Idiff2) / 2) / 3;
+
+
+      // apply doppler effect here, on `non_relativistic_color`
+
+      gl_FragColor =  vec4(abs(rel_vel) * light_vel + 0.5, 1.0) * non_relativistic_color;
     }";

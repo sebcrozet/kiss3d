@@ -13,21 +13,14 @@ use event;
 ///   * Scroll in/out - zoom in/out
 #[deriving(ToStr)]
 pub struct FirstPerson {
-    /// The camera position
     priv eye:        Vec3<f32>,
-    /// Yaw of the camera (rotation along the y axis).
     priv yaw:        f32,
-    /// Pitch of the camera (rotation along the x axis).
     priv pitch:      f32,
 
-    /// Increment of the yaw per unit mouse movement. The default value is 0.005.
     priv yaw_step:   f32,
-    /// Increment of the pitch per unit mouse movement. The default value is 0.005.
     priv pitch_step: f32,
-    /// Increment of the translation per arrow press. The default value is 0.1.
     priv move_step:  f32,
 
-    /// Low level datas
     priv fov:        f32,
     priv znear:      f32,
     priv zfar:       f32,
@@ -50,19 +43,19 @@ impl FirstPerson {
                              eye:    Vec3<f32>,
                              at:     Vec3<f32>) -> FirstPerson {
         let mut res = FirstPerson {
-            eye:           Vec3::new(0.0, 0.0, 0.0),
-            yaw:           0.0,
-            pitch:         0.0,
-            yaw_step:      0.005,
-            pitch_step:    0.005,
-            move_step:     0.5,
-            fov:        fov,
-            znear:      znear,
-            zfar:       zfar,
-            projection: na::perspective3d(800.0, 600.0, fov, znear, zfar),
-            proj_view:  na::zero(),
+            eye:             Vec3::new(0.0, 0.0, 0.0),
+            yaw:             0.0,
+            pitch:           0.0,
+            yaw_step:        0.005,
+            pitch_step:      0.005,
+            move_step:       0.5,
+            fov:             fov,
+            znear:           znear,
+            zfar:            zfar,
+            projection:      na::perspective3d(800.0, 600.0, fov, znear, zfar),
+            proj_view:       na::zero(),
             inv_proj_view:   na::zero(),
-            last_cursor_pos: na::zero()
+            last_cursor_pos: na::zero(),
         };
 
         res.look_at_z(eye, at);
