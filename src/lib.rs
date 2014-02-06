@@ -104,6 +104,7 @@ I’d love to see people improving this library for their own needs. However, ke
 
 extern mod std;
 extern mod extra;
+extern mod sync;
 extern mod glfw;
 extern mod gl;
 extern mod nalgebra;

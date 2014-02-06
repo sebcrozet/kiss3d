@@ -8,7 +8,7 @@ use std::vec;
 use std::cmp;
 use std::ptr;
 use std::libc::{c_uint, c_void};
-use std::util::NonCopyable;
+use std::kinds::marker::NoPod;
 use gl;
 use gl::types::*;
 use freetype::freetype;
@@ -27,7 +27,7 @@ pub struct Font {
     priv atlas_dimensions: Vec2<uint>,
     priv glyphs:           ~[Option<Glyph>],
     priv height:           i32,
-    priv nocpy:            NonCopyable
+    priv nocpy:            NoPod
 }
 
 impl Font {
@@ -40,7 +40,7 @@ impl Font {
             atlas_dimensions: na::zero(),
             glyphs:           vec::from_fn(128, |_| None),
             height:           0,
-            nocpy:            NonCopyable
+            nocpy:            NoPod
         };
 
         unsafe {

@@ -3,7 +3,7 @@
 use std::cast;
 use gl;
 use gl::types::*;
-use nalgebra::na::{Vec2, Vec3, Mat2, Mat3, Mat4};
+use nalgebra::na::{Vec2, Vec3, Mat2, Mat3, Mat4, Rot2, Rot3};
 
 #[path = "../error.rs"]
 mod error;
@@ -104,6 +104,25 @@ impl GLPrimitive for Mat2<GLfloat> {
     }
 }
 
+impl GLPrimitive for Rot2<GLfloat> {
+    #[inline]
+    fn gl_type(_: Option<Rot2<GLfloat>>) -> GLuint {
+        gl::FLOAT
+    }
+
+    #[inline]
+    fn size(_: Option<Rot2<GLfloat>>) -> GLuint {
+        4
+    }
+
+    #[inline]
+    fn upload(&self, location: GLuint) {
+        unsafe {
+            verify!(gl::UniformMatrix2fv(location as GLint, 1, gl::FALSE, cast::transmute(self)));
+        }
+    }
+}
+
 impl GLPrimitive for Mat3<GLfloat> {
     #[inline]
     fn gl_type(_: Option<Mat3<GLfloat>>) -> GLuint {
@@ -112,6 +131,25 @@ impl GLPrimitive for Mat3<GLfloat> {
 
     #[inline]
     fn size(_: Option<Mat3<GLfloat>>) -> GLuint {
+        9
+    }
+
+    #[inline]
+    fn upload(&self, location: GLuint) {
+        unsafe {
+            verify!(gl::UniformMatrix3fv(location as GLint, 1, gl::FALSE, cast::transmute(self)));
+        }
+    }
+}
+
+impl GLPrimitive for Rot3<GLfloat> {
+    #[inline]
+    fn gl_type(_: Option<Rot3<GLfloat>>) -> GLuint {
+        gl::FLOAT
+    }
+
+    #[inline]
+    fn size(_: Option<Rot3<GLfloat>>) -> GLuint {
         9
     }
 

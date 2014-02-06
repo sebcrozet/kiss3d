@@ -2,7 +2,7 @@ use std::cast;
 use std::mem;
 use std::ptr;
 use std::str;
-use std::util::NonCopyable;
+use std::kinds::marker::NoPod;
 use std::io::fs::File;
 use std::io::Reader;
 use gl;
@@ -18,7 +18,7 @@ pub struct Shader {
     priv program: GLuint,
     priv vshader: GLuint,
     priv fshader: GLuint,
-    priv nocpy:   NonCopyable
+    priv nocpy:   NoPod
 }
 
 impl Shader {
@@ -28,17 +28,17 @@ impl Shader {
             None
         }
         else {
-            let vshader = File::open(vshader_path).map(|mut v| v.read_to_end());
-            let fshader = File::open(fshader_path).map(|mut f| f.read_to_end());
+            let vshader = File::open(vshader_path).map(|mut v| v.read_to_str());
+            let fshader = File::open(fshader_path).map(|mut f| f.read_to_str());
 
-            if vshader.is_none() || fshader.is_none() {
+            if vshader.is_err() || fshader.is_err() {
                 return None;
             }
 
-            let vshader = str::from_utf8_owned(vshader.unwrap());
-            let fshader = str::from_utf8_owned(fshader.unwrap());
+            let vshader = vshader.unwrap();
+            let fshader = fshader.unwrap();
 
-            if vshader.is_none() || fshader.is_none() {
+            if vshader.is_err() || fshader.is_err() {
                 return None;
             }
 
@@ -54,7 +54,7 @@ impl Shader {
             program: program,
             vshader: vshader,
             fshader: fshader,
-            nocpy:   NonCopyable
+            nocpy:   NoPod
         }
     }
 

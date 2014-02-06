@@ -2,8 +2,7 @@
 
 use std::util;
 use std::io::fs::File;
-use std::io::Reader;
-use std::str;
+use std::io::{IoResult, Reader};
 use std::str::Words;
 use std::from_str::FromStr;
 use nalgebra::na::Vec3;
@@ -13,14 +12,10 @@ fn error(line: uint, err: &str) -> ! {
 }
 
 /// Parses a mtl file.
-pub fn parse_file(path: &Path) -> Option<~[MtlMaterial]> {
-    if !path.exists() {
-        None
-    }
-    else {
-        let s   = File::open(path).expect("Cannot open the file: " + path.as_str().unwrap()).read_to_end();
-        let obj = str::from_utf8_owned(s).unwrap();
-        Some(parse(obj))
+pub fn parse_file(path: &Path) -> IoResult<~[MtlMaterial]> {
+    match File::open(path) {
+        Ok(mut file) => file.read_to_str().map(|mtl| parse(mtl)),
+        Err(e)       => Err(e)
     }
 }
 

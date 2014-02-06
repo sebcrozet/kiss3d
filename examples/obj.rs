@@ -9,7 +9,7 @@ fn main() {
     Window::spawn("Kiss3d: obj", proc(window) {
         let obj_path = Path::new("media/teapot/teapot.obj");
         let mtl_path = Path::new("media/teapot");
-        let mut cs   = window.add_obj(&obj_path, &mtl_path, 0.001);
+        let mut cs   = window.add_obj(&obj_path, &mtl_path, 0.001).unwrap();
 
         window.set_light(light::StickToCamera);
 

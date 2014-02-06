@@ -1,6 +1,6 @@
 //! Data structure of a scene node geometry.
 
-use extra::arc::RWArc;
+use sync::RWArc;
 use std::num::Zero;
 use std::vec;
 use gl::types::*;

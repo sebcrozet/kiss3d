@@ -1,4 +1,5 @@
 extern mod extra;
+extern mod sync;
 extern mod gl;
 extern mod glfw;
 extern mod kiss3d;
@@ -7,9 +8,9 @@ extern mod nalgebra;
 use std::ptr;
 use std::rc::Rc;
 use std::cell::RefCell;
-use extra::arc::RWArc;
+use sync::RWArc;
 use gl::types::{GLint, GLuint, GLfloat};
-use nalgebra::na::{Vec2, Vec3, Mat3, Mat4, Rotation, Translation};
+use nalgebra::na::{Vec2, Vec3, Mat3, Mat4, Rot3, Rotation, Translation};
 use nalgebra::na;
 use kiss3d::window::Window;
 use kiss3d::event;
@@ -37,8 +38,8 @@ fn main() {
         /*
          * Setup the grid.
          */
-        let width     = 20;
-        let spacing   = 100.0;
+        let width     = 2;
+        let spacing   = 1000.0;
         let thickness = 10.0;
         let total     = (width - 1) as f32 * spacing;
 
@@ -101,7 +102,7 @@ fn main() {
                     curr_acceleration = deceleration;
                 }
 
-                let new_sop = (sop + curr_acceleration / 60.0).clamp(&0.0, &(c.speed_of_light - 0.001));
+                let new_sop = (sop + curr_acceleration / 60.0).clamp(&0.0, &(c.speed_of_light - 0.1));
 
                 first_person.set_move_step(new_sop * 60.0);
 
@@ -134,20 +135,22 @@ impl Context {
 
 /// The default material used to draw objects.
 pub struct RelativisticMaterial {
-    priv context:    RWArc<Context>,
-    priv shader:     Shader,
-    priv pos:        ShaderAttribute<Vec3<f32>>,
-    priv normal:     ShaderAttribute<Vec3<f32>>,
-    priv tex_coord:  ShaderAttribute<Vec2<f32>>,
-    priv light:      ShaderUniform<Vec3<f32>>,
-    priv color:      ShaderUniform<Vec3<f32>>,
-    priv transform:  ShaderUniform<Mat4<f32>>,
-    priv scale:      ShaderUniform<Mat3<f32>>,
-    priv ntransform: ShaderUniform<Mat3<f32>>,
-    priv view:       ShaderUniform<Mat4<f32>>,
-    priv tex:        ShaderUniform<GLuint>,
-    priv light_vel:  ShaderUniform<GLfloat>,
-    priv rel_vel:    ShaderUniform<Vec3<f32>>
+    priv context:         RWArc<Context>,
+    priv shader:          Shader,
+    priv pos:             ShaderAttribute<Vec3<f32>>,
+    priv normal:          ShaderAttribute<Vec3<f32>>,
+    priv tex_coord:       ShaderAttribute<Vec2<f32>>,
+    priv light:           ShaderUniform<Vec3<f32>>,
+    priv color:           ShaderUniform<Vec3<f32>>,
+    priv transform:       ShaderUniform<Mat4<f32>>,
+    priv scale:           ShaderUniform<Mat3<f32>>,
+    priv ntransform:      ShaderUniform<Mat3<f32>>,
+    priv view:            ShaderUniform<Mat4<f32>>,
+    priv tex:             ShaderUniform<GLuint>,
+    priv light_vel:       ShaderUniform<GLfloat>,
+    priv rel_vel:         ShaderUniform<Vec3<f32>>,
+    priv rot:             ShaderUniform<Rot3<f32>>,
+    priv player_position: ShaderUniform<Vec3<f32>>
 }
 
 impl RelativisticMaterial {
@@ -160,20 +163,22 @@ impl RelativisticMaterial {
 
         // get the variables locations
         RelativisticMaterial {
-            context:    context,
-            pos:        shader.get_attrib("position").unwrap(),
-            normal:     shader.get_attrib("normal").unwrap(),
-            tex_coord:  shader.get_attrib("tex_coord_v").unwrap(),
-            light:      shader.get_uniform("light_position").unwrap(),
-            light_vel:  shader.get_uniform("light_vel").unwrap(),
-            rel_vel:    shader.get_uniform("rel_vel").unwrap(),
-            color:      shader.get_uniform("color").unwrap(),
-            transform:  shader.get_uniform("transform").unwrap(),
-            scale:      shader.get_uniform("scale").unwrap(),
-            ntransform: shader.get_uniform("ntransform").unwrap(),
-            view:       shader.get_uniform("view").unwrap(),
-            tex:        shader.get_uniform("tex").unwrap(),
-            shader:     shader
+            context:         context,
+            pos:             shader.get_attrib("position").unwrap(),
+            normal:          shader.get_attrib("normal").unwrap(),
+            tex_coord:       shader.get_attrib("tex_coord_v").unwrap(),
+            light:           shader.get_uniform("light_position").unwrap(),
+            player_position: shader.get_uniform("player_position").unwrap(),
+            light_vel:       shader.get_uniform("light_vel").unwrap(),
+            rel_vel:         shader.get_uniform("rel_vel").unwrap(),
+            rot:             shader.get_uniform("rot").unwrap(),
+            color:           shader.get_uniform("color").unwrap(),
+            transform:       shader.get_uniform("transform").unwrap(),
+            scale:           shader.get_uniform("scale").unwrap(),
+            ntransform:      shader.get_uniform("ntransform").unwrap(),
+            view:            shader.get_uniform("view").unwrap(),
+            tex:             shader.get_uniform("tex").unwrap(),
+            shader:          shader
         }
     }
 
@@ -215,8 +220,19 @@ impl Material for RelativisticMaterial {
         self.light.upload(&pos);
 
         self.context.read(|c| {
+            // XXX: this relative velocity est very wrong!
             self.rel_vel.upload(&-c.speed_of_player);
             self.light_vel.upload(&-c.speed_of_light);
+
+            let mut rot = na::one::<Rot3<f32>>();
+
+            if na::sqnorm(&c.speed_of_player) != 0.0 {
+                rot.look_at_z(&(-c.speed_of_player), &Vec3::y());
+                println!("speed: {:?}", c.speed_of_player);
+                println!("{:?}", rot);
+            }
+
+            self.rot.upload(&rot);
         });
 
         /*
@@ -264,13 +280,30 @@ pub static RELATIVISTIC_VERTEX_SRC:   &'static str =
     uniform mat3   ntransform;
     uniform float  light_vel;
     uniform vec3   rel_vel;
+    uniform mat3   rot;
+    uniform vec3   player_position;
     void main() {
+        // mat4 scale4 = mat4(scale);
+        // vec4 pos4   = transform * scale4 * vec4(position, 1.0);
+        // tex_coord   = tex_coord_v;
+        // ws_position = pos4.xyz;
+        // pos4.z      /= (1.0 - sqrt(dot(rel_vel, rel_vel)));
+        // gl_Position = view * pos4;
+        // ws_normal   = normalize(ntransform * scale * normal);
+
+
         mat4 scale4 = mat4(scale);
+
         vec4 pos4   = transform * scale4 * vec4(position, 1.0);
-        tex_coord   = tex_coord_v;
-        ws_position = pos4.xyz;
-        gl_Position = view * pos4;
+
+        ws_position   =  rot * (pos4.xyz - player_position);
+        ws_position.z /= (1.0 - sqrt(dot(rel_vel, rel_vel)));
+        ws_position   =  ws_position * rot;
+
+        gl_Position = view * vec4(player_position + ws_position, 1.0);
+
         ws_normal   = normalize(ntransform * scale * normal);
+        tex_coord   = tex_coord_v;
     }";
 
 pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =

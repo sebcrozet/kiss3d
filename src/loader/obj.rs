@@ -4,11 +4,11 @@ use std::num::Bounded;
 use std::io::fs::File;
 use std::io::Reader;
 use std::vec;
-use std::str;
 use std::str::Words;
 use std::from_str::FromStr;
 use std::hashmap::HashMap;
-use extra::arc::RWArc;
+use std::io::IoResult;
+use sync::RWArc;
 use gl::types::GLfloat;
 use nalgebra::na::{Vec3, Vec2, Indexable};
 use nalgebra::na;
@@ -30,14 +30,10 @@ fn warn(line: uint, err: &str) {
 }
 
 /// Parses an obj file.
-pub fn parse_file(path: &Path, mtl_base_dir: &Path, basename: &str) -> Option<~[(~str, Mesh, Option<MtlMaterial>)]> {
-    if !path.exists() {
-        None
-    }
-    else {
-        let s   = File::open(path).expect("Cannot open the file: " + path.as_str().unwrap()).read_to_end();
-        let obj = str::from_utf8_owned(s).unwrap();
-        Some(parse(obj, mtl_base_dir, basename))
+pub fn parse_file(path: &Path, mtl_base_dir: &Path, basename: &str) -> IoResult<~[(~str, Mesh, Option<MtlMaterial>)]> {
+    match File::open(path) {
+        Ok(mut file) => file.read_to_str().map(|obj| parse(obj, mtl_base_dir, basename)),
+        Err(e)       => Err(e)
     }
 }
 
@@ -160,11 +156,11 @@ fn parse_mtllib<'a>(l:            uint,
     let ms = mtl::parse_file(&path);
 
     match ms {
-        Some(ms) =>
+        Ok(ms) =>
             for m in ms.move_iter() {
                 mtllib.insert(m.name.clone(), m);
             },
-        None => warn(l, "could not find the mtl file " + path.as_str().unwrap())
+        Err(err) => warn(l, format!("{}", err))
     }
 }
 

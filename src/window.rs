@@ -10,8 +10,9 @@ use std::num::Zero;
 use std::hashmap::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::io::IoResult;
 use extra::time;
-use extra::arc::RWArc;
+use sync::RWArc;
 use gl;
 use gl::types::*;
 use stb_image::image::*;
@@ -149,19 +150,19 @@ impl<'a> Window<'a> {
 
     /// Loads a mesh from an obj file located at `path` and registers its geometry as
     /// `geometry_name`.
-    pub fn load_obj(&mut self, path: &Path, mtl_dir: &Path, geometry_name: &str) -> ~[(~str, Rc<RefCell<Mesh>>, Option<MtlMaterial>)] {
-        let ms = obj::parse_file(path, mtl_dir, geometry_name).expect("Unable to parse the obj file: " + path.as_str().unwrap());
+    pub fn load_obj(&mut self, path: &Path, mtl_dir: &Path, geometry_name: &str) -> IoResult<~[(~str, Rc<RefCell<Mesh>>, Option<MtlMaterial>)]> {
+        obj::parse_file(path, mtl_dir, geometry_name).map(|ms| {
+            let mut res = ~[];
 
-        let mut res = ~[];
+            for (n, m, mat) in ms.move_iter() {
+                let m = Rc::new(RefCell::new(m));
+                self.geometries.insert(geometry_name.to_owned(), m.clone());
 
-        for (n, m, mat) in ms.move_iter() {
-            let m = Rc::new(RefCell::new(m));
-            self.geometries.insert(geometry_name.to_owned(), m.clone());
+                res.push((n, m, mat));
+            }
 
-            res.push((n, m, mat));
-        }
-
-        res
+            res
+        })
     }
 
     /// Gets the geometry named `geometry_name` if it has been already registered.
@@ -179,46 +180,45 @@ impl<'a> Window<'a> {
     /// # Arguments
     /// * `path`  - relative path to the obj file.
     /// * `scale` - uniform scale to apply to the model.
-    pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: GLfloat) -> ~[Object] {
+    pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: GLfloat) -> IoResult<~[Object]> {
         let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
-        let objs = self.load_obj(path, mtl_dir, path.as_str().unwrap());
-        println!("Parsing complete.");
+        self.load_obj(path, mtl_dir, path.as_str().unwrap()).map(|objs| {
+            let mut res = ~[];
 
-        let mut res = ~[];
+            for (_, mesh, mtl) in objs.move_iter() {
+                let mut object = Object::new(
+                    mesh,
+                    1.0, 1.0, 1.0,
+                    tex.clone(),
+                    scale, scale, scale,
+                    self.object_material.clone()
+                    );
 
-        for (_, mesh, mtl) in objs.move_iter() {
-            let mut object = Object::new(
-                mesh,
-                1.0, 1.0, 1.0,
-                tex.clone(),
-                scale, scale, scale,
-                self.object_material.clone()
-                );
+                match mtl {
+                    None      => { },
+                    Some(mtl) => {
+                        object.set_color(mtl.diffuse.x, mtl.diffuse.y, mtl.diffuse.z);
 
-            match mtl {
-                None      => { },
-                Some(mtl) => {
-                    object.set_color(mtl.diffuse.x, mtl.diffuse.y, mtl.diffuse.z);
+                        for t in mtl.diffuse_texture.iter() {
+                            let mut tpath = mtl_dir.clone();
+                            tpath.push(t.as_slice());
+                            object.set_texture(&tpath, tpath.as_str().unwrap())
+                        }
 
-                    for t in mtl.diffuse_texture.iter() {
-                        let mut tpath = mtl_dir.clone();
-                        tpath.push(t.as_slice());
-                        object.set_texture(&tpath, tpath.as_str().unwrap())
-                    }
-
-                    for t in mtl.ambiant_texture.iter() {
-                        let mut tpath = mtl_dir.clone();
-                        tpath.push(t.as_slice());
-                        object.set_texture(&tpath, tpath.as_str().unwrap())
+                        for t in mtl.ambiant_texture.iter() {
+                            let mut tpath = mtl_dir.clone();
+                            tpath.push(t.as_slice());
+                            object.set_texture(&tpath, tpath.as_str().unwrap())
+                        }
                     }
                 }
+
+                res.push(object.clone());
+                self.objects.push(object);
             }
 
-            res.push(object.clone());
-            self.objects.push(object);
-        }
-
-        res
+            res
+        })
     }
 
     /// Adds an unnamed mesh to the scene.
