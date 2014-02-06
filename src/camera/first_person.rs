@@ -1,6 +1,6 @@
-use std::num::atan2;
+use std::num::{Zero, atan2};
 use glfw;
-use nalgebra::na::{Vec2, Vec3, Mat4, Iso3};
+use nalgebra::na::{Translation, Vec2, Vec3, Mat4, Iso3};
 use nalgebra::na;
 use camera::Camera;
 use event;
@@ -11,7 +11,7 @@ use event;
 ///   * Right button press + drag - translates the camera position on the plane orthogonal to the
 ///   view direction
 ///   * Scroll in/out - zoom in/out
-#[deriving(ToStr)]
+#[deriving(ToStr, Clone)]
 pub struct FirstPerson {
     priv eye:        Vec3<f32>,
     priv yaw:        f32,
@@ -174,6 +174,43 @@ impl FirstPerson {
         self.proj_view     = self.projection * na::to_homogeneous(&na::inv(&self.view_transform()).unwrap());
         self.inv_proj_view = na::inv(&self.proj_view).unwrap();
     }
+
+    /// The direction this camera is looking at.
+    pub fn eye_dir(&self) -> Vec3<f32> {
+        na::normalize(&(self.at() - self.eye))
+    }
+
+    /// The direction this camera is being moved by the keyboard keys for a given set of key states.
+    pub fn move_dir(&self, up: bool, down: bool, right: bool, left: bool) -> Vec3<f32> {
+        let t                = self.view_transform();
+        let frontv: Vec3<f32> = na::rotate(&t, &Vec3::z());
+        let rightv: Vec3<f32> = na::rotate(&t, &Vec3::x());
+
+        let mut movement = na::zero::<Vec3<f32>>();
+
+        if up {
+            movement = movement + frontv
+        }
+
+        if down {
+            movement = movement - frontv
+        }
+
+        if right {
+            movement = movement - rightv
+        }
+
+        if left {
+            movement =  movement + rightv
+        }
+
+        if movement.is_zero() {
+            movement
+        }
+        else {
+            na::normalize(&movement)
+        }
+    }
 }
 
 impl Camera for FirstPerson {
@@ -228,26 +265,63 @@ impl Camera for FirstPerson {
     }
 
     fn update(&mut self, window: &glfw::Window) {
-        let t                = self.view_transform();
-        let front: Vec3<f32> = na::rotate(&t, &Vec3::z());
-        let right: Vec3<f32> = na::rotate(&t, &Vec3::x());
+        let up    = window.get_key(glfw::KeyUp)    == glfw::Press;
+        let down  = window.get_key(glfw::KeyDown)  == glfw::Press;
+        let right = window.get_key(glfw::KeyRight) == glfw::Press;
+        let left  = window.get_key(glfw::KeyLeft)  == glfw::Press;
+        let dir   = self.move_dir(up, down, right, left);
 
-        if window.get_key(glfw::KeyUp) == glfw::Press {
-            self.eye = self.eye + front * self.move_step
-        }
+        let move  = dir * self.move_step;
+        self.append_translation(&move);
+    }
+}
 
-        if window.get_key(glfw::KeyDown) == glfw::Press {
-            self.eye = self.eye + front * (-self.move_step)
-        }
+impl Translation<Vec3<f32>> for FirstPerson {
+    #[inline]
+    fn translation(&self) -> Vec3<f32> {
+        self.eye
+    }
 
-        if window.get_key(glfw::KeyRight) == glfw::Press {
-            self.eye = self.eye + right * (-self.move_step)
-        }
+    #[inline]
+    fn inv_translation(&self) -> Vec3<f32> {
+        -self.eye
+    }
 
-        if window.get_key(glfw::KeyLeft) == glfw::Press {
-            self.eye = self.eye + right * self.move_step
-        }
+    #[inline]
+    fn append_translation(&mut self, t: &Vec3<f32>) {
+        let new_t = self.eye + *t;
 
+        self.set_translation(new_t);
+    }
+
+    #[inline]
+    fn append_translation_cpy(me: &FirstPerson, t: &Vec3<f32>) -> FirstPerson {
+        let mut res = me.clone();
+
+        res.append_translation(t);
+
+        res
+    }
+
+    #[inline]
+    fn prepend_translation(&mut self, t: &Vec3<f32>) {
+        let new_t = self.eye - *t;
+
+        self.set_translation(new_t); // FIXME: is this correct?
+    }
+
+    #[inline]
+    fn prepend_translation_cpy(me: &FirstPerson, t: &Vec3<f32>) -> FirstPerson {
+        let mut res = me.clone();
+
+        res.prepend_translation(t);
+
+        res
+    }
+
+    #[inline]
+    fn set_translation(&mut self, t: Vec3<f32>) {
+        self.eye = t;
         self.update_restrictions();
         self.update_projviews();
     }

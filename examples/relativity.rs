@@ -6,11 +6,12 @@ extern mod kiss3d;
 extern mod nalgebra;
 
 use std::ptr;
+use std::num::Zero;
 use std::rc::Rc;
 use std::cell::RefCell;
 use sync::RWArc;
 use gl::types::{GLint, GLuint, GLfloat};
-use nalgebra::na::{Vec2, Vec3, Mat3, Mat4, Rot3, Rotation, Translation};
+use nalgebra::na::{Vec2, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
 use nalgebra::na;
 use kiss3d::window::Window;
 use kiss3d::event;
@@ -22,17 +23,15 @@ use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
 
 fn main() {
     Window::spawn("Kiss3d: relativity", proc(window) {
-        let eye                 = Vec3::new(0.0f32, 0.0, 200.0);
-        let at                  = na::zero();
-        let fov                 = 45.0f32.to_radians();
-        let font                = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
-        let mut first_person    = FirstPerson::new_with_frustrum(fov, 0.1, 100000.0, eye, at);
-        let     context         = RWArc::new(Context::new(1.0, na::zero(), eye));
-        let     acceleration    = 0.2f32;
-        let     deceleration    = -0.9f32;
-        let     material        = Rc::new(RefCell::new(~RelativisticMaterial::new(context.clone()) as ~Material));
+        let eye              = Vec3::new(0.0f32, 0.0, 200.0);
+        let at               = na::zero();
+        let fov              = 45.0f32.to_radians();
+        let mut observer     = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
+        let font             = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
+        let     context      = RWArc::new(Context::new(1000.0, na::zero(), eye));
+        let     material     = Rc::new(RefCell::new(~RelativisticMaterial::new(context.clone()) as ~Material));
 
-        window.set_camera(&mut first_person as &mut Camera);
+        window.set_camera(&mut observer as &mut Camera);
         window.set_framerate_limit(Some(60));
 
         /*
@@ -62,8 +61,15 @@ fn main() {
             }
         }
 
+        let obj_path = Path::new("media/teapot/teapot.obj");
+        let mtl_path = Path::new("media/teapot");
+        let mut cs   = window.add_obj(&obj_path, &mtl_path, 1.0).unwrap();
+
+        for c in cs.mut_iter() {
+            c.set_material(material.clone());
+        }
+
         window.set_light(StickToCamera);
-        first_person.set_move_step(0.0);
 
         /*
          * Render
@@ -86,35 +92,94 @@ fn main() {
                     true
                 });
 
-                let sop = first_person.move_step() / 60.0;
+                let sop = na::norm(&observer.velocity);
 
                 w.draw_text(format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop),
                             &na::zero(), &font, &Vec3::new(1.0, 1.0, 1.0));
 
-                let curr_acceleration;
-                if w.glfw_window().get_key(glfw::KeyUp)    == glfw::Press ||
-                   w.glfw_window().get_key(glfw::KeyDown)  == glfw::Press ||
-                   w.glfw_window().get_key(glfw::KeyRight) == glfw::Press ||
-                   w.glfw_window().get_key(glfw::KeyLeft)  == glfw::Press {
-                       curr_acceleration = acceleration;
-                }
-                else {
-                    curr_acceleration = deceleration;
-                }
-
-                let new_sop = (sop + curr_acceleration / 60.0).clamp(&0.0, &(c.speed_of_light - 0.1));
-
-                first_person.set_move_step(new_sop * 60.0);
-
-                let eye = first_person.eye();
-                let at  = first_person.at();
-                let dir = na::normalize(&(at - eye));
-
-                c.speed_of_player = dir * new_sop;
-                c.position        = first_person.eye();
+                observer.max_vel  = c.speed_of_light * 0.9;
+                c.speed_of_player = observer.velocity;
+                c.position        = observer.eye();
             })
         })
     })
+}
+
+struct InertialCamera {
+    cam:          FirstPerson,
+    acceleration: f32,
+    deceleration: f32,
+    max_vel:      f32,
+    velocity:     Vec3<f32>
+}
+
+impl InertialCamera {
+    pub fn new(fov: f32, znear: f32, zfar: f32, eye: Vec3<f32>, at: Vec3<f32>) -> InertialCamera {
+        let mut fp = FirstPerson::new_with_frustrum(fov, znear, zfar, eye, at);
+
+        fp.set_move_step(0.0);
+
+        InertialCamera {
+            cam:          fp,
+            acceleration: 400.0f32,
+            deceleration: 0.95f32,
+            max_vel:      1.0,
+            velocity:     na::zero()
+        }
+    }
+}
+
+impl Camera for InertialCamera {
+    fn clip_planes(&self) -> (f32, f32) {
+        self.cam.clip_planes()
+    }
+
+    fn view_transform(&self) -> Iso3<f32> {
+        self.cam.view_transform()
+    }
+
+    fn handle_event(&mut self, window: &glfw::Window, event: &event::Event) {
+        self.cam.handle_event(window, event)
+    }
+
+    fn eye(&self) -> Vec3<f32> {
+        self.cam.eye()
+    }
+
+    fn transformation(&self) -> Mat4<f32> {
+        self.cam.transformation()
+    }
+
+    fn inv_transformation(&self) -> Mat4<f32> {
+        self.cam.inv_transformation()
+    }
+
+    fn update(&mut self, window: &glfw::Window) {
+        let up    = window.get_key(glfw::KeyUp)    == glfw::Press;
+        let down  = window.get_key(glfw::KeyDown)  == glfw::Press;
+        let right = window.get_key(glfw::KeyRight) == glfw::Press;
+        let left  = window.get_key(glfw::KeyLeft)  == glfw::Press;
+
+        let dir = self.cam.move_dir(up, down, right, left);
+
+        if !dir.is_zero() {
+            self.velocity = self.velocity + dir * self.acceleration * 0.016f32;
+        }
+        else {
+            self.velocity = self.velocity * self.deceleration;
+        }
+
+        let speed = self.velocity.normalize().min(&self.max_vel);
+
+        if speed != 0.0 {
+            self.velocity = self.velocity * speed;
+        }
+        else {
+            self.velocity = na::zero();
+        }
+
+        self.cam.append_translation(&(self.velocity * 0.016f32));
+    }
 }
 
 struct Context {
@@ -228,8 +293,6 @@ impl Material for RelativisticMaterial {
 
             if na::sqnorm(&c.speed_of_player) != 0.0 {
                 rot.look_at_z(&(-c.speed_of_player), &Vec3::y());
-                println!("speed: {:?}", c.speed_of_player);
-                println!("{:?}", rot);
             }
 
             self.rot.upload(&rot);
@@ -297,7 +360,7 @@ pub static RELATIVISTIC_VERTEX_SRC:   &'static str =
         vec4 pos4   = transform * scale4 * vec4(position, 1.0);
 
         ws_position   =  rot * (pos4.xyz - player_position);
-        ws_position.z /= (1.0 - sqrt(dot(rel_vel, rel_vel)));
+        ws_position.z /= (1.0 - dot(rel_vel, rel_vel) / (light_vel * light_vel));
         ws_position   =  ws_position * rot;
 
         gl_Position = view * vec4(player_position + ws_position, 1.0);
@@ -311,8 +374,6 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
     uniform vec3      color;
     uniform vec3      light_position;
     uniform sampler2D tex;
-    uniform float     light_vel;
-    uniform vec3      rel_vel;
     varying vec2      tex_coord;
     varying vec3      ws_normal;
     varying vec3      ws_position;
@@ -337,5 +398,5 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
 
       // apply doppler effect here, on `non_relativistic_color`
 
-      gl_FragColor =  vec4(abs(rel_vel) * light_vel + 0.5, 1.0) * non_relativistic_color;
+      gl_FragColor =  non_relativistic_color;
     }";
