@@ -29,7 +29,7 @@ fn start(argc: int, argv: **u8) -> int {
 
 fn main() {
     Window::spawn("Kiss3d: relativity", proc(window) {
-        let eye          = Vec3::new(0.0f32, -199.0, 100.0);
+        let eye          = Vec3::new(0.0f32, -199.0/*600.0*/, 200.0);
         let at           = Vec3::new(0.0f32, -200.0, 0.0);
         let fov          = 45.0f32.to_radians();
         let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
@@ -94,10 +94,12 @@ fn main() {
                 c.append_translation(&Vec3::new(0.0, x, y));
             }
         }
+        */
 
-        let obj_path = Path::new("media/sponza/sponza.obj");
-        let mtl_path = Path::new("media/sponza");
-        let mut cs   = window.add_obj(&obj_path, &mtl_path, 10.0).unwrap();
+        /*
+        let obj_path = Path::new("media/town/town.obj");
+        let mtl_path = Path::new("media/town");
+        let mut cs   = window.add_obj(&obj_path, &mtl_path, 20.0).unwrap();
 
         for c in cs.mut_iter() {
             c.set_material(material.clone());
@@ -134,9 +136,9 @@ fn main() {
                 w.draw_text(format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop),
                             &na::zero(), &font, &Vec3::new(1.0, 1.0, 1.0));
 
-                observer.max_vel  = c.speed_of_light * 0.80;
+                observer.max_vel  = c.speed_of_light * 0.90;
                 c.speed_of_player = obs_vel;
-                c.position        = eye;
+                c.position        = observer.eye();
             })
         })
     })

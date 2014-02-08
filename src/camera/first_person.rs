@@ -171,8 +171,11 @@ impl FirstPerson {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view     = self.projection * na::to_homogeneous(&na::inv(&self.view_transform()).unwrap());
-        self.inv_proj_view = na::inv(&self.proj_view).unwrap();
+        let _ = na::inv(&self.view_transform()).map(|inv_view|
+            self.proj_view = self.projection * na::to_homogeneous(&inv_view)
+        );
+
+        let _ = na::inv(&self.proj_view).map(|inv_proj| self.inv_proj_view = inv_proj);
     }
 
     /// The direction this camera is looking at.
