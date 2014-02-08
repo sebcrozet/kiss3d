@@ -23,10 +23,11 @@ use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
 
 fn main() {
     Window::spawn("Kiss3d: relativity", proc(window) {
-        let eye          = Vec3::new(0.0f32, 0.0, 600.0);
-        let at           = na::zero();
+        let eye          = Vec3::new(0.0f32, -199.0, 100.0);
+        let at           = Vec3::new(0.0f32, -200.0, 0.0);
         let fov          = 45.0f32.to_radians();
         let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
+        // let mut observer = FirstPerson::new_with_frustrum(fov, 0.1, 100000.0, eye, at);
         let font         = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
         let context      = RWArc::new(Context::new(1000.0, na::zero(), eye));
         let material     = Rc::new(RefCell::new(~RelativisticMaterial::new(context.clone()) as ~Material));
@@ -34,27 +35,29 @@ fn main() {
         window.set_camera(&mut observer as &mut Camera);
         window.set_framerate_limit(Some(60));
 
-        let mut c = window.add_quad(400.0, 400.0, 400, 400);
+        let mut c = window.add_quad(800.0, 800.0, 40, 40);
         c.set_material(material.clone());
         c.set_texture(&Path::new("media/kitten.png"), "kitten");
 
-        let mut c = window.add_quad(400.0, 400.0, 400, 400);
+        let mut c = window.add_quad(800.0, 800.0, 40, 40);
         c.append_rotation(&(Vec3::x() * 90.0f32.to_radians()));
-        c.append_translation(&(Vec3::new(0.0, -200.0, 200.0)));
+        c.append_translation(&(Vec3::new(0.0, -400.0, 400.0)));
         c.set_material(material.clone());
         c.set_texture(&Path::new("media/kitten.png"), "kitten");
 
-        let mut c = window.add_quad(400.0, 400.0, 400, 400);
+        let mut c = window.add_quad(800.0, 800.0, 40, 40);
         c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
-        c.append_translation(&(Vec3::new(200.0, 0.0, 200.0)));
+        c.append_translation(&(Vec3::new(400.0, 0.0, 400.0)));
         c.set_material(material.clone());
         c.set_texture(&Path::new("media/kitten.png"), "kitten");
 
-        let mut c = window.add_quad(400.0, 400.0, 400, 400);
+        let mut c = window.add_quad(800.0, 800.0, 40, 40);
         c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
-        c.append_translation(&(Vec3::new(-200.0, 0.0, 200.0)));
+        c.append_translation(&(Vec3::new(-400.0, 0.0, 400.0)));
         c.set_material(material.clone());
         c.set_texture(&Path::new("media/kitten.png"), "kitten");
+
+        // window.set_wireframe_mode(true);
 
         /*
          * Setup the grid.
@@ -118,14 +121,16 @@ fn main() {
                     true
                 });
 
-                let sop = na::norm(&observer.velocity);
+                let obs_vel = observer.velocity;
+                // let obs_vel = Vec3::new(0.0f32, 0.0, -900.0);
+                let sop = na::norm(&obs_vel);
 
                 w.draw_text(format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop),
                             &na::zero(), &font, &Vec3::new(1.0, 1.0, 1.0));
 
-                observer.max_vel  = c.speed_of_light * 0.99;
-                c.speed_of_player = observer.velocity;
-                c.position        = observer.eye();
+                observer.max_vel  = c.speed_of_light * 0.80;
+                c.speed_of_player = obs_vel;
+                c.position        = eye;
             })
         })
     })
@@ -147,7 +152,7 @@ impl InertialCamera {
 
         InertialCamera {
             cam:          fp,
-            acceleration: 400.0f32,
+            acceleration: 800.0f32,
             deceleration: 0.95f32,
             max_vel:      1.0,
             velocity:     na::zero()
@@ -198,13 +203,15 @@ impl Camera for InertialCamera {
         let speed = self.velocity.normalize().min(&self.max_vel);
 
         if speed != 0.0 {
+            self.velocity.y = 0.0;
+            self.velocity.normalize();
             self.velocity = self.velocity * speed;
         }
         else {
             self.velocity = na::zero();
         }
 
-        // self.cam.append_translation(&(self.velocity * 0.016f32));
+        self.cam.append_translation(&(self.velocity * 0.016f32));
     }
 }
 
@@ -312,8 +319,9 @@ impl Material for RelativisticMaterial {
 
         self.context.read(|c| {
             // XXX: this relative velocity est very wrong!
-            self.rel_vel.upload(&-c.speed_of_player);
-            self.light_vel.upload(&-c.speed_of_light);
+            self.rel_vel.upload(&c.speed_of_player);
+            self.light_vel.upload(&c.speed_of_light);
+            self.player_position.upload(&c.position);
 
             let mut rot = na::one::<Rot3<f32>>();
 
@@ -332,14 +340,14 @@ impl Material for RelativisticMaterial {
         let formated_transform:  Mat4<f32> = na::to_homogeneous(data.transform());
         let formated_ntransform: Mat3<f32> = *data.transform().rotation.submat();
 
+        self.transform.upload(&formated_transform);
+        self.ntransform.upload(&formated_ntransform);
+        self.scale.upload(data.scale());
+        self.color.upload(data.color());
+
+        mesh.bind(&mut self.pos, &mut self.normal, &mut self.tex_coord);
+
         unsafe {
-            self.transform.upload(&formated_transform);
-            self.ntransform.upload(&formated_ntransform);
-            self.scale.upload(data.scale());
-            self.color.upload(data.color());
-
-            mesh.bind(&mut self.pos, &mut self.normal, &mut self.tex_coord);
-
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, data.texture().borrow().id());
 
@@ -391,13 +399,16 @@ pub static RELATIVISTIC_VERTEX_SRC:   &'static str =
 
         vec3 rot_vel = rot * rel_vel;
 
-        ws_position.z *= sqrt(1.0 - dot(rel_vel, rel_vel) / (light_vel * light_vel));
+        vec3 norm_ws_position = normalize(ws_position);
 
-        float dt     = sqrt(dot(ws_position, ws_position)) / light_vel;
+        float dt;
+        
+        dt = sqrt(dot(ws_position, ws_position)) / light_vel;
 
-        ws_position.x += rot_vel.x * dt;
-        ws_position.y += rot_vel.y * dt;
         ws_position.z += rot_vel.z * dt;
+
+        ws_position.z /= sqrt(1.0 - dot(rel_vel, rel_vel) / (light_vel * light_vel));
+
 
         ws_position   =  ws_position * rot;
 
