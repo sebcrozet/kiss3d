@@ -429,9 +429,9 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
    "#version 120
     uniform vec3      color;
     uniform vec3      light_position;
+    uniform vec3      rel_vel;
     uniform sampler2D tex;
     varying vec2      tex_coord;
-    uniform vec3      rel_vel;
     varying vec3      ws_normal;
     varying vec3      ws_position;
     void main() {
@@ -455,5 +455,7 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
 
       // apply doppler effect here, on `non_relativistic_color`
 
-      gl_FragColor =  non_relativistic_color;
+      vec4 real_color = non_relativistic_color + sqrt(dot(rel_vel, rel_vel));
+
+      gl_FragColor =  real_color;
     }";
