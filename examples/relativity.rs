@@ -434,6 +434,26 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
     varying vec2      tex_coord;
     varying vec3      ws_normal;
     varying vec3      ws_position;
+    uniform vec3      player_position;
+
+    vec3 rgb2hsv(vec3 c)
+    {
+        vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+        vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+        vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+        float d = q.x - min(q.w, q.y);
+        float e = 1.0e-10;
+        return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+    }
+
+    vec3 hsv2rgb(vec3 c)
+    {
+        vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+        vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+        return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+    }
+
     void main() {
       vec3 L = normalize(light_position - ws_position);
       vec3 E = normalize(-ws_position);
@@ -452,10 +472,20 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
       vec4 tex_color              = texture2D(tex, tex_coord);
       vec4 non_relativistic_color = tex_color * (vec4(color, 1.0) + Iamb + (Idiff1 + Idiff2) / 2) / 3;
 
+      vec3 hsv_col = rgb2hsv(non_relativistic_color.xyz);
+
 
       // apply doppler effect here, on `non_relativistic_color`
 
-      vec4 real_color = non_relativistic_color + sqrt(dot(rel_vel, rel_vel));
+      vec3 diff = normalize(ws_position - player_position);
+
+
+      hsv_col.x = clamp(hsv_col.x + 0.001 * dot(rel_vel, diff), 0.0, 1.0);
+
+      vec3 rgb_col = hsv2rgb(hsv_col);
+
+      vec4 real_color = vec4(rgb_col.x, rgb_col.y, rgb_col.z, 1.0);
+
 
       gl_FragColor =  real_color;
     }";
