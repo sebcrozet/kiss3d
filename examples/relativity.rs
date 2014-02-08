@@ -23,23 +23,46 @@ use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
 
 fn main() {
     Window::spawn("Kiss3d: relativity", proc(window) {
-        let eye              = Vec3::new(0.0f32, 0.0, 200.0);
-        let at               = na::zero();
-        let fov              = 45.0f32.to_radians();
-        let mut observer     = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
-        let font             = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
-        let     context      = RWArc::new(Context::new(1000.0, na::zero(), eye));
-        let     material     = Rc::new(RefCell::new(~RelativisticMaterial::new(context.clone()) as ~Material));
+        let eye          = Vec3::new(0.0f32, 0.0, 600.0);
+        let at           = na::zero();
+        let fov          = 45.0f32.to_radians();
+        let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
+        let font         = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
+        let context      = RWArc::new(Context::new(1000.0, na::zero(), eye));
+        let material     = Rc::new(RefCell::new(~RelativisticMaterial::new(context.clone()) as ~Material));
 
         window.set_camera(&mut observer as &mut Camera);
         window.set_framerate_limit(Some(60));
 
+        let mut c = window.add_quad(400.0, 400.0, 400, 400);
+        c.set_material(material.clone());
+        c.set_texture(&Path::new("media/kitten.png"), "kitten");
+
+        let mut c = window.add_quad(400.0, 400.0, 400, 400);
+        c.append_rotation(&(Vec3::x() * 90.0f32.to_radians()));
+        c.append_translation(&(Vec3::new(0.0, -200.0, 200.0)));
+        c.set_material(material.clone());
+        c.set_texture(&Path::new("media/kitten.png"), "kitten");
+
+        let mut c = window.add_quad(400.0, 400.0, 400, 400);
+        c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
+        c.append_translation(&(Vec3::new(200.0, 0.0, 200.0)));
+        c.set_material(material.clone());
+        c.set_texture(&Path::new("media/kitten.png"), "kitten");
+
+        let mut c = window.add_quad(400.0, 400.0, 400, 400);
+        c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
+        c.append_translation(&(Vec3::new(-200.0, 0.0, 200.0)));
+        c.set_material(material.clone());
+        c.set_texture(&Path::new("media/kitten.png"), "kitten");
+
         /*
          * Setup the grid.
          */
-        let width     = 2;
-        let spacing   = 1000.0;
-        let thickness = 10.0;
+        /*
+        let width     = 20;
+        let spacing   = 10.0;
+        let thickness = 1.0;
         let total     = (width - 1) as f32 * spacing;
 
         for i in range(0, width) {
@@ -47,9 +70,11 @@ fn main() {
                 let x = i as f32 * spacing - total / 2.0;
                 let y = j as f32 * spacing - total / 2.0;
 
-                let mut c = window.add_cube(thickness, thickness, total);
-                c.set_material(material.clone());
-                c.append_translation(&Vec3::new(x, y, 0.0));
+                for i in range(0, total as uint) {
+                    let mut c = window.add_cube(thickness, thickness, 1.0);
+                    c.set_material(material.clone());
+                    c.append_translation(&Vec3::new(x, y, i as f32));
+                }
 
                 let mut c = window.add_cube(thickness, total, thickness);
                 c.set_material(material.clone());
@@ -61,13 +86,14 @@ fn main() {
             }
         }
 
-        let obj_path = Path::new("media/teapot/teapot.obj");
-        let mtl_path = Path::new("media/teapot");
-        let mut cs   = window.add_obj(&obj_path, &mtl_path, 1.0).unwrap();
+        let obj_path = Path::new("media/sponza/sponza.obj");
+        let mtl_path = Path::new("media/sponza");
+        let mut cs   = window.add_obj(&obj_path, &mtl_path, 10.0).unwrap();
 
         for c in cs.mut_iter() {
             c.set_material(material.clone());
         }
+        */
 
         window.set_light(StickToCamera);
 
@@ -97,7 +123,7 @@ fn main() {
                 w.draw_text(format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop),
                             &na::zero(), &font, &Vec3::new(1.0, 1.0, 1.0));
 
-                observer.max_vel  = c.speed_of_light * 0.9;
+                observer.max_vel  = c.speed_of_light * 0.99;
                 c.speed_of_player = observer.velocity;
                 c.position        = observer.eye();
             })
@@ -178,7 +204,7 @@ impl Camera for InertialCamera {
             self.velocity = na::zero();
         }
 
-        self.cam.append_translation(&(self.velocity * 0.016f32));
+        // self.cam.append_translation(&(self.velocity * 0.016f32));
     }
 }
 
@@ -355,12 +381,24 @@ pub static RELATIVISTIC_VERTEX_SRC:   &'static str =
         // ws_normal   = normalize(ntransform * scale * normal);
 
 
-        mat4 scale4 = mat4(scale);
+        mat4 scale4  = mat4(scale);
 
-        vec4 pos4   = transform * scale4 * vec4(position, 1.0);
+        vec4 pos4    = transform * scale4 * vec4(position, 1.0);
 
-        ws_position   =  rot * (pos4.xyz - player_position);
-        ws_position.z /= (1.0 - dot(rel_vel, rel_vel) / (light_vel * light_vel));
+        ws_position  = pos4.xyz - player_position;
+        ws_position  = rot * ws_position;
+
+
+        vec3 rot_vel = rot * rel_vel;
+
+        ws_position.z *= sqrt(1.0 - dot(rel_vel, rel_vel) / (light_vel * light_vel));
+
+        float dt     = sqrt(dot(ws_position, ws_position)) / light_vel;
+
+        ws_position.x += rot_vel.x * dt;
+        ws_position.y += rot_vel.y * dt;
+        ws_position.z += rot_vel.z * dt;
+
         ws_position   =  ws_position * rot;
 
         gl_Position = view * vec4(player_position + ws_position, 1.0);

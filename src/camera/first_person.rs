@@ -13,17 +13,17 @@ use event;
 ///   * Scroll in/out - zoom in/out
 #[deriving(ToStr, Clone)]
 pub struct FirstPerson {
-    priv eye:        Vec3<f32>,
-    priv yaw:        f32,
-    priv pitch:      f32,
+    priv eye:             Vec3<f32>,
+    priv yaw:             f32,
+    priv pitch:           f32,
 
-    priv yaw_step:   f32,
-    priv pitch_step: f32,
-    priv move_step:  f32,
+    priv yaw_step:        f32,
+    priv pitch_step:      f32,
+    priv move_step:       f32,
 
-    priv fov:        f32,
-    priv znear:      f32,
-    priv zfar:       f32,
+    priv fov:             f32,
+    priv znear:           f32,
+    priv zfar:            f32,
     priv projection:      Mat4<f32>,
     priv proj_view:       Mat4<f32>,
     priv inv_proj_view:   Mat4<f32>,
@@ -129,13 +129,13 @@ impl FirstPerson {
     }
 
     fn update_restrictions(&mut self) {
-        if self.pitch <= 0.0001 {
-            self.pitch = 0.0001
+        if self.pitch <= 0.01 {
+            self.pitch = 0.01
         }
 
         let _pi: f32 = Real::pi();
-        if self.pitch > _pi - 0.0001 {
-            self.pitch = _pi - 0.0001
+        if self.pitch > _pi - 0.01 {
+            self.pitch = _pi - 0.01
         }
     }
 
