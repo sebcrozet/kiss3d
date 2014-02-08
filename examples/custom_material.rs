@@ -1,4 +1,4 @@
-
+extern mod native;
 extern mod gl;
 extern mod kiss3d;
 extern mod nalgebra;
@@ -14,6 +14,11 @@ use kiss3d::object::ObjectData;
 use kiss3d::camera::Camera;
 use kiss3d::light::Light;
 use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
+
+#[start]
+fn start(argc: int, argv: **u8) -> int {
+    native::start(argc, argv, main)
+}
 
 fn main() {
     Window::spawn("Kiss3d: cube", proc(window) {

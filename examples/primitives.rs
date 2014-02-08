@@ -1,3 +1,4 @@
+extern mod native;
 extern mod kiss3d;
 extern mod nalgebra;
 
@@ -5,6 +6,11 @@ use std::rand::random;
 use nalgebra::na::{Vec3, Translation, RotationWithTranslation};
 use kiss3d::window::Window;
 use kiss3d::light;
+
+#[start]
+fn start(argc: int, argv: **u8) -> int {
+    native::start(argc, argv, main)
+}
 
 fn main() {
     Window::spawn("Kiss3d: primitives", proc(window) {

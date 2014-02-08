@@ -1,8 +1,14 @@
+extern mod native;
 extern mod kiss3d;
 extern mod nalgebra;
 
 use kiss3d::window::Window;
 use kiss3d::event;
+
+#[start]
+fn start(argc: int, argv: **u8) -> int {
+    native::start(argc, argv, main)
+}
 
 fn main() {
     Window::spawn("Kiss3d: events", proc(window) {

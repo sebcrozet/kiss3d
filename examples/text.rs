@@ -1,3 +1,4 @@
+extern mod native;
 extern mod nalgebra;
 extern mod kiss3d;
 
@@ -5,6 +6,11 @@ use nalgebra::na::{Vec2, Vec3};
 use nalgebra::na;
 use kiss3d::window::Window;
 use kiss3d::text::Font;
+
+#[start]
+fn start(argc: int, argv: **u8) -> int {
+    native::start(argc, argv, main)
+}
 
 fn main() {
     Window::spawn("Kiss3d: empty window", proc(window) {

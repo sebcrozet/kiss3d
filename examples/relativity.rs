@@ -1,10 +1,10 @@
+extern mod native;
 extern mod extra;
 extern mod sync;
 extern mod gl;
 extern mod glfw;
 extern mod kiss3d;
 extern mod nalgebra;
-extern mod native;
 
 use std::ptr;
 use std::num::Zero;
@@ -24,8 +24,7 @@ use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
 
 #[start]
 fn start(argc: int, argv: **u8) -> int {
-       // Run GLFW on the main thread
-       native::start(argc, argv, main)
+    native::start(argc, argv, main)
 }
 
 fn main() {
