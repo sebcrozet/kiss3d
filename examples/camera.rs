@@ -1,3 +1,4 @@
+extern mod native;
 extern mod glfw;
 extern mod kiss3d;
 extern mod nalgebra;
@@ -9,6 +10,11 @@ use kiss3d::window::Window;
 use kiss3d::event::KeyReleased;
 use kiss3d::camera::{Camera, ArcBall, FirstPerson};
 use kiss3d::light;
+
+#[start]
+fn start(argc: int, argv: **u8) -> int {
+    native::start(argc, argv, main)
+}
 
 fn main()
 {

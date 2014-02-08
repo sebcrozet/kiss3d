@@ -1,15 +1,19 @@
+extern mod native;
 extern mod kiss3d;
 extern mod nalgebra;
 extern mod glfw;
 
-//use nalgebra::mat::Rotation;
 use nalgebra::na::Vec3;
 use kiss3d::window::Window;
 use kiss3d::light;
 use kiss3d::event::KeyReleased;
 use kiss3d::camera::{Camera, FirstPersonStereo};
 use kiss3d::post_processing::{PostProcessingEffect, OculusStereo};
-//use kiss3d::post_processing::grayscales::Grayscales;
+
+#[start]
+fn start(argc: int, argv: **u8) -> int {
+    native::start(argc, argv, main)
+}
 
 fn main() {
     Window::spawn_size("kiss3d_stereo", 1280, 800, proc(window) {

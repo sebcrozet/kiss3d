@@ -1,9 +1,15 @@
+extern mod native;
 extern mod kiss3d;
 extern mod nalgebra;
 
 use nalgebra::na::{Vec3, Rotation};
 use kiss3d::window::Window;
 use kiss3d::light;
+
+#[start]
+fn start(argc: int, argv: **u8) -> int {
+    native::start(argc, argv, main)
+}
 
 fn main() {
     Window::spawn("Kiss3d: wireframe", proc(window) {
@@ -27,6 +33,6 @@ fn main() {
             time = time + 1;
 
             c.append_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
-        })
+        });
     })
 }

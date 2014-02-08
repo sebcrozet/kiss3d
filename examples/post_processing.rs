@@ -1,3 +1,4 @@
+extern mod native;
 extern mod kiss3d;
 extern mod nalgebra;
 
@@ -6,6 +7,11 @@ use nalgebra::na::{Vec3, Translation};
 use kiss3d::window::Window;
 use kiss3d::light;
 use kiss3d::post_processing::{PostProcessingEffect, Waves, Grayscales, SobelEdgeHighlight};
+
+#[start]
+fn start(argc: int, argv: **u8) -> int {
+    native::start(argc, argv, main)
+}
 
 fn main() {
     Window::spawn("Kiss3d: cube", proc(window) {
