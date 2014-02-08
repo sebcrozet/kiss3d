@@ -479,7 +479,7 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
       vec3 diff = normalize(ws_position - player_position);
 
 
-      hsv_col.x = clamp(hsv_col.x + 0.001 * dot(rel_vel, diff), 0.0, 1.0);
+      hsv_col.x = clamp(hsv_col.x + 0.001 * dot(rel_vel, diff), 0.0, 0.66667);
 
       vec3 rgb_col = hsv2rgb(hsv_col);
 
