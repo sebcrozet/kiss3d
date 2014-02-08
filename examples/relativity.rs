@@ -433,6 +433,7 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
     varying vec2      tex_coord;
     varying vec3      ws_normal;
     varying vec3      ws_position;
+    uniform float     light_vel;
     uniform vec3      player_position;
 
     vec3 rgb2hsv(vec3 c)
@@ -479,7 +480,14 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
       vec3 diff = normalize(ws_position - player_position);
 
 
-      hsv_col.x = clamp(hsv_col.x + 0.001 * dot(rel_vel, diff), 0.0, 0.66667);
+      float shift_coef = 1.0;
+      float v_norm = sqrt(dot(rel_vel, rel_vel));
+      if (v_norm > 0) {
+          shift_coef = (1.0 - (v_norm / light_vel) * dot(rel_vel, diff) / v_norm) /
+                       sqrt(1 - v_norm*v_norm / (light_vel * light_vel));
+
+      }
+      hsv_col.x = clamp(hsv_col.x * shift_coef, 0.0, 0.6666);
 
       vec3 rgb_col = hsv2rgb(hsv_col);
 
