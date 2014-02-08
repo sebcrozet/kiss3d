@@ -4,6 +4,7 @@ extern mod gl;
 extern mod glfw;
 extern mod kiss3d;
 extern mod nalgebra;
+extern mod native;
 
 use std::ptr;
 use std::num::Zero;
@@ -20,6 +21,12 @@ use kiss3d::object::ObjectData;
 use kiss3d::camera::{Camera, FirstPerson};
 use kiss3d::light::{Light, Absolute, StickToCamera};
 use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
+
+#[start]
+fn start(argc: int, argv: **u8) -> int {
+       // Run GLFW on the main thread
+       native::start(argc, argv, main)
+}
 
 fn main() {
     Window::spawn("Kiss3d: relativity", proc(window) {
@@ -424,6 +431,7 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
     uniform vec3      light_position;
     uniform sampler2D tex;
     varying vec2      tex_coord;
+    uniform vec3      rel_vel;
     varying vec3      ws_normal;
     varying vec3      ws_position;
     void main() {
