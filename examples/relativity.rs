@@ -10,6 +10,7 @@ use std::ptr;
 use std::num::Zero;
 use std::rc::Rc;
 use std::cell::RefCell;
+use std::io::Reader;
 use sync::RWArc;
 use gl::types::{GLint, GLuint, GLfloat};
 use nalgebra::na::{Vec2, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
@@ -436,23 +437,79 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
     uniform float     light_vel;
     uniform vec3      player_position;
 
-    vec3 rgb2hsv(vec3 c)
-    {
-        vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-        vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
-        vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
 
-        float d = q.x - min(q.w, q.y);
-        float e = 1.0e-10;
-        return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+
+
+// According to the CIE RGB (http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html)
+    vec3 rgb2xyz(vec3 c) {
+        vec3 res;
+        res.x = 0.4887180 * c.x + 0.3106803 * c.y + 0.2006017 * c.z;
+        res.y = 0.1762044 * c.x + 0.8129847 * c.y + 0.0108109 * c.z;
+        res.z = 0.0102048 * c.y + 0.9897952 * c.z;
+        return res;
     }
 
-    vec3 hsv2rgb(vec3 c)
-    {
-        vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-        vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-        return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+    vec3 xyz2rgb(vec3 c) {
+        vec3 res;
+        res.x = 2.3706743 * c.x - 0.9000405 * c.y - 0.4706338 * c.z;
+        res.y = -0.5138850 * c.x + 1.4253036 * c.y + 0.0885814 * c.z;
+        res.z = 0.0052982 * c.x - 0.0146949 * c.y + 1.0093968 * c.z;
+        return res;
     }
+
+// XYZ gaussian equations according to CIE 1964 http://jcgt.org/published/0002/02/01/paper.pdf
+    vec3 wl2xyz(float lambda) {
+        float x1 = 0.398 * exp(-1250.0 * pow(log((lambda + 570.1) / 1014.0), 2.0));
+        float x2 = 1.132 * exp(-234.0 * pow(log((138.0 - lambda) / 743.5), 2.0));
+        float y = 1.011 * exp(-0.5 * pow((lambda - 556.1) / 46.14, 2));
+        float z = 2.060 * exp(-32.0 * pow(log((lambda - 265.8) / 180.4), 2));
+        return vec3(x1 + x2, y, z);
+    }
+
+    vec3 wav2rgb(float w) {
+        vec3 rgb = vec3(1.0, 0.0, 0.0);
+        float intens = 0.0;
+        if (w < 440.0) {
+            rgb.x = -(w - 440.0) / 90.0;
+            rgb.y = 0.0;
+            rgb.z = 1.0;
+        }
+        else if (w >= 440 && w <= 490.0) {
+            rgb.x = 0.0;
+            rgb.y = (w - 440.0) / 50.0;
+            rgb.z = 1.0;
+        }
+        else if (w >= 490 && w < 510) {
+            rgb.x = 0.0;
+            rgb.y = 1.0;
+            rgb.z = -(w - 510.) / 20.;
+        }
+        else if (w >= 510 && w < 580) {
+            rgb.x = (w - 510.) / 70.0;
+            rgb.y = 1.0;
+            rgb.z = 0.0;
+        }
+        else if (w >= 580.0 && w < 645.0) {
+            rgb.x = 1.0;
+            rgb.y = -(w - 645.0) / 65.0;
+            rgb.z = 0.0;
+        }
+
+        if (w < 420) {
+            intens = 0.3 + 0.7 * (w - 350.0) / 70.0;
+        }
+        else if (w >= 420 && w <= 700) {
+            intens = 1.0;
+        }
+        else if (w > 700 && w <= 780) {
+            intens = 0.3 + 0.7 * (780.0 - w) / 80.0;
+        }
+
+        return vec3(intens * rgb.x,
+                    intens * rgb.y,
+                    intens * rgb.z);
+    }
+
 
     void main() {
       vec3 L = normalize(light_position - ws_position);
@@ -472,7 +529,6 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
       vec4 tex_color              = texture2D(tex, tex_coord);
       vec4 non_relativistic_color = tex_color * (vec4(color, 1.0) + Iamb + (Idiff1 + Idiff2) / 2) / 3;
 
-      vec3 hsv_col = rgb2hsv(non_relativistic_color.xyz);
 
 
       // apply doppler effect here, on `non_relativistic_color`
@@ -482,16 +538,23 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
 
       float shift_coef = 1.0;
       float v_norm = sqrt(dot(rel_vel, rel_vel));
-      if (v_norm > 0) {
-          shift_coef = (1.0 - (v_norm / light_vel) * dot(rel_vel, diff) / v_norm) /
-                       sqrt(1 - v_norm*v_norm / (light_vel * light_vel));
+      float rel_v = dot(rel_vel, diff);
+
+      vec4 real_color = non_relativistic_color;
+
+      if (v_norm > 0.1) {
+         shift_coef = sqrt((1.0 - (rel_v / light_vel)) /
+                           (1.0 + (rel_v / light_vel)));
+
+          vec3 red_col = real_color.x * wav2rgb(700.0 * shift_coef);
+          vec3 green_col = real_color.y * wav2rgb(510.0 * shift_coef);
+          vec3 blue_col = real_color.z * wav2rgb(440.0 * shift_coef);
+
+          vec3 rgb_col = (red_col + green_col + blue_col);
+          rgb_col = clamp(rgb_col, 0.0, 1.0);
+          real_color = vec4(rgb_col.x, rgb_col.y, rgb_col.z, 1.0);
 
       }
-      hsv_col.x = clamp(hsv_col.x * shift_coef, 0.0, 0.6666);
-
-      vec3 rgb_col = hsv2rgb(hsv_col);
-
-      vec4 real_color = vec4(rgb_col.x, rgb_col.y, rgb_col.z, 1.0);
 
 
       gl_FragColor =  real_color;
