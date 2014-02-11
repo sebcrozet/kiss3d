@@ -30,7 +30,7 @@ fn start(argc: int, argv: **u8) -> int {
 
 fn main() {
     Window::spawn("Kiss3d: relativity", proc(window) {
-        let eye          = Vec3::new(0.0f32, -199.0/*600.0*/, 200.0);
+        let eye          = Vec3::new(0.0f32, -199.0/*600.0*/, -200.0);
         let at           = Vec3::new(0.0f32, -200.0, 0.0);
         let fov          = 45.0f32.to_radians();
         let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
@@ -42,27 +42,27 @@ fn main() {
         window.set_camera(&mut observer as &mut Camera);
         window.set_framerate_limit(Some(60));
 
-        let mut c = window.add_quad(800.0, 800.0, 40, 40);
-        c.set_material(material.clone());
-        c.set_texture(&Path::new("media/kitten.png"), "kitten");
-
-        let mut c = window.add_quad(800.0, 800.0, 40, 40);
-        c.append_rotation(&(Vec3::x() * 90.0f32.to_radians()));
-        c.append_translation(&(Vec3::new(0.0, -400.0, 400.0)));
-        c.set_material(material.clone());
-        c.set_texture(&Path::new("media/kitten.png"), "kitten");
-
-        let mut c = window.add_quad(800.0, 800.0, 40, 40);
-        c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
-        c.append_translation(&(Vec3::new(400.0, 0.0, 400.0)));
-        c.set_material(material.clone());
-        c.set_texture(&Path::new("media/kitten.png"), "kitten");
-
-        let mut c = window.add_quad(800.0, 800.0, 40, 40);
-        c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
-        c.append_translation(&(Vec3::new(-400.0, 0.0, 400.0)));
-        c.set_material(material.clone());
-        c.set_texture(&Path::new("media/kitten.png"), "kitten");
+//        let mut c = window.add_quad(800.0, 800.0, 40, 40);
+//        c.set_material(material.clone());
+//        c.set_texture(&Path::new("media/kitten.png"), "kitten");
+//
+//        let mut c = window.add_quad(800.0, 800.0, 40, 40);
+//        c.append_rotation(&(Vec3::x() * 90.0f32.to_radians()));
+//        c.append_translation(&(Vec3::new(0.0, -400.0, 400.0)));
+//        c.set_material(material.clone());
+//        c.set_texture(&Path::new("media/kitten.png"), "kitten");
+//
+//        let mut c = window.add_quad(800.0, 800.0, 40, 40);
+//        c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
+//        c.append_translation(&(Vec3::new(400.0, 0.0, 400.0)));
+//        c.set_material(material.clone());
+//        c.set_texture(&Path::new("media/kitten.png"), "kitten");
+//
+//        let mut c = window.add_quad(800.0, 800.0, 40, 40);
+//        c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
+//        c.append_translation(&(Vec3::new(-400.0, 0.0, 400.0)));
+//        c.set_material(material.clone());
+//        c.set_texture(&Path::new("media/kitten.png"), "kitten");
 
         // window.set_wireframe_mode(true);
 
@@ -97,15 +97,20 @@ fn main() {
         }
         */
 
-        /*
-        let obj_path = Path::new("media/town/town.obj");
-        let mtl_path = Path::new("media/town");
-        let mut cs   = window.add_obj(&obj_path, &mtl_path, 20.0).unwrap();
 
-        for c in cs.mut_iter() {
-            c.set_material(material.clone());
+        let obj_paths = ~[Path::new("media/city.obj")];
+        let mtl_paths = ~[Path::new("media/")];
+
+        let mut i = 0;
+        while i < obj_paths.len() {
+            let mut cs   = window.add_obj(&obj_paths[i], &mtl_paths[i], 20.0).unwrap();
+
+            for c in cs.mut_iter() {
+                c.set_material(material.clone());
+                c.append_translation(&Vec3::new(0.0, -1500.0f32, 0.0));
+            }
+            i = i + 1;
         }
-        */
 
         window.set_light(StickToCamera);
 
@@ -118,10 +123,10 @@ fn main() {
                     match *event {
                         event::KeyReleased(code) => {
                             if code == glfw::Key1 {
-                                c.speed_of_light = c.speed_of_light + 0.1;
+                                c.speed_of_light = c.speed_of_light + 100.0;
                             }
                             else if code == glfw::Key2 {
-                                c.speed_of_light = (c.speed_of_light - 0.1).max(&0.1);
+                                c.speed_of_light = (c.speed_of_light - 100.0).max(&0.1);
                             }
                         },
                         _ => { }
@@ -137,7 +142,7 @@ fn main() {
                 w.draw_text(format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop),
                             &na::zero(), &font, &Vec3::new(1.0, 1.0, 1.0));
 
-                observer.max_vel  = c.speed_of_light * 0.90;
+                observer.max_vel  = c.speed_of_light * 0.85;
                 c.speed_of_player = obs_vel;
                 c.position        = observer.eye();
             })
@@ -471,8 +476,13 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
     vec3 wav2rgb(float w) {
         vec3 rgb = vec3(1.0, 0.0, 0.0);
         float intens = 0.0;
-        if (w < 440.0) {
-            rgb.x = -(w - 440.0) / 90.0;
+        if (w < 350.0) {
+            rgb.x = 0.5;
+            rgb.y = 0.0;
+            rgb.z = 1.0;
+        }
+        else if (w >= 350.0 && w < 440.0) {
+            rgb.x = (440.0 - w) / 90.0;
             rgb.y = 0.0;
             rgb.z = 1.0;
         }
@@ -497,7 +507,11 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
             rgb.z = 0.0;
         }
 
-        if (w < 420) {
+
+        if (w < 350.0) {
+            intens = 0.3;
+        }
+        else if (w >= 350 && w < 420) {
             intens = 0.3 + 0.7 * (w - 350.0) / 70.0;
         }
         else if (w >= 420 && w <= 700) {
@@ -505,6 +519,9 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
         }
         else if (w > 700 && w <= 780) {
             intens = 0.3 + 0.7 * (780.0 - w) / 80.0;
+        }
+        else {
+            intens = 0.3;
         }
 
         return vec3(intens * rgb.x,
@@ -548,9 +565,12 @@ pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
          shift_coef = sqrt((1.0 - (rel_v / light_vel)) /
                            (1.0 + (rel_v / light_vel)));
 
+          float intens = sqrt(dot(real_color.xyz, real_color.xyz));
+          vec3 ir_col = intens * wav2rgb(1500.0 * shift_coef);
           vec3 red_col = real_color.x * wav2rgb(700.0 * shift_coef);
           vec3 green_col = real_color.y * wav2rgb(510.0 * shift_coef);
           vec3 blue_col = real_color.z * wav2rgb(440.0 * shift_coef);
+          vec3 uv_col = intens * wav2rgb(100.0 * shift_coef);
 
           vec3 rgb_col = (red_col + green_col + blue_col);
           rgb_col = clamp(rgb_col, 0.0, 1.0);
