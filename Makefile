@@ -9,7 +9,7 @@ nalgebra_lib_path=lib/nalgebra/lib
 stb_image_lib_path=lib/rust-stb-image/
 freetype_path=lib/rust-freetype/
 libs=-L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path) -L$(freetype_path)
-build_cmd= rustc --link-args=-lglfw -Llib  $(libs) --opt-level 3 --out-dir $(kiss3d_bin_path)
+build_cmd= rustc -C link-args=-lglfw -Llib  $(libs) --opt-level 3 --out-dir $(kiss3d_bin_path)
 
 all:
 	mkdir -p $(kiss3d_lib_path)
@@ -21,6 +21,7 @@ test: examples
 examples:
 	mkdir -p $(kiss3d_bin_path)
 	$(build_cmd) ./examples/relativity.rs 
+	$(build_cmd) ./examples/quad.rs 
 	$(build_cmd) ./examples/text.rs 
 	$(build_cmd) ./examples/custom_material.rs 
 	$(build_cmd) ./examples/custom_mesh.rs 
@@ -32,7 +33,6 @@ examples:
 	$(build_cmd) ./examples/add_remove.rs 
 	$(build_cmd) ./examples/event.rs 
 	$(build_cmd) ./examples/primitives.rs 
-	$(build_cmd) ./examples/quad.rs 
 	$(build_cmd) ./examples/obj.rs 
 	$(build_cmd) ./examples/texturing.rs 
 	$(build_cmd) ./examples/post_processing.rs 

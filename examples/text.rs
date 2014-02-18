@@ -1,6 +1,6 @@
-extern mod native;
-extern mod nalgebra;
-extern mod kiss3d;
+extern crate native;
+extern crate nalgebra;
+extern crate kiss3d;
 
 use nalgebra::na::{Vec2, Vec3};
 use nalgebra::na;

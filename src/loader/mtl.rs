@@ -1,6 +1,6 @@
 //! Simplistic mtl loader.
 
-use std::util;
+use std::mem;
 use std::io::fs::File;
 use std::io::{IoResult, Reader};
 use std::str::Words;
@@ -42,7 +42,7 @@ pub fn parse(string: &str) -> ~[MtlMaterial] {
                     match w {
                         // texture name
                         &"newmtl"      => {
-                            let old = util::replace(&mut curr_material, MtlMaterial::new_default(parse_name(l, words)));
+                            let old = mem::replace(&mut curr_material, MtlMaterial::new_default(parse_name(l, words)));
 
                             if old.name.len() != 0 {
                                 res.push(old);

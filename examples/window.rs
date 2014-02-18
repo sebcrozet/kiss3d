@@ -1,5 +1,5 @@
-extern mod native;
-extern mod kiss3d;
+extern crate native;
+extern crate kiss3d;
 
 use kiss3d::window::Window;
 

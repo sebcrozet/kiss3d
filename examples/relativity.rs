@@ -1,10 +1,10 @@
-extern mod native;
-extern mod extra;
-extern mod sync;
-extern mod gl;
-extern mod glfw;
-extern mod kiss3d;
-extern mod nalgebra;
+extern crate native;
+extern crate extra;
+extern crate sync;
+extern crate gl;
+extern crate glfw = "glfw-rs";
+extern crate kiss3d;
+extern crate nalgebra;
 
 use std::ptr;
 use std::num::Zero;
@@ -16,7 +16,6 @@ use gl::types::{GLint, GLuint, GLfloat};
 use nalgebra::na::{Vec2, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
 use nalgebra::na;
 use kiss3d::window::Window;
-use kiss3d::event;
 use kiss3d::text::Font;
 use kiss3d::object::ObjectData;
 use kiss3d::camera::{Camera, FirstPerson};
@@ -42,27 +41,29 @@ fn main() {
         window.set_camera(&mut observer as &mut Camera);
         window.set_framerate_limit(Some(60));
 
-//        let mut c = window.add_quad(800.0, 800.0, 40, 40);
-//        c.set_material(material.clone());
-//        c.set_texture(&Path::new("media/kitten.png"), "kitten");
-//
-//        let mut c = window.add_quad(800.0, 800.0, 40, 40);
-//        c.append_rotation(&(Vec3::x() * 90.0f32.to_radians()));
-//        c.append_translation(&(Vec3::new(0.0, -400.0, 400.0)));
-//        c.set_material(material.clone());
-//        c.set_texture(&Path::new("media/kitten.png"), "kitten");
-//
-//        let mut c = window.add_quad(800.0, 800.0, 40, 40);
-//        c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
-//        c.append_translation(&(Vec3::new(400.0, 0.0, 400.0)));
-//        c.set_material(material.clone());
-//        c.set_texture(&Path::new("media/kitten.png"), "kitten");
-//
-//        let mut c = window.add_quad(800.0, 800.0, 40, 40);
-//        c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
-//        c.append_translation(&(Vec3::new(-400.0, 0.0, 400.0)));
-//        c.set_material(material.clone());
-//        c.set_texture(&Path::new("media/kitten.png"), "kitten");
+        /*
+            let mut c = window.add_quad(800.0, 800.0, 40, 40);
+            c.set_material(material.clone());
+            c.set_texture(&Path::new("media/kitten.png"), "kitten");
+
+            let mut c = window.add_quad(800.0, 800.0, 40, 40);
+            c.append_rotation(&(Vec3::x() * 90.0f32.to_radians()));
+            c.append_translation(&(Vec3::new(0.0, -400.0, 400.0)));
+            c.set_material(material.clone());
+            c.set_texture(&Path::new("media/kitten.png"), "kitten");
+
+            let mut c = window.add_quad(800.0, 800.0, 40, 40);
+            c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
+            c.append_translation(&(Vec3::new(400.0, 0.0, 400.0)));
+            c.set_material(material.clone());
+            c.set_texture(&Path::new("media/kitten.png"), "kitten");
+
+            let mut c = window.add_quad(800.0, 800.0, 40, 40);
+            c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
+            c.append_translation(&(Vec3::new(-400.0, 0.0, 400.0)));
+            c.set_material(material.clone());
+            c.set_texture(&Path::new("media/kitten.png"), "kitten");
+        */
 
         // window.set_wireframe_mode(true);
 
@@ -97,19 +98,13 @@ fn main() {
         }
         */
 
+        let obj_path = Path::new("media/town/town.obj");
+        let mtl_path = Path::new("media/town");
+        let mut cs   = window.add_obj(&obj_path, &mtl_path, 20.0).unwrap();
 
-        let obj_paths = ~[Path::new("media/city.obj")];
-        let mtl_paths = ~[Path::new("media/")];
-
-        let mut i = 0;
-        while i < obj_paths.len() {
-            let mut cs   = window.add_obj(&obj_paths[i], &mtl_paths[i], 20.0).unwrap();
-
-            for c in cs.mut_iter() {
-                c.set_material(material.clone());
-                c.append_translation(&Vec3::new(0.0, -1500.0f32, 0.0));
-            }
-            i = i + 1;
+        for c in cs.mut_iter() {
+            c.set_material(material.clone());
+            c.append_translation(&Vec3::new(0.0, -1500.0f32, 0.0));
         }
 
         window.set_light(StickToCamera);
@@ -121,12 +116,12 @@ fn main() {
             context.write(|c| {
                 w.poll_events(|_, event| {
                     match *event {
-                        event::KeyReleased(code) => {
+                        glfw::KeyEvent(code, _, glfw::Release, _) => {
                             if code == glfw::Key1 {
                                 c.speed_of_light = c.speed_of_light + 100.0;
                             }
                             else if code == glfw::Key2 {
-                                c.speed_of_light = (c.speed_of_light - 100.0).max(&0.1);
+                                c.speed_of_light = na::max(c.speed_of_light - 100.0, 0.1);
                             }
                         },
                         _ => { }
@@ -166,7 +161,7 @@ impl InertialCamera {
 
         InertialCamera {
             cam:          fp,
-            acceleration: 800.0f32,
+            acceleration: 200.0f32,
             deceleration: 0.95f32,
             max_vel:      1.0,
             velocity:     na::zero()
@@ -183,7 +178,7 @@ impl Camera for InertialCamera {
         self.cam.view_transform()
     }
 
-    fn handle_event(&mut self, window: &glfw::Window, event: &event::Event) {
+    fn handle_event(&mut self, window: &glfw::Window, event: &glfw::WindowEvent) {
         self.cam.handle_event(window, event)
     }
 
@@ -214,7 +209,7 @@ impl Camera for InertialCamera {
             self.velocity = self.velocity * self.deceleration;
         }
 
-        let speed = self.velocity.normalize().min(&self.max_vel);
+        let speed = na::min(self.velocity.normalize(), self.max_vel);
 
         if speed != 0.0 {
             self.velocity.y = 0.0;
@@ -331,7 +326,8 @@ impl Material for RelativisticMaterial {
 
         self.light.upload(&pos);
 
-        self.context.read(|c| {
+        let ctxt = self.context.clone();
+        ctxt.read(|c| {
             // XXX: this relative velocity est very wrong!
             self.rel_vel.upload(&c.speed_of_player);
             self.light_vel.upload(&c.speed_of_light);

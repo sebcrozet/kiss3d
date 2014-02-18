@@ -1,12 +1,11 @@
-extern mod native;
-extern mod kiss3d;
-extern mod nalgebra;
-extern mod glfw;
+extern crate native;
+extern crate glfw = "glfw-rs";
+extern crate nalgebra;
+extern crate kiss3d;
 
 use nalgebra::na::Vec3;
 use kiss3d::window::Window;
 use kiss3d::light;
-use kiss3d::event::KeyReleased;
 use kiss3d::camera::{Camera, FirstPersonStereo};
 use kiss3d::post_processing::{PostProcessingEffect, OculusStereo};
 
@@ -46,7 +45,7 @@ fn main() {
 
             w.poll_events(|w, event| {
                 match *event {
-                    KeyReleased(key) => {
+                    glfw::KeyEvent(key, _, glfw::Release, _) => {
                         match key {
                             glfw::Key1 => {
                                 update_ipd(&mut first_person_stereo, 0.1f32)

@@ -1,6 +1,6 @@
-extern mod native;
-extern mod kiss3d;
-extern mod nalgebra;
+extern crate native;
+extern crate kiss3d;
+extern crate nalgebra;
 
 use nalgebra::na::Vec3;
 use kiss3d::window::Window;

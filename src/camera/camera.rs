@@ -1,7 +1,6 @@
 use glfw;
 use nalgebra::na::{Vec3, Mat4, Iso3};
 use resource::ShaderUniform;
-use event;
 
 /// Trait every camera must implement.
 pub trait Camera {
@@ -9,7 +8,7 @@ pub trait Camera {
      * Event handling.
      */
     /// Handle a mouse event.
-    fn handle_event(&mut self, &glfw::Window, &event::Event);
+    fn handle_event(&mut self, &glfw::Window, &glfw::WindowEvent);
 
     /*
      * Transformation-related methods.

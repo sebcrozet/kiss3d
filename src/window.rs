@@ -4,7 +4,6 @@
  */
 
 use glfw;
-use std::libc;
 use std::io::timer::Timer;
 use std::num::Zero;
 use std::hashmap::HashMap;
@@ -12,7 +11,6 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::io::IoResult;
 use extra::time;
-use sync::RWArc;
 use gl;
 use gl::types::*;
 use stb_image::image::*;
@@ -25,7 +23,6 @@ use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, RenderTarget, Texture, TextureManager, Mesh, Material};
 use builtin::ObjectMaterial;
 use builtin::loader;
-use event;
 use loader::obj;
 use loader::mtl::MtlMaterial;
 use light::{Light, Absolute, StickToCamera};
@@ -40,7 +37,9 @@ static DEFAULT_HEIGHT: u32 = 600u32;
 ///
 /// This is the main interface with the 3d engine.
 pub struct Window<'a> {
-    priv window:                     glfw::Window,
+    // XXX: this is not on a RefCell since mutability is _not_ needed for the glfw window.
+    // glfw-rs is doing something very wrong here.
+    priv window:                     Rc<glfw::Window>,
     priv max_ms_per_frame:           Option<u64>,
     priv objects:                    ~[Object],
     priv camera:                     &'a mut Camera,
@@ -53,14 +52,13 @@ pub struct Window<'a> {
     priv framebuffer_manager:        FramebufferManager,
     priv post_processing:            Option<&'a mut PostProcessingEffect>,
     priv post_process_render_target: RenderTarget,
-    priv events:                     RWArc<~[event::Event]>,
     priv object_material:            Rc<RefCell<~Material>>
 }
 
 impl<'a> Window<'a> {
     /// Access the glfw window.
     pub fn glfw_window<'r>(&'r self) -> &'r glfw::Window {
-        &self.window
+        self.window.borrow()
     }
 
     /// Sets the current processing effect.
@@ -70,14 +68,14 @@ impl<'a> Window<'a> {
 
     /// The window width.
     pub fn width(&self) -> f32 {
-        let (w, _) = self.window.get_size();
+        let (w, _) = self.window.borrow().get_size();
 
         w as f32
     }
 
     /// The window height.
     pub fn height(&self) -> f32 {
-        let (_, h) = self.window.get_size();
+        let (_, h) = self.window.borrow().get_size();
 
         h as f32
     }
@@ -89,10 +87,10 @@ impl<'a> Window<'a> {
 
     /// The current camera.
     pub fn set_camera(&mut self, camera: &'a mut Camera) {
-        let (w, h) = self.window.get_size();
+        let (w, h) = self.window.borrow().get_size();
 
         self.camera = camera;
-        self.camera.handle_event(&self.window, &event::FramebufferSize(w as f32, h as f32));
+        self.camera.handle_event(self.window.borrow(), &glfw::FramebufferSizeEvent(w, h));
     }
 
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
@@ -102,17 +100,17 @@ impl<'a> Window<'a> {
 
     /// Closes the window.
     pub fn close(&mut self) {
-        self.window.set_should_close(true)
+        self.window.borrow().set_should_close(true)
     }
 
     /// Hides the window, without closing it. Use `show` to make it visible again.
     pub fn hide(&mut self) {
-        self.window.hide()
+        self.window.borrow().hide()
     }
 
     /// Makes the window visible. Use `hide` to hide it.
     pub fn show(&mut self) {
-        self.window.show()
+        self.window.borrow().show()
     }
 
     /// Switch on or off wireframe rendering mode. When set to `true`, everything in the scene will
@@ -239,14 +237,17 @@ impl<'a> Window<'a> {
 
     /// Creates and adds a new object using the geometry registered as `geometry_name`.
     pub fn add(&mut self, geometry_name: &str, scale: GLfloat) -> Option<Object> {
+        let objects         = &mut self.objects;
+        let object_material = self.object_material.clone();
+
         self.geometries.find(&geometry_name.to_owned()).map(|m| {
             let res = Object::new(
                         m.clone(),
                         1.0, 1.0, 1.0,
                         TextureManager::get_global_manager(|tm| tm.get_default()),
                         scale, scale, scale,
-                        self.object_material.clone());
-            self.objects.push(res.clone());
+                        object_material.clone());
+            objects.push(res.clone());
 
             res
         })
@@ -457,7 +458,7 @@ impl<'a> Window<'a> {
 
         let normalized_coord: Vec3<f32> = na::from_homogeneous(&h_normalized_coord);
 
-        let (w, h) = self.window.get_size();
+        let (w, h) = self.window.borrow().get_size();
 
         Vec2::new(
             (1.0 + normalized_coord.x) * (w as f32) / 2.0,
@@ -466,7 +467,7 @@ impl<'a> Window<'a> {
 
     /// Converts a point in 2d screen coordinates to a ray (a 3d position and a direction).
     pub fn unproject(&self, window_coord: &Vec2<f32>) -> (Vec3<f32>, Vec3<f32>) {
-        let (w, h) = self.window.get_size();
+        let (w, h) = self.window.borrow().get_size();
 
         let normalized_coord = Vec2::new(
             2.0 * window_coord.x  / (w as f32) - 1.0,
@@ -505,8 +506,27 @@ impl<'a> Window<'a> {
     /// `false`, the default engine event handler is not executed. Return `false` if you want to
     /// override the default engine behaviour.
     #[inline(always)]
-    pub fn poll_events(&mut self, events_handler: |&mut Window, &event::Event| -> bool) {
+    pub fn poll_events(&mut self, event_handler: |&mut Window, &glfw::WindowEvent| -> bool) {
         // redispatch them
+        let win = self.window.clone(); // FIXME: this is very ugly
+        for event in win.borrow().flush_events() {
+            if event_handler(self, event.ref1()) {
+                match *event.ref1() {
+                    glfw::KeyEvent(glfw::KeyEscape, _, glfw::Release, _) => {
+                        self.close();
+                        continue
+                    },
+                    glfw::FramebufferSizeEvent(w, h) => {
+                        self.update_viewport(w as f32, h as f32);
+                    },
+                    _ => { }
+                }
+
+                self.camera.handle_event(self.window.borrow(), event.ref1())
+            }
+        }
+
+        /*
         let events = self.events.clone();
         events.read(|es| {
             for e in es.iter() {
@@ -531,6 +551,7 @@ impl<'a> Window<'a> {
 
         // clear the events collector
         self.events.write(|c| c.clear());
+        */
     }
 
     /// Starts an infinite loop polling events, calling an user-defined callback, and drawing the
@@ -539,7 +560,7 @@ impl<'a> Window<'a> {
         let mut timer = Timer::new().unwrap();
         let mut curr  = time::precise_time_ns();
 
-        while !self.window.should_close() {
+        while !self.window.borrow().should_close() {
             // collect events
             glfw::poll_events();
 
@@ -604,7 +625,7 @@ impl<'a> Window<'a> {
 
             let mut usr_window = Window {
                 max_ms_per_frame:      None,
-                window:                window,
+                window:                Rc::new(window),
                 objects:               ~[],
                 camera:                &mut camera as &mut Camera,
                 light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
@@ -616,33 +637,23 @@ impl<'a> Window<'a> {
                 post_processing:       None,
                 post_process_render_target: FramebufferManager::new_render_target(width as uint, height as uint),
                 framebuffer_manager:   FramebufferManager::new(),
-                events:                RWArc::new(~[]),
                 object_material:       Rc::new(RefCell::new(~ObjectMaterial::new() as ~Material))
             };
 
             // setup callbacks
-            let collector = usr_window.events.clone();
-            usr_window.window.set_framebuffer_size_callback(~FramebufferSizeCallback::new(collector));
+            usr_window.window.borrow().set_framebuffer_size_polling(true);
+            usr_window.window.borrow().set_key_polling(true);
+            usr_window.window.borrow().set_mouse_button_polling(true);
+            usr_window.window.borrow().set_cursor_pos_polling(true);
+            usr_window.window.borrow().set_scroll_polling(true);
 
-            let collector = usr_window.events.clone();
-            usr_window.window.set_key_callback(~KeyCallback::new(collector));
-
-            let collector = usr_window.events.clone();
-            usr_window.window.set_mouse_button_callback(~MouseButtonCallback::new(collector));
-
-            let collector = usr_window.events.clone();
-            usr_window.window.set_cursor_pos_callback(~CursorPosCallback::new(collector));
-
-            let collector = usr_window.events.clone();
-            usr_window.window.set_scroll_callback(~ScrollCallback::new(collector));
-
-            let (w, h) = usr_window.window.get_size();
+            let (w, h) = usr_window.window.borrow().get_size();
             usr_window.camera.handle_event(
-                &usr_window.window,
-                &event::FramebufferSize(w as f32, h as f32));
+                usr_window.window.borrow(),
+                &glfw::FramebufferSizeEvent(w, h));
 
             if hide {
-                usr_window.window.hide()
+                usr_window.window.borrow().hide()
             }
 
             // usr_window.framebuffer_size_callback(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -653,7 +664,7 @@ impl<'a> Window<'a> {
     }
 
     fn draw(&mut self, curr: &mut u64, timer: &mut Timer) {
-        self.camera.update(&self.window);
+        self.camera.update(self.window.borrow());
 
         match self.light_mode {
             StickToCamera => self.set_light(StickToCamera),
@@ -669,10 +680,10 @@ impl<'a> Window<'a> {
         }
 
         for pass in range(0u, self.camera.num_passes()) {
-            self.camera.start_pass(pass, &self.window);
+            self.camera.start_pass(pass, self.window.borrow());
             self.render_scene(pass);
         }
-        self.camera.render_complete(&self.window);
+        self.camera.render_complete(self.window.borrow());
 
         let w = self.width();
         let h = self.height();
@@ -698,7 +709,7 @@ impl<'a> Window<'a> {
         self.text_renderer.render(w, h);
 
         // We are done: swap buffers
-        self.window.swap_buffers();
+        self.window.borrow().swap_buffers();
 
         // Limit the fps if needed.
         match self.max_ms_per_frame {
@@ -758,130 +769,6 @@ fn init_gl() {
     verify!(gl::Enable(gl::DEPTH_TEST));
     verify!(gl::Enable(gl::SCISSOR_TEST));
     verify!(gl::DepthFunc(gl::LEQUAL));
-}
-
-//
-// Cursor Pos Callback
-//
-struct ScrollCallback {
-    collector: RWArc<~[event::Event]>
-}
-
-impl ScrollCallback {
-    pub fn new(collector: RWArc<~[event::Event]>) -> ScrollCallback {
-        ScrollCallback {
-            collector: collector
-        }
-    }
-}
-
-impl glfw::ScrollCallback for ScrollCallback {
-    fn call(&self, _: &glfw::Window, x: f64, y: f64) {
-        self.collector.write(|c| c.push(event::Scroll(x as f32, y as f32)))
-    }
-}
-
-//
-// Cursor Pos Callback
-//
-struct CursorPosCallback {
-    collector: RWArc<~[event::Event]>
-}
-
-impl CursorPosCallback {
-    pub fn new(collector: RWArc<~[event::Event]>) -> CursorPosCallback {
-        CursorPosCallback {
-            collector: collector
-        }
-    }
-}
-
-impl glfw::CursorPosCallback for CursorPosCallback {
-    fn call(&self, _: &glfw::Window, x: f64, y: f64) {
-        self.collector.write(|c| c.push(event::CursorPos(x as f32, y as f32)))
-    }
-}
-
-//
-// Mouse Button Callback
-//
-struct MouseButtonCallback {
-    collector: RWArc<~[event::Event]>
-}
-
-impl MouseButtonCallback {
-    pub fn new(collector: RWArc<~[event::Event]>) -> MouseButtonCallback {
-        MouseButtonCallback {
-            collector: collector
-        }
-    }
-}
-
-impl glfw::MouseButtonCallback for MouseButtonCallback {
-    fn call(&self,
-            _:      &glfw::Window,
-            button: glfw::MouseButton,
-            action: glfw::Action,
-            mods:   glfw::Modifiers) {
-        if action == glfw::Press {
-            self.collector.write(|c| c.push(event::ButtonPressed(button, mods)))
-        }
-        else {
-            self.collector.write(|c| c.push(event::ButtonReleased(button, mods)))
-        }
-    }
-}
-
-//
-// Key callback
-//
-struct KeyCallback {
-    collector: RWArc<~[event::Event]>
-}
-
-impl KeyCallback {
-    pub fn new(collector: RWArc<~[event::Event]>) -> KeyCallback {
-        KeyCallback {
-            collector: collector
-        }
-    }
-}
-
-impl glfw::KeyCallback for KeyCallback {
-    fn call(&self,
-            _:      &glfw::Window,
-            key:    glfw::Key,
-            _:      libc::c_int,
-            action: glfw::Action,
-            _:      glfw::Modifiers) {
-        if action == glfw::Press {
-            self.collector.write(|c| c.push(event::KeyPressed(key)))
-        }
-        else {
-            self.collector.write(|c| c.push(event::KeyReleased(key)))
-        }
-    }
-}
-
-//
-// Framebuffer callback
-//
-struct FramebufferSizeCallback {
-    collector: RWArc<~[event::Event]>
-}
-
-impl FramebufferSizeCallback {
-    pub fn new(collector: RWArc<~[event::Event]>) -> FramebufferSizeCallback {
-        FramebufferSizeCallback {
-            collector: collector
-        }
-    }
-}
-
-impl glfw::FramebufferSizeCallback for FramebufferSizeCallback {
-    fn call(&self, _: &glfw::Window, w: i32, h: i32) {
-        self.collector.write(|c| c.push(event::FramebufferSize(w as f32, h as f32)))
-    }
 }
 
 //

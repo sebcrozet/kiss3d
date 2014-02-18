@@ -32,8 +32,8 @@ Most features are one-liners.
 As an example, having a red, rotating cube with the light attached to the camera is as simple as:
 
 ```rust
-extern mod kiss3d;
-extern mod nalgebra;
+extern crate kiss3d;
+extern crate nalgebra;
 
 use nalgebra::na::{Vec3, Rotation};
 use kiss3d::window::Window;
@@ -102,17 +102,16 @@ I’d love to see people improving this library for their own needs. However, ke
 #[feature(managed_boxes)];
 #[doc(html_root_url = "http://www.rust-ci.org/kiss3d/nalgebra/doc")];
 
-extern mod std;
-extern mod extra;
-extern mod sync;
-extern mod glfw;
-extern mod gl;
-extern mod nalgebra;
-extern mod stb_image;
-extern mod freetype;
+extern crate std;
+extern crate extra;
+extern crate sync;
+extern crate glfw = "glfw-rs";
+extern crate gl;
+extern crate nalgebra;
+extern crate stb_image;
+extern crate freetype;
 
 pub mod window;
-pub mod event;
 pub mod object;
 pub mod camera;
 pub mod light;

@@ -120,9 +120,13 @@ impl<T: GLPrimitive> GPUVector<T> {
     #[inline]
     pub fn load_to_gpu(&mut self) {
         if !self.is_on_gpu() {
+            let buf_type   = self.buf_type;
+            let alloc_type = self.alloc_type;
+            let len        = &mut self.len;
+
             self.handle = self.data.as_ref().map(|d| {
-                self.len = d.len();
-                (d.len(), GLHandle::new(upload_buffer(*d, self.buf_type, self.alloc_type)))
+                *len = d.len();
+                (d.len(), GLHandle::new(upload_buffer(*d, buf_type, alloc_type)))
             });
         }
         else if self.trash() {

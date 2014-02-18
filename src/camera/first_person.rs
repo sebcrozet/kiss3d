@@ -3,7 +3,6 @@ use glfw;
 use nalgebra::na::{Translation, Vec2, Vec3, Mat4, Iso3};
 use nalgebra::na;
 use camera::Camera;
-use event;
 
 /// First-person camera mode.
 ///
@@ -133,7 +132,7 @@ impl FirstPerson {
             self.pitch = 0.01
         }
 
-        let _pi: f32 = Real::pi();
+        let _pi: f32 = Float::pi();
         if self.pitch > _pi - 0.01 {
             self.pitch = _pi - 0.01
         }
@@ -229,10 +228,10 @@ impl Camera for FirstPerson {
         id
     }
 
-    fn handle_event(&mut self, window: &glfw::Window, event: &event::Event) {
+    fn handle_event(&mut self, window: &glfw::Window, event: &glfw::WindowEvent) {
         match *event {
-            event::CursorPos(x, y) => {
-                let curr_pos = Vec2::new(x, y);
+            glfw::CursorPosEvent(x, y) => {
+                let curr_pos = Vec2::new(x as f32, y as f32);
 
                 if window.get_mouse_button(glfw::MouseButtonLeft) == glfw::Press {
                     let dpos = curr_pos - self.last_cursor_pos;
@@ -246,9 +245,9 @@ impl Camera for FirstPerson {
 
                 self.last_cursor_pos = curr_pos;
             },
-            event::Scroll(_, off) => self.handle_scroll(off),
-            event::FramebufferSize(w, h) => {
-                self.projection = na::perspective3d(w, h, self.fov, self.znear, self.zfar);
+            glfw::ScrollEvent(_, off) => self.handle_scroll(off as f32),
+            glfw::FramebufferSizeEvent(w, h) => {
+                self.projection = na::perspective3d(w as f32, h as f32, self.fov, self.znear, self.zfar);
                 self.update_projviews();
             }
             _ => { }

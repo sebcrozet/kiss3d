@@ -1,7 +1,7 @@
-extern mod native;
-extern mod gl;
-extern mod kiss3d;
-extern mod nalgebra;
+extern crate native;
+extern crate gl;
+extern crate kiss3d;
+extern crate nalgebra;
 
 use std::ptr;
 use std::rc::Rc;

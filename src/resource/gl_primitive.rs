@@ -270,7 +270,7 @@ impl GLPrimitive for (GLfloat, GLfloat, GLfloat) {
 
     #[inline]
     fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform3f(location as GLint, self.n0(), self.n1(), self.n2()));
+        verify!(gl::Uniform3f(location as GLint, self.val0(), self.val1(), self.val2()));
     }
 }
 
@@ -287,7 +287,7 @@ impl GLPrimitive for (GLfloat, GLfloat) {
 
     #[inline]
     fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform2f(location as GLint, self.n0(), self.n1()));
+        verify!(gl::Uniform2f(location as GLint, self.val0(), self.val1()));
     }
 }
 
@@ -304,7 +304,7 @@ impl GLPrimitive for (GLuint, GLuint) {
 
     #[inline]
     fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform2ui(location as GLint, self.n0(), self.n1()));
+        verify!(gl::Uniform2ui(location as GLint, self.val0(), self.val1()));
     }
 }
 
@@ -321,6 +321,6 @@ impl GLPrimitive for (GLuint, GLuint, GLuint) {
 
     #[inline]
     fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform3ui(location as GLint, self.n0(), self.n1(), self.n2()));
+        verify!(gl::Uniform3ui(location as GLint, self.val0(), self.val1(), self.val2()));
     }
 }

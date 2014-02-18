@@ -1,13 +1,12 @@
-extern mod native;
-extern mod glfw;
-extern mod kiss3d;
-extern mod nalgebra;
+extern crate native;
+extern crate glfw = "glfw-rs";
+extern crate kiss3d;
+extern crate nalgebra;
 
 
 use nalgebra::na::Vec3;
 use nalgebra::na;
 use kiss3d::window::Window;
-use kiss3d::event::KeyReleased;
 use kiss3d::camera::{Camera, ArcBall, FirstPerson};
 use kiss3d::light;
 
@@ -32,7 +31,7 @@ fn main()
         window.render_loop(|w| {
             w.poll_events(|w, event| {
                 match *event {
-                    KeyReleased(key) => {
+                    glfw::KeyEvent(key, _, glfw::Release, _) => {
                         if key == glfw::Key1 {
                             w.set_camera(&mut arc_ball as &mut Camera)
                         }

@@ -3,7 +3,6 @@ use glfw;
 use nalgebra::na::{Vec2, Vec3, Mat4, Iso3};
 use nalgebra::na;
 use camera::Camera;
-use event;
 
 /// Arc-ball camera mode.
 ///
@@ -143,7 +142,7 @@ impl ArcBall {
             self.pitch = 0.0001
         }
 
-        let _pi: f32 = Real::pi();
+        let _pi: f32 = Float::pi();
         if self.pitch > _pi - 0.0001 {
             self.pitch = _pi - 0.0001
         }
@@ -200,10 +199,10 @@ impl Camera for ArcBall {
         Vec3::new(px, py, pz)
     }
 
-    fn handle_event(&mut self, window: &glfw::Window, event: &event::Event) {
+    fn handle_event(&mut self, window: &glfw::Window, event: &glfw::WindowEvent) {
         match *event {
-            event::CursorPos(x, y) => {
-                let curr_pos = Vec2::new(x, y);
+            glfw::CursorPosEvent(x, y) => {
+                let curr_pos = Vec2::new(x as f32, y as f32);
 
                 if window.get_mouse_button(glfw::MouseButtonLeft) == glfw::Press {
                     let dpos = curr_pos - self.last_cursor_pos;
@@ -217,13 +216,13 @@ impl Camera for ArcBall {
 
                 self.last_cursor_pos = curr_pos;
             },
-            event::KeyReleased(button) => if button == glfw::KeyEnter {
+            glfw::KeyEvent(glfw::KeyEnter, _, glfw::Press, _) => {
                 self.at = na::zero();
                 self.update_projviews();
             },
-            event::Scroll(_, off) => self.handle_scroll(off),
-            event::FramebufferSize(w, h) => {
-                self.projection = na::perspective3d(w, h, self.fov, self.znear, self.zfar);
+            glfw::ScrollEvent(_, off) => self.handle_scroll(off as f32),
+            glfw::FramebufferSizeEvent(w, h) => {
+                self.projection = na::perspective3d(w as f32, h as f32, self.fov, self.znear, self.zfar);
                 self.update_projviews();
             },
             _ => { }
