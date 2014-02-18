@@ -29,11 +29,10 @@ fn start(argc: int, argv: **u8) -> int {
 
 fn main() {
     Window::spawn("Kiss3d: relativity", proc(window) {
-        let eye          = Vec3::new(0.0f32, -199.0/*600.0*/, -200.0);
-        let at           = Vec3::new(0.0f32, -200.0, 0.0);
+        let eye          = Vec3::new(0.0f32, -399.0, 400.0);
+        let at           = Vec3::new(0.0f32, -399.0, 0.0);
         let fov          = 45.0f32.to_radians();
         let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
-        // let mut observer = FirstPerson::new_with_frustrum(fov, 0.1, 100000.0, eye, at);
         let font         = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
         let context      = RWArc::new(Context::new(1000.0, na::zero(), eye));
         let material     = Rc::new(RefCell::new(~RelativisticMaterial::new(context.clone()) as ~Material));
@@ -41,71 +40,27 @@ fn main() {
         window.set_camera(&mut observer as &mut Camera);
         window.set_framerate_limit(Some(60));
 
-        /*
-            let mut c = window.add_quad(800.0, 800.0, 40, 40);
-            c.set_material(material.clone());
-            c.set_texture(&Path::new("media/kitten.png"), "kitten");
+        let mut c = window.add_quad(800.0, 800.0, 40, 40);
+        c.set_material(material.clone());
+        c.set_texture(&Path::new("media/kitten.png"), "kitten");
 
-            let mut c = window.add_quad(800.0, 800.0, 40, 40);
-            c.append_rotation(&(Vec3::x() * 90.0f32.to_radians()));
-            c.append_translation(&(Vec3::new(0.0, -400.0, 400.0)));
-            c.set_material(material.clone());
-            c.set_texture(&Path::new("media/kitten.png"), "kitten");
+        let mut c = window.add_quad(800.0, 800.0, 40, 40);
+        c.append_rotation(&(Vec3::x() * 90.0f32.to_radians()));
+        c.append_translation(&(Vec3::new(0.0, -400.0, 400.0)));
+        c.set_material(material.clone());
+        c.set_texture(&Path::new("media/kitten.png"), "kitten");
 
-            let mut c = window.add_quad(800.0, 800.0, 40, 40);
-            c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
-            c.append_translation(&(Vec3::new(400.0, 0.0, 400.0)));
-            c.set_material(material.clone());
-            c.set_texture(&Path::new("media/kitten.png"), "kitten");
+        let mut c = window.add_quad(800.0, 800.0, 40, 40);
+        c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
+        c.append_translation(&(Vec3::new(400.0, 0.0, 400.0)));
+        c.set_material(material.clone());
+        c.set_texture(&Path::new("media/kitten.png"), "kitten");
 
-            let mut c = window.add_quad(800.0, 800.0, 40, 40);
-            c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
-            c.append_translation(&(Vec3::new(-400.0, 0.0, 400.0)));
-            c.set_material(material.clone());
-            c.set_texture(&Path::new("media/kitten.png"), "kitten");
-        */
-
-        // window.set_wireframe_mode(true);
-
-        /*
-         * Setup the grid.
-         */
-        /*
-        let width     = 20;
-        let spacing   = 10.0;
-        let thickness = 1.0;
-        let total     = (width - 1) as f32 * spacing;
-
-        for i in range(0, width) {
-            for j in range(0, width) {
-                let x = i as f32 * spacing - total / 2.0;
-                let y = j as f32 * spacing - total / 2.0;
-
-                for i in range(0, total as uint) {
-                    let mut c = window.add_cube(thickness, thickness, 1.0);
-                    c.set_material(material.clone());
-                    c.append_translation(&Vec3::new(x, y, i as f32));
-                }
-
-                let mut c = window.add_cube(thickness, total, thickness);
-                c.set_material(material.clone());
-                c.append_translation(&Vec3::new(x, 0.0, y));
-
-                let mut c = window.add_cube(total, thickness, thickness);
-                c.set_material(material.clone());
-                c.append_translation(&Vec3::new(0.0, x, y));
-            }
-        }
-        */
-
-        let obj_path = Path::new("media/town/town.obj");
-        let mtl_path = Path::new("media/town");
-        let mut cs   = window.add_obj(&obj_path, &mtl_path, 20.0).unwrap();
-
-        for c in cs.mut_iter() {
-            c.set_material(material.clone());
-            c.append_translation(&Vec3::new(0.0, -1500.0f32, 0.0));
-        }
+        let mut c = window.add_quad(800.0, 800.0, 40, 40);
+        c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
+        c.append_translation(&(Vec3::new(-400.0, 0.0, 400.0)));
+        c.set_material(material.clone());
+        c.set_texture(&Path::new("media/kitten.png"), "kitten");
 
         window.set_light(StickToCamera);
 
@@ -131,7 +86,6 @@ fn main() {
                 });
 
                 let obs_vel = observer.velocity;
-                // let obs_vel = Vec3::new(0.0f32, 0.0, -900.0);
                 let sop = na::norm(&obs_vel);
 
                 w.draw_text(format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop),
