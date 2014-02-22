@@ -10,7 +10,7 @@ use std::hashmap::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::io::IoResult;
-use extra::time;
+use time;
 use gl;
 use gl::types::*;
 use stb_image::image::*;

@@ -154,19 +154,15 @@ impl<T: GLPrimitive> GPUVector<T> {
     pub fn bind(&mut self) {
         self.load_to_gpu();
 
-        unsafe {
-            let handle = self.handle.as_ref().map(|&(_, ref h)| h.handle()).expect("Could not bind the vector: data unavailable.");
-            verify!(gl::BindBuffer(self.buf_type.to_gl(), handle));
-        }
+        let handle = self.handle.as_ref().map(|&(_, ref h)| h.handle()).expect("Could not bind the vector: data unavailable.");
+        verify!(gl::BindBuffer(self.buf_type.to_gl(), handle));
     }
 
     /// Unbind this vector to the corresponding gpu buffer.
     #[inline]
     pub fn unbind(&mut self) {
         if self.is_on_gpu() {
-            unsafe {
-                verify!(gl::BindBuffer(self.buf_type.to_gl(), 0));
-            }
+            verify!(gl::BindBuffer(self.buf_type.to_gl(), 0));
         }
     }
 

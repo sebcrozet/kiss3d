@@ -105,6 +105,7 @@ I’d love to see people improving this library for their own needs. However, ke
 extern crate std;
 extern crate extra;
 extern crate sync;
+extern crate time;
 extern crate glfw = "glfw-rs";
 extern crate gl;
 extern crate nalgebra;

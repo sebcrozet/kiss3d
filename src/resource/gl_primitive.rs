@@ -36,9 +36,7 @@ impl GLPrimitive for GLfloat {
 
     #[inline]
     fn upload(&self, location: GLuint) {
-        unsafe {
-            verify!(gl::Uniform1f(location as GLint, self.clone()));
-        }
+        verify!(gl::Uniform1f(location as GLint, self.clone()));
     }
 }
 
@@ -55,9 +53,7 @@ impl GLPrimitive for GLint {
 
     #[inline]
     fn upload(&self, location: GLuint) {
-        unsafe {
-            verify!(gl::Uniform1i(location as GLint, self.clone()));
-        }
+        verify!(gl::Uniform1i(location as GLint, self.clone()));
     }
 }
 
@@ -74,9 +70,7 @@ impl GLPrimitive for GLuint {
 
     #[inline]
     fn upload(&self, location: GLuint) {
-        unsafe {
-            verify!(gl::Uniform1ui(location as GLint, self.clone()));
-        }
+        verify!(gl::Uniform1ui(location as GLint, self.clone()));
     }
 }
 
