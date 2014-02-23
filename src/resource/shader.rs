@@ -133,7 +133,7 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
                         self.id,
                         GLPrimitive::size(None::<T>) as i32,
                         GLPrimitive::gl_type(None::<T>),
-                        gl::FALSE as u8,
+                        gl::FALSE,
                         0,
                         ptr::null()));
         }
@@ -148,7 +148,7 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
                         self.id,
                         GLPrimitive::size(None::<T>) as i32,
                         GLPrimitive::gl_type(None::<T>),
-                        gl::FALSE as u8,
+                        gl::FALSE,
                         ((strides + 1) * mem::size_of::<T>()) as GLint,
                         cast::transmute(start_index * mem::size_of::<T>())));
         }

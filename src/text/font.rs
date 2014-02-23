@@ -129,8 +129,8 @@ impl Font {
                 }
 
                 /* Calculate the position in the texture. */
-                glyph.tex.x = (offset.x as f32 / (font.atlas_dimensions.x as f32));
-                glyph.tex.y = (offset.y as f32 / (font.atlas_dimensions.y as f32));
+                glyph.tex.x = offset.x as f32 / (font.atlas_dimensions.x as f32);
+                glyph.tex.y = offset.y as f32 / (font.atlas_dimensions.y as f32);
 
                 offset.x   = offset.x + glyph.dimensions.x as i32;
                 row_height = cmp::max(row_height, glyph.dimensions.y as uint);

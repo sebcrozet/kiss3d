@@ -97,6 +97,7 @@ I’d love to see people improving this library for their own needs. However, ke
 #[deny(unnecessary_qualification)];
 #[deny(missing_doc)];
 #[deny(unused_result)];
+#[deny(unnecessary_typecast)];
 #[feature(globs)];
 #[feature(macro_rules)];
 #[feature(managed_boxes)];

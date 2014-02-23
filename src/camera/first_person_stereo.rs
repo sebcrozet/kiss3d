@@ -306,13 +306,13 @@ impl Camera for FirstPersonStereo {
             1u => (win_w / 2, 0, win_w / 2, win_h),
             _ => fail!("stereo first person takes only two passes")
         };
-        verify!(gl::Viewport(x as i32, y as i32, w as i32, h as i32));
-        verify!(gl::Scissor(x as i32, y as i32, w as i32, h as i32));
+        verify!(gl::Viewport(x, y, w, h));
+        verify!(gl::Scissor(x, y, w, h));
     }
 
     fn render_complete(&self, window: &glfw::Window) {
         let (w, h) = window.get_size();
-        verify!(gl::Viewport(0, 0, w as i32, h as i32));
-        verify!(gl::Scissor(0, 0, w as i32, h as i32));
+        verify!(gl::Viewport(0, 0, w, h));
+        verify!(gl::Scissor(0, 0, w, h));
     }
 }
