@@ -1,8 +1,8 @@
 //! Builtin mesh loader.
 
-use std::hashmap::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
+use collections::HashMap;
 use loader::obj;
 use builtin::cube_obj;
 use builtin::sphere_obj;

@@ -2,8 +2,8 @@
 
 use std::local_data;
 use std::cast;
-use std::hashmap::HashMap;
 use std::rc::Rc;
+use collections::HashMap;
 use gl;
 use gl::types::*;
 use stb_image::image::ImageU8;

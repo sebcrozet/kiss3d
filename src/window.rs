@@ -6,10 +6,10 @@
 use glfw;
 use std::io::timer::Timer;
 use std::num::Zero;
-use std::hashmap::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::io::IoResult;
+use collections::HashMap;
 use time;
 use gl;
 use gl::types::*;
