@@ -53,7 +53,7 @@ distcheck:
 	rm -rf $(tmp)
 
 deps:
-	cd $(glfw_path); cmake .; make lib
+	make lib -C $(glfw_path)
 	make -C lib/nalgebra
 	cd lib/gl-rs; rustc --opt-level=3 src/gl/lib.rs
 	cd lib/rust-stb-image; ./configure

@@ -15,7 +15,7 @@ mod error;
 ///   * Right button press + drag - translates the camera position on the plane orthogonal to the
 ///   view direction
 ///   * Scroll in/out - zoom in/out
-#[deriving(ToStr)]
+#[deriving(Show)]
 pub struct FirstPersonStereo {
     /// The camera position
     priv eye:        Vec3<f32>,

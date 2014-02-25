@@ -10,7 +10,7 @@ use camera::Camera;
 ///   * Right button press + drag - translates the camera position on the plane orthogonal to the
 ///   view direction
 ///   * Scroll in/out - zoom in/out
-#[deriving(ToStr, Clone)]
+#[deriving(Show, Clone)]
 pub struct FirstPerson {
     priv eye:             Vec3<f32>,
     priv yaw:             f32,
