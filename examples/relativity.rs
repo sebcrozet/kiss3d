@@ -108,7 +108,7 @@ struct InertialCamera {
 }
 
 impl InertialCamera {
-    pub fn new(fov: f32, znear: f32, zfar: f32, eye: Vec3<f32>, at: Vec3<f32>) -> InertialCamera {
+    fn new(fov: f32, znear: f32, zfar: f32, eye: Vec3<f32>, at: Vec3<f32>) -> InertialCamera {
         let mut fp = FirstPerson::new_with_frustrum(fov, znear, zfar, eye, at);
 
         fp.set_move_step(0.0);
@@ -185,7 +185,7 @@ struct Context {
 }
 
 impl Context {
-    pub fn new(speed_of_light: f32, speed_of_player: Vec3<f32>, position: Vec3<f32>) -> Context {
+    fn new(speed_of_light: f32, speed_of_player: Vec3<f32>, position: Vec3<f32>) -> Context {
         Context {
             speed_of_light:  speed_of_light,
             speed_of_player: speed_of_player,
@@ -195,28 +195,28 @@ impl Context {
 }
 
 /// The default material used to draw objects.
-pub struct RelativisticMaterial {
-    priv context:         RWArc<Context>,
-    priv shader:          Shader,
-    priv pos:             ShaderAttribute<Vec3<f32>>,
-    priv normal:          ShaderAttribute<Vec3<f32>>,
-    priv tex_coord:       ShaderAttribute<Vec2<f32>>,
-    priv light:           ShaderUniform<Vec3<f32>>,
-    priv color:           ShaderUniform<Vec3<f32>>,
-    priv transform:       ShaderUniform<Mat4<f32>>,
-    priv scale:           ShaderUniform<Mat3<f32>>,
-    priv ntransform:      ShaderUniform<Mat3<f32>>,
-    priv view:            ShaderUniform<Mat4<f32>>,
-    priv tex:             ShaderUniform<GLuint>,
-    priv light_vel:       ShaderUniform<GLfloat>,
-    priv rel_vel:         ShaderUniform<Vec3<f32>>,
-    priv rot:             ShaderUniform<Rot3<f32>>,
-    priv player_position: ShaderUniform<Vec3<f32>>
+struct RelativisticMaterial {
+    context:         RWArc<Context>,
+    shader:          Shader,
+    pos:             ShaderAttribute<Vec3<f32>>,
+    normal:          ShaderAttribute<Vec3<f32>>,
+    tex_coord:       ShaderAttribute<Vec2<f32>>,
+    light:           ShaderUniform<Vec3<f32>>,
+    color:           ShaderUniform<Vec3<f32>>,
+    transform:       ShaderUniform<Mat4<f32>>,
+    scale:           ShaderUniform<Mat3<f32>>,
+    ntransform:      ShaderUniform<Mat3<f32>>,
+    view:            ShaderUniform<Mat4<f32>>,
+    tex:             ShaderUniform<GLuint>,
+    light_vel:       ShaderUniform<GLfloat>,
+    rel_vel:         ShaderUniform<Vec3<f32>>,
+    rot:             ShaderUniform<Rot3<f32>>,
+    player_position: ShaderUniform<Vec3<f32>>
 }
 
 impl RelativisticMaterial {
     /// Creates a new `RelativisticMaterial`.
-    pub fn new(context: RWArc<Context>) -> RelativisticMaterial {
+    fn new(context: RWArc<Context>) -> RelativisticMaterial {
         // load the shader
         let mut shader = Shader::new_from_str(RELATIVISTIC_VERTEX_SRC, RELATIVISTIC_FRAGMENT_SRC);
 
@@ -326,7 +326,7 @@ impl Material for RelativisticMaterial {
     }
 }
 
-pub static RELATIVISTIC_VERTEX_SRC:   &'static str =
+static RELATIVISTIC_VERTEX_SRC:   &'static str =
    "#version 120
     attribute vec3 position;
     attribute vec3 normal;
@@ -382,7 +382,7 @@ pub static RELATIVISTIC_VERTEX_SRC:   &'static str =
         tex_coord   = tex_coord_v;
     }";
 
-pub static RELATIVISTIC_FRAGMENT_SRC: &'static str =
+static RELATIVISTIC_FRAGMENT_SRC: &'static str =
    "#version 120
     uniform vec3      color;
     uniform vec3      light_position;

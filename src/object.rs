@@ -12,13 +12,10 @@ use light::Light;
 #[path = "error.rs"]
 mod error;
 
-type Transform3d = Iso3<f32>;
-type Scale3d     = Mat3<GLfloat>;
-
 /// Set of data identifying a scene node.
 pub struct ObjectData {
-    priv scale:     Scale3d,
-    priv transform: Transform3d,
+    priv scale:     Mat3<GLfloat>,
+    priv transform: Iso3<f32>,
     priv texture:   Rc<Texture>,
     priv color:     Vec3<f32>,
     priv visible:   bool,
@@ -27,12 +24,12 @@ pub struct ObjectData {
 
 impl ObjectData {
     /// The scale matrix of this object.
-    pub fn scale<'a>(&'a self) -> &'a Scale3d {
+    pub fn scale<'a>(&'a self) -> &'a Mat3<GLfloat> {
         &'a self.scale
     }
 
     /// The transformation matrix (scaling excluded) of this object.
-    pub fn transform<'a>(&'a self) -> &'a Transform3d {
+    pub fn transform<'a>(&'a self) -> &'a Iso3<f32> {
         &'a self.transform
     }
 
@@ -314,39 +311,39 @@ impl Object {
     }
 }
 
-impl Transformation<Transform3d> for Object {
+impl Transformation<Iso3<f32>> for Object {
     #[inline]
-    fn transformation(&self) -> Transform3d {
+    fn transformation(&self) -> Iso3<f32> {
         self.data.borrow().borrow().get().transform.clone()
     }
 
     #[inline]
-    fn inv_transformation(&self) -> Transform3d {
+    fn inv_transformation(&self) -> Iso3<f32> {
         self.data.borrow().borrow().get().transform.inv_transformation()
     }
 
     #[inline]
-    fn append_transformation(&mut self, t: &Transform3d) {
+    fn append_transformation(&mut self, t: &Iso3<f32>) {
         self.data.borrow().borrow_mut().get().transform.append_transformation(t)
     }
 
     #[inline]
-    fn append_transformation_cpy(_: &Object, _: &Transform3d) -> Object {
+    fn append_transformation_cpy(_: &Object, _: &Iso3<f32>) -> Object {
         fail!("Cannot clone an object.")
     }
 
     #[inline]
-    fn prepend_transformation(&mut self, t: &Transform3d) {
+    fn prepend_transformation(&mut self, t: &Iso3<f32>) {
         self.data.borrow().borrow_mut().get().transform.prepend_transformation(t)
     }
 
     #[inline]
-    fn prepend_transformation_cpy(_: &Object, _: &Transform3d) -> Object {
+    fn prepend_transformation_cpy(_: &Object, _: &Iso3<f32>) -> Object {
         fail!("Cannot clone an object.")
     }
 
     #[inline]
-    fn set_transformation(&mut self, t: Transform3d) {
+    fn set_transformation(&mut self, t: Iso3<f32>) {
         self.data.borrow().borrow_mut().get().transform.set_transformation(t)
     }
 }
