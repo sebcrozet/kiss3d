@@ -11,9 +11,9 @@ mod error;
 /// Trait implemented by structures that can be uploaded to a uniform or contained by a gpu array.
 pub trait GLPrimitive: Pod {
     /// The opengl primitive type of this structure content.
-    fn gl_type(Option<Self>) -> GLuint;
+    fn gl_type(_type: Option<Self>) -> GLuint;
     /// The number of elements of type `self.gl_type()` this structure stores.
-    fn size(Option<Self>) -> GLuint;
+    fn size(_type: Option<Self>) -> GLuint;
     /// Uploads the element to a gpu location.
     fn upload(&self, location: GLuint);
 }

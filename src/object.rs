@@ -1,5 +1,6 @@
 //! Data structure of a scene node.
 
+use std::any::Any;
 use std::cell::RefCell;
 use std::rc::Rc;
 use gl::types::*;

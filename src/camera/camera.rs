@@ -8,7 +8,7 @@ pub trait Camera {
      * Event handling.
      */
     /// Handle a mouse event.
-    fn handle_event(&mut self, &glfw::Window, &glfw::WindowEvent);
+    fn handle_event(&mut self, _window: &glfw::Window, _event: &glfw::WindowEvent);
 
     /*
      * Transformation-related methods.
@@ -44,8 +44,8 @@ pub trait Camera {
     fn num_passes(&self) -> uint { 1u }
 
     /// Indicates that a pass will begin.
-    fn start_pass(&self, uint, &glfw::Window) { }
+    fn start_pass(&self, _pass: uint, _window: &glfw::Window) { }
 
     /// Indicates that the scene has been rendered and the post-processing is being run.
-    fn render_complete(&self, &glfw::Window) { }
+    fn render_complete(&self, _window: &glfw::Window) { }
 }
