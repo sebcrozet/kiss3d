@@ -2,6 +2,7 @@
 // available under the BSD-3 licence.
 // It has been modified to work with gl-rs, nalgebra, and rust-freetype
 
+use std::vec_ng::Vec;
 use nalgebra::na::Vec2;
 
 #[packed]
@@ -16,7 +17,7 @@ pub struct Glyph {
     #[doc(hidden)]
     offset:     Vec2<f32>,
     #[doc(hidden)]
-    buffer:     ~[u8]
+    buffer:     Vec<u8>
 }
 
 impl Glyph {
@@ -25,7 +26,7 @@ impl Glyph {
                advance:    Vec2<f32>,
                dimensions: Vec2<f32>,
                offset:     Vec2<f32>,
-               buffer:     ~[u8])
+               buffer:     Vec<u8>)
                -> Glyph {
         Glyph {
             tex:        tex,

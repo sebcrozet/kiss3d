@@ -1,5 +1,6 @@
 //! A post-processing effect to highlight edges.
 
+use std::vec_ng::Vec;
 use gl;
 use gl::types::*;
 use nalgebra::na::Vec2;
@@ -31,11 +32,11 @@ pub struct SobelEdgeHighlight {
 impl SobelEdgeHighlight {
     /// Creates a new SobelEdgeHighlight post processing effect.
     pub fn new(threshold: f32) -> SobelEdgeHighlight {
-        let fbo_vertices: ~[Vec2<GLfloat>]  = ~[
+        let fbo_vertices: Vec<Vec2<GLfloat>>  = vec!(
             Vec2::new(-1.0, -1.0),
             Vec2::new(1.0, -1.0),
             Vec2::new(-1.0,  1.0),
-            Vec2::new(1.0,  1.0)];
+            Vec2::new(1.0,  1.0));
 
         let mut fbo_vertices = GPUVector::new(fbo_vertices, ArrayBuffer, StaticDraw);
         fbo_vertices.load_to_gpu();

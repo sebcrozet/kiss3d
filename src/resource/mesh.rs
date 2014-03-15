@@ -1,8 +1,9 @@
 //! Data structure of a scene node geometry.
 
-use sync::RWArc;
 use std::num::Zero;
 use std::vec;
+use std::vec_ng::Vec;
+use sync::RWArc;
 use gl::types::*;
 use nalgebra::na::{Vec2, Vec3};
 use nalgebra::na;
@@ -26,20 +27,20 @@ impl Mesh {
     /// Creates a new mesh.
     ///
     /// If the normals and uvs are not given, they are automatically computed.
-    pub fn new(coords:       ~[Vec3<GLfloat>],
-               faces:        ~[Vec3<GLuint>],
-               normals:      Option<~[Vec3<GLfloat>]>,
-               uvs:          Option<~[Vec2<GLfloat>]>,
+    pub fn new(coords:       Vec<Vec3<GLfloat>>,
+               faces:        Vec<Vec3<GLuint>>,
+               normals:      Option<Vec<Vec3<GLfloat>>>,
+               uvs:          Option<Vec<Vec2<GLfloat>>>,
                dynamic_draw: bool)
                -> Mesh {
         let normals = match normals {
             Some(ns) => ns,
-            None     => Mesh::compute_normals_array(coords, faces)
+            None     => Mesh::compute_normals_array(coords.as_slice(), faces.as_slice())
         };
 
         let uvs = match uvs {
             Some(us) => us,
-            None     => vec::from_elem(coords.len(), na::zero())
+            None     => Vec::from_elem(coords.len(), na::zero())
         };
 
         let location = if dynamic_draw { DynamicDraw } else { StaticDraw };
@@ -115,7 +116,9 @@ impl Mesh {
             self.normals.write(|ns|
                 self.coords.read(|cs|
                    self.faces.read(|fs|
-                       Mesh::compute_normals(*cs.data().get_ref(), *fs.data().get_ref(), ns.data_mut().get_mut_ref())
+                       Mesh::compute_normals(cs.data().get_ref().as_slice(),
+                                             fs.data().get_ref().as_slice(),
+                                             ns.data_mut().get_mut_ref())
                    )
                 )
             );
@@ -142,8 +145,8 @@ impl Mesh {
     }
 
     /// Computes normals from a set of faces.
-    pub fn compute_normals_array(coordinates: &[Vec3<GLfloat>], faces: &[Vec3<GLuint>]) -> ~[Vec3<GLfloat>] {
-        let mut res = ~[];
+    pub fn compute_normals_array(coordinates: &[Vec3<GLfloat>], faces: &[Vec3<GLuint>]) -> Vec<Vec3<GLfloat>> {
+        let mut res = Vec::new();
     
         Mesh::compute_normals(coordinates, faces, &mut res);
     
@@ -153,8 +156,8 @@ impl Mesh {
     /// Computes normals from a set of faces.
     pub fn compute_normals(coordinates: &[Vec3<GLfloat>],
                            faces:       &[Vec3<GLuint>],
-                           normals:     &mut ~[Vec3<GLfloat>]) {
-        let mut divisor = vec::from_elem(coordinates.len(), 0f32);
+                           normals:     &mut Vec<Vec3<GLfloat>>) {
+        let mut divisor = Vec::from_elem(coordinates.len(), 0f32);
     
         // Shrink the output buffer if it is too big.
         if normals.len() > coordinates.len() {
@@ -183,13 +186,13 @@ impl Mesh {
                 normal = cross
             }
     
-            normals[f.x] = normals[f.x] + normal;
-            normals[f.y] = normals[f.y] + normal;
-            normals[f.z] = normals[f.z] + normal;
+            *normals.get_mut(f.x as uint) = *normals.get(f.x as uint) + normal;
+            *normals.get_mut(f.y as uint) = *normals.get(f.y as uint) + normal;
+            *normals.get_mut(f.z as uint) = *normals.get(f.z as uint) + normal;
     
-            divisor[f.x] = divisor[f.x] + 1.0;
-            divisor[f.y] = divisor[f.y] + 1.0;
-            divisor[f.z] = divisor[f.z] + 1.0;
+            *divisor.get_mut(f.x as uint) = *divisor.get(f.x as uint) + 1.0;
+            *divisor.get_mut(f.y as uint) = *divisor.get(f.y as uint) + 1.0;
+            *divisor.get_mut(f.z as uint) = *divisor.get(f.z as uint) + 1.0;
         }
     
         // ... and compute the mean

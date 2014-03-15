@@ -3,6 +3,7 @@
 use std::any::Any;
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::vec_ng::Vec;
 use gl::types::*;
 use nalgebra::na::{Mat3, Vec2, Vec3, Iso3, Rotation, Rotate, Translation, Transformation};
 use nalgebra::na;
@@ -100,15 +101,15 @@ impl Object {
 
     #[doc(hidden)]
     pub fn render(&self, pass: uint, camera: &mut Camera, light: &Light) {
-        let visible = self.data.borrow().borrow().get().visible;
+        let visible = self.data.borrow().visible;
 
         if visible {
-            self.material.borrow().borrow().get().borrow().borrow_mut().get().render(
+            self.material.borrow().borrow_mut().render(
                 pass,
                 camera,
                 light,
-                self.data.borrow().borrow().get(),
-                self.mesh.borrow().borrow_mut().get());
+                self.data.borrow().deref(),
+                self.mesh.borrow_mut().deref_mut());
         }
     }
 
@@ -121,19 +122,19 @@ impl Object {
     /// Attaches user-defined data to this object.
     #[inline]
     pub fn set_user_data(&mut self, user_data: ~Any) {
-        self.data.borrow().borrow_mut().get().user_data = user_data;
+        self.data.borrow_mut().user_data = user_data;
     }
 
     /// Gets the material of this object.
     #[inline]
     pub fn material(&self) -> Rc<RefCell<~Material>> {
-        self.material.borrow().borrow().get().clone()
+        self.material.borrow().clone()
     }
 
     /// Sets the material of this object.
     #[inline]
     pub fn set_material(&mut self, material: Rc<RefCell<~Material>>) {
-        *self.material.borrow().borrow_mut().get() = material;
+        *self.material.borrow_mut() = material;
     }
 
     /// Sets the visible state of this object.
@@ -141,21 +142,21 @@ impl Object {
     /// An invisible object is not drawn.
     #[inline]
     pub fn set_visible(&mut self, visible: bool) {
-        self.data.borrow().borrow_mut().get().visible = visible
+        self.data.borrow_mut().visible = visible
     }
 
     /// Returns true if this object can be visible.
     #[inline]
     pub fn visible(&self) -> bool {
-        self.data.borrow().borrow().get().visible
+        self.data.borrow().visible
     }
 
     /// Sets the local scaling factor of the object.
     #[inline]
     pub fn set_scale(&mut self, sx: f32, sy: f32, sz: f32) {
-        self.data.borrow().borrow_mut().get().scale = Mat3::new(sx, 0.0, 0.0,
-                                                                0.0, sy, 0.0,
-                                                                0.0, 0.0, sz)
+        self.data.borrow_mut().scale = Mat3::new(sx, 0.0, 0.0,
+                                                 0.0, sy, 0.0,
+                                                 0.0, 0.0, sz)
     }
 
     /// This object's mesh.
@@ -166,99 +167,56 @@ impl Object {
 
     /// Mutably access the object's vertices.
     #[inline(always)]
-    pub fn modify_vertices(&mut self, f: |&mut ~[Vec3<GLfloat>]| -> ()) {
-        let     m  = self.mesh();
-        let mut bm = m.borrow().borrow_mut();
-
-        let coords = bm.get().coords();
-
-        let _ = coords.write(|coords| coords.data_mut().as_mut().map(|coords| f(coords)));
+    pub fn modify_vertices(&mut self, f: |&mut Vec<Vec3<GLfloat>>| -> ()) {
+        let _ = self.mesh.borrow_mut().coords().write(|coords| coords.data_mut().as_mut().map(|coords| f(coords)));
     }
 
     /// Access the object's vertices.
     #[inline(always)]
     pub fn read_vertices(&self, f: |&[Vec3<GLfloat>]| -> ()) {
-        let m  = self.mesh();
-        let bm = m.borrow().borrow();
-
-        let coords = bm.get().coords();
-
-        let _ = coords.read(|coords| coords.data().as_ref().map(|coords| f(*coords)));
+        let _ = self.mesh.borrow().coords().read(|coords| coords.data().as_ref().map(|coords| f(coords.as_slice())));
     }
 
     /// Recomputes the normals of this object's mesh.
     #[inline]
     pub fn recompute_normals(&mut self) {
-        let     m  = self.mesh();
-        let mut bm = m.borrow().borrow_mut();
-
-        bm.get().recompute_normals();
+        self.mesh.borrow_mut().recompute_normals();
     }
 
     /// Mutably access the object's normals.
     #[inline(always)]
-    pub fn modify_normals(&mut self, f: |&mut ~[Vec3<GLfloat>]| -> ()) {
-        let     m  = self.mesh();
-        let mut bm = m.borrow().borrow_mut();
-
-        let normals = bm.get().normals();
-
-        let _ = normals.write(|normals| normals.data_mut().as_mut().map(|normals| f(normals)));
+    pub fn modify_normals(&mut self, f: |&mut Vec<Vec3<GLfloat>>| -> ()) {
+        let _ = self.mesh.borrow_mut().normals().write(|normals| normals.data_mut().as_mut().map(|normals| f(normals)));
     }
 
     /// Access the object's normals.
     #[inline(always)]
     pub fn read_normals(&self, f: |&[Vec3<GLfloat>]| -> ()) {
-        let m  = self.mesh();
-        let bm = m.borrow().borrow();
-
-        let normals = bm.get().normals();
-
-        let _ = normals.read(|normals| normals.data().as_ref().map(|normals| f(*normals)));
+        let _ = self.mesh.borrow().normals().read(|normals| normals.data().as_ref().map(|normals| f(normals.as_slice())));
     }
 
     /// Mutably access the object's faces.
     #[inline(always)]
-    pub fn modify_faces(&mut self, f: |&mut ~[Vec3<GLuint>]| -> ()) {
-        let     m  = self.mesh();
-        let mut bm = m.borrow().borrow_mut();
-
-        let faces = bm.get().faces();
-
-        let _ = faces.write(|faces| faces.data_mut().as_mut().map(|faces| f(faces)));
+    pub fn modify_faces(&mut self, f: |&mut Vec<Vec3<GLuint>>| -> ()) {
+        let _ = self.mesh.borrow_mut().faces().write(|faces| faces.data_mut().as_mut().map(|faces| f(faces)));
     }
 
     /// Access the object's faces.
     #[inline(always)]
     pub fn read_faces(&self, f: |&[Vec3<GLuint>]| -> ()) {
-        let m  = self.mesh();
-        let bm = m.borrow().borrow();
-
-        let faces = bm.get().faces();
-
-        let _ = faces.read(|faces| faces.data().as_ref().map(|faces| f(*faces)));
+        let _ = self.mesh.borrow().faces().read(|faces| faces.data().as_ref().map(|faces| f(faces.as_slice())));
     }
 
     /// Mutably access the object's texture coordinates.
     #[inline(always)]
-    pub fn modify_uvs(&mut self, f: |&mut ~[Vec2<GLfloat>]| -> ()) {
-        let     m  = self.mesh();
-        let mut bm = m.borrow().borrow_mut();
-
-        let uvs = bm.get().uvs();
-
-        let _ = uvs.write(|uvs| uvs.data_mut().as_mut().map(|uvs| f(uvs)));
+    pub fn modify_uvs(&mut self, f: |&mut Vec<Vec2<GLfloat>>| -> ()) {
+        let _ = self.mesh.borrow_mut().uvs().write(|uvs| uvs.data_mut().as_mut().map(|uvs| f(uvs)));
     }
 
     /// Access the object's texture coordinates.
     #[inline(always)]
     pub fn read_uvs(&self, f: |&[Vec2<GLfloat>]| -> ()) {
-        let m  = self.mesh();
-        let bm = m.borrow().borrow();
-
-        let uvs = bm.get().uvs();
-
-        let _ = uvs.read(|uvs| uvs.data().as_ref().map(|uvs| f(*uvs)));
+        let _ = self.mesh.borrow().uvs().read(|uvs| uvs.data().as_ref().map(|uvs| f(uvs.as_slice())));
     }
 
 
@@ -267,8 +225,7 @@ impl Object {
     /// Colors components must be on the range `[0.0, 1.0]`.
     #[inline]
     pub fn set_color(&mut self, r: f32, g: f32, b: f32) {
-        let mut d = self.data.borrow().borrow_mut();
-        let d = d.get();
+        let mut d = self.data.borrow_mut();
 
         d.color.x = r;
         d.color.y = g;
@@ -283,7 +240,7 @@ impl Object {
     pub fn set_texture(&mut self, path: &Path, name: &str) {
         let texture = TextureManager::get_global_manager(|tm| tm.add(path, name));
 
-        self.data.borrow().borrow_mut().get().texture = texture;
+        self.data.borrow_mut().texture = texture;
     }
 
     /// Sets the texture of the object.
@@ -294,38 +251,38 @@ impl Object {
         let texture = TextureManager::get_global_manager(|tm| tm.get(name).unwrap_or_else(
             || fail!("Invalid attempt to use the unregistered texture: " + name)));
 
-        self.data.borrow().borrow_mut().get().texture = texture;
+        self.data.borrow_mut().texture = texture;
     }
 
     /// Move and orient the object such that it is placed at the point `eye` and have its `x` axis
     /// oriented toward `at`.
     #[inline]
     pub fn look_at(&mut self, eye: &Vec3<f32>, at: &Vec3<f32>, up: &Vec3<f32>) {
-        self.data.borrow().borrow_mut().get().transform.look_at(eye, at, up)
+        self.data.borrow_mut().transform.look_at(eye, at, up)
     }
 
     /// Move and orient the object such that it is placed at the point `eye` and have its `z` axis
     /// oriented toward `at`.
     #[inline]
     pub fn look_at_z(&mut self, eye: &Vec3<f32>, at: &Vec3<f32>, up: &Vec3<f32>) {
-        self.data.borrow().borrow_mut().get().transform.look_at_z(eye, at, up)
+        self.data.borrow_mut().transform.look_at_z(eye, at, up)
     }
 }
 
 impl Transformation<Iso3<f32>> for Object {
     #[inline]
     fn transformation(&self) -> Iso3<f32> {
-        self.data.borrow().borrow().get().transform.clone()
+        self.data.borrow().transform.clone()
     }
 
     #[inline]
     fn inv_transformation(&self) -> Iso3<f32> {
-        self.data.borrow().borrow().get().transform.inv_transformation()
+        self.data.borrow().transform.inv_transformation()
     }
 
     #[inline]
     fn append_transformation(&mut self, t: &Iso3<f32>) {
-        self.data.borrow().borrow_mut().get().transform.append_transformation(t)
+        self.data.borrow_mut().transform.append_transformation(t)
     }
 
     #[inline]
@@ -335,7 +292,7 @@ impl Transformation<Iso3<f32>> for Object {
 
     #[inline]
     fn prepend_transformation(&mut self, t: &Iso3<f32>) {
-        self.data.borrow().borrow_mut().get().transform.prepend_transformation(t)
+        self.data.borrow_mut().transform.prepend_transformation(t)
     }
 
     #[inline]
@@ -345,36 +302,36 @@ impl Transformation<Iso3<f32>> for Object {
 
     #[inline]
     fn set_transformation(&mut self, t: Iso3<f32>) {
-        self.data.borrow().borrow_mut().get().transform.set_transformation(t)
+        self.data.borrow_mut().transform.set_transformation(t)
     }
 }
 
 impl na::Transform<Vec3<f32>> for Object {
     #[inline]
     fn transform(&self, v: &Vec3<f32>) -> Vec3<f32> {
-        self.data.borrow().borrow().get().transform.transform(v)
+        self.data.borrow().transform.transform(v)
     }
 
     #[inline]
     fn inv_transform(&self, v: &Vec3<f32>) -> Vec3<f32> {
-        self.data.borrow().borrow().get().transform.inv_transform(v)
+        self.data.borrow().transform.inv_transform(v)
     }
 } 
 
 impl Rotation<Vec3<f32>> for Object {
     #[inline]
     fn rotation(&self) -> Vec3<f32> {
-        self.data.borrow().borrow().get().transform.rotation()
+        self.data.borrow().transform.rotation()
     }
 
     #[inline]
     fn inv_rotation(&self) -> Vec3<f32> {
-        self.data.borrow().borrow().get().transform.inv_rotation()
+        self.data.borrow().transform.inv_rotation()
     }
 
     #[inline]
     fn append_rotation(&mut self, t: &Vec3<f32>) {
-        self.data.borrow().borrow_mut().get().transform.append_rotation(t)
+        self.data.borrow_mut().transform.append_rotation(t)
     }
 
     #[inline]
@@ -384,7 +341,7 @@ impl Rotation<Vec3<f32>> for Object {
 
     #[inline]
     fn prepend_rotation(&mut self, t: &Vec3<f32>) {
-        self.data.borrow().borrow_mut().get().transform.prepend_rotation(t)
+        self.data.borrow_mut().transform.prepend_rotation(t)
     }
 
     #[inline]
@@ -394,36 +351,36 @@ impl Rotation<Vec3<f32>> for Object {
 
     #[inline]
     fn set_rotation(&mut self, r: Vec3<f32>) {
-        self.data.borrow().borrow_mut().get().transform.set_rotation(r)
+        self.data.borrow_mut().transform.set_rotation(r)
     }
 }
 
 impl Rotate<Vec3<f32>> for Object {
     #[inline]
     fn rotate(&self, v: &Vec3<f32>) -> Vec3<f32> {
-        self.data.borrow().borrow().get().transform.rotate(v)
+        self.data.borrow().transform.rotate(v)
     }
 
     #[inline]
     fn inv_rotate(&self, v: &Vec3<f32>) -> Vec3<f32> {
-        self.data.borrow().borrow().get().transform.inv_rotate(v)
+        self.data.borrow().transform.inv_rotate(v)
     }
 } 
 
 impl Translation<Vec3<f32>> for Object {
     #[inline]
     fn translation(&self) -> Vec3<f32> {
-        self.data.borrow().borrow().get().transform.translation()
+        self.data.borrow().transform.translation()
     }
 
     #[inline]
     fn inv_translation(&self) -> Vec3<f32> {
-        self.data.borrow().borrow().get().transform.inv_translation()
+        self.data.borrow().transform.inv_translation()
     }
 
     #[inline]
     fn append_translation(&mut self, t: &Vec3<f32>) {
-        self.data.borrow().borrow_mut().get().transform.append_translation(t)
+        self.data.borrow_mut().transform.append_translation(t)
     }
 
     #[inline]
@@ -433,7 +390,7 @@ impl Translation<Vec3<f32>> for Object {
 
     #[inline]
     fn prepend_translation(&mut self, t: &Vec3<f32>) {
-        self.data.borrow().borrow_mut().get().transform.prepend_translation(t)
+        self.data.borrow_mut().transform.prepend_translation(t)
     }
 
     #[inline]
@@ -443,16 +400,16 @@ impl Translation<Vec3<f32>> for Object {
 
     #[inline]
     fn set_translation(&mut self, t: Vec3<f32>) {
-        self.data.borrow().borrow_mut().get().transform.set_translation(t)
+        self.data.borrow_mut().transform.set_translation(t)
     }
 }
 
 impl Eq for Object {
     #[inline]
     fn eq(&self, other: &Object) -> bool {
-        let d1 = self.data.borrow().borrow();
-        let d2 = other.data.borrow().borrow();
+        let d1 = self.data.borrow();
+        let d2 = other.data.borrow();
 
-        d1.get() as *ObjectData == d2.get() as *ObjectData
+        d1.deref() as *ObjectData == d2.deref() as *ObjectData
     }
 }

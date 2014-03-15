@@ -2,6 +2,7 @@
 // available under the BSD-3 licence.
 // It has been modified to work with gl-rs, nalgebra, and rust-freetype
 
+use std::vec_ng::Vec;
 use std::rc::Rc;
 use gl;
 use gl::types::*;
@@ -39,7 +40,7 @@ pub struct TextRenderer {
     priv color:    ShaderUniform<Vec3<f32>>,
     priv pos:      ShaderAttribute<Vec2<f32>>,
     priv uvs:      ShaderAttribute<Vec2<f32>>,
-    priv contexts: ~[TextRenderContext],
+    priv contexts: Vec<TextRenderContext>,
     priv coords:   GPUVector<Vec2<f32>>,
 }
 
@@ -57,8 +58,8 @@ impl TextRenderer {
             pos:      shader.get_attrib("pos").expect("Could not find pos"),
             uvs:      shader.get_attrib("uvs").expect("Could not find uvs"),
             shader:   shader,
-            contexts: ~[],
-            coords:   GPUVector::new(~[], ArrayBuffer, StreamDraw)
+            contexts: Vec::new(),
+            coords:   GPUVector::new(Vec::new(), ArrayBuffer, StreamDraw)
         }
     }
 
@@ -71,11 +72,11 @@ impl TextRenderer {
 
             for (line_count, line) in text.lines_any().enumerate() {
                 let mut temp_pos = pos.clone();
-                temp_pos.y       = temp_pos.y + (font.borrow().height() as uint * (line_count + 1)) as f32;
+                temp_pos.y       = temp_pos.y + (font.height() as uint * (line_count + 1)) as f32;
 
                 for curr in line.chars() {
                     // XXX: do _not_ use a hashmap!
-                    let glyph = match font.borrow().glyphs()[curr as u8] {
+                    let glyph = match font.glyphs()[curr as u8] {
                         Some(ref g) => g,
                         None        => continue,
                     };
@@ -93,8 +94,8 @@ impl TextRenderer {
                         continue;
                     }
 
-                    let adimx = font.borrow().atlas_dimensions().x as f32;
-                    let adimy = font.borrow().atlas_dimensions().y as f32;
+                    let adimx = font.atlas_dimensions().x as f32;
+                    let adimy = font.atlas_dimensions().y as f32;
 
                     coords.push(Vec2::new(end_x, -end_y - end_h));
                     coords.push(Vec2::new(glyph.tex.x, glyph.tex.y));
@@ -140,7 +141,7 @@ impl TextRenderer {
         self.invsz.upload(&Vec2::new(1.0 / width, -1.0 / height));
 
         for ctxt in self.contexts.iter() {
-            verify!(gl::BindTexture(gl::TEXTURE_2D, ctxt.font.borrow().texture_atlas()));
+            verify!(gl::BindTexture(gl::TEXTURE_2D, ctxt.font.texture_atlas()));
             verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as i32));
             verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as i32));
 

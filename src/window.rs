@@ -9,6 +9,7 @@ use std::num::Zero;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::io::IoResult;
+use std::vec_ng::Vec;
 use collections::HashMap;
 use time;
 use gl;
@@ -41,7 +42,7 @@ pub struct Window<'a> {
     // glfw-rs is doing something very wrong here.
     priv window:                     Rc<glfw::Window>,
     priv max_ms_per_frame:           Option<u64>,
-    priv objects:                    ~[Object],
+    priv objects:                    Vec<Object>,
     priv camera:                     &'a mut Camera,
     priv light_mode:                 Light,
     priv wireframe_mode:             bool,
@@ -58,7 +59,7 @@ pub struct Window<'a> {
 impl<'a> Window<'a> {
     /// Access the glfw window.
     pub fn glfw_window<'r>(&'r self) -> &'r glfw::Window {
-        self.window.borrow()
+        self.window.deref()
     }
 
     /// Sets the current processing effect.
@@ -68,14 +69,14 @@ impl<'a> Window<'a> {
 
     /// The window width.
     pub fn width(&self) -> f32 {
-        let (w, _) = self.window.borrow().get_size();
+        let (w, _) = self.window.get_size();
 
         w as f32
     }
 
     /// The window height.
     pub fn height(&self) -> f32 {
-        let (_, h) = self.window.borrow().get_size();
+        let (_, h) = self.window.get_size();
 
         h as f32
     }
@@ -87,10 +88,10 @@ impl<'a> Window<'a> {
 
     /// The current camera.
     pub fn set_camera(&mut self, camera: &'a mut Camera) {
-        let (w, h) = self.window.borrow().get_size();
+        let (w, h) = self.window.get_size();
 
         self.camera = camera;
-        self.camera.handle_event(self.window.borrow(), &glfw::FramebufferSizeEvent(w, h));
+        self.camera.handle_event(self.window.deref(), &glfw::FramebufferSizeEvent(w, h));
     }
 
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
@@ -100,17 +101,17 @@ impl<'a> Window<'a> {
 
     /// Closes the window.
     pub fn close(&mut self) {
-        self.window.borrow().set_should_close(true)
+        self.window.set_should_close(true)
     }
 
     /// Hides the window, without closing it. Use `show` to make it visible again.
     pub fn hide(&mut self) {
-        self.window.borrow().hide()
+        self.window.hide()
     }
 
     /// Makes the window visible. Use `hide` to hide it.
     pub fn show(&mut self) {
-        self.window.borrow().show()
+        self.window.show()
     }
 
     /// Switch on or off wireframe rendering mode. When set to `true`, everything in the scene will
@@ -148,9 +149,9 @@ impl<'a> Window<'a> {
 
     /// Loads a mesh from an obj file located at `path` and registers its geometry as
     /// `geometry_name`.
-    pub fn load_obj(&mut self, path: &Path, mtl_dir: &Path, geometry_name: &str) -> IoResult<~[(~str, Rc<RefCell<Mesh>>, Option<MtlMaterial>)]> {
+    pub fn load_obj(&mut self, path: &Path, mtl_dir: &Path, geometry_name: &str) -> IoResult<Vec<(~str, Rc<RefCell<Mesh>>, Option<MtlMaterial>)>> {
         obj::parse_file(path, mtl_dir, geometry_name).map(|ms| {
-            let mut res = ~[];
+            let mut res = Vec::new();
 
             for (n, m, mat) in ms.move_iter() {
                 let m = Rc::new(RefCell::new(m));
@@ -178,10 +179,10 @@ impl<'a> Window<'a> {
     /// # Arguments
     /// * `path`  - relative path to the obj file.
     /// * `scale` - uniform scale to apply to the model.
-    pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: GLfloat) -> IoResult<~[Object]> {
+    pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: GLfloat) -> IoResult<Vec<Object>> {
         let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
         self.load_obj(path, mtl_dir, path.as_str().unwrap()).map(|objs| {
-            let mut res = ~[];
+            let mut res = Vec::new();
 
             for (_, mesh, mtl) in objs.move_iter() {
                 let mut object = Object::new(
@@ -393,10 +394,10 @@ impl<'a> Window<'a> {
         let cw       = w / 2.0;
         let ch       = h / 2.0;
 
-        let mut vertices   = ~[];
-        let mut normals    = ~[];
-        let mut triangles  = ~[];
-        let mut tex_coords = ~[];
+        let mut vertices   = Vec::new();
+        let mut normals    = Vec::new();
+        let mut triangles  = Vec::new();
+        let mut tex_coords = Vec::new();
 
         // create the vertices
         for i in range(0u, hsubdivs + 1) {
@@ -458,7 +459,7 @@ impl<'a> Window<'a> {
 
         let normalized_coord: Vec3<f32> = na::from_homogeneous(&h_normalized_coord);
 
-        let (w, h) = self.window.borrow().get_size();
+        let (w, h) = self.window.get_size();
 
         Vec2::new(
             (1.0 + normalized_coord.x) * (w as f32) / 2.0,
@@ -467,7 +468,7 @@ impl<'a> Window<'a> {
 
     /// Converts a point in 2d screen coordinates to a ray (a 3d position and a direction).
     pub fn unproject(&self, window_coord: &Vec2<f32>) -> (Vec3<f32>, Vec3<f32>) {
-        let (w, h) = self.window.borrow().get_size();
+        let (w, h) = self.window.get_size();
 
         let normalized_coord = Vec2::new(
             2.0 * window_coord.x  / (w as f32) - 1.0,
@@ -489,27 +490,23 @@ impl<'a> Window<'a> {
 
     /// The list of objects on the scene.
     pub fn objects<'r>(&'r self) -> &'r [Object] {
-        let res: &'r [Object] = self.objects;
-
-        res
+        self.objects.as_slice()
     }
 
     /// The list of objects on the scene.
     pub fn objects_mut<'r>(&'r mut self) -> &'r mut [Object] {
-        let res: &'r mut [Object] = self.objects;
-
-        res
+        self.objects.as_mut_slice()
     }
 
     /// Poll events and pass them to a user-defined function. If the function returns `true`, the
     /// default engine event handler (camera, framebuffer size, etc.) is executed, if it returns
     /// `false`, the default engine event handler is not executed. Return `false` if you want to
     /// override the default engine behaviour.
-    #[inline(always)]
+    #[inline]
     pub fn poll_events(&mut self, event_handler: |&mut Window, &glfw::WindowEvent| -> bool) {
         // redispatch them
         let win = self.window.clone(); // FIXME: this is very ugly
-        for event in win.borrow().flush_events() {
+        for event in win.flush_events() {
             if event_handler(self, event.ref1()) {
                 match *event.ref1() {
                     glfw::KeyEvent(glfw::KeyEscape, _, glfw::Release, _) => {
@@ -522,36 +519,9 @@ impl<'a> Window<'a> {
                     _ => { }
                 }
 
-                self.camera.handle_event(self.window.borrow(), event.ref1())
+                self.camera.handle_event(&*self.window, event.ref1())
             }
         }
-
-        /*
-        let events = self.events.clone();
-        events.read(|es| {
-            for e in es.iter() {
-                if events_handler(self, e) {
-                    match *e {
-                        event::KeyReleased(key) => {
-                            if key == glfw::KeyEscape {
-                                self.close();
-                                continue
-                            }
-                        },
-                        event::FramebufferSize(w, h) => {
-                            self.update_viewport(w, h);
-                        },
-                        _ => { }
-                    }
-
-                    self.camera.handle_event(&self.window, e);
-                }
-            }
-        });
-
-        // clear the events collector
-        self.events.write(|c| c.clear());
-        */
     }
 
     /// Starts an infinite loop polling events, calling an user-defined callback, and drawing the
@@ -560,7 +530,7 @@ impl<'a> Window<'a> {
         let mut timer = Timer::new().unwrap();
         let mut curr  = time::precise_time_ns();
 
-        while !self.window.borrow().should_close() {
+        while !self.window.should_close() {
             // collect events
             glfw::poll_events();
 
@@ -626,7 +596,7 @@ impl<'a> Window<'a> {
             let mut usr_window = Window {
                 max_ms_per_frame:      None,
                 window:                Rc::new(window),
-                objects:               ~[],
+                objects:               Vec::new(),
                 camera:                &mut camera as &mut Camera,
                 light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
                 wireframe_mode:        false,
@@ -641,19 +611,19 @@ impl<'a> Window<'a> {
             };
 
             // setup callbacks
-            usr_window.window.borrow().set_framebuffer_size_polling(true);
-            usr_window.window.borrow().set_key_polling(true);
-            usr_window.window.borrow().set_mouse_button_polling(true);
-            usr_window.window.borrow().set_cursor_pos_polling(true);
-            usr_window.window.borrow().set_scroll_polling(true);
+            usr_window.window.set_framebuffer_size_polling(true);
+            usr_window.window.set_key_polling(true);
+            usr_window.window.set_mouse_button_polling(true);
+            usr_window.window.set_cursor_pos_polling(true);
+            usr_window.window.set_scroll_polling(true);
 
-            let (w, h) = usr_window.window.borrow().get_size();
+            let (w, h) = usr_window.window.get_size();
             usr_window.camera.handle_event(
-                usr_window.window.borrow(),
+                usr_window.window.deref(),
                 &glfw::FramebufferSizeEvent(w, h));
 
             if hide {
-                usr_window.window.borrow().hide()
+                usr_window.window.hide()
             }
 
             // usr_window.framebuffer_size_callback(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -664,7 +634,7 @@ impl<'a> Window<'a> {
     }
 
     fn draw(&mut self, curr: &mut u64, timer: &mut Timer) {
-        self.camera.update(self.window.borrow());
+        self.camera.update(self.window.deref());
 
         match self.light_mode {
             StickToCamera => self.set_light(StickToCamera),
@@ -680,10 +650,10 @@ impl<'a> Window<'a> {
         }
 
         for pass in range(0u, self.camera.num_passes()) {
-            self.camera.start_pass(pass, self.window.borrow());
+            self.camera.start_pass(pass, self.window.deref());
             self.render_scene(pass);
         }
-        self.camera.render_complete(self.window.borrow());
+        self.camera.render_complete(self.window.deref());
 
         let w = self.width();
         let h = self.height();
@@ -709,7 +679,7 @@ impl<'a> Window<'a> {
         self.text_renderer.render(w, h);
 
         // We are done: swap buffers
-        self.window.borrow().swap_buffers();
+        self.window.swap_buffers();
 
         // Limit the fps if needed.
         match self.max_ms_per_frame {

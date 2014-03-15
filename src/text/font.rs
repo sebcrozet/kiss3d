@@ -5,6 +5,7 @@
 use std::rc::Rc;
 use std::num;
 use std::vec;
+use std::vec_ng::Vec;
 use std::cmp;
 use std::ptr;
 use std::libc::{c_uint, c_void};
@@ -25,7 +26,7 @@ pub struct Font {
     priv face:             freetype::FT_Face,
     priv texture_atlas:    GLuint,
     priv atlas_dimensions: Vec2<uint>,
-    priv glyphs:           ~[Option<Glyph>],
+    priv glyphs:           Vec<Option<Glyph>>,
     priv height:           i32,
     priv nocpy:            NoPod
 }
@@ -38,7 +39,7 @@ impl Font {
             face:             ptr::null(),
             texture_atlas:    0,
             atlas_dimensions: na::zero(),
-            glyphs:           vec::from_fn(128, |_| None),
+            glyphs:           Vec::from_fn(128, |_| None),
             height:           0,
             nocpy:            NoPod
         };
@@ -75,7 +76,7 @@ impl Font {
                 let advance    = Vec2::new(((*ft_glyph).advance.x >> 6) as f32, ((*ft_glyph).advance.y >> 6) as f32);
                 let dimensions = Vec2::new((*ft_glyph).bitmap.width as f32, (*ft_glyph).bitmap.rows as f32);
                 let offset     = Vec2::new((*ft_glyph).bitmap_left as f32, (*ft_glyph).bitmap_top as f32);
-                let buffer     = vec::from_buf((*ft_glyph).bitmap.buffer, (dimensions.x * dimensions.y) as uint);
+                let buffer     = Vec::from_slice(vec::from_buf((*ft_glyph).bitmap.buffer, (dimensions.x * dimensions.y) as uint));
                 let glyph      = Glyph::new(na::zero(), advance, dimensions, offset, buffer);
                     
 
@@ -83,7 +84,7 @@ impl Font {
                 row_height  = cmp::max(row_height, (*ft_glyph).bitmap.rows as uint);
                 font.height = cmp::max(font.height, row_height as i32);
 
-                font.glyphs[curr] = Some(glyph);
+                *font.glyphs.get_mut(curr) = Some(glyph);
             }
 
             font.atlas_dimensions.x = num::next_power_of_two(cmp::max(font.atlas_dimensions.x, row_width as uint));
@@ -110,7 +111,7 @@ impl Font {
             let mut offset: Vec2<i32> = na::zero();
             row_height = 0;
             for curr in range(0u, 128) {
-                let glyph = match font.glyphs[curr] {
+                let glyph = match *font.glyphs.get_mut(curr) {
                     Some(ref mut g) => g,
                     None            => continue
                 };
@@ -125,7 +126,7 @@ impl Font {
                     verify!(gl::TexSubImage2D(
                                 gl::TEXTURE_2D, 0, offset.x, offset.y,
                                 glyph.dimensions.x as i32, glyph.dimensions.y as i32,
-                                gl::RED, gl::UNSIGNED_BYTE, &glyph.buffer[0] as *u8 as *c_void));
+                                gl::RED, gl::UNSIGNED_BYTE, glyph.buffer.get(0) as *u8 as *c_void));
                 }
 
                 /* Calculate the position in the texture. */
@@ -160,9 +161,7 @@ impl Font {
     /// The glyphs of the this font.
     #[inline]
     pub fn glyphs<'a>(&'a self) -> &'a [Option<Glyph>] {
-        let res: &'a [Option<Glyph>] = self.glyphs;
-
-        res
+        self.glyphs.as_slice()
     }
 
     /// The height of this font.

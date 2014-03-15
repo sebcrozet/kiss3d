@@ -18,8 +18,8 @@ fn main() {
         let b = Vec3::new(1.0, -1.0, 0.0);
         let c = Vec3::new(0.0, 1.0, 0.0);
 
-        let vertices = ~[a, b, c];
-        let indices  = ~[Vec3::new(0u32, 1, 2)];
+        let vertices = vec!(a, b, c);
+        let indices  = vec!(Vec3::new(0u32, 1, 2));
 
         let mesh = Mesh::new(vertices, indices, None, None, false);
 

@@ -10,7 +10,7 @@ pub use resource::mesh::Mesh;
 
 mod framebuffer_manager;
 mod texture_manager;
-mod material;
+pub mod material;
 mod gpu_vector;
 mod gl_primitive;
 mod mesh;

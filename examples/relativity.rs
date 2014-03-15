@@ -1,5 +1,4 @@
 extern crate native;
-extern crate extra;
 extern crate sync;
 extern crate gl;
 extern crate glfw = "glfw-rs";
@@ -76,7 +75,7 @@ fn main() {
                                 c.speed_of_light = c.speed_of_light + 100.0;
                             }
                             else if code == glfw::Key2 {
-                                c.speed_of_light = na::max(c.speed_of_light - 100.0, 0.1);
+                                c.speed_of_light = (c.speed_of_light - 100.0).max(0.1);
                             }
                         },
                         _ => { }
@@ -163,7 +162,7 @@ impl Camera for InertialCamera {
             self.velocity = self.velocity * self.deceleration;
         }
 
-        let speed = na::min(self.velocity.normalize(), self.max_vel);
+        let speed = self.velocity.normalize().min(self.max_vel);
 
         if speed != 0.0 {
             self.velocity.y = 0.0;
@@ -313,7 +312,7 @@ impl Material for RelativisticMaterial {
 
         unsafe {
             gl::ActiveTexture(gl::TEXTURE0);
-            gl::BindTexture(gl::TEXTURE_2D, data.texture().borrow().id());
+            gl::BindTexture(gl::TEXTURE_2D, data.texture().id());
 
             gl::DrawElements(gl::TRIANGLES,
                              mesh.num_pts() as GLint,

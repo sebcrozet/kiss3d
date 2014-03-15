@@ -1,5 +1,6 @@
 //! Simplistic mtl loader.
 
+use std::vec_ng::Vec;
 use std::mem;
 use std::io::fs::File;
 use std::io::{IoResult, Reader};
@@ -12,7 +13,7 @@ fn error(line: uint, err: &str) -> ! {
 }
 
 /// Parses a mtl file.
-pub fn parse_file(path: &Path) -> IoResult<~[MtlMaterial]> {
+pub fn parse_file(path: &Path) -> IoResult<Vec<MtlMaterial>> {
     match File::open(path) {
         Ok(mut file) => file.read_to_str().map(|mtl| parse(mtl)),
         Err(e)       => Err(e)
@@ -20,8 +21,8 @@ pub fn parse_file(path: &Path) -> IoResult<~[MtlMaterial]> {
 }
 
 /// Parses a string representing a mtl file.
-pub fn parse(string: &str) -> ~[MtlMaterial] {
-    let mut res           = ~[];
+pub fn parse(string: &str) -> Vec<MtlMaterial> {
+    let mut res           = Vec::new();
     let mut curr_material = MtlMaterial::new_default(~"");
 
     for (l, line) in string.lines_any().enumerate() {

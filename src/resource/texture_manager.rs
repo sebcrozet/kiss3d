@@ -57,7 +57,7 @@ impl TextureManager {
         let default_tex = Texture::new();
         let default_tex_pixels: [ GLfloat, ..3 ] = [ 1.0, 1.0, 1.0 ];
         verify!(gl::ActiveTexture(gl::TEXTURE0));
-        verify!(gl::BindTexture(gl::TEXTURE_2D, default_tex.borrow().id()));
+        verify!(gl::BindTexture(gl::TEXTURE_2D, default_tex.id()));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_BASE_LEVEL, 0));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAX_LEVEL, 0));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT as i32));
@@ -112,7 +112,7 @@ impl TextureManager {
             match image::load(path.as_str().unwrap().to_owned()) {
                 ImageU8(mut image) => {
                     verify!(gl::ActiveTexture(gl::TEXTURE0));
-                    verify!(gl::BindTexture(gl::TEXTURE_2D, tex.borrow().id()));
+                    verify!(gl::BindTexture(gl::TEXTURE_2D, tex.id()));
 
                     // Flip the y axis
                     let elt_per_row = image.width * image.depth;

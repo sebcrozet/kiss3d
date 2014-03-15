@@ -1,5 +1,6 @@
 //! Post-processing effect to draw everything in grey-levels.
 
+use std::vec_ng::Vec;
 use gl;
 use gl::types::*;
 use nalgebra::na::Vec2;
@@ -20,11 +21,11 @@ pub struct Grayscales {
 impl Grayscales {
     /// Creates a new `Grayscales` post processing effect.
     pub fn new() -> Grayscales {
-        let fbo_vertices: ~[Vec2<GLfloat>]  = ~[
+        let fbo_vertices: Vec<Vec2<GLfloat>>  = vec!(
             Vec2::new(-1.0, -1.0),
             Vec2::new(1.0, -1.0),
             Vec2::new(-1.0,  1.0),
-            Vec2::new(1.0,  1.0)];
+            Vec2::new(1.0,  1.0));
 
         let mut fbo_vertices = GPUVector::new(fbo_vertices, ArrayBuffer, StaticDraw);
         fbo_vertices.load_to_gpu();

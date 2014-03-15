@@ -1,5 +1,6 @@
 //! A batched line renderer.
 
+use std::vec_ng::Vec;
 use gl;
 use gl::types::*;
 use nalgebra::na::{Vec3, Mat4};
@@ -27,7 +28,7 @@ impl LineRenderer {
         shader.use_program();
 
         LineRenderer {
-            lines:     GPUVector::new(~[], ArrayBuffer, StreamDraw),
+            lines:     GPUVector::new(Vec::new(), ArrayBuffer, StreamDraw),
             max_lines: 0,
             pos:       shader.get_attrib::<Vec3<f32>>("position").unwrap(),
             color:     shader.get_attrib::<Vec3<f32>>("color").unwrap(),

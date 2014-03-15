@@ -106,7 +106,7 @@ impl Material for ObjectMaterial {
             mesh.bind(&mut self.pos, &mut self.normal, &mut self.tex_coord);
 
             verify!(gl::ActiveTexture(gl::TEXTURE0));
-            verify!(gl::BindTexture(gl::TEXTURE_2D, data.texture().borrow().id()));
+            verify!(gl::BindTexture(gl::TEXTURE_2D, data.texture().id()));
 
             verify!(gl::DrawElements(gl::TRIANGLES,
                     mesh.num_pts() as GLint,

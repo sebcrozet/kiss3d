@@ -1,5 +1,6 @@
 //! Wrapper for an OpenGL buffer object.
 
+use std::vec_ng::Vec;
 use std::cast;
 use std::mem;
 use std::vec;
@@ -45,14 +46,14 @@ pub struct GPUVector<T> {
     priv buf_type:   BufferType,
     priv alloc_type: AllocationType,
     priv handle:     Option<(uint, GLHandle)>,
-    priv data:       Option<~[T]>,
+    priv data:       Option<Vec<T>>,
 }
 
 // FIXME: implement Clone
 
 impl<T: GLPrimitive> GPUVector<T> {
     /// Creates a new `GPUVector` that is not yet uploaded to the GPU.
-    pub fn new(data: ~[T], buf_type: BufferType, alloc_type: AllocationType) -> GPUVector<T> {
+    pub fn new(data: Vec<T>, buf_type: BufferType, alloc_type: AllocationType) -> GPUVector<T> {
         GPUVector {
             trash:      true,
             len:        data.len(),
@@ -82,7 +83,7 @@ impl<T: GLPrimitive> GPUVector<T> {
     ///
     /// This method will mark this vector as `trash`.
     #[inline]
-    pub fn data_mut<'a>(&'a mut self) -> &'a mut Option<~[T]> {
+    pub fn data_mut<'a>(&'a mut self) -> &'a mut Option<Vec<T>> {
         self.trash = true;
 
         &'a mut self.data
@@ -90,7 +91,7 @@ impl<T: GLPrimitive> GPUVector<T> {
 
     /// Immutably accesses the vector if it is available on RAM.
     #[inline]
-    pub fn data<'a>(&'a self) -> &'a Option<~[T]> {
+    pub fn data<'a>(&'a self) -> &'a Option<Vec<T>> {
         &'a self.data
     }
 
@@ -126,7 +127,7 @@ impl<T: GLPrimitive> GPUVector<T> {
 
             self.handle = self.data.as_ref().map(|d| {
                 *len = d.len();
-                (d.len(), GLHandle::new(upload_buffer(*d, buf_type, alloc_type)))
+                (d.len(), GLHandle::new(upload_buffer(d.as_slice(), buf_type, alloc_type)))
             });
         }
         else if self.trash() {
@@ -138,7 +139,7 @@ impl<T: GLPrimitive> GPUVector<T> {
                     Some((ref mut len, ref handle)) => {
                         let handle = handle.handle();
 
-                        *len = update_buffer(*d, *len, handle, self.buf_type, self.alloc_type)
+                        *len = update_buffer(d.as_slice(), *len, handle, self.buf_type, self.alloc_type)
                     }
                 }
             }
@@ -175,10 +176,10 @@ impl<T: GLPrimitive> GPUVector<T> {
         if !self.is_on_ram() && self.is_on_gpu() {
             assert!(!self.trash);
             let     handle = self.handle.as_ref().map(|&(_, ref h)| h.handle()).unwrap();
-            let mut data   = vec::with_capacity(self.len);
+            let mut data   = Vec::with_capacity(self.len);
 
             unsafe { data.set_len(self.len) };
-            download_buffer(handle, self.buf_type, data);
+            download_buffer(handle, self.buf_type, data.as_mut_slice());
             self.data = Some(data);
         }
     }
@@ -211,7 +212,7 @@ impl<T: Clone + GLPrimitive> GPUVector<T> {
     /// If it has been uploaded to the GPU, and unloaded from the RAM, call `load_to_ram` first to
     /// make the data accessible.
     #[inline]
-    pub fn to_owned(&self) -> Option<~[T]> {
+    pub fn to_owned(&self) -> Option<Vec<T>> {
         self.data.as_ref().map(|d| d.clone())
     }
 }
