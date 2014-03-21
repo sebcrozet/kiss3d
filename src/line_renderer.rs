@@ -1,6 +1,6 @@
 //! A batched line renderer.
 
-use std::vec_ng::Vec;
+use std::vec::Vec;
 use gl;
 use gl::types::*;
 use nalgebra::na::{Vec3, Mat4};

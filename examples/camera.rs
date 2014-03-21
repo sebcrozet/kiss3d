@@ -1,5 +1,5 @@
 extern crate native;
-extern crate glfw = "glfw-rs";
+extern crate glfw;
 extern crate kiss3d;
 extern crate nalgebra;
 

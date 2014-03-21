@@ -1,6 +1,6 @@
 //! Post processing effect to support the Oculus Rift.
 
-use std::vec_ng::Vec;
+use std::vec::Vec;
 use gl;
 use gl::types::*;
 use nalgebra::na::Vec2;

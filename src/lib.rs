@@ -82,11 +82,6 @@ Use `make doc` to compile the documentation on the `doc` folder.
 ## Contributions
 I’d love to see people improving this library for their own needs. However, keep in mind that
 **kiss3d** is KISS. One-liner features (from the user point of view) are preferred.
-
-## Acknowledgements
-
-* **bjz** for his awesome [glfw](https://github.com/bjz/glfw-rs.git) and [opengl](https://github.com/bjz/gl-rs.git) bindings.
-
 */
 
 #[crate_id = "kiss3d#0.1"];
@@ -108,7 +103,7 @@ extern crate std;
 extern crate sync;
 extern crate time;
 extern crate collections;
-extern crate glfw = "glfw-rs";
+extern crate glfw;
 extern crate gl;
 extern crate nalgebra;
 extern crate stb_image;

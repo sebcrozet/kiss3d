@@ -4,7 +4,7 @@
 // useless for anybody else.
 // This is inspired _a lot_ by: http://en.wikibooks.org/wiki/Opengl::Programming/Post-Processing
 
-use std::vec_ng::Vec;
+use std::vec::Vec;
 use gl;
 use gl::types::*;
 use nalgebra::na::Vec2;

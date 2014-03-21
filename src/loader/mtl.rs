@@ -1,6 +1,6 @@
 //! Simplistic mtl loader.
 
-use std::vec_ng::Vec;
+use std::vec::Vec;
 use std::mem;
 use std::io::fs::File;
 use std::io::{IoResult, Reader};

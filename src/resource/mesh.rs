@@ -1,8 +1,7 @@
 //! Data structure of a scene node geometry.
 
 use std::num::Zero;
-use std::vec;
-use std::vec_ng::Vec;
+use std::vec::Vec;
 use sync::RWArc;
 use gl::types::*;
 use nalgebra::na::{Vec2, Vec3};

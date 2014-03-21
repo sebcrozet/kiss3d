@@ -1,7 +1,7 @@
 extern crate native;
 extern crate sync;
 extern crate gl;
-extern crate glfw = "glfw-rs";
+extern crate glfw;
 extern crate kiss3d;
 extern crate nalgebra;
 

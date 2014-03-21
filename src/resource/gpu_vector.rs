@@ -1,9 +1,8 @@
 //! Wrapper for an OpenGL buffer object.
 
-use std::vec_ng::Vec;
+use std::vec::Vec;
 use std::cast;
 use std::mem;
-use std::vec;
 use gl;
 use gl::types::*;
 use std::kinds::marker::NoPod;
