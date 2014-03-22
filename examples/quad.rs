@@ -13,7 +13,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: quad waves", proc(window) {
+    Window::spawn("Kiss3d: quad", proc(window) {
         let mut c = window.add_quad(5.0, 4.0, 500, 400);
         
         c.set_color(random(), random(), random());

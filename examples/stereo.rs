@@ -15,7 +15,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn_size("kiss3d_stereo", 1280, 800, proc(window) {
+    Window::spawn_size("Kiss3d: stereo", 1280, 800, proc(window) {
         let mut c = window.add_cube(1.0, 1.0, 1.0);
 
         let     eye                 = Vec3::new(0.0f32, 0.0, 10.0);

@@ -14,7 +14,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: scaled primitives", proc(window) {
+    Window::spawn("Kiss3d: primitives_scale", proc(window) {
         // NOTE: scaling is not possible.
         for i in range(0u, 11) {
             let dim: f32 = random::<f32>() / 2.0;

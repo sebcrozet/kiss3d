@@ -11,7 +11,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: cube", proc(window) {
+    Window::spawn("Kiss3d: add_remove", proc(window) {
         let mut c     = window.add_cube(1.0, 1.0, 1.0);
         let mut added = true;
 
