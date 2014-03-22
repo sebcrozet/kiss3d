@@ -294,7 +294,8 @@ fn reformat(coords:     Vec<Coord>,
             uvs:        Option<Vec<UV>>,
             groups_ids: Vec<Vec<Vec3<u32>>>,
             groups:     HashMap<~str, uint>,
-            group2mtl:  HashMap<uint, MtlMaterial>) -> Vec<(~str, Mesh, Option<MtlMaterial>)> {
+            group2mtl:  HashMap<uint, MtlMaterial>)
+            -> Vec<(~str, Mesh, Option<MtlMaterial>)> {
     let mut vt2id:  HashMap<Vec3<u32>, u32> = HashMap::new();
     let mut vertex_ids: Vec<u32>            = Vec::new();
     let mut resc: Vec<Coord>                = Vec::new();

@@ -119,3 +119,4 @@ pub mod builtin;
 pub mod post_processing;
 pub mod resource;
 pub mod text;
+pub mod procedural;

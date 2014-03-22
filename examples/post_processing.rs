@@ -1,8 +1,9 @@
 extern crate native;
+extern crate rand;
 extern crate kiss3d;
 extern crate nalgebra;
 
-use std::rand::random;
+use rand::random;
 use nalgebra::na::{Vec3, Translation};
 use kiss3d::window::Window;
 use kiss3d::light;
