@@ -3,7 +3,6 @@
 use std::any::Any;
 use std::cell::RefCell;
 use std::rc::Rc;
-use std::vec::Vec;
 use gl::types::*;
 use nalgebra::na::{Mat3, Vec2, Vec3, Iso3, Rotation, Rotate, Translation, Transformation};
 use nalgebra::na;

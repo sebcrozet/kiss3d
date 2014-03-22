@@ -1,6 +1,5 @@
 //! Wrapper for an OpenGL buffer object.
 
-use std::vec::Vec;
 use std::cast;
 use std::mem;
 use gl;

@@ -5,7 +5,6 @@
 use std::rc::Rc;
 use std::num;
 use std::slice;
-use std::vec::Vec;
 use std::cmp;
 use std::ptr;
 use std::libc::{c_uint, c_void};

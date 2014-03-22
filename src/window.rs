@@ -9,7 +9,6 @@ use std::num::Zero;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::io::IoResult;
-use std::vec::Vec;
 use collections::HashMap;
 use time;
 use gl;

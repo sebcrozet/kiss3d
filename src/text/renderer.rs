@@ -2,7 +2,6 @@
 // available under the BSD-3 licence.
 // It has been modified to work with gl-rs, nalgebra, and rust-freetype
 
-use std::vec::Vec;
 use std::rc::Rc;
 use gl;
 use gl::types::*;

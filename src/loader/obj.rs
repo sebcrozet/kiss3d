@@ -1,6 +1,5 @@
 //! Simplistic obj loader.
 
-use std::vec::Vec;
 use std::num::Bounded;
 use std::io::fs::File;
 use std::io::Reader;

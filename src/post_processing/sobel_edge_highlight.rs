@@ -1,6 +1,5 @@
 //! A post-processing effect to highlight edges.
 
-use std::vec::Vec;
 use gl;
 use gl::types::*;
 use nalgebra::na::Vec2;
