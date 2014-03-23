@@ -111,6 +111,15 @@ impl<N: Mul<N, N>> MeshDescr<N> {
             c.z = c.z * s.z;
         }
     }
+
+    /// Scales each vertex of this mesh.
+    pub fn scale_by_scalar(&mut self, s: &N) {
+        for c in self.coords.mut_iter() {
+            c.x = c.x * *s;
+            c.y = c.y * *s;
+            c.z = c.z * *s;
+        }
+    }
 }
 
 impl<N: Clone> MeshDescr<N> {
@@ -120,7 +129,6 @@ impl<N: Clone> MeshDescr<N> {
     /// This might cause the duplication of some vertices, normals and uvs.
     /// Use this method to transform the mesh data to a OpenGL-compliant format.
     pub fn unify_index_buffer(&mut self) {
-        println!("Unification");
         let new_indices = match self.indices {
             SplitIndexBuffer(ref ids) => {
                 let mut vt2id:HashMap<Vec3<u32>, u32> = HashMap::new();
@@ -168,7 +176,6 @@ impl<N: Clone> MeshDescr<N> {
         };
 
         let _ = new_indices.map(|nids| self.indices = nids);
-        println!("end Unification");
     }
 
     /// Forces the mesh to use a different index for the vertices, normals and uvs.

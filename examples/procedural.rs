@@ -3,7 +3,7 @@ extern crate kiss3d;
 extern crate nalgebra;
 
 use nalgebra::na;
-use nalgebra::na::{Vec3, Rotation};
+use nalgebra::na::{Vec3, Translation};
 use kiss3d::window::Window;
 use kiss3d::resource::Mesh;
 use kiss3d::procedural;
@@ -16,17 +16,20 @@ fn start(argc: int, argv: **u8) -> int {
 
 fn main() {
     Window::spawn("Kiss3d: procedural", proc(window) {
-        let cube = procedural::cube(&na::zero(), &Vec3::new(0.7f32, 0.2, 0.4));
-        let mesh = Mesh::from_mesh_desc(cube, false);
-
+        let cube  = procedural::cube(&na::zero(), &Vec3::new(0.7f32, 0.2, 0.4));
+        let mesh  = Mesh::from_mesh_desc(cube, false);
         let mut c = window.add_mesh(mesh, 1.0);
+        c.append_translation(&Vec3::new(1.0, 0.0, 0.0));
+        c.set_texture(&Path::new("media/kitten.png"), "kitten");
 
-        c.set_color(1.0, 0.0, 0.0);
+        let sphere = procedural::sphere(&na::zero(), &0.4f32, 20, 20);
+        let mesh   = Mesh::from_mesh_desc(sphere, false);
+        let mut s  = window.add_mesh(mesh, 1.0);
+        s.set_texture_with_name("kitten");
 
         window.set_light(light::StickToCamera);
 
         window.render_loop(|_| {
-            c.prepend_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
         })
     })
 }
