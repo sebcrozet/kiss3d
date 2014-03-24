@@ -6,14 +6,12 @@ use procedural::{MeshDescr, SplitIndexBuffer};
  * Generates a cube geometry with a split index buffer.
  *
  * # Arguments:
- * * `center`       - the center of the cube.
- * * `half_extents` - the half extents of the cube.
+ * * `extents` - the extents of the cube.
  */
-pub fn cube<N: Num + Clone + Cast<f64>>(center: &Vec3<N>, extents: &Vec3<N>) -> MeshDescr<N> {
+pub fn cube<N: Num + Clone + Cast<f64>>(extents: &Vec3<N>) -> MeshDescr<N> {
     let mut cube = unit_cube();
 
     cube.scale_by(extents);
-    cube.translate_by(center);
 
     cube
 }

@@ -27,6 +27,7 @@ use loader::obj;
 use loader::mtl::MtlMaterial;
 use light::{Light, Absolute, StickToCamera};
 use text::{TextRenderer, Font};
+use procedural;
 
 mod error;
 
@@ -357,9 +358,11 @@ impl<'a> Window<'a> {
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
             let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
-            let geom = self.geometries.find(&~"capsule").unwrap();
+            // FIXME: cache the generated capsule
+            let geom = procedural::capsule(&h, &r, 20, 20);
+            let geom = Rc::new(RefCell::new(Mesh::from_mesh_desc(geom, false)));
             Object::new(
-                geom.clone(),
+                geom,
                 1.0, 1.0, 1.0,
                 tex,
                 r / 0.5, h, r / 0.5,

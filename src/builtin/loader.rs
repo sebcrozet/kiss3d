@@ -8,7 +8,6 @@ use builtin::cube_obj;
 use builtin::sphere_obj;
 use builtin::cone_obj;
 use builtin::cylinder_obj;
-use builtin::capsule_obj;
 use resource::Mesh;
 
 #[path = "../error.rs"]
@@ -23,7 +22,6 @@ pub fn load() -> HashMap<~str, Rc<RefCell<Mesh>>> {
     let m_sphere   = obj::parse(sphere_obj::SPHERE_OBJ, &emptypath, "sphere").move_iter().next().unwrap().val1();
     let m_cone     = obj::parse(cone_obj::CONE_OBJ, &emptypath, "cone").move_iter().next().unwrap().val1();
     let m_cylinder = obj::parse(cylinder_obj::CYLINDER_OBJ, &emptypath, "cylinder").move_iter().next().unwrap().val1();
-    let m_capsule  = obj::parse(capsule_obj::CAPSULE_OBJ, &emptypath, "capsule").move_iter().next().unwrap().val1();
 
     // register draw informations
     let mut hmap = HashMap::new();
@@ -32,7 +30,6 @@ pub fn load() -> HashMap<~str, Rc<RefCell<Mesh>>> {
     hmap.insert(~"sphere", Rc::new(RefCell::new(m_sphere)));
     hmap.insert(~"cone", Rc::new(RefCell::new(m_cone)));
     hmap.insert(~"cylinder", Rc::new(RefCell::new(m_cylinder)));
-    hmap.insert(~"capsule", Rc::new(RefCell::new(m_capsule)));
 
     hmap
 }
