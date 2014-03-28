@@ -83,7 +83,8 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
 }
 
 fn parse_name<'a>(_: uint, mut ws: Words<'a>) -> ~str {
-    ws.to_owned_vec().connect(" ")
+    let res: Vec<&'a str> = ws.collect();
+    res.connect(" ")
 }
 
 fn parse_color<'a>(l: uint, mut ws: Words<'a>) -> Vec3<f32> {

@@ -2,7 +2,7 @@ use std::cast;
 use std::mem;
 use std::ptr;
 use std::str;
-use std::kinds::marker::NoPod;
+use std::kinds::marker::NoCopy;
 use std::io::fs::File;
 use std::io::Reader;
 use gl;
@@ -18,7 +18,7 @@ pub struct Shader {
     priv program: GLuint,
     priv vshader: GLuint,
     priv fshader: GLuint,
-    priv nocpy:   NoPod
+    priv nocpy:   NoCopy
 }
 
 impl Shader {
@@ -54,7 +54,7 @@ impl Shader {
             program: program,
             vshader: vshader,
             fshader: fshader,
-            nocpy:   NoPod
+            nocpy:   NoCopy
         }
     }
 

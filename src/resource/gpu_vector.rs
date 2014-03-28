@@ -4,7 +4,7 @@ use std::cast;
 use std::mem;
 use gl;
 use gl::types::*;
-use std::kinds::marker::NoPod;
+use std::kinds::marker::NoCopy;
 use resource::gl_primitive::GLPrimitive;
 
 #[path = "../error.rs"]
@@ -12,14 +12,14 @@ mod error;
 
 struct GLHandle {
     handle: GLuint,
-    nocpy:  NoPod
+    nocpy:  NoCopy
 }
 
 impl GLHandle {
     pub fn new(handle: GLuint) -> GLHandle {
         GLHandle {
             handle: handle,
-            nocpy:  NoPod
+            nocpy:  NoCopy
         }
     }
 

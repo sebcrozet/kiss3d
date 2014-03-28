@@ -9,7 +9,7 @@ use nalgebra::na::{Vec2, Vec3, Mat2, Mat3, Mat4, Rot2, Rot3};
 mod error;
 
 /// Trait implemented by structures that can be uploaded to a uniform or contained by a gpu array.
-pub trait GLPrimitive: Pod {
+pub trait GLPrimitive: Copy {
     /// The opengl primitive type of this structure content.
     fn gl_type(_type: Option<Self>) -> GLuint;
     /// The number of elements of type `self.gl_type()` this structure stores.

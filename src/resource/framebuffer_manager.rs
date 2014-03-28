@@ -1,7 +1,7 @@
 //! Resource manager to allocate and switch between framebuffers.
 
 use std::ptr;
-use std::kinds::marker::NoPod;
+use std::kinds::marker::NoCopy;
 use gl;
 use gl::types::*;
 
@@ -19,7 +19,7 @@ pub enum RenderTarget {
 struct OffscreenBuffers {
     texture: GLuint,
     depth:   GLuint,
-    ncpy:    NoPod
+    ncpy:    NoCopy
 }
 
 impl RenderTarget {
@@ -127,7 +127,7 @@ impl FramebufferManager {
         }
         verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
-        Offscreen(OffscreenBuffers { texture: fbo_texture, depth: fbo_depth, ncpy: NoPod })
+        Offscreen(OffscreenBuffers { texture: fbo_texture, depth: fbo_depth, ncpy: NoCopy })
     }
 
     /// Returns the render target associated with the screen.

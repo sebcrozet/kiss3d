@@ -10,7 +10,7 @@ use std::num::Zero;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::io::Reader;
-use sync::RWArc;
+use sync::{Arc, RWLock};
 use gl::types::{GLint, GLuint, GLfloat};
 use nalgebra::na::{Vec2, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
 use nalgebra::na;
@@ -33,7 +33,7 @@ fn main() {
         let fov          = 45.0f32.to_radians();
         let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
         let font         = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
-        let context      = RWArc::new(Context::new(1000.0, na::zero(), eye));
+        let context      = Arc::new(RWLock::new(Context::new(1000.0, na::zero(), eye)));
         let material     = Rc::new(RefCell::new(~RelativisticMaterial::new(context.clone()) as ~Material));
 
         window.set_camera(&mut observer as &mut Camera);
@@ -67,33 +67,33 @@ fn main() {
          * Render
          */
         window.render_loop(|w| {
-            context.write(|c| {
-                w.poll_events(|_, event| {
-                    match *event {
-                        glfw::KeyEvent(code, _, glfw::Release, _) => {
-                            if code == glfw::Key1 {
-                                c.speed_of_light = c.speed_of_light + 100.0;
-                            }
-                            else if code == glfw::Key2 {
-                                c.speed_of_light = (c.speed_of_light - 100.0).max(0.1);
-                            }
-                        },
-                        _ => { }
-                    }
+            let mut c = context.write();
 
-                    true
-                });
+            w.poll_events(|_, event| {
+                match *event {
+                    glfw::KeyEvent(code, _, glfw::Release, _) => {
+                        if code == glfw::Key1 {
+                            c.speed_of_light = c.speed_of_light + 100.0;
+                        }
+                        else if code == glfw::Key2 {
+                            c.speed_of_light = (c.speed_of_light - 100.0).max(0.1);
+                        }
+                    },
+                    _ => { }
+                }
 
-                let obs_vel = observer.velocity;
-                let sop = na::norm(&obs_vel);
+                true
+            });
 
-                w.draw_text(format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop),
-                            &na::zero(), &font, &Vec3::new(1.0, 1.0, 1.0));
+            let obs_vel = observer.velocity;
+            let sop = na::norm(&obs_vel);
 
-                observer.max_vel  = c.speed_of_light * 0.85;
-                c.speed_of_player = obs_vel;
-                c.position        = observer.eye();
-            })
+            w.draw_text(format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop),
+            &na::zero(), &font, &Vec3::new(1.0, 1.0, 1.0));
+
+            observer.max_vel  = c.speed_of_light * 0.85;
+            c.speed_of_player = obs_vel;
+            c.position        = observer.eye();
         })
     })
 }
@@ -195,7 +195,7 @@ impl Context {
 
 /// The default material used to draw objects.
 struct RelativisticMaterial {
-    context:         RWArc<Context>,
+    context:         Arc<RWLock<Context>>,
     shader:          Shader,
     pos:             ShaderAttribute<Vec3<f32>>,
     normal:          ShaderAttribute<Vec3<f32>>,
@@ -215,7 +215,7 @@ struct RelativisticMaterial {
 
 impl RelativisticMaterial {
     /// Creates a new `RelativisticMaterial`.
-    fn new(context: RWArc<Context>) -> RelativisticMaterial {
+    fn new(context: Arc<RWLock<Context>>) -> RelativisticMaterial {
         // load the shader
         let mut shader = Shader::new_from_str(RELATIVISTIC_VERTEX_SRC, RELATIVISTIC_FRAGMENT_SRC);
 
@@ -280,7 +280,9 @@ impl Material for RelativisticMaterial {
         self.light.upload(&pos);
 
         let ctxt = self.context.clone();
-        ctxt.read(|c| {
+
+        {
+            let c = ctxt.read();
             // XXX: this relative velocity est very wrong!
             self.rel_vel.upload(&c.speed_of_player);
             self.light_vel.upload(&c.speed_of_light);
@@ -293,7 +295,7 @@ impl Material for RelativisticMaterial {
             }
 
             self.rot.upload(&rot);
-        });
+        }
 
         /*
          *

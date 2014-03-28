@@ -7,7 +7,7 @@ use std::str::Words;
 use std::from_str::FromStr;
 use std::io::IoResult;
 use collections::HashMap;
-use sync::RWArc;
+use sync::{Arc, RWLock};
 use gl::types::GLfloat;
 use nalgebra::na::{Vec3, Vec2, Indexable};
 use nalgebra::na;
@@ -106,7 +106,8 @@ fn parse_usemtl<'a>(l:          uint,
                     groups_ids: &mut Vec<Vec<Vec3<u32>>>,
                     curr_mtl:   &mut Option<MtlMaterial>)
                     -> uint {
-    let mname = ws.to_owned_vec().connect(" ");
+    let mname: Vec<&'a str> = ws.collect();
+    let mname = mname.connect(" ");
     let none  = "None";
     if mname.as_slice() != none.as_slice() {
         match mtllib.find(&mname) {
@@ -146,7 +147,8 @@ fn parse_mtllib<'a>(l:            uint,
                     mut ws:       Words<'a>,
                     mtl_base_dir: &Path,
                     mtllib:       &mut HashMap<~str, MtlMaterial>) {
-    let filename = ws.to_owned_vec().connect(" ");
+    let filename: Vec<&'a str> = ws.collect();
+    let filename = filename.connect(" ");
 
     let mut path = mtl_base_dir.clone();
 
@@ -283,7 +285,8 @@ fn parse_g<'a>(_:          uint,
                groups:     &mut HashMap<~str, uint>,
                groups_ids: &mut Vec<Vec<Vec3<u32>>>)
                -> uint {
-    let suffix = ws.to_owned_vec().connect(" ");
+    let suffix: Vec<&'a str> = ws.collect();
+    let suffix = suffix.connect(" ");
     let name   = if suffix.len() == 0 { prefix.to_owned() } else { prefix + "/" + suffix };
 
     *groups.find_or_insert_with(name, |_| { groups_ids.push(Vec::new()); groups_ids.len() - 1 })
@@ -344,15 +347,15 @@ fn reformat(coords:     Vec<Coord>,
     }
 
     let resn = resn.unwrap_or_else(|| Mesh::compute_normals_array(resc.as_slice(), allfs.as_slice()));
-    let resn = RWArc::new(GPUVector::new(resn, ArrayBuffer, StaticDraw));
+    let resn = Arc::new(RWLock::new(GPUVector::new(resn, ArrayBuffer, StaticDraw)));
     let resu = resu.unwrap_or_else(|| Vec::from_elem(resc.len(), na::zero()));
-    let resu = RWArc::new(GPUVector::new(resu, ArrayBuffer, StaticDraw));
-    let resc = RWArc::new(GPUVector::new(resc, ArrayBuffer, StaticDraw));
+    let resu = Arc::new(RWLock::new(GPUVector::new(resu, ArrayBuffer, StaticDraw)));
+    let resc = Arc::new(RWLock::new(GPUVector::new(resc, ArrayBuffer, StaticDraw)));
 
     let mut meshes = Vec::new();
     for ((fs, name), mtl) in resfs.move_iter().zip(names.move_iter()).zip(mtls.move_iter()) {
         if fs.len() != 0 {
-            let fs   = RWArc::new(GPUVector::new(fs, ElementArrayBuffer, StaticDraw));
+            let fs   = Arc::new(RWLock::new(GPUVector::new(fs, ElementArrayBuffer, StaticDraw)));
             let mesh = Mesh::new_with_gpu_vectors(resc.clone(), fs, resn.clone(), resu.clone());
             meshes.push((name, mesh, mtl))
         }

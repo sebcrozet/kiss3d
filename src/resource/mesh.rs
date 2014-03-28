@@ -1,7 +1,7 @@
 //! Data structure of a scene node geometry.
 
 use std::num::Zero;
-use sync::RWArc;
+use sync::{Arc, RWLock};
 use gl::types::*;
 use nalgebra::na::{Vec2, Vec3};
 use nalgebra::na;
@@ -16,10 +16,10 @@ mod error;
 ///
 /// It also contains the GPU location of those buffers.
 pub struct Mesh {
-    priv coords:  RWArc<GPUVector<Vec3<GLfloat>>>,
-    priv faces:   RWArc<GPUVector<Vec3<GLuint>>>,
-    priv normals: RWArc<GPUVector<Vec3<GLfloat>>>,
-    priv uvs:     RWArc<GPUVector<Vec2<GLfloat>>>
+    priv coords:  Arc<RWLock<GPUVector<Vec3<GLfloat>>>>,
+    priv faces:   Arc<RWLock<GPUVector<Vec3<GLuint>>>>,
+    priv normals: Arc<RWLock<GPUVector<Vec3<GLfloat>>>>,
+    priv uvs:     Arc<RWLock<GPUVector<Vec2<GLfloat>>>>
 }
 
 impl Mesh {
@@ -43,10 +43,10 @@ impl Mesh {
         };
 
         let location = if dynamic_draw { DynamicDraw } else { StaticDraw };
-        let cs = RWArc::new(GPUVector::new(coords, ArrayBuffer, location));
-        let fs = RWArc::new(GPUVector::new(faces, ElementArrayBuffer, location));
-        let ns = RWArc::new(GPUVector::new(normals, ArrayBuffer, location));
-        let us = RWArc::new(GPUVector::new(uvs, ArrayBuffer, location));
+        let cs = Arc::new(RWLock::new(GPUVector::new(coords, ArrayBuffer, location)));
+        let fs = Arc::new(RWLock::new(GPUVector::new(faces, ElementArrayBuffer, location)));
+        let ns = Arc::new(RWLock::new(GPUVector::new(normals, ArrayBuffer, location)));
+        let us = Arc::new(RWLock::new(GPUVector::new(uvs, ArrayBuffer, location)));
 
         Mesh::new_with_gpu_vectors(cs, fs, ns, us)
     }
@@ -65,10 +65,10 @@ impl Mesh {
     }
 
     /// Creates a new mesh. Arguments set to `None` are automatically computed.
-    pub fn new_with_gpu_vectors(coords:  RWArc<GPUVector<Vec3<GLfloat>>>,
-                                faces:   RWArc<GPUVector<Vec3<GLuint>>>,
-                                normals: RWArc<GPUVector<Vec3<GLfloat>>>,
-                                uvs:     RWArc<GPUVector<Vec2<GLfloat>>>)
+    pub fn new_with_gpu_vectors(coords:  Arc<RWLock<GPUVector<Vec3<GLfloat>>>>,
+                                faces:   Arc<RWLock<GPUVector<Vec3<GLuint>>>>,
+                                normals: Arc<RWLock<GPUVector<Vec3<GLfloat>>>>,
+                                uvs:     Arc<RWLock<GPUVector<Vec2<GLfloat>>>>)
                                 -> Mesh {
         Mesh {
             coords:  coords,
@@ -80,22 +80,22 @@ impl Mesh {
 
     /// Binds this mesh vertex coordinates buffer to a vertex attribute.
     pub fn bind_coords(&mut self, coords: &mut ShaderAttribute<Vec3<GLfloat>>) {
-        self.coords.write(|c| coords.bind(c));
+        coords.bind(self.coords.write().deref_mut());
     }
 
     /// Binds this mesh vertex normals buffer to a vertex attribute.
     pub fn bind_normals(&mut self, normals: &mut ShaderAttribute<Vec3<GLfloat>>) {
-        self.normals.write(|n| normals.bind(n));
+        normals.bind(self.normals.write().deref_mut());
     }
 
     /// Binds this mesh vertex uvs buffer to a vertex attribute.
     pub fn bind_uvs(&mut self, uvs: &mut ShaderAttribute<Vec2<GLfloat>>) {
-        self.uvs.write(|u| uvs.bind(u));
+        uvs.bind(self.uvs.write().deref_mut());
     }
 
     /// Binds this mesh vertex uvs buffer to a vertex attribute.
     pub fn bind_faces(&mut self) {
-        self.faces.write(|c| c.bind());
+        self.faces.write().bind();
     }
 
     /// Binds this mesh buffers to vertex attributes.
@@ -111,48 +111,41 @@ impl Mesh {
 
     /// Unbind this mesh buffers to vertex attributes.
     pub fn unbind(&self) {
-        self.coords.write(|c| c.unbind());
-        self.normals.write(|c| c.unbind());
-        self.uvs.write(|c| c.unbind());
-        self.faces.write(|c| c.unbind());
+        self.coords.write().unbind();
+        self.normals.write().unbind();
+        self.uvs.write().unbind();
+        self.faces.write().unbind();
     }
 
     /// Number of points needed to draw this mesh.
     pub fn num_pts(&self) -> uint {
-        self.faces.read(|f| f.len() * 3)
+        self.faces.read().len() * 3
     }
 
     /// Recompute this mesh normals.
     pub fn recompute_normals(&mut self) {
-        let _ =
-            self.normals.write(|ns|
-                self.coords.read(|cs|
-                   self.faces.read(|fs|
-                       Mesh::compute_normals(cs.data().get_ref().as_slice(),
-                                             fs.data().get_ref().as_slice(),
-                                             ns.data_mut().get_mut_ref())
-                   )
-                )
-            );
+        Mesh::compute_normals(self.coords.read().data().get_ref().as_slice(),
+                              self.faces.read().data().get_ref().as_slice(),
+                              self.normals.write().data_mut().get_mut_ref());
     }
 
     /// This mesh faces.
-    pub fn faces<'a>(&'a self) -> &'a RWArc<GPUVector<Vec3<GLuint>>> {
+    pub fn faces<'a>(&'a self) -> &'a Arc<RWLock<GPUVector<Vec3<GLuint>>>> {
         &'a self.faces
     }
 
     /// This mesh normals.
-    pub fn normals<'a>(&'a self) -> &'a RWArc<GPUVector<Vec3<GLfloat>>> {
+    pub fn normals<'a>(&'a self) -> &'a Arc<RWLock<GPUVector<Vec3<GLfloat>>>> {
         &'a self.normals
     }
 
     /// This mesh vertex coordinates.
-    pub fn coords<'a>(&'a self) -> &'a RWArc<GPUVector<Vec3<GLfloat>>> {
+    pub fn coords<'a>(&'a self) -> &'a Arc<RWLock<GPUVector<Vec3<GLfloat>>>> {
         &'a self.coords
     }
 
     /// This mesh texture coordinates.
-    pub fn uvs<'a>(&'a self) -> &'a RWArc<GPUVector<Vec2<GLfloat>>> {
+    pub fn uvs<'a>(&'a self) -> &'a Arc<RWLock<GPUVector<Vec2<GLfloat>>>> {
         &'a self.uvs
     }
 

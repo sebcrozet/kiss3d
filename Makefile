@@ -20,6 +20,7 @@ test: examples
 
 examples:
 	mkdir -p $(kiss3d_bin_path)
+	$(build_cmd) ./examples/relativity.rs 
 	$(build_cmd) ./examples/procedural.rs 
 	$(build_cmd) ./examples/cube.rs 
 	$(build_cmd) ./examples/camera.rs 
@@ -29,7 +30,6 @@ examples:
 	$(build_cmd) ./examples/texturing.rs 
 	$(build_cmd) ./examples/post_processing.rs 
 	$(build_cmd) ./examples/stereo.rs 
-	$(build_cmd) ./examples/relativity.rs 
 	$(build_cmd) ./examples/quad.rs 
 	$(build_cmd) ./examples/custom_material.rs 
 	$(build_cmd) ./examples/custom_mesh.rs 
