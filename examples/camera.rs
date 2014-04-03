@@ -17,7 +17,7 @@ fn start(argc: int, argv: **u8) -> int {
 
 fn main()
 {
-    Window::spawn("Kiss3d: camera", proc(window) {
+    Window::spawn("Kiss3d: camera", |window| {
         window.set_light(light::StickToCamera);
 
         // Replace the default arc-ball camera so that we can control it

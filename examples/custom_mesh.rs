@@ -13,7 +13,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: custom_mesh", proc(window) {
+    Window::spawn("Kiss3d: custom_mesh", |window| {
         let a = Vec3::new(-1.0, -1.0, 0.0);
         let b = Vec3::new(1.0, -1.0, 0.0);
         let c = Vec3::new(0.0, 1.0, 0.0);

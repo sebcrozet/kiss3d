@@ -27,7 +27,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: relativity", proc(window) {
+    Window::spawn("Kiss3d: relativity", |window| {
         let eye          = Vec3::new(0.0f32, -399.0, 400.0);
         let at           = Vec3::new(0.0f32, -399.0, 0.0);
         let fov          = 45.0f32.to_radians();

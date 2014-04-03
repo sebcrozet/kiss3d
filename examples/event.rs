@@ -11,7 +11,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: events", proc(window) {
+    Window::spawn("Kiss3d: events", |window| {
         window.render_loop(|w| {
             w.poll_events(event_handler);
         })

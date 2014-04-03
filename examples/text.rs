@@ -13,7 +13,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: text", proc(window) {
+    Window::spawn("Kiss3d: text", |window| {
         let bigfont   = Font::new(&Path::new("media/font/Inconsolata.otf"), 120);
         let smallfont = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
 

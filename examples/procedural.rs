@@ -14,7 +14,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: procedural", proc(window) {
+    Window::spawn("Kiss3d: procedural", |window| {
         let cube  = procedural::cube(&Vec3::new(0.7f32, 0.2, 0.4));
         let mesh  = Mesh::from_mesh_desc(cube, false);
         let mut c = window.add_mesh(mesh, 1.0);

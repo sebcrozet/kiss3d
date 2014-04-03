@@ -12,7 +12,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: wireframe", proc(window) {
+    Window::spawn("Kiss3d: wireframe", |window| {
         let mut c = window.add_cube(1.0, 1.0, 1.0);
 
         c.set_color(1.0, 0.0, 0.0);

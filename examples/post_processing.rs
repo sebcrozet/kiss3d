@@ -15,7 +15,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: post_processing", proc(window) {
+    Window::spawn("Kiss3d: post_processing", |window| {
         let mut c = window.add_cube(1.0, 1.0, 1.0);
         let mut b = window.add_sphere(0.5);
         let mut p = window.add_cone(1.0, 0.5);

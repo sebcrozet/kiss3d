@@ -9,7 +9,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: window", proc(window) {
+    Window::spawn("Kiss3d: window", |window| {
         window.set_background_color(0.0, 0.0, 0.3);
 
         window.render_loop(|_| {})

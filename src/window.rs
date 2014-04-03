@@ -587,7 +587,7 @@ impl<'a> Window<'a> {
     /// # Arguments
     /// * `title` - the window title
     /// * `callback` - a callback called once the window has been created
-    pub fn spawn_hidden(title: &str, callback: proc(&mut Window)) {
+    pub fn spawn_hidden(title: &str, callback: |&mut Window| -> ()) {
         Window::do_spawn(title.to_owned(), true, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
     }
 
@@ -596,7 +596,7 @@ impl<'a> Window<'a> {
     /// # Arguments
     /// * `title` - the window title
     /// * `callback` - a callback called once the window has been created
-    pub fn spawn(title: &str, callback: proc(&mut Window)) {
+    pub fn spawn(title: &str, callback: |&mut Window| -> ()) {
         Window::do_spawn(title.to_owned(), false, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
     }
 
@@ -605,11 +605,11 @@ impl<'a> Window<'a> {
     /// # Arguments
     /// * `title` - the window title
     /// * `callback` - a callback called once the window has been created
-    pub fn spawn_size(title: &str, width: u32, height: u32, callback: proc(&mut Window)) {
+    pub fn spawn_size(title: &str, width: u32, height: u32, callback: |&mut Window| -> ()) {
         Window::do_spawn(title.to_owned(), false, width, height, callback)
     }
 
-    fn do_spawn(title: ~str, hide: bool, width: u32, height: u32, callback: proc(&mut Window)) {
+    fn do_spawn(title: ~str, hide: bool, width: u32, height: u32, callback: |&mut Window| -> ()) {
         // FIXME: glfw::set_error_callback(~ErrorCallback);
 
         let (glfw, errors) = glfw::init().unwrap();

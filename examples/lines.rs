@@ -12,7 +12,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: lines", proc(window) {
+    Window::spawn("Kiss3d: lines", |window| {
 
         window.set_light(light::StickToCamera);
 
