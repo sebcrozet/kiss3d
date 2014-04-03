@@ -1,4 +1,4 @@
-use std::num::{Zero, atan2};
+use std::num::Zero;
 use glfw;
 use nalgebra::na::{Translation, Vec2, Vec3, Mat4, Iso3};
 use nalgebra::na;
@@ -12,21 +12,21 @@ use camera::Camera;
 ///   * Scroll in/out - zoom in/out
 #[deriving(Show, Clone)]
 pub struct FirstPerson {
-    priv eye:             Vec3<f32>,
-    priv yaw:             f32,
-    priv pitch:           f32,
+    eye:             Vec3<f32>,
+    yaw:             f32,
+    pitch:           f32,
 
-    priv yaw_step:        f32,
-    priv pitch_step:      f32,
-    priv move_step:       f32,
+    yaw_step:        f32,
+    pitch_step:      f32,
+    move_step:       f32,
 
-    priv fov:             f32,
-    priv znear:           f32,
-    priv zfar:            f32,
-    priv projection:      Mat4<f32>,
-    priv proj_view:       Mat4<f32>,
-    priv inv_proj_view:   Mat4<f32>,
-    priv last_cursor_pos: Vec2<f32>
+    fov:             f32,
+    znear:           f32,
+    zfar:            f32,
+    projection:      Mat4<f32>,
+    proj_view:       Mat4<f32>,
+    inv_proj_view:   Mat4<f32>,
+    last_cursor_pos: Vec2<f32>
 }
 
 impl FirstPerson {
@@ -110,7 +110,7 @@ impl FirstPerson {
         let dist  = na::norm(&(eye - at));
 
         let pitch = ((at.y - eye.y) / dist).acos();
-        let yaw   = atan2(at.z - eye.z, at.x - eye.x);
+        let yaw   = (at.z - eye.z).atan2(&(at.x - eye.x));
 
         self.eye   = eye;
         self.yaw   = yaw;

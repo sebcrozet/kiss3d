@@ -11,12 +11,12 @@ mod error;
 
 /// Structure which manages the display of short-living lines.
 pub struct LineRenderer {
-    priv shader:    Shader,
-    priv pos:       ShaderAttribute<Vec3<f32>>,
-    priv color:     ShaderAttribute<Vec3<f32>>,
-    priv view:      ShaderUniform<Mat4<f32>>,
-    priv lines:     GPUVector<Vec3<GLfloat>>,
-    priv max_lines: uint
+    shader:    Shader,
+    pos:       ShaderAttribute<Vec3<f32>>,
+    color:     ShaderAttribute<Vec3<f32>>,
+    view:      ShaderUniform<Mat4<f32>>,
+    lines:     GPUVector<Vec3<GLfloat>>,
+    max_lines: uint
 }
 
 impl LineRenderer {

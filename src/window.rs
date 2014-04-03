@@ -40,34 +40,45 @@ static DEFAULT_HEIGHT: u32 = 600u32;
 pub struct Window<'a> {
     // XXX: this is not on a RefCell since mutability is _not_ needed for the glfw window.
     // glfw-rs is doing something very wrong here.
-    priv window:                     Rc<glfw::Window>,
-    priv max_ms_per_frame:           Option<u64>,
-    priv objects:                    Vec<Object>,
-    priv camera:                     &'a mut Camera,
-    priv light_mode:                 Light,
-    priv wireframe_mode:             bool,
-    priv geometries:                 HashMap<~str, Rc<RefCell<Mesh>>>,
-    priv background:                 Vec3<GLfloat>,
-    priv line_renderer:              LineRenderer,
-    priv text_renderer:              TextRenderer,
-    priv framebuffer_manager:        FramebufferManager,
-    priv post_processing:            Option<&'a mut PostProcessingEffect>,
-    priv post_process_render_target: RenderTarget,
-    priv object_material:            Rc<RefCell<~Material>>
+    events:                     Rc<Receiver<(f64, glfw::WindowEvent)>>,
+    glfw:                       glfw::Glfw,
+    window:                     glfw::Window,
+    max_ms_per_frame:           Option<u64>,
+    objects:                    Vec<Object>,
+    camera:                     &'a mut Camera,
+    light_mode:                 Light,
+    wireframe_mode:             bool,
+    geometries:                 HashMap<~str, Rc<RefCell<Mesh>>>,
+    background:                 Vec3<GLfloat>,
+    line_renderer:              LineRenderer,
+    text_renderer:              TextRenderer,
+    framebuffer_manager:        FramebufferManager,
+    post_processing:            Option<&'a mut PostProcessingEffect>,
+    post_process_render_target: RenderTarget,
+    object_material:            Rc<RefCell<~Material>>
 }
 
 impl<'a> Window<'a> {
+    /// Access the glfw context.
+    #[inline]
+    pub fn context<'r>(&'r self) -> &'r glfw::Glfw {
+        &'r self.glfw
+    }
+
     /// Access the glfw window.
+    #[inline]
     pub fn glfw_window<'r>(&'r self) -> &'r glfw::Window {
-        self.window.deref()
+        &'r self.window
     }
 
     /// Sets the current processing effect.
+    #[inline]
     pub fn set_post_processing_effect(&mut self, effect: Option<&'a mut PostProcessingEffect>) {
         self.post_processing = effect;
     }
 
     /// The window width.
+    #[inline]
     pub fn width(&self) -> f32 {
         let (w, _) = self.window.get_size();
 
@@ -75,6 +86,7 @@ impl<'a> Window<'a> {
     }
 
     /// The window height.
+    #[inline]
     pub fn height(&self) -> f32 {
         let (_, h) = self.window.get_size();
 
@@ -82,45 +94,53 @@ impl<'a> Window<'a> {
     }
 
     /// The current camera.
+    #[inline]
     pub fn camera<'b>(&'b self) -> &'b &'a mut Camera {
         &'b self.camera
     }
 
     /// The current camera.
+    #[inline]
     pub fn set_camera(&mut self, camera: &'a mut Camera) {
         let (w, h) = self.window.get_size();
 
         self.camera = camera;
-        self.camera.handle_event(self.window.deref(), &glfw::FramebufferSizeEvent(w, h));
+        self.camera.handle_event(&self.window, &glfw::FramebufferSizeEvent(w, h));
     }
 
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
+    #[inline]
     pub fn set_framerate_limit(&mut self, fps: Option<u64>) {
         self.max_ms_per_frame = fps.map(|f| { assert!(f != 0); 1000 / f })
     }
 
     /// Closes the window.
+    #[inline]
     pub fn close(&mut self) {
         self.window.set_should_close(true)
     }
 
     /// Hides the window, without closing it. Use `show` to make it visible again.
+    #[inline]
     pub fn hide(&mut self) {
         self.window.hide()
     }
 
     /// Makes the window visible. Use `hide` to hide it.
+    #[inline]
     pub fn show(&mut self) {
         self.window.show()
     }
 
     /// Switch on or off wireframe rendering mode. When set to `true`, everything in the scene will
     /// be drawn using wireframes. Wireframe rendering mode cannot be enabled on a per-object basis.
+    #[inline]
     pub fn set_wireframe_mode(&mut self, mode: bool) {
         self.wireframe_mode = mode;
     }
 
     /// Sets the background color.
+    #[inline]
     pub fn set_background_color(&mut self, r: f32, g: GLfloat, b: f32) {
         self.background.x = r;
         self.background.y = g;
@@ -128,11 +148,13 @@ impl<'a> Window<'a> {
     }
 
     /// Adds a line to be drawn during the next frame.
+    #[inline]
     pub fn draw_line(&mut self, a: &Vec3<f32>, b: &Vec3<f32>, color: &Vec3<f32>) {
         self.line_renderer.draw_line(a.clone(), b.clone(), color.clone());
     }
 
     /// Adds a string to be drawn during the next frame.
+    #[inline]
     pub fn draw_text(&mut self, text: &str, pos: &Vec2<f32>, font: &Rc<Font>, color: &Vec3<f32>) {
         self.text_renderer.draw_text(text, pos, font, color);
     }
@@ -149,7 +171,11 @@ impl<'a> Window<'a> {
 
     /// Loads a mesh from an obj file located at `path` and registers its geometry as
     /// `geometry_name`.
-    pub fn load_obj(&mut self, path: &Path, mtl_dir: &Path, geometry_name: &str) -> IoResult<Vec<(~str, Rc<RefCell<Mesh>>, Option<MtlMaterial>)>> {
+    pub fn load_obj(&mut self,
+                    path:          &Path,
+                    mtl_dir:       &Path,
+                    geometry_name: &str)
+                    -> IoResult<Vec<(~str, Rc<RefCell<Mesh>>, Option<MtlMaterial>)>> {
         obj::parse_file(path, mtl_dir, geometry_name).map(|ms| {
             let mut res = Vec::new();
 
@@ -165,11 +191,13 @@ impl<'a> Window<'a> {
     }
 
     /// Gets the geometry named `geometry_name` if it has been already registered.
+    #[inline]
     pub fn get_mesh(&mut self, geometry_name: &str) -> Option<Rc<RefCell<Mesh>>> {
         self.geometries.find(&geometry_name.to_owned()).map(|m| m.clone())
     }
 
     /// Registers the geometry `mesh` with the name `geometry_name`.
+    #[inline]
     pub fn register_mesh(&mut self, geometry_name: &str, mesh: Mesh) {
         self.geometries.insert(geometry_name.to_owned(), Rc::new(RefCell::new(mesh)));
     }
@@ -507,8 +535,8 @@ impl<'a> Window<'a> {
     #[inline]
     pub fn poll_events(&mut self, event_handler: |&mut Window, &glfw::WindowEvent| -> bool) {
         // redispatch them
-        let win = self.window.clone(); // FIXME: this is very ugly
-        for event in win.flush_events() {
+        let events = self.events.clone(); // FIXME: this is very ugly
+        for event in glfw::flush_messages(events.deref()) {
             if event_handler(self, event.ref1()) {
                 match *event.ref1() {
                     glfw::KeyEvent(glfw::KeyEscape, _, glfw::Release, _) => {
@@ -521,7 +549,7 @@ impl<'a> Window<'a> {
                     _ => { }
                 }
 
-                self.camera.handle_event(&*self.window, event.ref1())
+                self.camera.handle_event(&self.window, event.ref1())
             }
         }
     }
@@ -534,7 +562,7 @@ impl<'a> Window<'a> {
 
         while !self.window.should_close() {
             // collect events
-            glfw::poll_events();
+            self.glfw.poll_events();
 
             callback(self);
 
@@ -582,61 +610,64 @@ impl<'a> Window<'a> {
     }
 
     fn do_spawn(title: ~str, hide: bool, width: u32, height: u32, callback: proc(&mut Window)) {
-        glfw::set_error_callback(~ErrorCallback);
+        // FIXME: glfw::set_error_callback(~ErrorCallback);
 
-        glfw::start(proc() {
-            let window = glfw::Window::create(width, height, title, glfw::Windowed).expect("Unable to open a glfw window.");
+        let (glfw, errors) = glfw::init().unwrap();
+        glfw::fail_on_error(&errors);
 
-            window.make_context_current();
+        let (window, events) = glfw.create_window(width, height, title, glfw::Windowed).expect("Unable to open a glfw window.");
 
-            verify!(gl::load_with(glfw::get_proc_address));
-            init_gl();
+        window.make_context_current();
 
-            let builtins     = loader::load();
-            let mut camera   = ArcBall::new(-Vec3::z(), Zero::zero());
+        verify!(gl::load_with(|name| glfw.get_proc_address(name)));
+        init_gl();
 
-            let mut usr_window = Window {
-                max_ms_per_frame:      None,
-                window:                Rc::new(window),
-                objects:               Vec::new(),
-                camera:                &mut camera as &mut Camera,
-                light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
-                wireframe_mode:        false,
-                geometries:            builtins,
-                background:            Vec3::new(0.0, 0.0, 0.0),
-                line_renderer:         LineRenderer::new(),
-                text_renderer:         TextRenderer::new(),
-                post_processing:       None,
-                post_process_render_target: FramebufferManager::new_render_target(width as uint, height as uint),
-                framebuffer_manager:   FramebufferManager::new(),
-                object_material:       Rc::new(RefCell::new(~ObjectMaterial::new() as ~Material))
-            };
+        let builtins     = loader::load();
+        let mut camera   = ArcBall::new(-Vec3::z(), Zero::zero());
 
-            // setup callbacks
-            usr_window.window.set_framebuffer_size_polling(true);
-            usr_window.window.set_key_polling(true);
-            usr_window.window.set_mouse_button_polling(true);
-            usr_window.window.set_cursor_pos_polling(true);
-            usr_window.window.set_scroll_polling(true);
+        let mut usr_window = Window {
+            max_ms_per_frame:      None,
+            glfw:                  glfw,
+            window:                window,
+            events:                Rc::new(events),
+            objects:               Vec::new(),
+            camera:                &mut camera as &mut Camera,
+            light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
+            wireframe_mode:        false,
+            geometries:            builtins,
+            background:            Vec3::new(0.0, 0.0, 0.0),
+            line_renderer:         LineRenderer::new(),
+            text_renderer:         TextRenderer::new(),
+            post_processing:       None,
+            post_process_render_target: FramebufferManager::new_render_target(width as uint, height as uint),
+            framebuffer_manager:   FramebufferManager::new(),
+            object_material:       Rc::new(RefCell::new(~ObjectMaterial::new() as ~Material))
+        };
 
-            let (w, h) = usr_window.window.get_size();
-            usr_window.camera.handle_event(
-                usr_window.window.deref(),
-                &glfw::FramebufferSizeEvent(w, h));
+        // setup callbacks
+        usr_window.window.set_framebuffer_size_polling(true);
+        usr_window.window.set_key_polling(true);
+        usr_window.window.set_mouse_button_polling(true);
+        usr_window.window.set_cursor_pos_polling(true);
+        usr_window.window.set_scroll_polling(true);
 
-            if hide {
-                usr_window.window.hide()
-            }
+        let (w, h) = usr_window.window.get_size();
+        usr_window.camera.handle_event(
+            &usr_window.window,
+            &glfw::FramebufferSizeEvent(w, h));
 
-            // usr_window.framebuffer_size_callback(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-            usr_window.set_light(usr_window.light_mode);
+        if hide {
+            usr_window.window.hide()
+        }
 
-            callback(&mut usr_window);
-        })
+        // usr_window.framebuffer_size_callback(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        usr_window.set_light(usr_window.light_mode);
+
+        callback(&mut usr_window);
     }
 
     fn draw(&mut self, curr: &mut u64, timer: &mut Timer) {
-        self.camera.update(self.window.deref());
+        self.camera.update(&self.window);
 
         match self.light_mode {
             StickToCamera => self.set_light(StickToCamera),
@@ -652,10 +683,10 @@ impl<'a> Window<'a> {
         }
 
         for pass in range(0u, self.camera.num_passes()) {
-            self.camera.start_pass(pass, self.window.deref());
+            self.camera.start_pass(pass, &self.window);
             self.render_scene(pass);
         }
-        self.camera.render_complete(self.window.deref());
+        self.camera.render_complete(&self.window);
 
         let w = self.width();
         let h = self.height();
@@ -741,14 +772,4 @@ fn init_gl() {
     verify!(gl::Enable(gl::DEPTH_TEST));
     verify!(gl::Enable(gl::SCISSOR_TEST));
     verify!(gl::DepthFunc(gl::LEQUAL));
-}
-
-//
-// Error callback
-//
-struct ErrorCallback;
-impl glfw::ErrorCallback for ErrorCallback {
-    fn call(&self, _: glfw::Error, description: ~str) {
-        println!("Kiss3d Error: {}", description);
-    }
 }

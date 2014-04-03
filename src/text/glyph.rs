@@ -8,15 +8,15 @@ use nalgebra::na::Vec2;
 /// A ttf glyph.
 pub struct Glyph {
     #[doc(hidden)]
-    tex:        Vec2<f32>,
+    pub tex:        Vec2<f32>,
     #[doc(hidden)]
-    advance:    Vec2<f32>,
+    pub advance:    Vec2<f32>,
     #[doc(hidden)]
-    dimensions: Vec2<f32>,
+    pub dimensions: Vec2<f32>,
     #[doc(hidden)]
-    offset:     Vec2<f32>,
+    pub offset:     Vec2<f32>,
     #[doc(hidden)]
-    buffer:     Vec<u8>
+    pub buffer:     Vec<u8>
 }
 
 impl Glyph {

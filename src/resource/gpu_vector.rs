@@ -39,12 +39,12 @@ impl Drop for GLHandle {
 // FIXME: generalize this for any resource: GPUResource
 /// A vector of elements that can be loaded to the GPU, on the RAM, or both.
 pub struct GPUVector<T> {
-    priv trash:      bool,
-    priv len:        uint,
-    priv buf_type:   BufferType,
-    priv alloc_type: AllocationType,
-    priv handle:     Option<(uint, GLHandle)>,
-    priv data:       Option<Vec<T>>,
+    trash:      bool,
+    len:        uint,
+    buf_type:   BufferType,
+    alloc_type: AllocationType,
+    handle:     Option<(uint, GLHandle)>,
+    data:       Option<Vec<T>>,
 }
 
 // FIXME: implement Clone

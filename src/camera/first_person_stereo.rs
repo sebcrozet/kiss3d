@@ -1,4 +1,4 @@
-use std::num::{Zero, One, atan2};
+use std::num::{Zero, One};
 use glfw;
 use gl;
 use nalgebra::na::{Vec2, Vec3, Mat4, Iso3, Rotate};
@@ -18,35 +18,35 @@ mod error;
 #[deriving(Show)]
 pub struct FirstPersonStereo {
     /// The camera position
-    priv eye:        Vec3<f32>,
-    priv eye_left:   Vec3<f32>,
-    priv eye_right:  Vec3<f32>,
+    eye:        Vec3<f32>,
+    eye_left:   Vec3<f32>,
+    eye_right:  Vec3<f32>,
 
     /// Inter Pupilary Distance
-    priv ipd:        f32,
+    ipd:        f32,
 
     /// Yaw of the camera (rotation along the y axis).
-    priv yaw:        f32,
+    yaw:        f32,
     /// Pitch of the camera (rotation along the x axis).
-    priv pitch:      f32,
+    pitch:      f32,
 
     /// Increment of the yaw per unit mouse movement. The default value is 0.005.
-    priv yaw_step:   f32,
+    yaw_step:   f32,
     /// Increment of the pitch per unit mouse movement. The default value is 0.005.
-    priv pitch_step: f32,
+    pitch_step: f32,
     /// Increment of the translation per arrow press. The default value is 0.1.
-    priv move_step:  f32,
+    move_step:  f32,
 
     /// Low level datas
-    priv fov:        f32,
-    priv znear:      f32,
-    priv zfar:       f32,
-    priv projection:      Mat4<f32>,
-    priv proj_view:       Mat4<f32>,
-    priv proj_view_left:  Mat4<f32>,
-    priv proj_view_right: Mat4<f32>,
-    priv inv_proj_view:   Mat4<f32>,
-    priv last_cursor_pos: Vec2<f32>
+    fov:        f32,
+    znear:      f32,
+    zfar:       f32,
+    projection:      Mat4<f32>,
+    proj_view:       Mat4<f32>,
+    proj_view_left:  Mat4<f32>,
+    proj_view_right: Mat4<f32>,
+    inv_proj_view:   Mat4<f32>,
+    last_cursor_pos: Vec2<f32>
 }
 
 impl FirstPersonStereo {
@@ -95,7 +95,7 @@ impl FirstPersonStereo {
         let dist  = na::norm(&(eye - at));
 
         let pitch = ((at.y - eye.y) / dist).acos();
-        let yaw   = atan2(at.z - eye.z, at.x - eye.x);
+        let yaw   = (at.z - eye.z).atan2(&(at.x - eye.x));
 
         self.eye   = eye;
         self.yaw   = yaw;

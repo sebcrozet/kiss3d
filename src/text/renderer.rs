@@ -33,14 +33,14 @@ impl TextRenderContext {
 
 /// A ttf text renderer.
 pub struct TextRenderer {
-    priv shader:   Shader,
-    priv invsz:    ShaderUniform<Vec2<f32>>,
-    priv tex:      ShaderUniform<GLint>,
-    priv color:    ShaderUniform<Vec3<f32>>,
-    priv pos:      ShaderAttribute<Vec2<f32>>,
-    priv uvs:      ShaderAttribute<Vec2<f32>>,
-    priv contexts: Vec<TextRenderContext>,
-    priv coords:   GPUVector<Vec2<f32>>,
+    shader:   Shader,
+    invsz:    ShaderUniform<Vec2<f32>>,
+    tex:      ShaderUniform<GLint>,
+    color:    ShaderUniform<Vec3<f32>>,
+    pos:      ShaderAttribute<Vec2<f32>>,
+    uvs:      ShaderAttribute<Vec2<f32>>,
+    contexts: Vec<TextRenderContext>,
+    coords:   GPUVector<Vec2<f32>>,
 }
 
 impl TextRenderer {
@@ -75,7 +75,7 @@ impl TextRenderer {
 
                 for curr in line.chars() {
                     // XXX: do _not_ use a hashmap!
-                    let glyph = match font.glyphs()[curr as u8] {
+                    let glyph = match font.glyphs()[curr as uint] {
                         Some(ref g) => g,
                         None        => continue,
                     };

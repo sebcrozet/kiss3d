@@ -11,19 +11,19 @@ mod error;
 
 /// An post-processing effect to support the oculus rift.
 pub struct OculusStereo {
-    priv shader:       Shader,
-    priv time:         f32,
-    priv fbo_vertices: GPUVector<Vec2<f32>>,
-    priv fbo_texture:  ShaderUniform<GLint>,
-    priv v_coord:      ShaderAttribute<Vec2<GLfloat>>,
-    priv kappa_0:      ShaderUniform<GLfloat>,
-    priv kappa_1:      ShaderUniform<GLfloat>,
-    priv kappa_2:      ShaderUniform<GLfloat>,
-    priv kappa_3:      ShaderUniform<GLfloat>,
-    priv scale:        ShaderUniform<Vec2<GLfloat>>,
-    priv scale_in:     ShaderUniform<Vec2<GLfloat>>,
-    priv w:            f32,
-    priv h:            f32
+    shader:       Shader,
+    time:         f32,
+    fbo_vertices: GPUVector<Vec2<f32>>,
+    fbo_texture:  ShaderUniform<GLint>,
+    v_coord:      ShaderAttribute<Vec2<GLfloat>>,
+    kappa_0:      ShaderUniform<GLfloat>,
+    kappa_1:      ShaderUniform<GLfloat>,
+    kappa_2:      ShaderUniform<GLfloat>,
+    kappa_3:      ShaderUniform<GLfloat>,
+    scale:        ShaderUniform<Vec2<GLfloat>>,
+    scale_in:     ShaderUniform<Vec2<GLfloat>>,
+    w:            f32,
+    h:            f32
 }
 
 impl OculusStereo {

@@ -17,12 +17,12 @@ mod error;
 ///
 /// It deforms the displayed scene with a wave effect.
 pub struct Waves {
-    priv shader:       Shader,
-    priv time:         f32,
-    priv offset:       ShaderUniform<GLfloat>,
-    priv fbo_texture:  ShaderUniform<GLint>,
-    priv v_coord:      ShaderAttribute<Vec2<f32>>,
-    priv fbo_vertices: GPUVector<Vec2<GLfloat>>
+    shader:       Shader,
+    time:         f32,
+    offset:       ShaderUniform<GLfloat>,
+    fbo_texture:  ShaderUniform<GLint>,
+    v_coord:      ShaderAttribute<Vec2<f32>>,
+    fbo_vertices: GPUVector<Vec2<GLfloat>>
 }
 
 impl Waves {

@@ -15,12 +15,12 @@ mod error;
 
 /// Set of data identifying a scene node.
 pub struct ObjectData {
-    priv scale:     Mat3<GLfloat>,
-    priv transform: Iso3<f32>,
-    priv texture:   Rc<Texture>,
-    priv color:     Vec3<f32>,
-    priv visible:   bool,
-    priv user_data: ~Any
+    scale:     Mat3<GLfloat>,
+    transform: Iso3<f32>,
+    texture:   Rc<Texture>,
+    color:     Vec3<f32>,
+    visible:   bool,
+    user_data: ~Any
 }
 
 impl ObjectData {
@@ -64,9 +64,9 @@ impl ObjectData {
 /// This is the only interface to manipulate the object position, color, vertices and texture.
 #[deriving(Clone)]
 pub struct Object {
-    priv material: Rc<RefCell<Rc<RefCell<~Material>>>>,
-    priv data:     Rc<RefCell<ObjectData>>,
-    priv mesh:     Rc<RefCell<Mesh>>
+    material: Rc<RefCell<Rc<RefCell<~Material>>>>,
+    data:     Rc<RefCell<ObjectData>>,
+    mesh:     Rc<RefCell<Mesh>>
 }
 
 impl Object {

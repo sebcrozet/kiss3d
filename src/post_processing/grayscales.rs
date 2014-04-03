@@ -11,10 +11,10 @@ mod error;
 
 /// Post processing effect which turns everything in gray scales.
 pub struct Grayscales {
-    priv shader:       Shader,
-    priv fbo_texture:  ShaderUniform<GLint>,
-    priv v_coord:      ShaderAttribute<Vec2<f32>>,
-    priv fbo_vertices: GPUVector<Vec2<GLfloat>>,
+    shader:       Shader,
+    fbo_texture:  ShaderUniform<GLint>,
+    v_coord:      ShaderAttribute<Vec2<f32>>,
+    fbo_vertices: GPUVector<Vec2<GLfloat>>,
 }
 
 impl Grayscales {

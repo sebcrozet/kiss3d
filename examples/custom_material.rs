@@ -35,12 +35,12 @@ fn main() {
 
 // A material that draws normals
 pub struct NormalMaterial {
-    priv shader:    Shader,
-    priv position:  ShaderAttribute<Vec3<f32>>,
-    priv normal:    ShaderAttribute<Vec3<f32>>,
-    priv view:      ShaderUniform<Mat4<f32>>,
-    priv transform: ShaderUniform<Mat4<f32>>,
-    priv scale:     ShaderUniform<Mat3<f32>>
+    shader:    Shader,
+    position:  ShaderAttribute<Vec3<f32>>,
+    normal:    ShaderAttribute<Vec3<f32>>,
+    view:      ShaderUniform<Mat4<f32>>,
+    transform: ShaderUniform<Mat4<f32>>,
+    scale:     ShaderUniform<Mat3<f32>>
 }
 
 impl NormalMaterial {

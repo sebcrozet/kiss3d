@@ -117,25 +117,25 @@ fn parse_scalar<'a>(l: uint, mut ws: Words<'a>) -> f32 {
 #[deriving(Clone)]
 pub struct MtlMaterial {
     /// Name of the material.
-    name:             ~str,
+    pub name:             ~str,
     /// Path to the ambiant texture.
-    ambiant_texture:  Option<~str>,
+    pub ambiant_texture:  Option<~str>,
     /// Path to the diffuse texture.
-    diffuse_texture:  Option<~str>,
+    pub diffuse_texture:  Option<~str>,
     /// Path to the specular texture.
-    specular_texture: Option<~str>,
+    pub specular_texture: Option<~str>,
     /// Path to the opacity map.
-    opacity_map:      Option<~str>,
+    pub opacity_map:      Option<~str>,
     /// The ambiant color.
-    ambiant:          Vec3<f32>,
+    pub ambiant:          Vec3<f32>,
     /// The diffuse color.
-    diffuse:          Vec3<f32>,
+    pub diffuse:          Vec3<f32>,
     /// The specular color.
-    specular:         Vec3<f32>,
+    pub specular:         Vec3<f32>,
     /// The shininess.
-    shininess:        f32,
+    pub shininess:        f32,
     /// Alpha blending.
-    alpha:            f32,
+    pub alpha:            f32,
 }
 
 impl MtlMaterial {

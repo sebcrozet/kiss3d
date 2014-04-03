@@ -14,7 +14,7 @@ mod error;
 
 /// A gpu texture. It contains the texture id provided by opengl and is automatically released.
 pub struct Texture {
-    priv id: GLuint
+    id: GLuint
 }
 
 impl Texture {
@@ -47,8 +47,8 @@ local_data_key!(KEY_TEXTURE_MANAGER: TextureManager)
 ///
 /// It keeps a cache of already-loaded textures, and can load new textures.
 pub struct TextureManager {
-    priv default_texture: Rc<Texture>,
-    priv textures:        HashMap<~str, Rc<Texture>>,
+    default_texture: Rc<Texture>,
+    textures:        HashMap<~str, Rc<Texture>>,
 }
 
 impl TextureManager {

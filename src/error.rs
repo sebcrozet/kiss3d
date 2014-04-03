@@ -1,4 +1,4 @@
-#[macro_escape];
+#![macro_escape]
 
 macro_rules! verify(
     ($e: expr) => (

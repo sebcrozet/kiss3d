@@ -84,20 +84,20 @@ I’d love to see people improving this library for their own needs. However, ke
 **kiss3d** is KISS. One-liner features (from the user point of view) are preferred.
 */
 
-#[crate_id = "kiss3d#0.1"];
-#[crate_type = "lib"];
-#[deny(non_camel_case_types)];
-#[deny(unnecessary_parens)];
-#[deny(non_uppercase_statics)];
-#[deny(unnecessary_qualification)];
-#[deny(missing_doc)];
-#[deny(unused_result)];
-#[deny(unnecessary_typecast)];
-#[deny(visible_private_types)];
-#[feature(globs)];
-#[feature(macro_rules)];
-#[feature(managed_boxes)];
-#[doc(html_root_url = "http://www.rust-ci.org/kiss3d/nalgebra/doc")];
+#![crate_id = "kiss3d#0.1"]
+#![crate_type = "lib"]
+#![deny(non_camel_case_types)]
+#![deny(unnecessary_parens)]
+#![deny(non_uppercase_statics)]
+#![deny(unnecessary_qualification)]
+#![deny(missing_doc)]
+#![deny(unused_result)]
+#![deny(unnecessary_typecast)]
+#![deny(visible_private_types)]
+#![feature(globs)]
+#![feature(macro_rules)]
+#![feature(managed_boxes)]
+#![doc(html_root_url = "http://www.rust-ci.org/kiss3d/nalgebra/doc")]
 
 extern crate std;
 extern crate sync;

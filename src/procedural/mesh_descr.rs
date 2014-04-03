@@ -33,13 +33,13 @@ impl IndexBuffer {
 /// Geometric description of a mesh.
 pub struct MeshDescr<N> {
     /// Coordinates of the mesh vertices.
-    coords:  Vec<Vec3<N>>,
+    pub coords:  Vec<Vec3<N>>,
     /// Coordinates of the mesh normals.
-    normals: Option<Vec<Vec3<N>>>,
+    pub normals: Option<Vec<Vec3<N>>>,
     /// Textures coordinates of the mesh.
-    uvs:     Option<Vec<Vec2<N>>>,
+    pub uvs:     Option<Vec<Vec2<N>>>,
     /// Index buffer of the mesh.
-    indices: IndexBuffer
+    pub indices: IndexBuffer
 }
 
 impl<N> MeshDescr<N> {

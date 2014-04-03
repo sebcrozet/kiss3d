@@ -68,10 +68,10 @@ impl RenderTarget {
 /// A framebuffer manager. It is a simple to to switch between an off-screen framebuffer and the
 /// default (window) framebuffer.
 pub struct FramebufferManager {
-    priv curr_fbo:   GLuint,
-    priv curr_color: GLuint,
-    priv curr_depth: GLuint,
-    priv fbo:        GLuint
+    curr_fbo:   GLuint,
+    curr_color: GLuint,
+    curr_depth: GLuint,
+    fbo:        GLuint
 }
 
 impl FramebufferManager {

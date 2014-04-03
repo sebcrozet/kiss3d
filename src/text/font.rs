@@ -21,13 +21,13 @@ mod error;
 
 /// A ttf font.
 pub struct Font {
-    priv library:          freetype::FT_Library,
-    priv face:             freetype::FT_Face,
-    priv texture_atlas:    GLuint,
-    priv atlas_dimensions: Vec2<uint>,
-    priv glyphs:           Vec<Option<Glyph>>,
-    priv height:           i32,
-    priv nocpy:            NoCopy
+    library:          freetype::FT_Library,
+    face:             freetype::FT_Face,
+    texture_atlas:    GLuint,
+    atlas_dimensions: Vec2<uint>,
+    glyphs:           Vec<Option<Glyph>>,
+    height:           i32,
+    nocpy:            NoCopy
 }
 
 impl Font {

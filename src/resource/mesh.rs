@@ -16,10 +16,10 @@ mod error;
 ///
 /// It also contains the GPU location of those buffers.
 pub struct Mesh {
-    priv coords:  Arc<RWLock<GPUVector<Vec3<GLfloat>>>>,
-    priv faces:   Arc<RWLock<GPUVector<Vec3<GLuint>>>>,
-    priv normals: Arc<RWLock<GPUVector<Vec3<GLfloat>>>>,
-    priv uvs:     Arc<RWLock<GPUVector<Vec2<GLfloat>>>>
+    coords:  Arc<RWLock<GPUVector<Vec3<GLfloat>>>>,
+    faces:   Arc<RWLock<GPUVector<Vec3<GLuint>>>>,
+    normals: Arc<RWLock<GPUVector<Vec3<GLfloat>>>>,
+    uvs:     Arc<RWLock<GPUVector<Vec2<GLfloat>>>>
 }
 
 impl Mesh {
@@ -179,8 +179,8 @@ impl Mesh {
     
         // Accumulate normals ...
         for f in faces.iter() {
-            let edge1  = coordinates[f.y] - coordinates[f.x];
-            let edge2  = coordinates[f.z] - coordinates[f.x];
+            let edge1  = coordinates[f.y as uint] - coordinates[f.x as uint];
+            let edge2  = coordinates[f.z as uint] - coordinates[f.x as uint];
             let cross  = na::cross(&edge1, &edge2);
             let normal;
     

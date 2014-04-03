@@ -15,10 +15,10 @@ mod error;
 
 /// Structure encapsulating a shader program.
 pub struct Shader {
-    priv program: GLuint,
-    priv vshader: GLuint,
-    priv fshader: GLuint,
-    priv nocpy:   NoCopy
+    program: GLuint,
+    vshader: GLuint,
+    fshader: GLuint,
+    nocpy:   NoCopy
 }
 
 impl Shader {
@@ -98,7 +98,7 @@ impl Drop for Shader {
 
 /// Structure encapsulating an uniform variable.
 pub struct ShaderUniform<T> {
-    priv id: GLuint
+    id: GLuint
 }
 
 impl<T: GLPrimitive> ShaderUniform<T> {
@@ -110,7 +110,7 @@ impl<T: GLPrimitive> ShaderUniform<T> {
 
 /// Structure encapsulating an attribute.
 pub struct ShaderAttribute<T> {
-    priv id: GLuint
+    id: GLuint
 }
 
 impl<T: GLPrimitive> ShaderAttribute<T> {

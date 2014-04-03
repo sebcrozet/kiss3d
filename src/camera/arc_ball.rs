@@ -1,4 +1,3 @@
-use std::num::atan2;
 use glfw;
 use nalgebra::na::{Vec2, Vec3, Mat4, Iso3};
 use nalgebra::na;
@@ -17,28 +16,28 @@ use camera::Camera;
 #[deriving(Clone, Show)]
 pub struct ArcBall {
     /// The focus point.
-    priv at:    Vec3<f32>,
+    at:    Vec3<f32>,
     /// Yaw of the camera (rotation along the y axis).
-    priv yaw:   f32,
+    yaw:   f32,
     /// Pitch of the camera (rotation along the x axis).
-    priv pitch: f32,
+    pitch: f32,
     /// Distance from the camera to the `at` focus point.
-    priv dist:  f32,
+    dist:  f32,
 
     /// Increment of the yaw per unit mouse movement. The default value is 0.005.
-    priv yaw_step:   f32,
+    yaw_step:   f32,
     /// Increment of the pitch per unit mouse movement. The default value is 0.005.
-    priv pitch_step: f32,
+    pitch_step: f32,
     /// Increment of the distance per unit scrolling. The default value is 40.0.
-    priv dist_step:  f32,
+    dist_step:  f32,
 
-    priv fov:        f32,
-    priv znear:      f32,
-    priv zfar:       f32,
-    priv projection:      Mat4<f32>,
-    priv proj_view:       Mat4<f32>,
-    priv inv_proj_view:   Mat4<f32>,
-    priv last_cursor_pos: Vec2<f32>
+    fov:        f32,
+    znear:      f32,
+    zfar:       f32,
+    projection:      Mat4<f32>,
+    proj_view:       Mat4<f32>,
+    inv_proj_view:   Mat4<f32>,
+    last_cursor_pos: Vec2<f32>
 }
 
 impl ArcBall {
@@ -123,7 +122,7 @@ impl ArcBall {
     pub fn look_at_z(&mut self, eye: Vec3<f32>, at: Vec3<f32>) {
         let dist  = na::norm(&(eye - at));
         let pitch = ((eye.y - at.y) / dist).acos();
-        let yaw   = atan2(eye.z - at.z, eye.x - at.x);
+        let yaw   = (eye.z - at.z).atan2(&(eye.x - at.x));
 
         self.at    = at;
         self.dist  = dist;

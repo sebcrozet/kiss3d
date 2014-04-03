@@ -11,21 +11,21 @@ mod error;
 
 /// Post processing effect which turns everything in grayscales.
 pub struct SobelEdgeHighlight {
-    priv shiftx:          f32,
-    priv shifty:          f32,
-    priv zn:              f32,
-    priv zf:              f32,
-    priv threshold:       f32,
-    priv shader:          Shader,
-    priv gl_nx:           ShaderUniform<GLfloat>,
-    priv gl_ny:           ShaderUniform<GLfloat>,
-    priv gl_fbo_depth:    ShaderUniform<GLint>,
-    priv gl_fbo_texture:  ShaderUniform<GLint>,
-    priv gl_znear:        ShaderUniform<GLfloat>,
-    priv gl_zfar:         ShaderUniform<GLfloat>,
-    priv gl_threshold:    ShaderUniform<GLfloat>,
-    priv gl_v_coord:      ShaderAttribute<Vec2<f32>>,
-    priv gl_fbo_vertices: GPUVector<Vec2<f32>>
+    shiftx:          f32,
+    shifty:          f32,
+    zn:              f32,
+    zf:              f32,
+    threshold:       f32,
+    shader:          Shader,
+    gl_nx:           ShaderUniform<GLfloat>,
+    gl_ny:           ShaderUniform<GLfloat>,
+    gl_fbo_depth:    ShaderUniform<GLint>,
+    gl_fbo_texture:  ShaderUniform<GLint>,
+    gl_znear:        ShaderUniform<GLfloat>,
+    gl_zfar:         ShaderUniform<GLfloat>,
+    gl_threshold:    ShaderUniform<GLfloat>,
+    gl_v_coord:      ShaderAttribute<Vec2<f32>>,
+    gl_fbo_vertices: GPUVector<Vec2<f32>>
 }
 
 impl SobelEdgeHighlight {
