@@ -100,6 +100,7 @@ I’d love to see people improving this library for their own needs. However, ke
 #![doc(html_root_url = "http://www.rust-ci.org/kiss3d/nalgebra/doc")]
 
 extern crate std;
+extern crate libc;
 extern crate sync;
 extern crate time;
 extern crate collections;

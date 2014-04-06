@@ -4,6 +4,7 @@
  */
 
 use glfw;
+use glfw::Context;
 use std::io::timer::Timer;
 use std::num::Zero;
 use std::cell::RefCell;
@@ -612,12 +613,11 @@ impl<'a> Window<'a> {
     fn do_spawn(title: ~str, hide: bool, width: u32, height: u32, callback: |&mut Window| -> ()) {
         // FIXME: glfw::set_error_callback(~ErrorCallback);
 
-        let (glfw, errors) = glfw::init().unwrap();
-        glfw::fail_on_error(&errors);
+        let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
 
         let (window, events) = glfw.create_window(width, height, title, glfw::Windowed).expect("Unable to open a glfw window.");
 
-        window.make_context_current();
+        window.make_current();
 
         verify!(gl::load_with(|name| glfw.get_proc_address(name)));
         init_gl();
