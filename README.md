@@ -31,15 +31,21 @@ Most features are one-liners.
 As an example, having a red, rotating cube with the light attached to the camera is as simple as:
 
 ```rust
-extern mod kiss3d;
-extern mod nalgebra;
+extern crate native;
+extern crate kiss3d;
+extern crate nalgebra;
 
 use nalgebra::na::{Vec3, Rotation};
-use kiss3d::window;
+use kiss3d::window::Window;
 use kiss3d::light;
 
+#[start]
+fn start(argc: int, argv: **u8) -> int {
+    native::start(argc, argv, main)
+}
+
 fn main() {
-    Window::spawn("Kiss3d: cube", proc(window) {
+    Window::spawn("Kiss3d: cube", |window| {
         let mut c = window.add_cube(1.0, 1.0, 1.0);
 
         c.set_color(1.0, 0.0, 0.0);
