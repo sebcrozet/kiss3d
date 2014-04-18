@@ -8,8 +8,9 @@ gl_lib_path=lib/gl-rs
 nalgebra_lib_path=lib/nalgebra/lib
 stb_image_lib_path=lib/rust-stb-image/
 freetype_path=lib/rust-freetype/
-libs=-L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path) -L$(freetype_path)
-build_cmd= rustc -C link-args=-lglfw -Llib  $(libs) --opt-level 3 --out-dir $(kiss3d_bin_path)
+ffmpeg_path=lib/rust-ffmpeg/lib
+libs=-L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path) -L$(freetype_path) -L$(ffmpeg_path)
+build_cmd= rustc -Llib  $(libs) --opt-level 3 --out-dir $(kiss3d_bin_path)
 
 all:
 	mkdir -p $(kiss3d_lib_path)
@@ -20,6 +21,7 @@ test: examples
 
 examples:
 	mkdir -p $(kiss3d_bin_path)
+	$(build_cmd) ./examples/recording.rs
 	$(build_cmd) ./examples/cube.rs 
 	$(build_cmd) ./examples/camera.rs 
 	$(build_cmd) ./examples/window.rs 
@@ -54,6 +56,7 @@ distcheck:
 	rm -rf $(tmp)
 
 deps:
+	cd lib/rust-ffmpeg; ./build.sh
 	make lib -C $(glfw_path)
 	make -C lib/nalgebra
 	cd lib/gl-rs; rustc --opt-level=3 src/gl/lib.rs

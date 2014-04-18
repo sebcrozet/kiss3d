@@ -93,7 +93,7 @@ I’d love to see people improving this library for their own needs. However, ke
 #![deny(missing_doc)]
 #![deny(unused_result)]
 #![deny(unnecessary_typecast)]
-#![deny(visible_private_types)]
+#![warn(visible_private_types)] // FIXME: should be denied
 #![feature(globs)]
 #![feature(macro_rules)]
 #![feature(managed_boxes)]
@@ -109,6 +109,9 @@ extern crate gl;
 extern crate nalgebra;
 extern crate stb_image;
 extern crate freetype;
+extern crate avcodec = "avcodec55";
+extern crate avutil  = "avutil52";
+extern crate swscale = "swscale2";
 
 pub mod window;
 pub mod object;
@@ -121,3 +124,4 @@ pub mod post_processing;
 pub mod resource;
 pub mod text;
 pub mod procedural;
+pub mod utils;

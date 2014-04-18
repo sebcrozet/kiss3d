@@ -11,11 +11,12 @@ mod error;
 /// The target to every rendering call.
 pub enum RenderTarget {
     /// The screen (main framebuffer).
-    priv Screen,
+    Screen,
     /// An off-screen buffer.
-    priv Offscreen(OffscreenBuffers)
+    Offscreen(OffscreenBuffers)
 }
 
+// FIXME: pub ?
 struct OffscreenBuffers {
     texture: GLuint,
     depth:   GLuint,

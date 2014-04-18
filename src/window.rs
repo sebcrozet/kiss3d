@@ -10,6 +10,7 @@ use std::num::Zero;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::io::IoResult;
+use libc;
 use collections::HashMap;
 use time;
 use gl;
@@ -664,6 +665,34 @@ impl<'a> Window<'a> {
         usr_window.set_light(usr_window.light_mode);
 
         callback(&mut usr_window);
+    }
+
+    // FIXME: give more options for the snap size and offset.
+    /// Read the pixels currently displayed to the screen.
+    ///
+    /// # Arguments:
+    /// * `out` - the output buffer. It is automatically resized.
+    pub fn snap(&self, out: &mut Vec<u8>) {
+        let (width, height) = self.window.get_size();
+
+        let size = (width * height * 3) as uint;
+
+        if out.len() < size {
+            out.grow_set(size - 1, &0, 0);
+        }
+        else {
+            out.truncate(size)
+        }
+
+        // FIXME: this is _not_ the fastest way of doing this.
+        unsafe {
+            gl::PixelStorei(gl::PACK_ALIGNMENT, 1);
+            gl::ReadPixels(0, 0,
+                           width, height,
+                           gl::RGB,
+                           gl::UNSIGNED_BYTE,
+                           out.get_mut(0) as *mut u8 as *mut libc::c_void);
+        }
     }
 
     fn draw(&mut self, curr: &mut u64, timer: &mut Timer) {
