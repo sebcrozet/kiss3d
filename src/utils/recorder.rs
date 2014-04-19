@@ -63,7 +63,7 @@ impl Recorder {
     ///                    frame timestamps are represented. Default value: (1, 60), i-e, 60fps.
     /// * `gop_size`     - the number of pictures in a group of pictures. Default value: 10.
     /// * `max_b_frames` - maximum number of B-frames between non-B-frames. Default value: 1.
-    /// * `pix_fmt`      - pixel format. Default value: `avcodec::AV_CODEC_ID_MPEG1VIDEO`.
+    /// * `pix_fmt`      - pixel format. Default value: `avutil::PIX_FMT_YUV420P`.
     pub fn new_with_params(path:         Path,
                            width:        uint,
                            height:       uint,
@@ -105,9 +105,6 @@ impl Recorder {
             format_context:   ptr::mut_null(),
             video_st:         ptr::mut_null(),
             path:             path,
-            // XXX: we do the following hacky allocation since the bindings do not give
-            // access to avcodec::av_image_alloc…
-            // FIXME: does that depend on the pix_fmt ?
             frame_buf:        Vec::new(),
             tmp_frame_buf:    Vec::new()
         }
