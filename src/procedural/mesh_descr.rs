@@ -1,4 +1,3 @@
-use std::slice;
 use collections::HashMap;
 use nalgebra::na::{Iterable, Translate, Rotate, Transform, Vec3, Vec2};
 
@@ -54,9 +53,7 @@ impl<N> MeshDescr<N> {
         // generate trivial indices
         let idx = indices.unwrap_or_else(||
            UnifiedIndexBuffer(
-               Vec::from_slice(
-                   slice::from_fn(coords.len() / 3, |i| Vec3::new(i as u32 * 3, i as u32 * 3 + 1, i as u32 * 3 + 2))
-               )
+               Vec::from_fn(coords.len() / 3, |i| Vec3::new(i as u32 * 3, i as u32 * 3 + 1, i as u32 * 3 + 2))
            )
         );
 
