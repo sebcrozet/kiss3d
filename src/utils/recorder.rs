@@ -130,8 +130,11 @@ impl Recorder {
          */
         window.snap(&mut self.tmp_frame_buf);
 
+
         let win_width  = window.width() as i32;
         let win_height = window.height() as i32;
+
+        vflip(self.tmp_frame_buf.as_mut_slice(), win_width as uint * 3, win_height as uint);
 
         unsafe {
             (*self.frame).pts += avutil::av_rescale_q(1, (*self.context).time_base, (*self.video_st).time_base);
@@ -392,4 +395,13 @@ impl Drop for Recorder {
             }
         }
     }
+}
+
+fn vflip(vec: &mut [u8], width: uint, height: uint) {
+    for j in range(0u, height / 2) {
+        for i in range(0u, width) {
+            vec.swap((height - j - 1) * width + i, j * width + i);
+        }
+    }
+
 }

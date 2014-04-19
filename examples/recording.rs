@@ -14,7 +14,7 @@ fn start(argc: int, argv: **u8) -> int {
 
 fn main() {
     Window::spawn("Kiss3d: recording", |window| {
-        let mut c = window.add_cube(1.0, 1.0, 1.0);
+        let mut c = window.add_cone(1.0, 0.5);
 
         c.set_color(1.0, 0.0, 0.0);
 
