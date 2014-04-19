@@ -20,7 +20,7 @@ fn main() {
 
         window.set_light(light::StickToCamera);
 
-        let mut recorder = Recorder::new(&Path::new("test.h264"),
+        let mut recorder = Recorder::new(Path::new("test.mpg"),
                                          window.width()  as uint,
                                          window.height() as uint);
 

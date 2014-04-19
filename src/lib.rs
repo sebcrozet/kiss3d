@@ -111,6 +111,7 @@ extern crate stb_image;
 extern crate freetype;
 extern crate avcodec = "avcodec55";
 extern crate avutil  = "avutil52";
+extern crate avformat = "avformat55";
 extern crate swscale = "swscale2";
 
 pub mod window;

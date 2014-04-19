@@ -1,19 +1,21 @@
+// inspired by the muxing sample: http://ffmpeg.org/doxygen/trunk/muxing_8c-source.html
+
 use libc::c_void;
 use std::cast;
 use swscale;
 use swscale::Struct_SwsContext;
 use avcodec;
-use avcodec::{AVCodec, AVCodecContext, AVPacket, Enum_AVCodecID};
+use avcodec::{AVCodec, AVCodecContext, AVPacket};
+use avformat;
+use avformat::{AVFormatContext, AVStream};
 use avutil;
 use avutil::{AVFrame, Struct_AVRational};
-use std::slice::raw;
-use std::io::File;
 use std::ptr;
 use std::mem;
 use sync::one::{Once, ONCE_INIT};
 use window::Window;
 
-static mut avcodec_init: Once = ONCE_INIT;
+static mut avformat_init: Once = ONCE_INIT;
 
 /// OpenGL rendering video recorder.
 ///
@@ -23,7 +25,6 @@ pub struct Recorder {
     frame_buf:        Vec<u8>,
     curr_frame_index: uint,
     initialized:      bool,
-    codec_id:         Enum_AVCodecID,
     bit_rate:         uint,
     width:            uint,
     height:           uint,
@@ -34,8 +35,10 @@ pub struct Recorder {
     tmp_frame:        *mut AVFrame,
     frame:            *mut AVFrame,
     context:          *mut AVCodecContext,
+    format_context:   *mut AVFormatContext,
+    video_st:         *mut AVStream,
     scale_context:    *mut Struct_SwsContext,
-    file:             File
+    path:             Path
 }
 
 impl Recorder {
@@ -45,9 +48,8 @@ impl Recorder {
     /// * `path`   - path to the output file.
     /// * `width`  - width of the recorded video.
     /// * `height` - height of the recorded video.
-    pub fn new(path: &Path, width: uint, height: uint) -> Recorder {
-        // FIXME: Use a default codec that we are sure the user has.
-        Recorder::new_with_params(path, width, height, None, None, None, None, None, None)
+    pub fn new(path: Path, width: uint, height: uint) -> Recorder {
+        Recorder::new_with_params(path, width, height, None, None, None, None, None)
     }
 
     /// Creates a new video recorder with custom recording parameters.
@@ -56,17 +58,15 @@ impl Recorder {
     /// * `path`         - path to the output file.
     /// * `width`        - width of the recorded video.
     /// * `height`       - height of the recorded video.
-    /// * `codec`        - the codec used to encode the video. Default value: `avcodec::AV_CODEC_ID_H264`.
     /// * `bit_rate`     - the average bit rate. Default value: 400000.
     /// * `time_base`    - this is the fundamental unit of time (in seconds) in terms of which
-    ///                    frame timestamps are represented. Default value: (1, 25), i-e, 25fps.
+    ///                    frame timestamps are represented. Default value: (1, 60), i-e, 60fps.
     /// * `gop_size`     - the number of pictures in a group of pictures. Default value: 10.
     /// * `max_b_frames` - maximum number of B-frames between non-B-frames. Default value: 1.
-    /// * `pix_fmt`      - pixel format. Default value: `avcodec::AV_CODEC_ID_H264`.
-    pub fn new_with_params(path:         &Path,
+    /// * `pix_fmt`      - pixel format. Default value: `avcodec::AV_CODEC_ID_MPEG1VIDEO`.
+    pub fn new_with_params(path:         Path,
                            width:        uint,
                            height:       uint,
-                           codec:        Option<Enum_AVCodecID>,
                            bit_rate:     Option<uint>,
                            time_base:    Option<(uint, uint)>,
                            gop_size:     Option<uint>,
@@ -74,14 +74,13 @@ impl Recorder {
                            pix_fmt:      Option<i32>)
                            -> Recorder {
         unsafe {
-            avcodec_init.doit(|| {
-                avcodec::avcodec_register_all();
+            avformat_init.doit(|| {
+                avformat::av_register_all();
             });
         }
 
-        let codec        = codec.unwrap_or(avcodec::AV_CODEC_ID_H264);
         let bit_rate     = bit_rate.unwrap_or(400000); // FIXME
-        let time_base    = time_base.unwrap_or((1, 25));
+        let time_base    = time_base.unwrap_or((1, 60));
         let gop_size     = gop_size.unwrap_or(10);
         let max_b_frames = max_b_frames.unwrap_or(1);
         let pix_fmt      = pix_fmt.unwrap_or(avutil::PIX_FMT_YUV420P);
@@ -89,24 +88,9 @@ impl Recorder {
         let width        = if width  % 2 == 0 { width }  else { width + 1 };
         let height       = if height % 2 == 0 { height } else { height + 1 };
 
-        let file =
-            match File::create(path) {
-                Ok(file) => file,
-                Err(e)   => fail!(e)
-            };
-
-        let nframe_bytes;
-        let nframe_tmp_bytes;
-
-        unsafe {
-            nframe_bytes     = avcodec::avpicture_get_size(avutil::PIX_FMT_YUV420P, width as i32, height as i32);
-            nframe_tmp_bytes = avcodec::avpicture_get_size(avutil::PIX_FMT_RGB24, width as i32, height as i32);
-        }
-
         Recorder {
             initialized:      false,
             curr_frame_index: 0,
-            codec_id:         codec,
             bit_rate:         bit_rate,
             width:            width,
             height:           height,
@@ -118,12 +102,14 @@ impl Recorder {
             tmp_frame:        ptr::mut_null(),
             context:          ptr::mut_null(),
             scale_context:    ptr::mut_null(),
-            file:             file,
+            format_context:   ptr::mut_null(),
+            video_st:         ptr::mut_null(),
+            path:             path,
             // XXX: we do the following hacky allocation since the bindings do not give
             // access to avcodec::av_image_alloc…
             // FIXME: does that depend on the pix_fmt ?
-            frame_buf:        Vec::from_elem(nframe_bytes as uint, 0u8),
-            tmp_frame_buf:    Vec::from_elem(nframe_tmp_bytes as uint, 0u8)
+            frame_buf:        Vec::new(),
+            tmp_frame_buf:    Vec::new()
         }
     }
                             
@@ -151,8 +137,7 @@ impl Recorder {
         let win_height = window.height() as i32;
 
         unsafe {
-            (*self.frame).pts = self.curr_frame_index as i64;
-            (*self.frame).pkt_duration = self.curr_frame_index as i64;
+            (*self.frame).pts += avutil::av_rescale_q(1, (*self.context).time_base, (*self.video_st).time_base);
             self.curr_frame_index = self.curr_frame_index + 1;
         }
 
@@ -185,8 +170,6 @@ impl Recorder {
         }
 
 
-        /* */
-
         // Encode the image.
 
         let mut got_output = 0;
@@ -205,7 +188,7 @@ impl Recorder {
 
         if got_output != 0 {
             unsafe {
-                let _ = raw::buf_as_slice(pkt.data as *u8, pkt.size as uint, |data| self.file.write(data));
+                let _ = avformat::av_interleaved_write_frame(self.format_context, &mut pkt);
                 avcodec::av_free_packet(&mut pkt);
             }
         }
@@ -220,36 +203,66 @@ impl Recorder {
             return;
         }
 
-        let mut codec: *mut AVCodec;
-
-        let ret: i32 = 0;
-
         unsafe {
-            codec = avcodec::avcodec_find_encoder(self.codec_id);
-        }
+            // try to guess the container type from the path.
+            let mut fmt = ptr::mut_null();
 
-        if codec.is_null() {
-            fail!("Codec not found.");
-        }
+            self.path.with_c_str(|path| {
+                let _ = avformat::avformat_alloc_output_context2(&mut fmt, ptr::mut_null(), ptr::null(), path);
 
-        unsafe {
-            self.context = avcodec::avcodec_alloc_context3(codec as *AVCodec);
-        }
+                if self.format_context.is_null() {
+                    // could not guess, default to MPEG
+                    "mpeg".with_c_str(|mpeg| {
+                        let _ = avformat::avformat_alloc_output_context2(&mut fmt, ptr::mut_null(), mpeg, path);
+                    });
+                }
+            });
 
-        if self.context.is_null() {
-            fail!("Could not allocate video codec context.");
-        }
+            self.format_context = fmt;
 
-        // sws scaling context
-        unsafe {
+            if self.format_context.is_null() {
+                fail!("Unable to create the output context.");
+            }
+
+            let fmt = (*self.format_context).oformat;
+
+            if (*fmt).video_codec == avcodec::AV_CODEC_ID_NONE {
+                fail!("The selected output container does not support video encoding.")
+            }
+
+            let mut codec: *mut AVCodec;
+
+            let ret: i32 = 0;
+
+            codec = avcodec::avcodec_find_encoder((*fmt).video_codec);
+
+            if codec.is_null() {
+                fail!("Codec not found.");
+            }
+
+            self.video_st = avformat::avformat_new_stream(self.format_context, codec as *AVCodec);
+
+            if self.video_st.is_null() {
+                fail!("Failed to allocate the video stream.");
+            }
+
+            (*self.video_st).id = ((*self.format_context).nb_streams - 1) as i32;
+
+            self.context = (*self.video_st).codec;
+
+            let _ = avcodec::avcodec_get_context_defaults3(self.context, codec as *AVCodec);
+
+            if self.context.is_null() {
+                fail!("Could not allocate video codec context.");
+            }
+
+            // sws scaling context
             self.scale_context = swscale::sws_getContext(
                 self.width as i32, self.height as i32, avutil::PIX_FMT_RGB24,
-                self.width as i32, self.height as i32, avutil::PIX_FMT_YUV420P,
+                self.width as i32, self.height as i32, (*fmt).video_codec as i32,
                 swscale::SWS_BICUBIC as i32, ptr::mut_null(), ptr::mut_null(), ptr::null());
-        }
 
-        // Put sample parameters.
-        unsafe {
+            // Put sample parameters.
             (*self.context).bit_rate = self.bit_rate as i32;
 
             // Resolution must be a multiple of two.
@@ -262,66 +275,78 @@ impl Recorder {
             (*self.context).gop_size     = self.gop_size as i32;
             (*self.context).max_b_frames = self.max_b_frames as i32;
             (*self.context).pix_fmt      = self.pix_fmt;
-        }
 
-        if self.codec_id == avcodec::AV_CODEC_ID_H264 {
-            "preset".to_c_str().with_ref(|preset| {
-                "slow".to_c_str().with_ref(|slow| {
-                    unsafe {
-                        let _ = avutil::av_opt_set((*self.context).priv_data, preset, slow, 0);
-                    }
-                })
-            });
-        }
+            if (*self.context).codec_id == avcodec::AV_CODEC_ID_MPEG1VIDEO {
+                // Needed to avoid using macroblocks in which some coeffs overflow.
+                // This does not happen with normal video, it just happens here as
+                // the motion of the chroma plane does not match the luma plane.
+                (*self.context).mb_decision = 2;
+            }
 
-        // Open it.
-        unsafe {
+            /*
+            if (*fmt).flags & avformat::AVFMT_GLOBALHEADER != 0 {
+                (*self.context).flags = (*self.context).flags | CODEC_FLAG_GLOBAL_HEADER;
+            }
+            */
+
+            // Open the codec.
             if avcodec::avcodec_open2(self.context, codec as *AVCodec, ptr::mut_null()) < 0 {
                 fail!("Could not open the codec.");
             }
-        }
 
-        /*
-         * Init the destination video frame.
-         */
-        unsafe {
+            /*
+             * Init the destination video frame.
+             */
             self.frame = avcodec::avcodec_alloc_frame();
-        }
 
-        if self.frame.is_null() {
-            fail!("Could not allocate the video frame.");
-        }
+            if self.frame.is_null() {
+                fail!("Could not allocate the video frame.");
+            }
 
-        unsafe {
             (*self.frame).format = (*self.context).pix_fmt;
             (*self.frame).width  = (*self.context).width;
             (*self.frame).height = (*self.context).height;
+            (*self.frame).pts    = 0;
+
+            // alloc the buffer
+            let nframe_bytes = avcodec::avpicture_get_size(self.pix_fmt,
+                                                           self.width as i32,
+                                                           self.height as i32);
+            self.frame_buf = Vec::from_elem(nframe_bytes as uint, 0u8);
 
             let _ = avcodec::avpicture_fill(self.frame as *mut avcodec::AVPicture,
                                             self.frame_buf.get(0),
-                                            avutil::PIX_FMT_YUV420P,
+                                            self.pix_fmt,
                                             self.width as i32,
                                             self.height as i32);
-        }
 
-        /*
-         * Init the temporary video frame.
-         */
-        unsafe {
+            /*
+             * Init the temporary video frame.
+             */
             self.tmp_frame = avcodec::avcodec_alloc_frame();
-        }
 
-        if self.tmp_frame.is_null() {
-            fail!("Could not allocate the video frame.");
-        }
+            if self.tmp_frame.is_null() {
+                fail!("Could not allocate the video frame.");
+            }
 
-        unsafe {
             (*self.frame).format = (*self.context).pix_fmt;
             // the rest (width, height, data, linesize) are set at the moment of the snapshot.
-        }
 
-        if ret < 0 {
-            fail!("Could not allocate raw picture buffer");
+            // Open the output file.
+            self.path.with_c_str(|path| {
+                static AVIO_FLAG_WRITE: i32 = 2; // XXX: this should be defined by the bindings.
+                if avformat::avio_open(&mut (*self.format_context).pb, path, AVIO_FLAG_WRITE) < 0 {
+                    fail!("Failed to open the output file.");
+                }
+            });
+
+            if avformat::avformat_write_header(self.format_context, ptr::mut_null()) < 0 {
+                fail!("Failed to open the output file.");
+            }
+
+            if ret < 0 {
+                fail!("Could not allocate raw picture buffer");
+            }
         }
 
         self.initialized = true;
@@ -354,7 +379,7 @@ impl Drop for Recorder {
 
                 if got_output != 0 {
                     unsafe {
-                        let _ = raw::buf_as_slice(pkt.data as *u8, pkt.size as uint, |data| self.file.write(data));
+                        let _ = avformat::av_interleaved_write_frame(self.format_context, &mut pkt);
                         avcodec::av_free_packet(&mut pkt);
                     }
                 }
