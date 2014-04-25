@@ -122,7 +122,7 @@ impl ArcBall {
     pub fn look_at_z(&mut self, eye: Vec3<f32>, at: Vec3<f32>) {
         let dist  = na::norm(&(eye - at));
         let pitch = ((eye.y - at.y) / dist).acos();
-        let yaw   = (eye.z - at.z).atan2(&(eye.x - at.x));
+        let yaw   = (eye.z - at.z).atan2(eye.x - at.x);
 
         self.at    = at;
         self.dist  = dist;

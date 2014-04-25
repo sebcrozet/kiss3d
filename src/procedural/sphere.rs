@@ -76,7 +76,7 @@ fn ball_uv<N: Float + Cast<f64>>(normal: &Vec3<N>) -> Vec2<N> {
     let two_pi: N = Float::two_pi();
     let pi:     N = Float::pi();
     let _0_5:   N = na::cast(0.5f64);
-    let uvx       = _0_5 + normal.z.atan2(&normal.x) / two_pi;
+    let uvx       = _0_5 + normal.z.atan2(normal.x) / two_pi;
     let uvy       = _0_5 - normal.y.asin() / pi;
 
     Vec2::new(uvx, uvy)

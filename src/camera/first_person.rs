@@ -110,7 +110,7 @@ impl FirstPerson {
         let dist  = na::norm(&(eye - at));
 
         let pitch = ((at.y - eye.y) / dist).acos();
-        let yaw   = (at.z - eye.z).atan2(&(at.x - eye.x));
+        let yaw   = (at.z - eye.z).atan2(at.x - eye.x);
 
         self.eye   = eye;
         self.yaw   = yaw;
