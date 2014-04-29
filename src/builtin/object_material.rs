@@ -161,7 +161,7 @@ static ANOTHER_VERY_LONG_STRING: &'static str =
       vec3 E = normalize(-ws_position);
 
       //calculate Ambient Term:
-      vec4 Iamb = vec4(1.0, 1.0, 1.0, 1.0);
+      vec4 Iamb = vec4(color, 1.0);
 
       //calculate Diffuse Term:
       vec4 Idiff1 = vec4(1.0, 1.0, 1.0, 1.0) * max(dot(ws_normal,L), 0.0);
@@ -172,5 +172,5 @@ static ANOTHER_VERY_LONG_STRING: &'static str =
       Idiff2 = clamp(Idiff2, 0.0, 1.0);
 
       vec4 tex_color = texture2D(tex, tex_coord);
-      gl_FragColor   = tex_color * (vec4(color, 1.0) + Iamb + (Idiff1 + Idiff2) / 2) / 3;
+      gl_FragColor   = tex_color * (Iamb + (Idiff1 + Idiff2) / 2) / 2;
     }";
