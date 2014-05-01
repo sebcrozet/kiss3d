@@ -21,6 +21,7 @@ test: examples
 
 examples:
 	mkdir -p $(kiss3d_bin_path)
+	$(build_cmd) ./examples/points.rs
 	$(build_cmd) ./examples/recording.rs
 	$(build_cmd) ./examples/cube.rs 
 	$(build_cmd) ./examples/camera.rs 

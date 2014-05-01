@@ -21,6 +21,7 @@ use nalgebra::na;
 use camera::{Camera, ArcBall};
 use object::Object;
 use line_renderer::LineRenderer;
+use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, RenderTarget, Texture, TextureManager, Mesh, Material};
 use builtin::ObjectMaterial;
@@ -53,6 +54,7 @@ pub struct Window<'a> {
     geometries:                 HashMap<~str, Rc<RefCell<Mesh>>>,
     background:                 Vec3<GLfloat>,
     line_renderer:              LineRenderer,
+    point_renderer:             PointRenderer,
     text_renderer:              TextRenderer,
     framebuffer_manager:        FramebufferManager,
     post_processing:            Option<&'a mut PostProcessingEffect>,
@@ -153,6 +155,12 @@ impl<'a> Window<'a> {
     #[inline]
     pub fn draw_line(&mut self, a: &Vec3<f32>, b: &Vec3<f32>, color: &Vec3<f32>) {
         self.line_renderer.draw_line(a.clone(), b.clone(), color.clone());
+    }
+
+    /// Adds a point to be drawn during the next frame.
+    #[inline]
+    pub fn draw_point(&mut self, pt: &Vec3<f32>, color: &Vec3<f32>) {
+        self.point_renderer.draw_point(pt.clone(), color.clone());
     }
 
     /// Adds a string to be drawn during the next frame.
@@ -595,6 +603,7 @@ impl<'a> Window<'a> {
             geometries:            builtins,
             background:            Vec3::new(0.0, 0.0, 0.0),
             line_renderer:         LineRenderer::new(),
+            point_renderer:        PointRenderer::new(),
             text_renderer:         TextRenderer::new(),
             post_processing:       None,
             post_process_render_target: FramebufferManager::new_render_target(width as uint, height as uint),
@@ -727,6 +736,10 @@ impl<'a> Window<'a> {
 
         if self.line_renderer.needs_rendering() {
             self.line_renderer.render(pass, self.camera);
+        }
+
+        if self.point_renderer.needs_rendering() {
+            self.point_renderer.render(pass, self.camera);
         }
 
         if self.wireframe_mode {

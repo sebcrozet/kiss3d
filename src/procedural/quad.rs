@@ -9,16 +9,16 @@ use procedural::{MeshDescr, UnifiedIndexBuffer};
 /// # Arguments
 /// * `w` - the quad width.
 /// * `h` - the quad height.
-/// * `wsubdivs` - number of horizontal subdivisions. This correspond to the number of squares
+/// * `usubdivs` - number of horizontal subdivisions. This correspond to the number of squares
 /// which will be placed horizontally on each line. Must not be `0`.
-/// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
+/// * `vsubdivs` - number of vertical subdivisions. This correspond to the number of squares
 /// which will be placed vertically on each line. Must not be `0`.
 pub fn quad<N: Num + Cast<f64>>(width:    N,
                                 height:   N,
-                                wsubdivs: uint,
-                                hsubdivs: uint)
+                                usubdivs: uint,
+                                vsubdivs: uint)
                                 -> MeshDescr<N> {
-    let mut quad = unit_quad(wsubdivs, hsubdivs);
+    let mut quad = unit_quad(usubdivs, vsubdivs);
 
     quad.scale_by(&Vec3::new(width, height, na::zero()));
 
@@ -30,15 +30,15 @@ pub fn quad<N: Num + Cast<f64>>(width:    N,
 ///  triangles regularly spaced on a grid. This is the main way to draw height maps.
 ///
 /// # Arguments
-/// * `wsubdivs` - number of horizontal subdivisions. This correspond to the number of squares
+/// * `usubdivs` - number of horizontal subdivisions. This correspond to the number of squares
 /// which will be placed horizontally on each line. Must not be `0`.
-/// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
+/// * `vsubdivs` - number of vertical subdivisions. This correspond to the number of squares
 /// which will be placed vertically on each line. Must not be `0`.
-pub fn unit_quad<N: Num + Cast<f64>>(wsubdivs: uint, hsubdivs: uint) -> MeshDescr<N> {
-    assert!(wsubdivs > 0 && hsubdivs > 0, "The number of subdivisions cannot be zero");
+pub fn unit_quad<N: Num + Cast<f64>>(usubdivs: uint, vsubdivs: uint) -> MeshDescr<N> {
+    assert!(usubdivs > 0 && vsubdivs > 0, "The number of subdivisions cannot be zero");
 
-    let wstep    = na::one::<N>() / na::cast(wsubdivs as f64);
-    let hstep    = na::one::<N>() / na::cast(hsubdivs as f64);
+    let wstep    = na::one::<N>() / na::cast(usubdivs as f64);
+    let hstep    = na::one::<N>() / na::cast(vsubdivs as f64);
     let cw       = na::cast(0.5);
     let ch       = na::cast(0.5);
 
@@ -48,8 +48,8 @@ pub fn unit_quad<N: Num + Cast<f64>>(wsubdivs: uint, hsubdivs: uint) -> MeshDesc
     let mut tex_coords = Vec::new();
 
     // create the vertices
-    for i in range(0u, hsubdivs + 1) {
-        for j in range(0u, wsubdivs + 1) {
+    for i in range(0u, vsubdivs + 1) {
+        for j in range(0u, usubdivs + 1) {
             let ni: N = na::cast(i as f64);
             let nj: N = na::cast(j as f64);
 
@@ -59,7 +59,7 @@ pub fn unit_quad<N: Num + Cast<f64>>(wsubdivs: uint, hsubdivs: uint) -> MeshDesc
     }
 
     // create the normals
-    for _ in range(0, (hsubdivs + 1) * (wsubdivs + 1)) {
+    for _ in range(0, (vsubdivs + 1) * (usubdivs + 1)) {
         normals.push(Vec3::x())
     }
 
@@ -72,11 +72,11 @@ pub fn unit_quad<N: Num + Cast<f64>>(wsubdivs: uint, hsubdivs: uint) -> MeshDesc
         Vec3::new(i * ws + j, i * ws + (j + 1), (i + 1) * ws + j + 1)
     }
 
-    for i in range(0u, hsubdivs) {
-        for j in range(0u, wsubdivs) {
+    for i in range(0u, vsubdivs) {
+        for j in range(0u, usubdivs) {
             // build two triangles...
-            triangles.push(dl_triangle(i as u32, j as u32, (wsubdivs + 1) as u32));
-            triangles.push(ur_triangle(i as u32, j as u32, (wsubdivs + 1) as u32));
+            triangles.push(dl_triangle(i as u32, j as u32, (usubdivs + 1) as u32));
+            triangles.push(ur_triangle(i as u32, j as u32, (usubdivs + 1) as u32));
         }
     }
 

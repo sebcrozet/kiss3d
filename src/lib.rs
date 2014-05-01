@@ -120,6 +120,7 @@ pub mod camera;
 pub mod light;
 pub mod loader;
 pub mod line_renderer;
+pub mod point_renderer;
 pub mod builtin;
 pub mod post_processing;
 pub mod resource;

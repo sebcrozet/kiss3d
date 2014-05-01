@@ -5,6 +5,7 @@ pub use procedural::cube::{cube, unit_cube};
 pub use procedural::sphere::{sphere, unit_sphere};
 pub use procedural::capsule::capsule;
 pub use procedural::quad::{quad, unit_quad};
+pub use procedural::bezier::bezier_surface;
 
 mod utils;
 mod mesh_descr;
@@ -12,3 +13,4 @@ mod cube;
 mod sphere;
 mod capsule;
 mod quad;
+mod bezier;

@@ -12,7 +12,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: lines", |window| {
+    Window::spawn("Kiss3d: points", |window| {
 
         window.set_light(light::StickToCamera);
 
@@ -21,9 +21,9 @@ fn main() {
             let b = Vec3::new(0.0, 0.1, 0.0);
             let c = Vec3::new(0.1, -0.1, 0.0);
 
-            w.draw_line(&a, &b, &Vec3::x());
-            w.draw_line(&b, &c, &Vec3::y());
-            w.draw_line(&c, &a, &Vec3::z());
+            w.draw_point(&a, &Vec3::x());
+            w.draw_point(&b, &Vec3::y());
+            w.draw_point(&c, &Vec3::z());
         })
     })
 }
