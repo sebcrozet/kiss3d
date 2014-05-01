@@ -404,70 +404,27 @@ impl<'a> Window<'a> {
         res
     }
 
-    /// Adds a double-sided quad to the scene. The cylinder is initially centered at (0, 0, 0). The
+    /// Adds a double-sided quad to the scene. The quad is initially centered at (0, 0, 0). The
     /// quad itself is composed of a user-defined number of triangles regularly spaced on a grid.
     /// This is the main way to draw height maps.
     ///
     /// # Arguments
-    /// * `w` - the quad width
-    /// * `h` - the quad height
+    /// * `w` - the quad width.
+    /// * `h` - the quad height.
     /// * `wsubdivs` - number of horizontal subdivisions. This correspond to the number of squares
-    /// which will be placed horizontally on each line. Must not be `0`
+    /// which will be placed horizontally on each line. Must not be `0`.
     /// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
-    /// which will be placed vertically on each line. Must not be `0`
+    /// which will be placed vertically on each line. Must not be `0`.
     /// update.
     pub fn add_quad(&mut self, w: f32, h: f32, wsubdivs: uint, hsubdivs: uint) -> Object {
-        assert!(wsubdivs > 0 && hsubdivs > 0, "The number of subdivisions cannot be zero");
-
-        let wstep    = w / (wsubdivs as GLfloat);
-        let hstep    = h / (hsubdivs as GLfloat);
-        let wtexstep = 1.0 / (wsubdivs as GLfloat);
-        let htexstep = 1.0 / (hsubdivs as GLfloat);
-        let cw       = w / 2.0;
-        let ch       = h / 2.0;
-
-        let mut vertices   = Vec::new();
-        let mut normals    = Vec::new();
-        let mut triangles  = Vec::new();
-        let mut tex_coords = Vec::new();
-
-        // create the vertices
-        for i in range(0u, hsubdivs + 1) {
-            for j in range(0u, wsubdivs + 1) {
-                vertices.push(Vec3::new(j as GLfloat * wstep - cw, i as GLfloat * hstep - ch, 0.0));
-                tex_coords.push(Vec2::new(1.0 - j as GLfloat * wtexstep, 1.0 - i as GLfloat * htexstep))
-            }
-        }
-
-        // create the normals
-        for _ in range(0, (hsubdivs + 1) * (wsubdivs + 1)) {
-            { normals.push(Vec3::new(1.0, 0.0, 0.0)) }
-        }
-
-        // create triangles
-        fn dl_triangle(i: u32, j: u32, ws: u32) -> Vec3<GLuint> {
-            Vec3::new((i + 1) * ws + j, i * ws + j, (i + 1) * ws + j + 1)
-        }
-
-        fn ur_triangle(i: u32, j: u32, ws: u32) -> Vec3<GLuint> {
-            Vec3::new(i * ws + j, i * ws + (j + 1), (i + 1) * ws + j + 1)
-        }
-
-        for i in range(0u, hsubdivs) {
-            for j in range(0u, wsubdivs) {
-                // build two triangles...
-                triangles.push(dl_triangle(i as GLuint, j as GLuint, (wsubdivs + 1) as GLuint));
-                triangles.push(ur_triangle(i as GLuint, j as GLuint, (wsubdivs + 1) as GLuint));
-            }
-        }
-
-        let mesh = Mesh::new(vertices, triangles, Some(normals), Some(tex_coords), true);
-
         // FIXME: this weird block indirection are here because of Rust issue #6248
         let res = {
             let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
+            // FIXME: cache the generated quad
+            let geom = procedural::quad(w, h, wsubdivs, hsubdivs);
+            let geom = Rc::new(RefCell::new(Mesh::from_mesh_desc(geom, false)));
             Object::new(
-                Rc::new(RefCell::new(mesh)),
+                geom,
                 1.0, 1.0, 1.0,
                 tex,
                 1.0, 1.0, 1.0,
