@@ -16,7 +16,7 @@ use nalgebra::na::{Vec2, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, No
 use nalgebra::na;
 use kiss3d::window::Window;
 use kiss3d::text::Font;
-use kiss3d::object::ObjectData;
+use kiss3d::scene::ObjectData;
 use kiss3d::camera::{Camera, FirstPerson};
 use kiss3d::light::{Light, Absolute, StickToCamera};
 use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
@@ -34,32 +34,32 @@ fn main() {
         let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
         let font         = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
         let context      = Arc::new(RWLock::new(Context::new(1000.0, na::zero(), eye)));
-        let material     = Rc::new(RefCell::new(~RelativisticMaterial::new(context.clone()) as ~Material));
+        let material     = Rc::new(RefCell::new(~RelativisticMaterial::new(context.clone()) as ~Material:'static));
 
         window.set_camera(&mut observer as &mut Camera);
         window.set_framerate_limit(Some(60));
 
         let mut c = window.add_quad(800.0, 800.0, 40, 40);
         c.set_material(material.clone());
-        c.set_texture(&Path::new("media/kitten.png"), "kitten");
+        c.set_texture_from_file(&Path::new("media/kitten.png"), "kitten");
 
         let mut c = window.add_quad(800.0, 800.0, 40, 40);
         c.append_rotation(&(Vec3::x() * 90.0f32.to_radians()));
         c.append_translation(&(Vec3::new(0.0, -400.0, 400.0)));
         c.set_material(material.clone());
-        c.set_texture(&Path::new("media/kitten.png"), "kitten");
+        c.set_texture_with_name("kitten");
 
         let mut c = window.add_quad(800.0, 800.0, 40, 40);
         c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
         c.append_translation(&(Vec3::new(400.0, 0.0, 400.0)));
         c.set_material(material.clone());
-        c.set_texture(&Path::new("media/kitten.png"), "kitten");
+        c.set_texture_with_name("kitten");
 
         let mut c = window.add_quad(800.0, 800.0, 40, 40);
         c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
         c.append_translation(&(Vec3::new(-400.0, 0.0, 400.0)));
         c.set_material(material.clone());
-        c.set_texture(&Path::new("media/kitten.png"), "kitten");
+        c.set_texture_with_name("kitten");
 
         window.set_light(StickToCamera);
 
@@ -258,11 +258,13 @@ impl RelativisticMaterial {
 
 impl Material for RelativisticMaterial {
     fn render(&mut self,
-              pass:   uint,
-              camera: &mut Camera,
-              light:  &Light,
-              data:   &ObjectData,
-              mesh:   &mut Mesh) {
+              pass:      uint,
+              transform: &Iso3<f32>, 
+              scale:     &Vec3<f32>,
+              camera:    &mut Camera,
+              light:     &Light,
+              data:      &ObjectData,
+              mesh:      &mut Mesh) {
         self.activate();
 
         /*
@@ -302,12 +304,14 @@ impl Material for RelativisticMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform:  Mat4<f32> = na::to_homogeneous(data.transform());
-        let formated_ntransform: Mat3<f32> = *data.transform().rotation.submat();
+        let formated_transform:  Mat4<f32> = na::to_homogeneous(transform);
+        let formated_ntransform: Mat3<f32> = *transform.rotation.submat();
+        let formated_scale:      Mat3<f32> = Mat3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
+        // XXX: there should be a `na::diagonal(scale)` function on nalgebra.
 
         self.transform.upload(&formated_transform);
         self.ntransform.upload(&formated_ntransform);
-        self.scale.upload(data.scale());
+        self.scale.upload(&formated_scale);
         self.color.upload(data.color());
 
         mesh.bind(&mut self.pos, &mut self.normal, &mut self.tex_coord);

@@ -24,9 +24,9 @@ fn main() {
 
             let mut cu = window.add_cube(dim2, dim2, dim2);
             let mut sp = window.add_sphere(dim2);
-            let mut co = window.add_cone(dim, dim2);
-            let mut cy = window.add_cylinder(dim, dim2);
-            let mut ca = window.add_capsule(dim, dim2);
+            let mut co = window.add_cone(dim2, dim);
+            let mut cy = window.add_cylinder(dim2, dim);
+            let mut ca = window.add_capsule(dim2, dim);
 
             cu.append_translation(&Vec3::new(offset, 1.0, 0.0));
             sp.append_translation(&Vec3::new(offset, -1.0, 0.0));
@@ -44,9 +44,8 @@ fn main() {
         window.set_light(StickToCamera);
 
         window.render_loop(|w| {
-            for o in w.objects_mut().mut_iter() {
-                o.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
-            }
+            // XXX: applying this to each object individually became complicated…
+            w.scene_mut().append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
         });
     })
 }

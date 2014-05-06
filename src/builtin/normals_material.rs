@@ -1,40 +1,20 @@
-extern crate native;
-extern crate gl;
-extern crate kiss3d;
-extern crate nalgebra;
-
 use std::ptr;
-use std::rc::Rc;
-use std::cell::RefCell;
-use gl::types::GLint;
+use gl;
+use gl::types::*;
 use nalgebra::na::{Vec3, Mat3, Mat4, Iso3};
 use nalgebra::na;
-use kiss3d::window::Window;
-use kiss3d::scene::ObjectData;
-use kiss3d::camera::Camera;
-use kiss3d::light::Light;
-use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
+use resource::Material;
+use scene::ObjectData;
+use light::Light;
+use camera::Camera;
+use resource::{Mesh, Shader, ShaderAttribute, ShaderUniform};
 
-#[start]
-fn start(argc: int, argv: **u8) -> int {
-    native::start(argc, argv, main)
-}
+#[path = "../error.rs"]
+mod error;
 
-fn main() {
-    Window::spawn("Kiss3d: custom_material", |window| {
-        let mut c    = window.add_sphere(1.0);
-        let material = Rc::new(RefCell::new(~NormalMaterial::new() as ~Material:'static));
 
-        c.set_material(material);
-
-        window.render_loop(|_| {
-            c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
-        })
-    })
-}
-
-// A material that draws normals
-pub struct NormalMaterial {
+/// A material that draws normals of an object.
+pub struct NormalsMaterial {
     shader:    Shader,
     position:  ShaderAttribute<Vec3<f32>>,
     normal:    ShaderAttribute<Vec3<f32>>,
@@ -43,13 +23,14 @@ pub struct NormalMaterial {
     scale:     ShaderUniform<Mat3<f32>>
 }
 
-impl NormalMaterial {
-    pub fn new() -> NormalMaterial {
+impl NormalsMaterial {
+    /// Creates a new NormalsMaterial.
+    pub fn new() -> NormalsMaterial {
         let mut shader = Shader::new_from_str(NORMAL_VERTEX_SRC, NORMAL_FRAGMENT_SRC);
 
         shader.use_program();
 
-        NormalMaterial {
+        NormalsMaterial {
             position:  shader.get_attrib("position").unwrap(),
             normal:    shader.get_attrib("normal").unwrap(),
             transform: shader.get_uniform("transform").unwrap(),
@@ -60,15 +41,27 @@ impl NormalMaterial {
     }
 }
 
-impl Material for NormalMaterial {
+impl Material for NormalsMaterial {
     fn render(&mut self,
               pass:      uint,
               transform: &Iso3<f32>,
               scale:     &Vec3<f32>,
               camera:    &mut Camera,
               _:         &Light,
-              _:         &ObjectData,
+              data:      &ObjectData,
               mesh:      &mut Mesh) {
+        if !data.surface_rendering_active() {
+            return
+        }
+        // enable/disable culling.
+        if data.backface_culling_enabled() {
+            verify!(gl::Enable(gl::CULL_FACE));
+        }
+        else {
+            verify!(gl::Disable(gl::CULL_FACE));
+        }
+
+
         self.shader.use_program();
         self.position.enable();
         self.normal.enable();
@@ -110,7 +103,11 @@ impl Material for NormalMaterial {
     }
 }
 
-static NORMAL_VERTEX_SRC: &'static str =
+pub static NORMAL_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
+
+pub static NORMAL_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
+
+static A_VERY_LONG_STRING: &'static str =
 "#version 120
 attribute vec3 position;
 attribute vec3 normal;
@@ -125,7 +122,7 @@ void main() {
 }
 ";
 
-static NORMAL_FRAGMENT_SRC: &'static str =
+static ANOTHER_VERY_LONG_STRING: &'static str =
 "#version 120
 varying vec3 ls_normal;
 
@@ -133,3 +130,4 @@ void main() {
     gl_FragColor = vec4((ls_normal + 1.0) / 2.0, 1.0);
 }
 ";
+

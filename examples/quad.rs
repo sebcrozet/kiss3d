@@ -23,7 +23,7 @@ fn main() {
         window.set_light(light::StickToCamera);
 
         window.render_loop(|_| {
-            c.modify_vertices(|coords| {
+            c.modify_vertices(&mut |coords| {
                 for v in coords.mut_iter() {
                     v.z = time.sin() * (((v.x + time) * 4.0).cos() +
                           time.sin() * ((v.y + time) * 4.0 + time).cos()) / 2.0

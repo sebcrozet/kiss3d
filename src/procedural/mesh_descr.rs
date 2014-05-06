@@ -1,4 +1,5 @@
 use collections::HashMap;
+use procedural::utils;
 use nalgebra::na::{Iterable, Translate, Rotate, Transform, Vec3, Vec2};
 
 /// Different representation of the index buffer.
@@ -107,6 +108,7 @@ impl<N: Mul<N, N>> MeshDescr<N> {
             c.y = c.y * s.y;
             c.z = c.z * s.z;
         }
+        // FIXME: do something for the normals?
     }
 
     /// Scales each vertex of this mesh.
@@ -179,17 +181,7 @@ impl<N: Clone> MeshDescr<N> {
     pub fn split_index_buffer(&mut self) {
         let new_indices = match self.indices {
             UnifiedIndexBuffer(ref ids) => {
-                let mut resi = Vec::new();
-
-                for vertex in ids.iter() {
-                    resi.push(
-                        Vec3::new(
-                            Vec3::new(vertex.x, vertex.x, vertex.x),
-                            Vec3::new(vertex.y, vertex.y, vertex.y),
-                            Vec3::new(vertex.z, vertex.z, vertex.z)
-                            )
-                        );
-                }
+                let resi = utils::split_index_buffer(ids.as_slice());
 
                 Some(SplitIndexBuffer(resi))
             },

@@ -19,7 +19,7 @@ fn main() {
 
         window.render_loop(|w| {
             if added {
-                w.remove(c.clone());
+                w.remove(&mut c);
             }
             else {
                 c = w.add_cube(1.0, 1.0, 1.0);

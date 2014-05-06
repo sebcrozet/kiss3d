@@ -4,10 +4,7 @@ use procedural::{MeshDescr, UnifiedIndexBuffer};
 use procedural::utils;
 
 /// Generates a UV sphere.
-pub fn sphere<N: Float + Cast<f64>>(diameter:      &N,
-                                    ntheta_subdiv: u32,
-                                    nphi_subdiv:   u32)
-                                    -> MeshDescr<N> {
+pub fn sphere<N: Float + Cast<f64>>(diameter: &N, ntheta_subdiv: u32, nphi_subdiv: u32) -> MeshDescr<N> {
     let mut sphere = unit_sphere(ntheta_subdiv, nphi_subdiv);
 
     sphere.scale_by_scalar(diameter);
@@ -41,6 +38,7 @@ pub fn unit_sphere<N: Float + Cast<f64>>(ntheta_subdiv: u32, nphi_subdiv: u32) -
     // index buffer
     let mut idx = Vec::new();
     utils::push_degenerate_top_ring_indices(1, 0, ntheta_subdiv, &mut idx);
+    utils::reverse_clockwising(idx.as_mut_slice());
 
     for i in range(0, 2 * nphi_subdiv - 2) {
         utils::push_ring_indices(1 + i * ntheta_subdiv, 1 + (i + 1) * ntheta_subdiv, ntheta_subdiv, &mut idx);
@@ -50,10 +48,6 @@ pub fn unit_sphere<N: Float + Cast<f64>>(ntheta_subdiv: u32, nphi_subdiv: u32) -
                                             coords.len() as u32 - 1,
                                             ntheta_subdiv,
                                             &mut idx);
-    {
-        let len = idx.len();
-        utils::reverce_clockwising(idx.mut_slice_from(len - ntheta_subdiv as uint));
-    }
 
     // uvs
     let mut uvs = Vec::new();

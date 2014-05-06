@@ -8,7 +8,7 @@ use procedural::{MeshDescr, SplitIndexBuffer};
  * # Arguments:
  * * `extents` - the extents of the cube.
  */
-pub fn cube<N: Num + Clone + Cast<f64>>(extents: &Vec3<N>) -> MeshDescr<N> {
+pub fn cube<N: Float + Clone + Cast<f64>>(extents: &Vec3<N>) -> MeshDescr<N> {
     let mut cube = unit_cube();
 
     cube.scale_by(extents);
@@ -21,7 +21,7 @@ pub fn cube<N: Num + Clone + Cast<f64>>(extents: &Vec3<N>) -> MeshDescr<N> {
  *
  * The cube is centered at the origin, and has its half extents set to 0.5.
  */
-pub fn unit_cube<N: Num + Clone + Cast<f64>>() -> MeshDescr<N> {
+pub fn unit_cube<N: Float + Clone + Cast<f64>>() -> MeshDescr<N> {
     let mut coords  = Vec::new();
     let mut uvs     = Vec::new();
     let mut normals = Vec::new();

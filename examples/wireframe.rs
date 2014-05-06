@@ -2,7 +2,7 @@ extern crate native;
 extern crate kiss3d;
 extern crate nalgebra;
 
-use nalgebra::na::{Vec3, Rotation};
+use nalgebra::na::Vec3;
 use kiss3d::window::Window;
 use kiss3d::light;
 
@@ -16,23 +16,14 @@ fn main() {
         let mut c = window.add_cube(1.0, 1.0, 1.0);
 
         c.set_color(1.0, 0.0, 0.0);
+        c.set_points_size(10.0);
+        c.set_lines_width(1.0);
+        c.set_surface_rendering_activation(false);
 
         window.set_light(light::StickToCamera);
-        window.set_framerate_limit(Some(60));
 
-        let mut time = 0u;
-        let mut on   = true;
-
-        window.render_loop(|w| {
-            if time % 200 == 0 {
-                // Toogle the wireframe mode.
-                w.set_wireframe_mode(on);
-                on = !on;
-            }
-
-            time = time + 1;
-
-            c.append_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
-        });
+        window.render_loop(|_| {
+            c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
+        })
     })
 }

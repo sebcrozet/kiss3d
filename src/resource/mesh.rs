@@ -54,7 +54,7 @@ impl Mesh {
     /// Creates a new mesh from a mesh descr.
     ///
     /// In the normals and uvs are not given, they are automatically computed.
-    pub fn from_mesh_desc(mesh: MeshDescr<GLfloat>, dynamic_draw: bool) -> Mesh {
+    pub fn from_mesh_descr(mesh: MeshDescr<GLfloat>, dynamic_draw: bool) -> Mesh {
         let mut mesh = mesh;
 
         mesh.unify_index_buffer();

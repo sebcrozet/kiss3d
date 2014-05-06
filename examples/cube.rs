@@ -2,7 +2,7 @@ extern crate native;
 extern crate kiss3d;
 extern crate nalgebra;
 
-use nalgebra::na::{Vec3, Rotation};
+use nalgebra::na::Vec3;
 use kiss3d::window::Window;
 use kiss3d::light;
 
@@ -20,7 +20,7 @@ fn main() {
         window.set_light(light::StickToCamera);
 
         window.render_loop(|_| {
-            c.prepend_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
+            c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
         })
     })
 }

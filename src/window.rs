@@ -9,28 +9,21 @@ use std::io::timer::Timer;
 use std::num::Zero;
 use std::cell::RefCell;
 use std::rc::Rc;
-use std::io::IoResult;
 use libc;
-use collections::HashMap;
 use time;
 use gl;
 use gl::types::*;
-use stb_image::image::*;
 use nalgebra::na::{Vec2, Vec3, Vec4};
 use nalgebra::na;
 use camera::{Camera, ArcBall};
-use object::Object;
+use scene::SceneNode;
 use line_renderer::LineRenderer;
 use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, RenderTarget, Texture, TextureManager, Mesh, Material};
-use builtin::ObjectMaterial;
-use builtin::loader;
-use loader::obj;
-use loader::mtl::MtlMaterial;
 use light::{Light, Absolute, StickToCamera};
 use text::{TextRenderer, Font};
-use procedural;
+use procedural::{MeshDescr, ProceduralGenerator};
 
 mod error;
 
@@ -47,19 +40,16 @@ pub struct Window<'a> {
     glfw:                       glfw::Glfw,
     window:                     glfw::Window,
     max_ms_per_frame:           Option<u64>,
-    objects:                    Vec<Object>,
+    scene:                      SceneNode,
     camera:                     &'a mut Camera,
-    light_mode:                 Light,
-    wireframe_mode:             bool,
-    geometries:                 HashMap<~str, Rc<RefCell<Mesh>>>,
+    light_mode:                 Light, // FIXME: move that to the scene graph
     background:                 Vec3<GLfloat>,
     line_renderer:              LineRenderer,
     point_renderer:             PointRenderer,
     text_renderer:              TextRenderer,
     framebuffer_manager:        FramebufferManager,
     post_processing:            Option<&'a mut PostProcessingEffect>,
-    post_process_render_target: RenderTarget,
-    object_material:            Rc<RefCell<~Material>>
+    post_process_render_target: RenderTarget
 }
 
 impl<'a> Window<'a> {
@@ -136,12 +126,13 @@ impl<'a> Window<'a> {
         self.window.show()
     }
 
-    /// Switch on or off wireframe rendering mode. When set to `true`, everything in the scene will
-    /// be drawn using wireframes. Wireframe rendering mode cannot be enabled on a per-object basis.
-    #[inline]
-    pub fn set_wireframe_mode(&mut self, mode: bool) {
-        self.wireframe_mode = mode;
-    }
+    // XXX: remove this completely?
+    // /// Switch on or off wireframe rendering mode. When set to `true`, everything in the scene will
+    // /// be drawn using wireframes. Wireframe rendering mode cannot be enabled on a per-object basis.
+    // #[inline]
+    // pub fn set_wireframe_mode(&mut self, mode: bool) {
+    //     self.wireframe_mode = mode;
+    // }
 
     /// Sets the background color.
     #[inline]
@@ -170,126 +161,50 @@ impl<'a> Window<'a> {
     }
 
     /// Removes an object from the scene.
-    pub fn remove(&mut self, o: Object) {
-        match self.objects.iter().rposition(|e| o == *e) {
-            Some(i) => {
-                let _ = self.objects.swap_remove(i);
-            },
-            None => { }
-        }
+    pub fn remove(&mut self, sn: &mut SceneNode) {
+        sn.unlink()
     }
 
-    /// Loads a mesh from an obj file located at `path` and registers its geometry as
-    /// `geometry_name`.
-    pub fn load_obj(&mut self,
-                    path:          &Path,
-                    mtl_dir:       &Path,
-                    geometry_name: &str)
-                    -> IoResult<Vec<(~str, Rc<RefCell<Mesh>>, Option<MtlMaterial>)>> {
-        obj::parse_file(path, mtl_dir, geometry_name).map(|ms| {
-            let mut res = Vec::new();
-
-            for (n, m, mat) in ms.move_iter() {
-                let m = Rc::new(RefCell::new(m));
-                self.geometries.insert(geometry_name.to_owned(), m.clone());
-
-                res.push((n, m, mat));
-            }
-
-            res
-        })
-    }
-
-    /// Gets the geometry named `geometry_name` if it has been already registered.
-    #[inline]
-    pub fn get_mesh(&mut self, geometry_name: &str) -> Option<Rc<RefCell<Mesh>>> {
-        self.geometries.find(&geometry_name.to_owned()).map(|m| m.clone())
-    }
-
-    /// Registers the geometry `mesh` with the name `geometry_name`.
-    #[inline]
-    pub fn register_mesh(&mut self, geometry_name: &str, mesh: Mesh) {
-        self.geometries.insert(geometry_name.to_owned(), Rc::new(RefCell::new(mesh)));
+    /// Adds a group to the scene.
+    ///
+    /// A group is a node not containing any object.
+    pub fn add_group(&mut self) -> SceneNode {
+        self.scene.add_group()
     }
 
     /// Adds an obj model to the scene.
     ///
     /// # Arguments
     /// * `path`  - relative path to the obj file.
-    /// * `scale` - uniform scale to apply to the model.
-    pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: GLfloat) -> IoResult<Vec<Object>> {
-        let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
-        self.load_obj(path, mtl_dir, path.as_str().unwrap()).map(|objs| {
-            let mut res = Vec::new();
-
-            for (_, mesh, mtl) in objs.move_iter() {
-                let mut object = Object::new(
-                    mesh,
-                    1.0, 1.0, 1.0,
-                    tex.clone(),
-                    scale, scale, scale,
-                    self.object_material.clone()
-                    );
-
-                match mtl {
-                    None      => { },
-                    Some(mtl) => {
-                        object.set_color(mtl.diffuse.x, mtl.diffuse.y, mtl.diffuse.z);
-
-                        for t in mtl.diffuse_texture.iter() {
-                            let mut tpath = mtl_dir.clone();
-                            tpath.push(t.as_slice());
-                            object.set_texture(&tpath, tpath.as_str().unwrap())
-                        }
-
-                        for t in mtl.ambiant_texture.iter() {
-                            let mut tpath = mtl_dir.clone();
-                            tpath.push(t.as_slice());
-                            object.set_texture(&tpath, tpath.as_str().unwrap())
-                        }
-                    }
-                }
-
-                res.push(object.clone());
-                self.objects.push(object);
-            }
-
-            res
-        })
+    /// * `scale` - scale to apply to the model.
+    pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: Vec3<f32>) -> SceneNode {
+        self.scene.add_obj(path, mtl_dir, scale)
     }
 
     /// Adds an unnamed mesh to the scene.
-    pub fn add_mesh(&mut self, mesh: Mesh, scale: GLfloat) -> Object {
-        let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
-
-        let res = Object::new(
-                    Rc::new(RefCell::new(mesh)),
-                    1.0, 1.0, 1.0,
-                    tex,
-                    scale, scale, scale,
-                    self.object_material.clone());
-
-        self.objects.push(res.clone());
-
-        res
+    pub fn add_mesh(&mut self, mesh: Rc<RefCell<Mesh>>, scale: Vec3<f32>) -> SceneNode {
+        self.scene.add_mesh(mesh, scale)
     }
 
+    /// Creates and adds a new object using the geometry generated by a given procedural generator.
+    /// Creates and adds a new object using a mesh descriptor.
+    pub fn add_mesh_descr(&mut self, descr: MeshDescr<f32>, scale: Vec3<f32>) -> SceneNode {
+        self.scene.add_mesh_descr(descr, scale)
+    }
+
+    /// Creates and adds a new object using the geometry generated by a given procedural generator.
+    pub fn add_from_generator<G: ProceduralGenerator<f32>>(
+                              &mut self,
+                              generator: &G,
+                              scale:     Vec3<f32>)
+                              -> SceneNode {
+        self.scene.add_from_generator(generator, scale)
+    }
+
+
     /// Creates and adds a new object using the geometry registered as `geometry_name`.
-    pub fn add(&mut self, geometry_name: &str, scale: GLfloat) -> Option<Object> {
-        let objects         = &mut self.objects;
-        let object_material = self.object_material.clone();
-
-        self.geometries.find(&geometry_name.to_owned()).map(|m| {
-            let res = Object::new(
-                        m.clone(),
-                        1.0, 1.0, 1.0,
-                        TextureManager::get_global_manager(|tm| tm.get_default()),
-                        scale, scale, scale,
-                        object_material.clone());
-            objects.push(res.clone());
-
-            res
-        })
+    pub fn add_geom_with_name(&mut self, geometry_name: &str, scale: Vec3<f32>) -> Option<SceneNode> {
+        self.scene.add_geom_with_name(geometry_name, scale)
     }
 
     /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
@@ -298,44 +213,16 @@ impl<'a> Window<'a> {
     /// * `wx` - the cube extent along the z axis
     /// * `wy` - the cube extent along the y axis
     /// * `wz` - the cube extent along the z axis
-    pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> Object {
-        // FIXME: this weird block indirection are here because of Rust issue #6248
-        let res = {
-            let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
-            let geom = self.geometries.find(&~"cube").unwrap();
-            Object::new(
-                geom.clone(),
-                1.0, 1.0, 1.0,
-                tex,
-                wx, wy, wz,
-                self.object_material.clone())
-        };
-
-        self.objects.push(res.clone());
-
-        res
+    pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> SceneNode {
+        self.scene.add_cube(wx, wy, wz)
     }
 
     /// Adds a sphere to the scene. The sphere is initially centered at (0, 0, 0).
     ///
     /// # Arguments
     /// * `r` - the sphere radius
-    pub fn add_sphere(&mut self, r: GLfloat) -> Object {
-        // FIXME: this weird block indirection are here because of Rust issue #6248
-        let res = {
-            let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
-            let geom = self.geometries.find(&~"sphere").unwrap();
-            Object::new(
-                geom.clone(),
-                1.0, 1.0, 1.0,
-                tex,
-                r / 0.5, r / 0.5, r / 0.5,
-                self.object_material.clone())
-        };
-
-        self.objects.push(res.clone());
-
-        res
+    pub fn add_sphere(&mut self, r: GLfloat) -> SceneNode {
+        self.scene.add_sphere(r)
     }
 
     /// Adds a cone to the scene. The cone is initially centered at (0, 0, 0) and points toward the
@@ -344,22 +231,8 @@ impl<'a> Window<'a> {
     /// # Arguments
     /// * `h` - the cone height
     /// * `r` - the cone base radius
-    pub fn add_cone(&mut self, h: GLfloat, r: GLfloat) -> Object {
-        // FIXME: this weird block indirection are here because of Rust issue #6248
-        let res = {
-            let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
-            let geom = self.geometries.find(&~"cone").unwrap();
-            Object::new(
-                geom.clone(),
-                1.0, 1.0, 1.0,
-                tex,
-                r / 0.5, h, r / 0.5,
-                self.object_material.clone())
-        };
-
-        self.objects.push(res.clone());
-
-        res
+    pub fn add_cone(&mut self, r: GLfloat, h: GLfloat) -> SceneNode {
+        self.scene.add_cone(r, h)
     }
 
     /// Adds a cylinder to the scene. The cylinder is initially centered at (0, 0, 0) and has its
@@ -368,22 +241,8 @@ impl<'a> Window<'a> {
     /// # Arguments
     /// * `h` - the cylinder height
     /// * `r` - the cylinder base radius
-    pub fn add_cylinder(&mut self, h: GLfloat, r: GLfloat) -> Object {
-        // FIXME: this weird block indirection are here because of Rust issue #6248
-        let res = {
-            let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
-            let geom = self.geometries.find(&~"cylinder").unwrap();
-            Object::new(
-                geom.clone(),
-                1.0, 1.0, 1.0,
-                tex,
-                r / 0.5, h, r / 0.5,
-                self.object_material.clone())
-        };
-
-        self.objects.push(res.clone());
-
-        res
+    pub fn add_cylinder(&mut self, r: GLfloat, h: GLfloat) -> SceneNode {
+        self.scene.add_cylinder(r, h)
     }
 
     /// Adds a capsule to the scene. The capsule is initially centered at (0, 0, 0) and has its
@@ -392,24 +251,8 @@ impl<'a> Window<'a> {
     /// # Arguments
     /// * `h` - the capsule height
     /// * `r` - the capsule caps radius
-    pub fn add_capsule(&mut self, h: GLfloat, r: GLfloat) -> Object {
-        // FIXME: this weird block indirection are here because of Rust issue #6248
-        let res = {
-            let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
-            // FIXME: cache the generated capsule
-            let geom = procedural::capsule(&h, &r, 20, 20);
-            let geom = Rc::new(RefCell::new(Mesh::from_mesh_desc(geom, false)));
-            Object::new(
-                geom,
-                1.0, 1.0, 1.0,
-                tex,
-                r / 0.5, h, r / 0.5,
-                self.object_material.clone())
-        };
-
-        self.objects.push(res.clone());
-
-        res
+    pub fn add_capsule(&mut self, r: GLfloat, h: GLfloat) -> SceneNode {
+        self.scene.add_capsule(r, h)
     }
 
     /// Adds a double-sided quad to the scene. The quad is initially centered at (0, 0, 0). The
@@ -424,24 +267,17 @@ impl<'a> Window<'a> {
     /// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
     /// which will be placed vertically on each line. Must not be `0`.
     /// update.
-    pub fn add_quad(&mut self, w: f32, h: f32, wsubdivs: uint, hsubdivs: uint) -> Object {
-        // FIXME: this weird block indirection are here because of Rust issue #6248
-        let res = {
-            let tex  = TextureManager::get_global_manager(|tm| tm.get_default());
-            // FIXME: cache the generated quad
-            let geom = procedural::quad(w, h, wsubdivs, hsubdivs);
-            let geom = Rc::new(RefCell::new(Mesh::from_mesh_desc(geom, false)));
-            Object::new(
-                geom,
-                1.0, 1.0, 1.0,
-                tex,
-                1.0, 1.0, 1.0,
-                self.object_material.clone())
-        };
+    pub fn add_quad(&mut self, w: f32, h: f32, usubdivs: uint, vsubdivs: uint) -> SceneNode {
+        self.scene.add_quad(w, h, usubdivs, vsubdivs)
+    }
 
-        self.objects.push(res.clone());
-
-        res
+    /// Adds a double-sided quad with the specified vertices.
+    pub fn add_quad_with_vertices(&mut self,
+                                  vertices: &[Vec3<f32>],
+                                  nhpoints: uint,
+                                  nvpoints: uint)
+                                  -> SceneNode {
+        self.scene.add_quad_with_vertices(vertices, nhpoints, nvpoints)
     }
 
     #[doc(hidden)]
@@ -485,6 +321,7 @@ impl<'a> Window<'a> {
         (unprojected_begin, na::normalize(&(unprojected_end - unprojected_begin)))
     }
 
+    /* XXX
     /// The list of objects on the scene.
     pub fn objects<'r>(&'r self) -> &'r [Object] {
         self.objects.as_slice()
@@ -494,6 +331,7 @@ impl<'a> Window<'a> {
     pub fn objects_mut<'r>(&'r mut self) -> &'r mut [Object] {
         self.objects.as_mut_slice()
     }
+    */
 
     /// Poll events and pass them to a user-defined function. If the function returns `true`, the
     /// default engine event handler (camera, framebuffer size, etc.) is executed, if it returns
@@ -588,7 +426,6 @@ impl<'a> Window<'a> {
         verify!(gl::load_with(|name| glfw.get_proc_address(name)));
         init_gl();
 
-        let builtins     = loader::load();
         let mut camera   = ArcBall::new(-Vec3::z(), Zero::zero());
 
         let mut usr_window = Window {
@@ -596,11 +433,9 @@ impl<'a> Window<'a> {
             glfw:                  glfw,
             window:                window,
             events:                Rc::new(events),
-            objects:               Vec::new(),
+            scene:                 SceneNode::new_empty(),
             camera:                &mut camera as &mut Camera,
             light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
-            wireframe_mode:        false,
-            geometries:            builtins,
             background:            Vec3::new(0.0, 0.0, 0.0),
             line_renderer:         LineRenderer::new(),
             point_renderer:        PointRenderer::new(),
@@ -608,7 +443,6 @@ impl<'a> Window<'a> {
             post_processing:       None,
             post_process_render_target: FramebufferManager::new_render_target(width as uint, height as uint),
             framebuffer_manager:   FramebufferManager::new(),
-            object_material:       Rc::new(RefCell::new(~ObjectMaterial::new() as ~Material))
         };
 
         // setup callbacks
@@ -631,6 +465,18 @@ impl<'a> Window<'a> {
         usr_window.set_light(usr_window.light_mode);
 
         callback(&mut usr_window);
+    }
+
+    /// Reference to the scene associated with this window.
+    #[inline]
+    pub fn scene<'a>(&'a self) -> &'a SceneNode {
+        &'a self.scene
+    }
+
+    /// Mutable reference to the scene associated with this window.
+    #[inline]
+    pub fn scene_mut<'a>(&'a mut self) -> &'a mut SceneNode {
+        &'a mut self.scene
     }
 
     // FIXME: give more options for the snap size and offset.
@@ -687,10 +533,11 @@ impl<'a> Window<'a> {
         let h = self.height();
         let (znear, zfar) = self.camera.clip_planes();
 
+        // FIXME: remove this completely?
         // swatch off the wireframe mode for post processing and text rendering.
-        if self.wireframe_mode {
-            verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
-        }
+        // if self.wireframe_mode {
+        //     verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
+        // }
 
         match self.post_processing {
             Some(ref mut p) => {
@@ -742,16 +589,15 @@ impl<'a> Window<'a> {
             self.point_renderer.render(pass, self.camera);
         }
 
-        if self.wireframe_mode {
-            verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE));
-        }
-        else {
-            verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
-        }
+        // XXX: remove this completely?
+        // if self.wireframe_mode {
+        //     verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE));
+        // }
+        // else {
+        //     verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
+        // }
 
-        for o in self.objects.iter() {
-            o.render(pass, self.camera, &self.light_mode)
-        }
+        self.scene.data_mut().render(pass, self.camera, &self.light_mode);
     }
 
 
@@ -771,4 +617,7 @@ fn init_gl() {
     verify!(gl::Enable(gl::DEPTH_TEST));
     verify!(gl::Enable(gl::SCISSOR_TEST));
     verify!(gl::DepthFunc(gl::LEQUAL));
+    verify!(gl::FrontFace(gl::CCW));
+    verify!(gl::Enable(gl::CULL_FACE));
+    verify!(gl::CullFace(gl::BACK));
 }

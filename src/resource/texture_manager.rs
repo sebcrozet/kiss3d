@@ -39,9 +39,7 @@ impl Drop for Texture {
     }
 }
 
-// FIXME: why is this on TLS?
 local_data_key!(KEY_TEXTURE_MANAGER: TextureManager)
-
 
 /// The texture manager.
 ///
@@ -90,7 +88,7 @@ impl TextureManager {
         self.default_texture.clone()
     }
 
-    /// Get a texture with the specified path. Returns `None` if the texture is not loaded.
+    /// Get a texture with the specified name. Returns `None` if the texture is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<Texture>> {
         self.textures.find(&name.to_owned()).map(|t| t.clone())
     }

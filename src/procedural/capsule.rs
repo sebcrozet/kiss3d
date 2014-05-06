@@ -4,8 +4,8 @@ use procedural::{MeshDescr, UnifiedIndexBuffer};
 use procedural::{sphere, utils};
 
 /// Generates a capsule.
-pub fn capsule<N: Float + Cast<f64>>(cylinder_height: &N,
-                                     caps_diameter:   &N,
+pub fn capsule<N: Float + Cast<f64>>(caps_diameter:   &N,
+                                     cylinder_height: &N,
                                      ntheta_subdiv:   u32,
                                      nphi_subdiv:     u32)
                                      -> MeshDescr<N> {
@@ -14,6 +14,7 @@ pub fn capsule<N: Float + Cast<f64>>(cylinder_height: &N,
     let mut bottom_coords  = coords;
     let mut bottom_normals = normals.unwrap();
     let mut bottom_indices = indices.unwrap_unified();
+    utils::reverse_clockwising(bottom_indices.as_mut_slice());
 
     let MeshDescr { coords, normals, indices, .. } = top;
     let mut top_coords  = coords;

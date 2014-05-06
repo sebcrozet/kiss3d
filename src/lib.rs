@@ -115,7 +115,7 @@ extern crate avformat = "avformat55";
 extern crate swscale = "swscale2";
 
 pub mod window;
-pub mod object;
+pub mod scene;
 pub mod camera;
 pub mod light;
 pub mod loader;

@@ -2,7 +2,7 @@ extern crate native;
 extern crate kiss3d;
 extern crate nalgebra;
 
-use nalgebra::na::{Vec3, Rotation};
+use nalgebra::na::Vec3;
 use kiss3d::window::Window;
 use kiss3d::light;
 use kiss3d::utils::Recorder;
@@ -14,7 +14,7 @@ fn start(argc: int, argv: **u8) -> int {
 
 fn main() {
     Window::spawn("Kiss3d: recording", |window| {
-        let mut c = window.add_cone(1.0, 0.5);
+        let mut c = window.add_cone(0.5, 1.0);
 
         c.set_color(1.0, 0.0, 0.0);
 
@@ -25,7 +25,7 @@ fn main() {
                                          window.height() as uint);
 
         window.render_loop(|window| {
-            c.prepend_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
+            c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
 
             recorder.snap(window);
         })

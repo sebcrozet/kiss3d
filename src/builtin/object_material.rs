@@ -1,10 +1,10 @@
 use std::ptr;
 use gl;
 use gl::types::*;
-use nalgebra::na::{Vec2, Vec3, Mat3, Mat4};
+use nalgebra::na::{Vec2, Vec3, Mat3, Mat4, Iso3};
 use nalgebra::na;
 use resource::Material;
-use object::ObjectData;
+use scene::ObjectData;
 use light::{Light, Absolute, StickToCamera};
 use camera::Camera;
 use resource::{Mesh, Shader, ShaderAttribute, ShaderUniform};
@@ -67,11 +67,13 @@ impl ObjectMaterial {
 
 impl Material for ObjectMaterial {
     fn render(&mut self,
-              pass:   uint,
-              camera: &mut Camera,
-              light:  &Light,
-              data:   &ObjectData,
-              mesh:   &mut Mesh) {
+              pass:      uint,
+              transform: &Iso3<f32>,
+              scale:     &Vec3<f32>,
+              camera:    &mut Camera,
+              light:     &Light,
+              data:      &ObjectData,
+              mesh:      &mut Mesh) {
         self.activate();
 
 
@@ -94,13 +96,14 @@ impl Material for ObjectMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform:  Mat4<f32> = na::to_homogeneous(data.transform());
-        let formated_ntransform: Mat3<f32> = *data.transform().rotation.submat();
+        let formated_transform:  Mat4<f32> = na::to_homogeneous(transform);
+        let formated_ntransform: Mat3<f32> = *transform.rotation.submat();
+        let formated_scale:      Mat3<f32> = Mat3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
 
         unsafe {
             self.transform.upload(&formated_transform);
             self.ntransform.upload(&formated_ntransform);
-            self.scale.upload(data.scale());
+            self.scale.upload(&formated_scale);
             self.color.upload(data.color());
 
             mesh.bind(&mut self.pos, &mut self.normal, &mut self.tex_coord);
@@ -108,10 +111,45 @@ impl Material for ObjectMaterial {
             verify!(gl::ActiveTexture(gl::TEXTURE0));
             verify!(gl::BindTexture(gl::TEXTURE_2D, data.texture().id()));
 
-            verify!(gl::DrawElements(gl::TRIANGLES,
-                    mesh.num_pts() as GLint,
-                    gl::UNSIGNED_INT,
-                    ptr::null()));
+            if data.surface_rendering_active() {
+                if data.backface_culling_enabled() {
+                    verify!(gl::Enable(gl::CULL_FACE));
+                }
+                else {
+                    verify!(gl::Disable(gl::CULL_FACE));
+                }
+
+                verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
+                verify!(gl::DrawElements(
+                            gl::TRIANGLES,
+                            mesh.num_pts() as GLint,
+                            gl::UNSIGNED_INT,
+                            ptr::null()));
+            }
+
+            if data.lines_width() != 0.0 {
+                verify!(gl::Disable(gl::CULL_FACE));
+                verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE));
+                gl::LineWidth(data.lines_width());
+                verify!(gl::DrawElements(
+                            gl::TRIANGLES,
+                            mesh.num_pts() as GLint,
+                            gl::UNSIGNED_INT,
+                            ptr::null()));
+                gl::LineWidth(1.0);
+            }
+
+            if data.points_size() != 0.0 {
+                verify!(gl::Disable(gl::CULL_FACE));
+                verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::POINT));
+                gl::PointSize(data.points_size());
+                verify!(gl::DrawElements(
+                            gl::TRIANGLES,
+                            mesh.num_pts() as GLint,
+                            gl::UNSIGNED_INT,
+                            ptr::null()));
+                gl::PointSize(1.0);
+            }
         }
 
         mesh.unbind();

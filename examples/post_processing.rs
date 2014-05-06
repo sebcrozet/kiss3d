@@ -18,9 +18,9 @@ fn main() {
     Window::spawn("Kiss3d: post_processing", |window| {
         let mut c = window.add_cube(1.0, 1.0, 1.0);
         let mut b = window.add_sphere(0.5);
-        let mut p = window.add_cone(1.0, 0.5);
-        let mut y = window.add_cylinder(1.0, 0.5);
-        let mut a = window.add_capsule(1.0, 0.5);
+        let mut p = window.add_cone(0.5, 1.0);
+        let mut y = window.add_cylinder(0.5, 1.0);
+        let mut a = window.add_capsule(0.5, 1.0);
 
         c.append_translation(&Vec3::new(2.0, 0.0, 0.0));
         b.append_translation(&Vec3::new(4.0, 0.0, 0.0));
