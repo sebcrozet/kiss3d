@@ -6,8 +6,8 @@ use std::cell::RefCell;
 use std::local_data;
 use collections::HashMap;
 use resource::Mesh;
-use procedural::MeshDescr;
-use procedural;
+use nprocgen::mesh::MeshDescr;
+use nprocgen::mesh;
 use loader::obj;
 use loader::mtl::MtlMaterial;
 
@@ -30,10 +30,10 @@ impl MeshManager {
             meshes: HashMap::new()
         };
 
-        let _ = res.add_mesh_descr(procedural::unit_sphere(50, 50), false, "sphere");
-        let _ = res.add_mesh_descr(procedural::unit_cube(), false, "cube");
-        let _ = res.add_mesh_descr(procedural::unit_cone(50), false, "cone");
-        let _ = res.add_mesh_descr(procedural::unit_cylinder(50), false, "cylinder");
+        let _ = res.add_mesh_descr(mesh::unit_sphere(50, 50), false, "sphere");
+        let _ = res.add_mesh_descr(mesh::unit_cube(), false, "cube");
+        let _ = res.add_mesh_descr(mesh::unit_cone(50), false, "cone");
+        let _ = res.add_mesh_descr(mesh::unit_cylinder(50), false, "cylinder");
 
         res
     }

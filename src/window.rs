@@ -23,7 +23,7 @@ use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, RenderTarget, Texture, TextureManager, Mesh, Material};
 use light::{Light, Absolute, StickToCamera};
 use text::{TextRenderer, Font};
-use procedural::{MeshDescr, ProceduralGenerator};
+use nprocgen::mesh::{MeshDescr, ProceduralGenerator};
 
 mod error;
 

@@ -4,8 +4,8 @@ use std::cast;
 use nalgebra::na;
 use nalgebra::na::{Iso3, Vec2, Vec3, Transformation, Rotation, Translation, RotationWithTranslation};
 use resource::{Mesh, MeshManager, Texture, TextureManager, Material, MaterialManager};
-use procedural::{ProceduralGenerator, CapsuleGenerator, QuadGenerator, MeshDescr};
-use procedural;
+use nprocgen::mesh::{ProceduralGenerator, CapsuleGenerator, QuadGenerator, MeshDescr};
+use nprocgen::mesh;
 use scene::Object;
 use camera::Camera;
 use light::Light;
@@ -683,7 +683,7 @@ impl SceneNode {
 
     /// Adds a double-sided quad with the specified vertices.
     pub fn add_quad_with_vertices(&mut self, vertices: &[Vec3<f32>], nhpoints: uint, nvpoints: uint) -> SceneNode {
-        let geom = procedural::quad_with_vertices(vertices, nhpoints, nvpoints);
+        let geom = mesh::quad_with_vertices(vertices, nhpoints, nvpoints);
 
         let mut node = self.add_mesh_descr(geom, na::one());
         node.enable_backface_culling(false);

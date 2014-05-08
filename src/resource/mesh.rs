@@ -7,7 +7,7 @@ use nalgebra::na::{Vec2, Vec3};
 use nalgebra::na;
 use resource::ShaderAttribute;
 use resource::gpu_vector::{GPUVector, DynamicDraw, StaticDraw, ArrayBuffer, ElementArrayBuffer};
-use procedural::MeshDescr;
+use nprocgen::mesh::MeshDescr;
 
 #[path = "../error.rs"]
 mod error;

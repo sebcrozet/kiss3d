@@ -9,7 +9,8 @@ nalgebra_lib_path=lib/nalgebra/lib
 stb_image_lib_path=lib/rust-stb-image/
 freetype_path=lib/rust-freetype/
 ffmpeg_path=lib/rust-ffmpeg/lib
-libs=-L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path) -L$(freetype_path) -L$(ffmpeg_path)
+nprocgen_path=lib/nprocgen/lib
+libs=-L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path) -L$(freetype_path) -L$(ffmpeg_path) -L$(nprocgen_path)
 build_cmd= rustc -Llib  $(libs) --opt-level 3 --out-dir $(kiss3d_bin_path)
 
 all:
@@ -61,6 +62,8 @@ deps:
 	cd lib/rust-ffmpeg; ./build.sh
 	make lib -C $(glfw_path)
 	make -C lib/nalgebra
+	make deps -C lib/nprocgen
+	make -C lib/nprocgen
 	cd lib/gl-rs; rustc --opt-level=3 src/gl/lib.rs
 	cd lib/rust-stb-image; ./configure
 	make clean -C lib/rust-stb-image

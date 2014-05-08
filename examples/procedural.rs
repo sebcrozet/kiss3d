@@ -1,11 +1,12 @@
 extern crate native;
+extern crate nprocgen;
 extern crate kiss3d;
 extern crate nalgebra;
 
 use nalgebra::na;
 use nalgebra::na::{Vec3, Translation};
+use nprocgen::mesh;
 use kiss3d::window::Window;
-use kiss3d::procedural;
 use kiss3d::light;
 
 #[start]
@@ -18,7 +19,7 @@ fn main() {
         /*
          * A cube.
          */
-        let cube  = procedural::cube(&Vec3::new(0.7f32, 0.2, 0.4));
+        let cube  = mesh::cube(&Vec3::new(0.7f32, 0.2, 0.4));
         let mut c = window.add_mesh_descr(cube, na::one());
         c.append_translation(&Vec3::new(1.0, 0.0, 0.0));
         c.set_texture_from_file(&Path::new("media/kitten.png"), "kitten");
@@ -26,14 +27,14 @@ fn main() {
         /*
          * A sphere.
          */
-        let sphere = procedural::sphere(&0.4f32, 20, 20);
+        let sphere = mesh::sphere(&0.4f32, 20, 20);
         let mut s  = window.add_mesh_descr(sphere, na::one());
         s.set_texture_with_name("kitten");
 
         /*
          * A capsule.
          */
-        let capsule = procedural::capsule(&0.4f32, &0.4f32, 20, 20);
+        let capsule = mesh::capsule(&0.4f32, &0.4f32, 20, 20);
         let mut c   = window.add_mesh_descr(capsule, na::one());
         c.append_translation(&Vec3::new(-1.0, 0.0, 0.0));
         c.set_color(0.0, 0.0, 1.0);
@@ -47,7 +48,7 @@ fn main() {
             Vec3::new(0.0f32, 2.0, 2.0), Vec3::new(1.0, 2.0, 3.0), Vec3::new(2.0, 2.0, 3.0), Vec3::new(3.0, 2.0, 2.0),
             Vec3::new(0.0f32, 3.0, 0.0), Vec3::new(1.0, 3.0, 2.0), Vec3::new(2.0, 3.0, 2.0), Vec3::new(3.0, 3.0, 0.0)
         ];
-        let bezier = procedural::bezier_surface(control_points, 4, 4, 100, 100);
+        let bezier = mesh::bezier_surface(control_points, 4, 4, 100, 100);
         let mut b  = window.add_mesh_descr(bezier, na::one());
         b.append_translation(&Vec3::new(-1.5, -1.5, 0.0));
         b.enable_backface_culling(false);
