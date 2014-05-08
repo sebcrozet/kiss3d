@@ -25,7 +25,7 @@ Most features are one-liners.
 * display boxes, spheres, cones, cylinders, quads and lines.
 * change an object color or texture.
 * change an object transform (we use the [nalgebra](https://github.com/sebcrozet/nalgebra) library
-  to do that).  An object cannot be scaled though.
+  to do that).
 * create basic post-processing effects.
 
 As an example, having a red, rotating cube with the light attached to the camera is as simple as:
