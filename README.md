@@ -90,4 +90,4 @@ I’d love to see people improving this library for their own needs. However, ke
 
 ## Acknowledgements
 
-* **bjz** for his awesome [glfw](https://github.com/bjz/glfw-rs.git) and [opengl](https://github.com/bjz/gl-rs.git) bindings.
+Thanks to all the Rustafarians for their help, and their OpenGl/ffmpeg/stb-image/etc. bindings.
