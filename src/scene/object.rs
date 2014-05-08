@@ -14,14 +14,14 @@ mod error;
 
 /// Set of data identifying a scene node.
 pub struct ObjectData {
-    material:     Rc<RefCell<~Material:'static>>,
+    material:     Rc<RefCell<Box<Material:'static>>>,
     texture:      Rc<Texture>,
     color:        Vec3<f32>,
     wlines:       f32,
     wpoints:      f32,
     draw_surface: bool,
     cull:         bool,
-    user_data:    ~Any
+    user_data:    Box<Any>
 }
 
 impl ObjectData {
@@ -89,7 +89,8 @@ impl Object {
                g:            f32,
                b:            f32,
                texture:      Rc<Texture>,
-               material:     Rc<RefCell<~Material:'static>>) -> Object {
+               material:     Rc<RefCell<Box<Material:'static>>>) -> Object {
+        let user_data = ();
         let data = ObjectData {
             color:        Vec3::new(r, g, b),
             texture:      texture,
@@ -98,7 +99,7 @@ impl Object {
             draw_surface: true,
             cull:         true,
             material:     material,
-            user_data:    ~() as ~Any
+            user_data:    box user_data as Box<Any>
         };
 
         Object {
@@ -144,19 +145,19 @@ impl Object {
 
     /// Attaches user-defined data to this object.
     #[inline]
-    pub fn set_user_data(&mut self, user_data: ~Any) {
+    pub fn set_user_data(&mut self, user_data: Box<Any>) {
         self.data.user_data = user_data;
     }
 
     /// Gets the material of this object.
     #[inline]
-    pub fn material(&self) -> Rc<RefCell<~Material:'static>> {
+    pub fn material(&self) -> Rc<RefCell<Box<Material:'static>>> {
         self.data.material.clone()
     }
 
     /// Sets the material of this object.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<~Material:'static>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material:'static>>>) {
         self.data.material = material;
     }
 

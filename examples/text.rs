@@ -20,7 +20,7 @@ fn main() {
         window.render_loop(|w| {
             w.draw_text("Hello birds!", &na::zero(), &bigfont, &Vec3::new(0.0, 1.0, 1.0));
 
-            let ascii = &" !\"#$%&'`()*+,-_./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^abcdefghijklmnopqrstuvwxyz{|}~";
+            let ascii = " !\"#$%&'`()*+,-_./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^abcdefghijklmnopqrstuvwxyz{|}~";
 
             w.draw_text(ascii, &Vec2::new(0.0, 120.0), &smallfont, &Vec3::new(1.0, 1.0, 0.0))
         })

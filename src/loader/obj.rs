@@ -61,16 +61,16 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(~str, Me
             Some(w) => {
                 if w.len() != 0 && w[0] != ('#' as u8) {
                     match w {
-                        &"v"      => coords.push(parse_v_or_vn(l, words)),
-                        &"vn"     => if !ignore_normals { normals.push(parse_v_or_vn(l, words)) },
-                        &"f"      => parse_f(l, words, coords.as_slice(), uvs.as_slice(), normals.as_slice(), &mut ignore_uvs, &mut ignore_normals, &mut groups_ids, curr_group),
-                        &"vt"     => if !ignore_uvs { uvs.push(parse_vt(l, words)) },
-                        &"g"      => {
+                        "v"      => coords.push(parse_v_or_vn(l, words)),
+                        "vn"     => if !ignore_normals { normals.push(parse_v_or_vn(l, words)) },
+                        "f"      => parse_f(l, words, coords.as_slice(), uvs.as_slice(), normals.as_slice(), &mut ignore_uvs, &mut ignore_normals, &mut groups_ids, curr_group),
+                        "vt"     => if !ignore_uvs { uvs.push(parse_vt(l, words)) },
+                        "g"      => {
                             curr_group = parse_g(l, words, basename, &mut groups, &mut groups_ids);
                             let _ = curr_mtl.as_ref().map(|mtl| group2mtl.insert(curr_group, mtl.clone()));
                         },
-                        &"mtllib" => parse_mtllib(l, words, mtl_base_dir, &mut mtllib),
-                        &"usemtl" => curr_group = parse_usemtl(l, words, curr_group, &mtllib, &mut group2mtl, &mut groups, &mut groups_ids, &mut curr_mtl),
+                        "mtllib" => parse_mtllib(l, words, mtl_base_dir, &mut mtllib),
+                        "usemtl" => curr_group = parse_usemtl(l, words, curr_group, &mtllib, &mut group2mtl, &mut groups, &mut groups_ids, &mut curr_mtl),
                         _         => {
                             println!("Warning: unknown line {} ignored: `{:s}'", l, line);
                         }

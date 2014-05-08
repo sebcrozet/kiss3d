@@ -3,7 +3,6 @@
 use std::io::IoResult;
 use std::rc::Rc;
 use std::cell::RefCell;
-use std::local_data;
 use collections::HashMap;
 use resource::Mesh;
 use nprocgen::mesh::MeshDescr;
@@ -11,7 +10,7 @@ use nprocgen::mesh;
 use loader::obj;
 use loader::mtl::MtlMaterial;
 
-local_data_key!(KEY_MESH_MANAGER: MeshManager)
+local_data_key!(KEY_MESH_MANAGER: RefCell<MeshManager>)
 
 /// The mesh manager.
 ///
@@ -40,11 +39,11 @@ impl MeshManager {
 
     /// Mutably applies a function to the mesh manager.
     pub fn get_global_manager<T>(f: |&mut MeshManager| -> T) -> T {
-        if local_data::get(KEY_MESH_MANAGER, |mm| mm.is_none()) {
-            local_data::set(KEY_MESH_MANAGER, MeshManager::new())
+        if KEY_MESH_MANAGER.get().is_none() {
+            let _ = KEY_MESH_MANAGER.replace(Some(RefCell::new(MeshManager::new())));
         }
 
-        local_data::get_mut(KEY_MESH_MANAGER, |mm| f(mm.unwrap()))
+        f(KEY_MESH_MANAGER.get().unwrap().borrow_mut().deref_mut())
     }
 
     /// Get a mesh with the specified name. Returns `None` if the mesh is not registered.

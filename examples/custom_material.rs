@@ -23,7 +23,7 @@ fn start(argc: int, argv: **u8) -> int {
 fn main() {
     Window::spawn("Kiss3d: custom_material", |window| {
         let mut c    = window.add_sphere(1.0);
-        let material = Rc::new(RefCell::new(~NormalMaterial::new() as ~Material:'static));
+        let material = Rc::new(RefCell::new(box NormalMaterial::new() as Box<Material:'static>));
 
         c.set_material(material);
 

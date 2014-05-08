@@ -1,6 +1,6 @@
 //! A resource manager to load textures.
 
-use std::local_data;
+use std::cell::RefCell;
 use std::cast;
 use std::rc::Rc;
 use collections::HashMap;
@@ -39,7 +39,7 @@ impl Drop for Texture {
     }
 }
 
-local_data_key!(KEY_TEXTURE_MANAGER: TextureManager)
+local_data_key!(KEY_TEXTURE_MANAGER: RefCell<TextureManager>)
 
 /// The texture manager.
 ///
@@ -76,11 +76,11 @@ impl TextureManager {
 
     /// Mutably applies a function to the texture manager.
     pub fn get_global_manager<T>(f: |&mut TextureManager| -> T) -> T {
-        if local_data::get(KEY_TEXTURE_MANAGER, |tm| tm.is_none()) {
-            local_data::set(KEY_TEXTURE_MANAGER, TextureManager::new())
+        if KEY_TEXTURE_MANAGER.get().is_none() {
+            let _ = KEY_TEXTURE_MANAGER.replace(Some(RefCell::new(TextureManager::new())));
         }
     
-        local_data::get_mut(KEY_TEXTURE_MANAGER, |tm| f(tm.unwrap()))
+        f(KEY_TEXTURE_MANAGER.get().unwrap().borrow_mut().deref_mut())
     }
 
     /// Gets the default, completely white, texture.
@@ -107,7 +107,7 @@ impl TextureManager {
 
         // FIXME: dont re-load the texture if it already exists!
         unsafe {
-            match image::load(path.as_str().unwrap().to_owned()) {
+            match image::load(path) {
                 ImageU8(mut image) => {
                     verify!(gl::ActiveTexture(gl::TEXTURE0));
                     verify!(gl::BindTexture(gl::TEXTURE_2D, tex.id()));

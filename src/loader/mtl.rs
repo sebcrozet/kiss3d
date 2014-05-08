@@ -22,7 +22,7 @@ pub fn parse_file(path: &Path) -> IoResult<Vec<MtlMaterial>> {
 /// Parses a string representing a mtl file.
 pub fn parse(string: &str) -> Vec<MtlMaterial> {
     let mut res           = Vec::new();
-    let mut curr_material = MtlMaterial::new_default(~"");
+    let mut curr_material = MtlMaterial::new_default("".to_owned());
 
     for (l, line) in string.lines_any().enumerate() {
         let mut words = line.words();
@@ -41,7 +41,7 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
 
                     match w {
                         // texture name
-                        &"newmtl"      => {
+                        "newmtl"      => {
                             let old = mem::replace(&mut curr_material, MtlMaterial::new_default(parse_name(l, words)));
 
                             if old.name.len() != 0 {
@@ -49,23 +49,23 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
                             }
                         },
                         // ambiant color
-                            &"Ka"          => curr_material.ambiant = parse_color(l, words),
+                            "Ka"          => curr_material.ambiant = parse_color(l, words),
                             // diffuse color
-                            &"Kd"          => curr_material.diffuse = parse_color(l, words),
+                            "Kd"          => curr_material.diffuse = parse_color(l, words),
                             // specular color
-                            &"Ks"          => curr_material.specular = parse_color(l, words),
+                            "Ks"          => curr_material.specular = parse_color(l, words),
                             // shininess
-                            &"Ns"          => curr_material.shininess = parse_scalar(l, words),
+                            "Ns"          => curr_material.shininess = parse_scalar(l, words),
                             // alpha
-                            &"d"           => curr_material.alpha = parse_scalar(l, words),
+                            "d"           => curr_material.alpha = parse_scalar(l, words),
                             // ambiant map
-                            &"map_Ka"      => curr_material.ambiant_texture = Some(parse_name(l, words)),
+                            "map_Ka"      => curr_material.ambiant_texture = Some(parse_name(l, words)),
                             // diffuse texture map
-                            &"map_Kd"      => curr_material.diffuse_texture = Some(parse_name(l, words)),
+                            "map_Kd"      => curr_material.diffuse_texture = Some(parse_name(l, words)),
                             // specular texture map
-                            &"map_Ks"      => curr_material.specular_texture = Some(parse_name(l, words)),
+                            "map_Ks"      => curr_material.specular_texture = Some(parse_name(l, words)),
                             // specular texture map
-                            &"map_d" | &"map_opacity" => curr_material.opacity_map = Some(parse_name(l, words)),
+                            "map_d" | "map_opacity" => curr_material.opacity_map = Some(parse_name(l, words)),
                             _     => {
                                 println!("Warning: unknown line {} ignored: `{:s}'", l, line);
                             }
