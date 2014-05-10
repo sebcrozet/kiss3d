@@ -130,6 +130,7 @@ impl TextRenderer {
 
         self.shader.use_program();
 
+        verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
         verify!(gl::Enable(gl::BLEND));
         verify!(gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA));
         verify!(gl::Disable(gl::DEPTH_TEST));
