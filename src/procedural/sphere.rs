@@ -17,8 +17,8 @@ pub fn sphere<N: Float + Cast<f64>>(diameter: &N, ntheta_subdiv: u32, nphi_subdi
 pub fn unit_sphere<N: Float + Cast<f64>>(ntheta_subdiv: u32, nphi_subdiv: u32) -> MeshDescr<N> {
     let two_pi: N = Float::two_pi();
     let pi_two: N = Float::frac_pi_2();
-    let dtheta    =  two_pi / na::cast(ntheta_subdiv as f64);
-    let dphi      =  pi_two / na::cast(nphi_subdiv as f64);
+    let dtheta    =  two_pi / na::mem(ntheta_subdiv as f64);
+    let dphi      =  pi_two / na::mem(nphi_subdiv as f64);
 
     let mut coords     = Vec::new();
     let mut curr_phi   = -pi_two + dphi;
@@ -60,7 +60,7 @@ pub fn unit_sphere<N: Float + Cast<f64>>(ntheta_subdiv: u32, nphi_subdiv: u32) -
     let mut out = MeshDescr::new(coords, Some(normals), Some(uvs), Some(UnifiedIndexBuffer(idx)));
 
     // set the radius to 0.5
-    let _0_5: N = na::cast(0.5);
+    let _0_5: N = na::mem(0.5);
     out.scale_by_scalar(&_0_5);
 
     out
@@ -69,7 +69,7 @@ pub fn unit_sphere<N: Float + Cast<f64>>(ntheta_subdiv: u32, nphi_subdiv: u32) -
 fn ball_uv<N: Float + Cast<f64>>(normal: &Vec3<N>) -> Vec2<N> {
     let two_pi: N = Float::two_pi();
     let pi:     N = Float::pi();
-    let _0_5:   N = na::cast(0.5f64);
+    let _0_5:   N = na::mem(0.5f64);
     let uvx       = _0_5 + normal.z.atan2(normal.x) / two_pi;
     let uvy       = _0_5 - normal.y.asin() / pi;
 
@@ -80,8 +80,8 @@ fn ball_uv<N: Float + Cast<f64>>(normal: &Vec3<N>) -> Vec2<N> {
 pub fn unit_hemisphere<N: Float + Cast<f64>>(ntheta_subdiv: u32, nphi_subdiv: u32) -> MeshDescr<N> {
     let two_pi: N = Float::two_pi();
     let pi_two: N = Float::frac_pi_2();
-    let dtheta    =  two_pi / na::cast(ntheta_subdiv as f64);
-    let dphi      =  pi_two / na::cast(nphi_subdiv as f64);
+    let dtheta    =  two_pi / na::mem(ntheta_subdiv as f64);
+    let dphi      =  pi_two / na::mem(nphi_subdiv as f64);
 
     let mut coords     = Vec::new();
     let mut curr_phi   = na::zero::<N>();
@@ -110,7 +110,7 @@ pub fn unit_hemisphere<N: Float + Cast<f64>>(ntheta_subdiv: u32, nphi_subdiv: u3
     let mut out = MeshDescr::new(coords, Some(normals), None, Some(UnifiedIndexBuffer(idx)));
 
     // set the radius to 0.5
-    let _0_5: N = na::cast(0.5);
+    let _0_5: N = na::mem(0.5);
     out.scale_by_scalar(&_0_5);
 
     out

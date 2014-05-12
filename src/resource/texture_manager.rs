@@ -1,7 +1,7 @@
 //! A resource manager to load textures.
 
 use std::cell::RefCell;
-use std::cast;
+use std::mem;
 use std::rc::Rc;
 use collections::HashMap;
 use gl;
@@ -65,7 +65,7 @@ impl TextureManager {
 
         unsafe {
             verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, 1, 1, 0, gl::RGB, gl::FLOAT,
-                                   cast::transmute(&default_tex_pixels[0])));
+                                   mem::transmute(&default_tex_pixels[0])));
         }
 
         TextureManager {
@@ -116,7 +116,7 @@ impl TextureManager {
                     let elt_per_row = image.width * image.depth;
                     for j in range(0u, image.height / 2) {
                         for i in range(0u, elt_per_row) {
-                            image.data.swap(
+                            image.data.as_mut_slice().swap(
                                 (image.height - j - 1) * elt_per_row + i, 
                                 j * elt_per_row + i)
                         }
@@ -129,7 +129,7 @@ impl TextureManager {
                                 image.width as GLsizei,
                                 image.height as GLsizei,
                                 0, gl::RGB, gl::UNSIGNED_BYTE,
-                                cast::transmute(&image.data[0])));
+                                mem::transmute(image.data.get(0))));
                     }
                     else {
                         verify!(gl::TexImage2D(
@@ -138,7 +138,7 @@ impl TextureManager {
                                 image.width as GLsizei,
                                 image.height as GLsizei,
                                 0, gl::RGBA, gl::UNSIGNED_BYTE,
-                                cast::transmute(&image.data[0])));
+                                mem::transmute(image.data.get(0))));
                     }
 
                     verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));

@@ -4,7 +4,7 @@ kiss3d_bin_path=bin
 kiss3d_doc_path=doc
 glfw_path=lib/glfw-rs
 glfw_lib_path=lib/glfw-rs/lib
-gl_lib_path=lib/gl-rs
+gl_lib_path=lib/gl-rs/lib
 nalgebra_lib_path=lib/nalgebra/lib
 stb_image_lib_path=lib/rust-stb-image/
 freetype_path=lib/rust-freetype/
@@ -64,7 +64,7 @@ deps:
 	make -C lib/nalgebra
 	make deps -C lib/nprocgen
 	make -C lib/nprocgen
-	cd lib/gl-rs; rustc --opt-level=3 src/gl/lib.rs
+	make -C lib/gl-rs
 	cd lib/rust-stb-image; ./configure
 	make clean -C lib/rust-stb-image
 	make -C lib/rust-stb-image

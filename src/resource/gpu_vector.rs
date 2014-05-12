@@ -1,6 +1,5 @@
 //! Wrapper for an OpenGL buffer object.
 
-use std::cast;
 use std::mem;
 use gl;
 use gl::types::*;
@@ -282,7 +281,7 @@ pub fn download_buffer<T: GLPrimitive>(buf_id: GLuint, buf_type: BufferType, out
                 buf_type.to_gl(),
                 0,
                 (out.len() * mem::size_of::<T>()) as GLsizeiptr,
-                cast::transmute(&out[0])));
+                mem::transmute(&out[0])));
     }
 }
 
@@ -304,7 +303,7 @@ pub fn update_buffer<T: GLPrimitive>(buf:                 &[T],
                     gpu_buf_type.to_gl(),
                     0,
                     (buf.len() * mem::size_of::<T>()) as GLsizeiptr,
-                    cast::transmute(&buf[0])));
+                    mem::transmute(&buf[0])));
 
             gpu_buf_len
         }
@@ -312,7 +311,7 @@ pub fn update_buffer<T: GLPrimitive>(buf:                 &[T],
             verify!(gl::BufferData(
                     gpu_buf_type.to_gl(),
                     (buf.len() * mem::size_of::<T>()) as GLsizeiptr,
-                    cast::transmute(&buf[0]),
+                    mem::transmute(&buf[0]),
                     gpu_allocation_type.to_gl()));
 
             buf.len()

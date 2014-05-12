@@ -4,9 +4,9 @@
 
 use std::rc::Rc;
 use std::num;
-use std::slice;
 use std::cmp;
 use std::ptr;
+use std::vec::raw;
 use std::kinds::marker::NoCopy;
 use libc::{c_uint, c_void};
 use gl;
@@ -75,7 +75,7 @@ impl Font {
                 let advance    = Vec2::new(((*ft_glyph).advance.x >> 6) as f32, ((*ft_glyph).advance.y >> 6) as f32);
                 let dimensions = Vec2::new((*ft_glyph).bitmap.width as f32, (*ft_glyph).bitmap.rows as f32);
                 let offset     = Vec2::new((*ft_glyph).bitmap_left as f32, (*ft_glyph).bitmap_top as f32);
-                let buffer     = Vec::from_slice(slice::from_buf((*ft_glyph).bitmap.buffer, (dimensions.x * dimensions.y) as uint));
+                let buffer     = raw::from_buf((*ft_glyph).bitmap.buffer, (dimensions.x * dimensions.y) as uint);
                 let glyph      = Glyph::new(na::zero(), advance, dimensions, offset, buffer);
                     
 

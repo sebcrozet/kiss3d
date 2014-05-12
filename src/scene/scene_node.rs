@@ -1,6 +1,6 @@
 use std::rc::{Rc, Weak};
 use std::cell::{Ref, RefMut, RefCell};
-use std::cast;
+use std::mem;
 use nalgebra::na;
 use nalgebra::na::{Iso3, Vec2, Vec3, Transformation, Rotation, Translation, RotationWithTranslation};
 use resource::{Mesh, MeshManager, Texture, TextureManager, Material, MaterialManager};
@@ -371,7 +371,8 @@ impl SceneNodeData {
     pub fn world_transformation(&self) -> Iso3<f32> {
         // NOTE: this is to have some kind of laziness without a `&mut self`.
         unsafe {
-            cast::transmute_mut(self).update();
+            let mself: &mut SceneNodeData = mem::transmute(self);
+            mself.update();
         }
         self.world_transform.clone()
     }
@@ -384,7 +385,8 @@ impl SceneNodeData {
     pub fn inv_world_transformation(&self) -> Iso3<f32> {
         // NOTE: this is to have some kind of laziness without a `&mut self`.
         unsafe {
-            cast::transmute_mut(self).update();
+            let mself: &mut SceneNodeData = mem::transmute(self);
+            mself.update();
         }
         self.local_transform.inv_transformation()
     }

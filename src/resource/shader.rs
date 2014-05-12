@@ -1,4 +1,3 @@
-use std::cast;
 use std::mem;
 use std::ptr;
 use std::str;
@@ -150,7 +149,7 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
                         GLPrimitive::gl_type(None::<T>),
                         gl::FALSE,
                         ((strides + 1) * mem::size_of::<T>()) as GLint,
-                        cast::transmute(start_index * mem::size_of::<T>())));
+                        mem::transmute(start_index * mem::size_of::<T>())));
         }
     }
 }

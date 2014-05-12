@@ -64,10 +64,10 @@ pub fn quad_with_vertices<N: Float + Cast<f64> + Clone>(
 pub fn unit_quad<N: Float + Cast<f64>>(usubdivs: uint, vsubdivs: uint) -> MeshDescr<N> {
     assert!(usubdivs > 0 && vsubdivs > 0, "The number of subdivisions cannot be zero");
 
-    let wstep    = na::one::<N>() / na::cast(usubdivs as f64);
-    let hstep    = na::one::<N>() / na::cast(vsubdivs as f64);
-    let cw       = na::cast(0.5);
-    let ch       = na::cast(0.5);
+    let wstep    = na::one::<N>() / na::mem(usubdivs as f64);
+    let hstep    = na::one::<N>() / na::mem(vsubdivs as f64);
+    let cw       = na::mem(0.5);
+    let ch       = na::mem(0.5);
 
     let mut vertices   = Vec::new();
     let mut normals    = Vec::new();
@@ -77,8 +77,8 @@ pub fn unit_quad<N: Float + Cast<f64>>(usubdivs: uint, vsubdivs: uint) -> MeshDe
     // create the vertices
     for i in range(0u, vsubdivs + 1) {
         for j in range(0u, usubdivs + 1) {
-            let ni: N = na::cast(i as f64);
-            let nj: N = na::cast(j as f64);
+            let ni: N = na::mem(i as f64);
+            let nj: N = na::mem(j as f64);
 
             vertices.push(Vec3::new(nj * wstep - cw, ni * hstep - ch, na::zero()));
             tex_coords.push(Vec2::new(na::one::<N>() - nj * wstep, na::one::<N>() - ni * hstep))

@@ -15,16 +15,16 @@ pub fn cylinder<N: Float + Cast<f64>>(diameter: N, height: N, nsubdiv: u32) -> M
 /// Generates a cylinder with unit height and diameter.
 pub fn unit_cylinder<N: Float + Cast<f64>>(nsubdiv: u32) -> MeshDescr<N> {
     let two_pi: N   = Float::two_pi();
-    let dtheta      = two_pi / na::cast(nsubdiv as f64);
+    let dtheta      = two_pi / na::mem(nsubdiv as f64);
     let mut coords  = Vec::new();
     let mut indices = Vec::new();
     let mut normals;
 
-    utils::push_circle(na::cast(0.5), nsubdiv, dtheta, na::cast(-0.5), &mut coords);
+    utils::push_circle(na::mem(0.5), nsubdiv, dtheta, na::mem(-0.5), &mut coords);
 
     normals = coords.clone();
 
-    utils::push_circle(na::cast(0.5), nsubdiv, dtheta, na::cast(0.5),  &mut coords);
+    utils::push_circle(na::mem(0.5), nsubdiv, dtheta, na::mem(0.5),  &mut coords);
 
     utils::push_ring_indices(0, nsubdiv, nsubdiv, &mut indices);
     utils::push_closed_circle_indices(0, nsubdiv, &mut indices);
@@ -40,9 +40,9 @@ pub fn unit_cylinder<N: Float + Cast<f64>>(nsubdiv: u32) -> MeshDescr<N> {
      * Adjust normals.
      */
     for n in normals.mut_iter() {
-        n.x = n.x * na::cast(2.0);
+        n.x = n.x * na::mem(2.0);
         n.y = na::zero();
-        n.z = n.z * na::cast(2.0);
+        n.z = n.z * na::mem(2.0);
     }
 
     normals.push(Vec3::y());  // top cap

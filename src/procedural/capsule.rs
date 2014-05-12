@@ -21,7 +21,7 @@ pub fn capsule<N: Float + Cast<f64>>(caps_diameter:   &N,
     let top_normals     = normals.unwrap();
     let mut top_indices = indices.unwrap_unified();
 
-    let half_height = *cylinder_height * na::cast(0.5);
+    let half_height = *cylinder_height * na::mem(0.5);
 
     // shift the top
     for coord in top_coords.mut_iter() {

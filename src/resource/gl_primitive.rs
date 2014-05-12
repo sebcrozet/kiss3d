@@ -1,6 +1,6 @@
 //! Structures that a gpu buffer may contain.
 
-use std::cast;
+use std::mem;
 use gl;
 use gl::types::*;
 use nalgebra::na::{Vec2, Vec3, Mat2, Mat3, Mat4, Rot2, Rot3};
@@ -93,7 +93,7 @@ impl GLPrimitive for Mat2<GLfloat> {
     #[inline]
     fn upload(&self, location: GLuint) {
         unsafe {
-            verify!(gl::UniformMatrix2fv(location as GLint, 1, gl::FALSE, cast::transmute(self)));
+            verify!(gl::UniformMatrix2fv(location as GLint, 1, gl::FALSE, mem::transmute(self)));
         }
     }
 }
@@ -112,7 +112,7 @@ impl GLPrimitive for Rot2<GLfloat> {
     #[inline]
     fn upload(&self, location: GLuint) {
         unsafe {
-            verify!(gl::UniformMatrix2fv(location as GLint, 1, gl::FALSE, cast::transmute(self)));
+            verify!(gl::UniformMatrix2fv(location as GLint, 1, gl::FALSE, mem::transmute(self)));
         }
     }
 }
@@ -131,7 +131,7 @@ impl GLPrimitive for Mat3<GLfloat> {
     #[inline]
     fn upload(&self, location: GLuint) {
         unsafe {
-            verify!(gl::UniformMatrix3fv(location as GLint, 1, gl::FALSE, cast::transmute(self)));
+            verify!(gl::UniformMatrix3fv(location as GLint, 1, gl::FALSE, mem::transmute(self)));
         }
     }
 }
@@ -150,7 +150,7 @@ impl GLPrimitive for Rot3<GLfloat> {
     #[inline]
     fn upload(&self, location: GLuint) {
         unsafe {
-            verify!(gl::UniformMatrix3fv(location as GLint, 1, gl::FALSE, cast::transmute(self)));
+            verify!(gl::UniformMatrix3fv(location as GLint, 1, gl::FALSE, mem::transmute(self)));
         }
     }
 }
@@ -169,7 +169,7 @@ impl GLPrimitive for Mat4<GLfloat> {
     #[inline]
     fn upload(&self, location: GLuint) {
         unsafe {
-            verify!(gl::UniformMatrix4fv(location as GLint, 1, gl::FALSE, cast::transmute(self)));
+            verify!(gl::UniformMatrix4fv(location as GLint, 1, gl::FALSE, mem::transmute(self)));
         }
     }
 }

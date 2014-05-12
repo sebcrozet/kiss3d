@@ -27,7 +27,7 @@ pub fn unit_cube<N: Float + Clone + Cast<f64>>() -> MeshDescr<N> {
     let mut normals = Vec::new();
     let mut faces   = Vec::new();
 
-    let _0_5: N = na::cast(0.5);
+    let _0_5: N = na::mem(0.5);
     let m0_5: N = -_0_5;
     let _1:   N = na::one();
     let m1:   N = -_1;

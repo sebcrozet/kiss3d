@@ -13,7 +13,7 @@ fn bezier_curve_at<N: Float + Clone + Cast<f64>>(
 
     let cache = cache.as_mut_slice();
 
-    let _1: N = na::cast(1.0);
+    let _1: N = na::mem(1.0);
     let t_1   = _1 - *t;
 
     unsafe {

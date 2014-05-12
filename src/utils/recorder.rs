@@ -1,7 +1,6 @@
 // inspired by the muxing sample: http://ffmpeg.org/doxygen/trunk/muxing_8c-source.html
 
 use libc::c_void;
-use std::cast;
 use swscale;
 use swscale::Struct_SwsContext;
 use avcodec;
@@ -166,7 +165,7 @@ impl Recorder {
             let _ = swscale::sws_scale(self.scale_context,
                                        &(*self.tmp_frame).data[0], &(*self.tmp_frame).linesize[0],
                                        0, win_height,
-                                       cast::transmute(&(*self.frame).data[0]), &(*self.frame).linesize[0]);
+                                       mem::transmute(&(*self.frame).data[0]), &(*self.frame).linesize[0]);
         }
 
 
