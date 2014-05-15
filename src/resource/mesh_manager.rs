@@ -4,9 +4,10 @@ use std::io::IoResult;
 use std::rc::Rc;
 use std::cell::RefCell;
 use collections::HashMap;
-use resource::Mesh;
-use nprocgen::mesh::MeshDescr;
+use nalgebra::na::Vec3;
+use nprocgen::mesh::TriMesh;
 use nprocgen::mesh;
+use resource::Mesh;
 use loader::obj;
 use loader::mtl::MtlMaterial;
 
@@ -29,10 +30,10 @@ impl MeshManager {
             meshes: HashMap::new()
         };
 
-        let _ = res.add_mesh_descr(mesh::unit_sphere(50, 50), false, "sphere");
-        let _ = res.add_mesh_descr(mesh::unit_cube(), false, "cube");
-        let _ = res.add_mesh_descr(mesh::unit_cone(50), false, "cone");
-        let _ = res.add_mesh_descr(mesh::unit_cylinder(50), false, "cylinder");
+        let _ = res.add_trimesh(mesh::unit_sphere(50, 50), false, "sphere");
+        let _ = res.add_trimesh(mesh::unit_cube(), false, "cube");
+        let _ = res.add_trimesh(mesh::unit_cone(50), false, "cone");
+        let _ = res.add_trimesh(mesh::unit_cylinder(50), false, "cylinder");
 
         res
     }
@@ -57,8 +58,8 @@ impl MeshManager {
     }
 
     /// Adds a mesh with the specified mesh descriptor and name.
-    pub fn add_mesh_descr(&mut self, descr: MeshDescr<f32>, dynamic_draw: bool, name: &str) -> Rc<RefCell<Mesh>> {
-        let mesh = Mesh::from_mesh_descr(descr, dynamic_draw);
+    pub fn add_trimesh(&mut self, descr: TriMesh<f32, Vec3<f32>>, dynamic_draw: bool, name: &str) -> Rc<RefCell<Mesh>> {
+        let mesh = Mesh::from_trimesh(descr, dynamic_draw);
         let mesh = Rc::new(RefCell::new(mesh));
 
         self.add(mesh.clone(), name);

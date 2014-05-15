@@ -7,7 +7,7 @@ use nalgebra::na::{Vec2, Vec3};
 use nalgebra::na;
 use resource::ShaderAttribute;
 use resource::gpu_vector::{GPUVector, DynamicDraw, StaticDraw, ArrayBuffer, ElementArrayBuffer};
-use nprocgen::mesh::MeshDescr;
+use nprocgen::mesh::TriMesh;
 
 #[path = "../error.rs"]
 mod error;
@@ -54,12 +54,12 @@ impl Mesh {
     /// Creates a new mesh from a mesh descr.
     ///
     /// In the normals and uvs are not given, they are automatically computed.
-    pub fn from_mesh_descr(mesh: MeshDescr<GLfloat>, dynamic_draw: bool) -> Mesh {
+    pub fn from_trimesh(mesh: TriMesh<GLfloat, Vec3<GLfloat>>, dynamic_draw: bool) -> Mesh {
         let mut mesh = mesh;
 
         mesh.unify_index_buffer();
 
-        let MeshDescr { coords, normals, uvs, indices } = mesh;
+        let TriMesh { coords, normals, uvs, indices } = mesh;
         
         Mesh::new(coords, indices.unwrap_unified(), normals, uvs, dynamic_draw)
     }
