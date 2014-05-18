@@ -35,6 +35,9 @@ fn main() {
         c1.set_color(1.0, 0.0, 0.0);
         c2.set_color(0.0, 1.0, 0.0);
 
+        c1.enable_backface_culling(false);
+        c2.enable_backface_culling(false);
+
         window.set_light(light::StickToCamera);
 
         window.render_loop(|_| {

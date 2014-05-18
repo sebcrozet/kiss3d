@@ -28,6 +28,7 @@ fn main() {
         let mut c = window.add_mesh(mesh, na::one());
 
         c.set_color(1.0, 0.0, 0.0);
+        c.enable_backface_culling(false);
 
         window.set_light(light::StickToCamera);
 
