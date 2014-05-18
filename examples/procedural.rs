@@ -7,6 +7,7 @@ use nalgebra::na;
 use nalgebra::na::{Vec3, Translation};
 use nprocgen::mesh;
 use nprocgen::triangulate;
+use nprocgen::path::{PolylinePath, PolylinePattern, StrokePattern, ArrowheadCap};
 use kiss3d::window::Window;
 use kiss3d::light;
 
@@ -81,6 +82,39 @@ fn main() {
         control_points_gfx.set_surface_rendering_activation(false);
         control_points_gfx.set_points_size(10.0);
 
+        /*
+         * Path stroke.
+         */
+        let control_points = [
+            Vec3::new(0.0f32, 1.0, 0.0),
+            Vec3::new(2.0f32, 4.0, 2.0),
+            Vec3::new(2.0f32, 1.0, 4.0),
+            Vec3::new(4.0f32, 4.0, 6.0),
+            Vec3::new(2.0f32, 1.0, 8.0),
+            Vec3::new(2.0f32, 4.0, 10.0),
+            Vec3::new(0.0f32, 1.0, 12.0),
+            Vec3::new(-2.0f32, 4.0, 10.0),
+            Vec3::new(-2.0f32, 1.0, 8.0),
+            Vec3::new(-4.0f32, 4.0, 6.0),
+            Vec3::new(-2.0f32, 1.0, 4.0),
+            Vec3::new(-2.0f32, 4.0, 2.0),
+        ];
+        let bezier      = mesh::bezier_curve(control_points, 100);
+        let mut path    = PolylinePath::new(&bezier);
+        let pattern     = mesh::unit_circle(100);
+        let start_cap   = ArrowheadCap::new(1.5f32, 2.0, 0.0);
+        let end_cap     = ArrowheadCap::new(2.0f32, 2.0, 0.5);
+        let mut pattern = PolylinePattern::new(&pattern, true, start_cap, end_cap);
+        let mesh        = pattern.stroke(&mut path);
+        let mut m = window.add_trimesh(mesh, Vec3::new(0.5f32, 0.5, 0.5));
+        m.append_translation(&Vec3::new(4.0, -1.0, 0.0));
+        m.set_color(1.0, 1.0, 0.0);
+
+        /*
+         *
+         * Rendering.
+         *
+         */
         window.set_light(light::StickToCamera);
 
         window.render_loop(|_| {
