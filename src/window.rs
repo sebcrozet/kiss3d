@@ -25,7 +25,6 @@ use light::{Light, Absolute, StickToCamera};
 use text::{TextRenderer, Font};
 use nprocgen::mesh::{TriMesh, ProceduralGenerator};
 
-mod error;
 
 static DEFAULT_WIDTH:  u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
