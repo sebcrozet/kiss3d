@@ -115,6 +115,7 @@ extern crate avutil  = "avutil52";
 extern crate avformat = "avformat55";
 extern crate swscale = "swscale2";
 
+mod error;
 pub mod window;
 pub mod scene;
 pub mod camera;

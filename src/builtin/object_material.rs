@@ -121,7 +121,7 @@ impl Material for ObjectMaterial {
 
                 verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
                 verify!(gl::DrawElements(
-                            gl::TRIANGLES,
+                            gl::POINTS,
                             mesh.num_pts() as GLint,
                             gl::UNSIGNED_INT,
                             ptr::null()));
