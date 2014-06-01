@@ -41,7 +41,7 @@ impl Shader {
                 return None;
             }
 
-            Some(Shader::new_from_str(vshader.unwrap(), fshader.unwrap()))
+            Some(Shader::new_from_str(vshader.unwrap().as_slice(), fshader.unwrap().as_slice()))
         }
     }
 
@@ -212,7 +212,7 @@ fn check_shader_error(shader: GLuint) {
 
                 let bytes = c_str.as_bytes();
                 let bytes = bytes.slice_to(bytes.len() - 1);
-                fail!("Shader compilation failed: " + str::from_utf8(bytes).unwrap());
+                fail!("Shader compilation failed: {}", str::from_utf8(bytes).unwrap());
             }
         }
     }

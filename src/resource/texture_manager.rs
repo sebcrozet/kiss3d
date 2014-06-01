@@ -46,7 +46,7 @@ local_data_key!(KEY_TEXTURE_MANAGER: RefCell<TextureManager>)
 /// It keeps a cache of already-loaded textures, and can load new textures.
 pub struct TextureManager {
     default_texture: Rc<Texture>,
-    textures:        HashMap<~str, Rc<Texture>>,
+    textures:        HashMap<String, Rc<Texture>>,
 }
 
 impl TextureManager {
@@ -90,20 +90,20 @@ impl TextureManager {
 
     /// Get a texture with the specified name. Returns `None` if the texture is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<Texture>> {
-        self.textures.find(&name.to_owned()).map(|t| t.clone())
+        self.textures.find(&name.to_string()).map(|t| t.clone())
     }
 
     /// Allocates a new texture that is not yet configured.
     ///
     /// If a texture with same name exists, nothing is created and the old texture is returned.
     pub fn add_empty(&mut self, name: &str) -> Rc<Texture> {
-        self.textures.find_or_insert_with(name.to_owned(), |_| Texture::new()).clone()
+        self.textures.find_or_insert_with(name.to_string(), |_| Texture::new()).clone()
     }
 
     /// Allocates a new texture read from a file. If a texture with same name exists, nothing is
     /// created and the old texture is returned.
     pub fn add(&mut self, path: &Path, name: &str) -> Rc<Texture> {
-        let tex = self.textures.find_or_insert_with(name.to_owned(), |_| Texture::new());
+        let tex = self.textures.find_or_insert_with(name.to_string(), |_| Texture::new());
 
         // FIXME: dont re-load the texture if it already exists!
         unsafe {
@@ -147,7 +147,7 @@ impl TextureManager {
                     verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
                 }
                 _ => {
-                    fail!("Failed to load texture " + path.as_str().unwrap());
+                    fail!("Failed to load texture {}", path.as_str().unwrap());
                 }
             }
         }

@@ -392,7 +392,7 @@ impl<'a> Window<'a> {
     /// * `title` - the window title
     /// * `callback` - a callback called once the window has been created
     pub fn spawn_hidden(title: &str, callback: |&mut Window| -> ()) {
-        Window::do_spawn(title.to_owned(), true, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
+        Window::do_spawn(title, true, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
     }
 
     /// Opens a window then calls a user-defined procedure.
@@ -401,7 +401,7 @@ impl<'a> Window<'a> {
     /// * `title` - the window title
     /// * `callback` - a callback called once the window has been created
     pub fn spawn(title: &str, callback: |&mut Window| -> ()) {
-        Window::do_spawn(title.to_owned(), false, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
+        Window::do_spawn(title, false, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
     }
 
     /// Opens a window with a custom size then calls a user-defined procedure.
@@ -410,10 +410,10 @@ impl<'a> Window<'a> {
     /// * `title` - the window title
     /// * `callback` - a callback called once the window has been created
     pub fn spawn_size(title: &str, width: u32, height: u32, callback: |&mut Window| -> ()) {
-        Window::do_spawn(title.to_owned(), false, width, height, callback)
+        Window::do_spawn(title, false, width, height, callback)
     }
 
-    fn do_spawn(title: ~str, hide: bool, width: u32, height: u32, callback: |&mut Window| -> ()) {
+    fn do_spawn(title: &str, hide: bool, width: u32, height: u32, callback: |&mut Window| -> ()) {
         // FIXME: glfw::set_error_callback(~ErrorCallback);
 
         let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();

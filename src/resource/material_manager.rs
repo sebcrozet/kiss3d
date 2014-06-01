@@ -18,7 +18,7 @@ local_data_key!(KEY_MATERIAL_MANAGER: RefCell<MaterialManager>)
 /// Thus, its usage is not required to load materials.
 pub struct MaterialManager {
     default_material: Rc<RefCell<Box<Material:'static>>>,
-    materials:        HashMap<~str, Rc<RefCell<Box<Material:'static>>>>
+    materials:        HashMap<String, Rc<RefCell<Box<Material:'static>>>>
 }
 
 impl MaterialManager {
@@ -28,10 +28,10 @@ impl MaterialManager {
         let mut materials = HashMap::new();
 
         let om = Rc::new(RefCell::new(box ObjectMaterial::new() as Box<Material:'static>));
-        materials.insert("object".to_owned(), om.clone());
+        materials.insert("object".to_string(), om.clone());
 
         let nm = Rc::new(RefCell::new(box NormalsMaterial::new() as Box<Material:'static>));
-        materials.insert("normals".to_owned(), nm.clone());
+        materials.insert("normals".to_string(), nm.clone());
 
         MaterialManager {
             default_material: om,
@@ -55,16 +55,16 @@ impl MaterialManager {
 
     /// Get a material with the specified name. Returns `None` if the material is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Box<Material:'static>>>> {
-        self.materials.find(&name.to_owned()).map(|t| t.clone())
+        self.materials.find(&name.to_string()).map(|t| t.clone())
     }
 
     /// Adds a material with the specified name to this cache.
     pub fn add(&mut self, material: Rc<RefCell<Box<Material:'static>>>, name: &str) {
-        let _ = self.materials.insert(name.to_owned(), material);
+        let _ = self.materials.insert(name.to_string(), material);
     }
 
     /// Removes a mesh from this cache.
     pub fn remove(&mut self, name: &str) {
-        self.materials.remove(&name.to_owned());
+        self.materials.remove(&name.to_string());
     }
 }

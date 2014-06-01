@@ -8,13 +8,13 @@ use std::from_str::FromStr;
 use nalgebra::na::Vec3;
 
 fn error(line: uint, err: &str) -> ! {
-    fail!("At line " + line.to_str() + ": " + err)
+    fail!("At line {}: {}", line, err)
 }
 
 /// Parses a mtl file.
 pub fn parse_file(path: &Path) -> IoResult<Vec<MtlMaterial>> {
     match File::open(path) {
-        Ok(mut file) => file.read_to_str().map(|mtl| parse(mtl)),
+        Ok(mut file) => file.read_to_str().map(|mtl| parse(mtl.as_slice())),
         Err(e)       => Err(e)
     }
 }
@@ -22,7 +22,7 @@ pub fn parse_file(path: &Path) -> IoResult<Vec<MtlMaterial>> {
 /// Parses a string representing a mtl file.
 pub fn parse(string: &str) -> Vec<MtlMaterial> {
     let mut res           = Vec::new();
-    let mut curr_material = MtlMaterial::new_default("".to_owned());
+    let mut curr_material = MtlMaterial::new_default("".to_string());
 
     for (l, line) in string.lines_any().enumerate() {
         let mut words = line.words();
@@ -82,7 +82,7 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
     res
 }
 
-fn parse_name<'a>(_: uint, mut ws: Words<'a>) -> ~str {
+fn parse_name<'a>(_: uint, mut ws: Words<'a>) -> String {
     let res: Vec<&'a str> = ws.collect();
     res.connect(" ")
 }
@@ -96,9 +96,9 @@ fn parse_color<'a>(l: uint, mut ws: Words<'a>) -> Vec3<f32> {
     let y: Option<f32> = FromStr::from_str(sy);
     let z: Option<f32> = FromStr::from_str(sz);
 
-    let x = x.unwrap_or_else(|| error(l, "failed to parse `" + sx + "' as a f32."));
-    let y = y.unwrap_or_else(|| error(l, "failed to parse `" + sy + "' as a f32."));
-    let z = z.unwrap_or_else(|| error(l, "failed to parse `" + sz + "' as a f32."));
+    let x = x.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sx).as_slice()));
+    let y = y.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sy).as_slice()));
+    let z = z.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sz).as_slice()));
 
     Vec3::new(x, y, z)
 }
@@ -108,7 +108,7 @@ fn parse_scalar<'a>(l: uint, mut ws: Words<'a>) -> f32 {
 
     let x: Option<f32> = FromStr::from_str(sx);
 
-    let x = x.unwrap_or_else(|| error(l, "failed to parse `" + sx + "' as a f32."));
+    let x = x.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sx).as_slice()));
 
     x
 }
@@ -117,15 +117,15 @@ fn parse_scalar<'a>(l: uint, mut ws: Words<'a>) -> f32 {
 #[deriving(Clone)]
 pub struct MtlMaterial {
     /// Name of the material.
-    pub name:             ~str,
+    pub name:             String,
     /// Path to the ambiant texture.
-    pub ambiant_texture:  Option<~str>,
+    pub ambiant_texture:  Option<String>,
     /// Path to the diffuse texture.
-    pub diffuse_texture:  Option<~str>,
+    pub diffuse_texture:  Option<String>,
     /// Path to the specular texture.
-    pub specular_texture: Option<~str>,
+    pub specular_texture: Option<String>,
     /// Path to the opacity map.
-    pub opacity_map:      Option<~str>,
+    pub opacity_map:      Option<String>,
     /// The ambiant color.
     pub ambiant:          Vec3<f32>,
     /// The diffuse color.
@@ -140,7 +140,7 @@ pub struct MtlMaterial {
 
 impl MtlMaterial {
     /// Creates a new mtl material with a name and default values.
-    pub fn new_default(name: ~str) -> MtlMaterial {
+    pub fn new_default(name: String) -> MtlMaterial {
         MtlMaterial {
             name:             name,
             shininess:        60.0,
@@ -156,16 +156,16 @@ impl MtlMaterial {
     }
 
     /// Creates a new mtl material.
-    pub fn new(name:             ~str,
+    pub fn new(name:             String,
                shininess:        f32,
                alpha:            f32,
                ambiant:          Vec3<f32>,
                diffuse:          Vec3<f32>,
                specular:         Vec3<f32>,
-               ambiant_texture:  Option<~str>,
-               diffuse_texture:  Option<~str>,
-               specular_texture: Option<~str>,
-               opacity_map:      Option<~str>)
+               ambiant_texture:  Option<String>,
+               diffuse_texture:  Option<String>,
+               specular_texture: Option<String>,
+               opacity_map:      Option<String>)
                -> MtlMaterial {
         MtlMaterial {
             name:             name,

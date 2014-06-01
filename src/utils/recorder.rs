@@ -113,7 +113,7 @@ impl Recorder {
     pub fn snap(&mut self, window: &Window) {
         self.init();
 
-        let mut pkt: AVPacket = unsafe { mem::uninit() };
+        let mut pkt: AVPacket = unsafe { mem::uninitialized() };
 
         unsafe {
             avcodec::av_init_packet(&mut pkt);
@@ -356,7 +356,7 @@ impl Drop for Recorder {
     fn drop(&mut self) {
         if self.initialized {
             // Get the delayed frames.
-            let mut pkt:   AVPacket = unsafe { mem::uninit() };
+            let mut pkt:   AVPacket = unsafe { mem::uninitialized() };
             let mut got_output = 1;
             while got_output != 0 {
                 let ret;

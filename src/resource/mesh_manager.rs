@@ -20,7 +20,7 @@ local_data_key!(KEY_MESH_MANAGER: RefCell<MeshManager>)
 /// It keeps a cache of already-loaded meshes. Note that this is only a cache, nothing more.
 /// Thus, its usage is not required to load meshes.
 pub struct MeshManager {
-    meshes:       HashMap<~str, Rc<RefCell<Mesh>>>
+    meshes:       HashMap<String, Rc<RefCell<Mesh>>>
 }
 
 impl MeshManager {
@@ -49,12 +49,12 @@ impl MeshManager {
 
     /// Get a mesh with the specified name. Returns `None` if the mesh is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Mesh>>> {
-        self.meshes.find(&name.to_owned()).map(|t| t.clone())
+        self.meshes.find(&name.to_string()).map(|t| t.clone())
     }
 
     /// Adds a mesh with the specified name to this cache.
     pub fn add(&mut self, mesh: Rc<RefCell<Mesh>>, name: &str) {
-        let _ = self.meshes.insert(name.to_owned(), mesh);
+        let _ = self.meshes.insert(name.to_string(), mesh);
     }
 
     /// Adds a mesh with the specified mesh descriptor and name.
@@ -69,13 +69,13 @@ impl MeshManager {
 
     /// Removes a mesh from this cache.
     pub fn remove(&mut self, name: &str) {
-        self.meshes.remove(&name.to_owned());
+        self.meshes.remove(&name.to_string());
     }
 
     // FIXME: is this the right place to put this?
     /// Loads the meshes described by an obj file.
     pub fn load_obj(path: &Path, mtl_dir: &Path, geometry_name: &str)
-                    -> IoResult<Vec<(~str, Rc<RefCell<Mesh>>, Option<MtlMaterial>)>> {
+                    -> IoResult<Vec<(String, Rc<RefCell<Mesh>>, Option<MtlMaterial>)>> {
         obj::parse_file(path, mtl_dir, geometry_name).map(|ms| {
             let mut res = Vec::new();
 

@@ -88,7 +88,7 @@ fn main() {
             let obs_vel = observer.velocity;
             let sop = na::norm(&obs_vel);
 
-            w.draw_text(format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop),
+            w.draw_text(format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop).as_slice(),
             &na::zero(), &font, &Vec3::new(1.0, 1.0, 1.0));
 
             observer.max_vel  = c.speed_of_light * 0.85;
