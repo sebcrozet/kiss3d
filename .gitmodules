@@ -16,6 +16,6 @@
 [submodule "lib/rust-ffmpeg"]
 	path = lib/rust-ffmpeg
 	url = git://github.com/sebcrozet/rust-ffmpeg.git
-[submodule "lib/nprocgen"]
-	path = lib/nprocgen
-	url = git://github.com/sebcrozet/nprocgen
+[submodule "lib/ncollide"]
+	path = lib/ncollide
+	url = git://github.com/sebcrozet/ncollide.git

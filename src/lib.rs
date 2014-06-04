@@ -107,7 +107,7 @@ extern crate collections;
 extern crate glfw;
 extern crate gl;
 extern crate nalgebra;
-extern crate nprocgen;
+extern crate ncollide = "ncollide3df32";
 extern crate stb_image;
 extern crate freetype;
 extern crate avcodec = "avcodec55";

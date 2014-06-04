@@ -5,8 +5,8 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use collections::HashMap;
 use nalgebra::na::Vec3;
-use nprocgen::mesh::TriMesh;
-use nprocgen::mesh;
+use ncollide::procedural::TriMesh;
+use ncollide::procedural;
 use resource::Mesh;
 use loader::obj;
 use loader::mtl::MtlMaterial;
@@ -30,10 +30,10 @@ impl MeshManager {
             meshes: HashMap::new()
         };
 
-        let _ = res.add_trimesh(mesh::unit_sphere(50, 50), false, "sphere");
-        let _ = res.add_trimesh(mesh::unit_cube(), false, "cube");
-        let _ = res.add_trimesh(mesh::unit_cone(50), false, "cone");
-        let _ = res.add_trimesh(mesh::unit_cylinder(50), false, "cylinder");
+        let _ = res.add_trimesh(procedural::unit_sphere(50, 50), false, "sphere");
+        let _ = res.add_trimesh(procedural::unit_cube(), false, "cube");
+        let _ = res.add_trimesh(procedural::unit_cone(50), false, "cone");
+        let _ = res.add_trimesh(procedural::unit_cylinder(50), false, "cylinder");
 
         res
     }
