@@ -31,40 +31,13 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h1>
-<a name="kiss3d" class="anchor" href="#kiss3d"><span class="octicon octicon-link"></span></a>kiss3d</h1>
+        <h2>
+<a name="about-kiss3d" class="anchor" href="#about-kiss3d"><span class="octicon octicon-link"></span></a>About kiss3d</h2>
 
-<p>Keep It Simple, Stupid 3d graphics engine.</p>
-
-<p>This library is born from the frustration in front of the fact that today’s 3D
-graphics library are:</p>
-
-<ul>
-<li>either too low level: you have to write your own shaders and opening a
-window steals you 8 hours, 300 lines of code and 10L of coffee.</li>
-<li>or high level but too hard to understand/use: those are libraries made to
-write beautiful animations or games. They have a lot of feature; too much
-feature if you only want to draw a few geometries on the screen.</li>
-</ul><p><strong>kiss3d</strong> is not designed to be feature-complete or fast.
-It is designed to be able to draw simple geometric figures and play with them
-with one-liners.</p>
-
-<p>An on-line version of this documentation is available <a href="http://www.rust-ci.org/sebcrozet/kiss3d/doc/kiss3d/index.html">here</a>.</p>
+<p><strong>kiss3d</strong> is a Keep It Simple, Stupid 3d graphics engine written with Rust.</p>
 
 <h2>
-<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
-
-<p>Most features are one-liners.</p>
-
-<ul>
-<li>open a window with a default arc-ball camera and a point light.</li>
-<li>a first-person camera is available too and user-defined cameras are possible.</li>
-<li>display boxes, spheres, cones, cylinders, quads and lines.</li>
-<li>change an object color or texture.</li>
-<li>change an object transform (we use the <a href="https://github.com/sebcrozet/nalgebra">nalgebra</a> library
-to do that).</li>
-<li>create basic post-processing effects.</li>
-</ul><p>As an example, having a red, rotating cube with the light attached to the camera is as simple as:</p>
+<a name="red-rotating-cube-example" class="anchor" href="#red-rotating-cube-example"><span class="octicon octicon-link"></span></a>Red rotating cube example</h2>
 
 <div class="highlight highlight-rust"><pre><span class="k">extern</span> <span class="n">crate</span> <span class="n">native</span><span class="p">;</span>
 <span class="k">extern</span> <span class="n">crate</span> <span class="n">kiss3d</span><span class="p">;</span>
@@ -94,46 +67,7 @@ to do that).</li>
 <span class="p">}</span>
 </pre></div>
 
-<p>Some controls are handled by default by the engine (they can be overridden by the user):</p>
-
-<ul>
-<li>
-<code>scroll</code>: zoom in / zoom out.</li>
-<li>
-<code>left click + drag</code>: look around.</li>
-<li>
-<code>right click + drag</code>: translate the view point.</li>
-<li>
-<code>enter</code>: look at the origin (0.0, 0.0, 0.0).</li>
-</ul><h2>
-<a name="compilation" class="anchor" href="#compilation"><span class="octicon octicon-link"></span></a>Compilation</h2>
-
-<p>You will need the last rust compiler from the <code>master</code> branch.
-If you encounter problems, make sure you have the last compiler version before creating an issue.</p>
-
-<p>The simplest way to build <strong>kiss3d</strong> and all its dependencies is to do a
-recursive clone:</p>
-
-<pre><code>git clone --recursive git://github.com/sebcrozet/kiss3d.git
-cd kiss3d
-make deps
-make
-make examples
-</code></pre>
-
-<p>The last command will compile examples on the <code>bin</code> folder.
-Use <code>make doc</code> to compile the documentation on the <code>doc</code> folder.</p>
-
-<h2>
-<a name="contributions" class="anchor" href="#contributions"><span class="octicon octicon-link"></span></a>Contributions</h2>
-
-<p>I’d love to see people improving this library for their own needs. However, keep in mind that
-<strong>kiss3d</strong> is KISS. One-liner features (from the user point of view) are preferred.</p>
-
-<h2>
-<a name="acknowledgements" class="anchor" href="#acknowledgements"><span class="octicon octicon-link"></span></a>Acknowledgements</h2>
-
-<p>Thanks to all the Rustafarians for their help, and their OpenGl/ffmpeg/stb-image/etc. bindings.</p>
+<p>For more, check out the <a href="kiss3d.org/doc/kiss3d/">online documentation</a>.</p>
       </section>
     </div>
 
