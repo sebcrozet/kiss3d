@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Kiss3d : Keep it simple, stupid 3d graphics engine for Rust." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Kiss3d</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/sebcrozet/kiss3d">View on GitHub</a>
+
+          <h1 id="project_title">Kiss3d</h1>
+          <h2 id="project_tagline">Keep it simple, stupid 3d graphics engine for Rust.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/sebcrozet/kiss3d/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/sebcrozet/kiss3d/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="kiss3d" class="anchor" href="#kiss3d"><span class="octicon octicon-link"></span></a>kiss3d</h1>
+
+<p>Keep It Simple, Stupid 3d graphics engine.</p>
+
+<p>This library is born from the frustration in front of the fact that today’s 3D
+graphics library are:</p>
+
+<ul>
+<li>either too low level: you have to write your own shaders and opening a
+window steals you 8 hours, 300 lines of code and 10L of coffee.</li>
+<li>or high level but too hard to understand/use: those are libraries made to
+write beautiful animations or games. They have a lot of feature; too much
+feature if you only want to draw a few geometries on the screen.</li>
+</ul><p><strong>kiss3d</strong> is not designed to be feature-complete or fast.
+It is designed to be able to draw simple geometric figures and play with them
+with one-liners.</p>
+
+<p>An on-line version of this documentation is available <a href="http://www.rust-ci.org/sebcrozet/kiss3d/doc/kiss3d/index.html">here</a>.</p>
+
+<h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<p>Most features are one-liners.</p>
+
+<ul>
+<li>open a window with a default arc-ball camera and a point light.</li>
+<li>a first-person camera is available too and user-defined cameras are possible.</li>
+<li>display boxes, spheres, cones, cylinders, quads and lines.</li>
+<li>change an object color or texture.</li>
+<li>change an object transform (we use the <a href="https://github.com/sebcrozet/nalgebra">nalgebra</a> library
+to do that).</li>
+<li>create basic post-processing effects.</li>
+</ul><p>As an example, having a red, rotating cube with the light attached to the camera is as simple as:</p>
+
+<div class="highlight highlight-rust"><pre><span class="k">extern</span> <span class="n">crate</span> <span class="n">native</span><span class="p">;</span>
+<span class="k">extern</span> <span class="n">crate</span> <span class="n">kiss3d</span><span class="p">;</span>
+<span class="k">extern</span> <span class="n">crate</span> <span class="n">nalgebra</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="n">nalgebra</span><span class="o">::</span><span class="n">na</span><span class="o">::</span><span class="n">Vec3</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">kiss3d</span><span class="o">::</span><span class="n">window</span><span class="o">::</span><span class="n">Window</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">kiss3d</span><span class="o">::</span><span class="n">light</span><span class="p">;</span>
+
+<span class="cp">#[start]</span>
+<span class="k">fn</span> <span class="n">start</span><span class="p">(</span><span class="n">argc</span><span class="o">:</span> <span class="k">int</span><span class="p">,</span> <span class="n">argv</span><span class="o">:</span> <span class="o">**</span><span class="k">u8</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">int</span> <span class="p">{</span>
+    <span class="n">native</span><span class="o">::</span><span class="n">start</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">main</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">Window</span><span class="o">::</span><span class="n">spawn</span><span class="p">(</span><span class="s">"Kiss3d: cube"</span><span class="p">,</span> <span class="o">|</span><span class="n">window</span><span class="o">|</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="k">mut</span> <span class="n">c</span> <span class="o">=</span> <span class="n">window</span><span class="p">.</span><span class="n">add_cube</span><span class="p">(</span><span class="m">1.0</span><span class="p">,</span> <span class="m">1.0</span><span class="p">,</span> <span class="m">1.0</span><span class="p">);</span>
+
+        <span class="n">c</span><span class="p">.</span><span class="n">set_color</span><span class="p">(</span><span class="m">1.0</span><span class="p">,</span> <span class="m">0.0</span><span class="p">,</span> <span class="m">0.0</span><span class="p">);</span>
+
+        <span class="n">window</span><span class="p">.</span><span class="n">set_light</span><span class="p">(</span><span class="n">light</span><span class="o">::</span><span class="n">StickToCamera</span><span class="p">);</span>
+
+        <span class="n">window</span><span class="p">.</span><span class="n">render_loop</span><span class="p">(</span><span class="o">|</span><span class="n">_</span><span class="o">|</span> <span class="p">{</span>
+            <span class="n">c</span><span class="p">.</span><span class="n">prepend_to_local_rotation</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Vec3</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="m">0.0</span><span class="k">f32</span><span class="p">,</span> <span class="m">0.014</span><span class="p">,</span> <span class="m">0.0</span><span class="p">))</span>
+        <span class="p">})</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Some controls are handled by default by the engine (they can be overridden by the user):</p>
+
+<ul>
+<li>
+<code>scroll</code>: zoom in / zoom out.</li>
+<li>
+<code>left click + drag</code>: look around.</li>
+<li>
+<code>right click + drag</code>: translate the view point.</li>
+<li>
+<code>enter</code>: look at the origin (0.0, 0.0, 0.0).</li>
+</ul><h2>
+<a name="compilation" class="anchor" href="#compilation"><span class="octicon octicon-link"></span></a>Compilation</h2>
+
+<p>You will need the last rust compiler from the <code>master</code> branch.
+If you encounter problems, make sure you have the last compiler version before creating an issue.</p>
+
+<p>The simplest way to build <strong>kiss3d</strong> and all its dependencies is to do a
+recursive clone:</p>
+
+<pre><code>git clone --recursive git://github.com/sebcrozet/kiss3d.git
+cd kiss3d
+make deps
+make
+make examples
+</code></pre>
+
+<p>The last command will compile examples on the <code>bin</code> folder.
+Use <code>make doc</code> to compile the documentation on the <code>doc</code> folder.</p>
+
+<h2>
+<a name="contributions" class="anchor" href="#contributions"><span class="octicon octicon-link"></span></a>Contributions</h2>
+
+<p>I’d love to see people improving this library for their own needs. However, keep in mind that
+<strong>kiss3d</strong> is KISS. One-liner features (from the user point of view) are preferred.</p>
+
+<h2>
+<a name="acknowledgements" class="anchor" href="#acknowledgements"><span class="octicon octicon-link"></span></a>Acknowledgements</h2>
+
+<p>Thanks to all the Rustafarians for their help, and their OpenGl/ffmpeg/stb-image/etc. bindings.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Kiss3d maintained by <a href="https://github.com/sebcrozet">sebcrozet</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
