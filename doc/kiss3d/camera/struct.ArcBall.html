@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The kiss3d library documentation.">
+
+    <title>kiss3d::camera::ArcBall - Rust</title>
+
+    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
+          rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+</head>
+<body>
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    <section class="sidebar">
+        
+
+        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>camera</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.ArcBall.html'>ArcBall</a><br/><a class='struct ' href='struct.FirstPerson.html'>FirstPerson</a><br/><a class='struct ' href='struct.FirstPersonStereo.html'>FirstPersonStereo</a><br/></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Search documentation..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>camera</a>::<a class='struct' href=''>ArcBall</a><a class='source' id='src-8236' href='../../src/kiss3d/src/camera/arc_ball.rs.html#17-41'>[src]</a></h1>
+<pre class='rust struct'>pub struct ArcBall {
+    // some fields omitted
+}</pre><div class='docblock'><p>Arc-ball camera mode.</p>
+
+<p>An arc-ball camera is a camera rotating around a fixed point (the focus point) and always
+looking at it. The following inputs are handled:</p>
+
+<ul>
+<li>Left button press + drag - rotates the camera around the focus point</li>
+<li>Right button press + drag - translates the focus point on the plane orthogonal to the view
+direction</li>
+<li>Scroll in/out - zoom in/out</li>
+<li>Enter key - set the focus point to the origin</li>
+</ul>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(eye: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
+<div class='docblock'><p>Create a new arc-ball camera.</p>
+</div><h4 id='method.new_with_frustrum' class='method'><code>fn <a href='#method.new_with_frustrum' class='fnname'>new_with_frustrum</a>(fov: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, znear: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, zfar: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, eye: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
+<div class='docblock'><p>Creates a new arc ball camera with default sensitivity values.</p>
+</div><h4 id='method.at' class='method'><code>fn <a href='#method.at' class='fnname'>at</a>(&amp;self) -&gt; <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+<div class='docblock'><p>The point the arc-ball is looking at.</p>
+</div><h4 id='method.yaw' class='method'><code>fn <a href='#method.yaw' class='fnname'>yaw</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a></code></h4>
+<div class='docblock'><p>The arc-ball camera <code>yaw</code>.</p>
+</div><h4 id='method.set_yaw' class='method'><code>fn <a href='#method.set_yaw' class='fnname'>set_yaw</a>(&amp;mut self, yaw: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>)</code></h4>
+<div class='docblock'><p>Sets the camera <code>yaw</code>. Change this to modify the rotation along the <code>up</code> axis.</p>
+</div><h4 id='method.pitch' class='method'><code>fn <a href='#method.pitch' class='fnname'>pitch</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a></code></h4>
+<div class='docblock'><p>The arc-ball camera <code>pitch</code>.</p>
+</div><h4 id='method.set_pitch' class='method'><code>fn <a href='#method.set_pitch' class='fnname'>set_pitch</a>(&amp;mut self, pitch: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>)</code></h4>
+<div class='docblock'><p>Sets the camera <code>pitch</code>.</p>
+</div><h4 id='method.dist' class='method'><code>fn <a href='#method.dist' class='fnname'>dist</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a></code></h4>
+<div class='docblock'><p>The distance from the camera position to its view point.</p>
+</div><h4 id='method.set_dist' class='method'><code>fn <a href='#method.set_dist' class='fnname'>set_dist</a>(&amp;mut self, dist: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>)</code></h4>
+<div class='docblock'><p>Move the camera such that it is at a given distance from the view point.</p>
+</div><h4 id='method.look_at_z' class='method'><code>fn <a href='#method.look_at_z' class='fnname'>look_at_z</a>(&amp;mut self, eye: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+<div class='docblock'><p>Move and orient the camera such that it looks at a specific point.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/core/fmt/trait.Show.html' title='core::fmt::Show'>Show</a> for <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h3><div class='methods'><h4 id='method.fmt' class='method'><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h3><div class='methods'><h4 id='method.clone' class='method'><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, &amp;Self)</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&uarr;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&darr;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    <script>
+        var rootPath = "../../";
+        var currentCrate = "kiss3d";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

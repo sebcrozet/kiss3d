@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The kiss3d library documentation.">
+
+    <title>kiss3d::resource::Mesh - Rust</title>
+
+    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
+          rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+</head>
+<body>
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    <section class="sidebar">
+        
+
+        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>resource</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='material/index.html'>material</a><br/></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.FramebufferManager.html'>FramebufferManager</a><br/><a class='struct ' href='struct.GPUVector.html'>GPUVector</a><br/><a class='struct ' href='struct.MaterialManager.html'>MaterialManager</a><br/><a class='struct current' href='struct.Mesh.html'>Mesh</a><br/><a class='struct ' href='struct.MeshManager.html'>MeshManager</a><br/><a class='struct ' href='struct.Shader.html'>Shader</a><br/><a class='struct ' href='struct.ShaderAttribute.html'>ShaderAttribute</a><br/><a class='struct ' href='struct.ShaderUniform.html'>ShaderUniform</a><br/><a class='struct ' href='struct.Texture.html'>Texture</a><br/><a class='struct ' href='struct.TextureManager.html'>TextureManager</a><br/></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.GLPrimitive.html'>GLPrimitive</a><br/></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Search documentation..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>resource</a>::<a class='struct' href=''>Mesh</a><a class='source' id='src-38514' href='../../src/kiss3d/src/resource/mesh.rs.html#18-23'>[src]</a></h1>
+<pre class='rust struct'>pub struct Mesh {
+    // some fields omitted
+}</pre><div class='docblock'><p>Aggregation of vertices, indices, normals and texture coordinates.</p>
+
+<p>It also contains the GPU location of those buffers.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(coords: <a class='struct' href='http://doc.rust-lang.org/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;&gt;, faces: <a class='struct' href='http://doc.rust-lang.org/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLuint&gt;&gt;, normals: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;&gt;&gt;, uvs: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;GLfloat&gt;&gt;&gt;, dynamic_draw: <a href='http://doc.rust-lang.org/std/primitive.bool.html'>bool</a>) -&gt; <a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a></code></h4>
+<div class='docblock'><p>Creates a new mesh.</p>
+
+<p>If the normals and uvs are not given, they are automatically computed.</p>
+</div><h4 id='method.from_trimesh' class='method'><code>fn <a href='#method.from_trimesh' class='fnname'>from_trimesh</a>(mesh: <a class='struct' href='http://www.rust-ci.org/sebcrozet/ncollide/doc/ncollide3df32/procedural/trimesh/struct.TriMesh.html' title='ncollide3df32::procedural::trimesh::TriMesh'>TriMesh</a>&lt;GLfloat, <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;&gt;, dynamic_draw: <a href='http://doc.rust-lang.org/std/primitive.bool.html'>bool</a>) -&gt; <a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a></code></h4>
+<div class='docblock'><p>Creates a new mesh from a mesh descr.</p>
+
+<p>In the normals and uvs are not given, they are automatically computed.</p>
+</div><h4 id='method.new_with_gpu_vectors' class='method'><code>fn <a href='#method.new_with_gpu_vectors' class='fnname'>new_with_gpu_vectors</a>(coords: <a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;&gt;&gt;&gt;, faces: <a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLuint&gt;&gt;&gt;&gt;, normals: <a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;&gt;&gt;&gt;, uvs: <a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;GLfloat&gt;&gt;&gt;&gt;) -&gt; <a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a></code></h4>
+<div class='docblock'><p>Creates a new mesh. Arguments set to <code>None</code> are automatically computed.</p>
+</div><h4 id='method.bind_coords' class='method'><code>fn <a href='#method.bind_coords' class='fnname'>bind_coords</a>(&amp;mut self, coords: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;&gt;)</code></h4>
+<div class='docblock'><p>Binds this mesh vertex coordinates buffer to a vertex attribute.</p>
+</div><h4 id='method.bind_normals' class='method'><code>fn <a href='#method.bind_normals' class='fnname'>bind_normals</a>(&amp;mut self, normals: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;&gt;)</code></h4>
+<div class='docblock'><p>Binds this mesh vertex normals buffer to a vertex attribute.</p>
+</div><h4 id='method.bind_uvs' class='method'><code>fn <a href='#method.bind_uvs' class='fnname'>bind_uvs</a>(&amp;mut self, uvs: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;GLfloat&gt;&gt;)</code></h4>
+<div class='docblock'><p>Binds this mesh vertex uvs buffer to a vertex attribute.</p>
+</div><h4 id='method.bind_faces' class='method'><code>fn <a href='#method.bind_faces' class='fnname'>bind_faces</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Binds this mesh vertex uvs buffer to a vertex attribute.</p>
+</div><h4 id='method.bind' class='method'><code>fn <a href='#method.bind' class='fnname'>bind</a>(&amp;mut self, coords: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;&gt;, normals: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;&gt;, uvs: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;GLfloat&gt;&gt;)</code></h4>
+<div class='docblock'><p>Binds this mesh buffers to vertex attributes.</p>
+</div><h4 id='method.unbind' class='method'><code>fn <a href='#method.unbind' class='fnname'>unbind</a>(&amp;self)</code></h4>
+<div class='docblock'><p>Unbind this mesh buffers to vertex attributes.</p>
+</div><h4 id='method.num_pts' class='method'><code>fn <a href='#method.num_pts' class='fnname'>num_pts</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a></code></h4>
+<div class='docblock'><p>Number of points needed to draw this mesh.</p>
+</div><h4 id='method.recompute_normals' class='method'><code>fn <a href='#method.recompute_normals' class='fnname'>recompute_normals</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Recompute this mesh normals.</p>
+</div><h4 id='method.faces' class='method'><code>fn <a href='#method.faces' class='fnname'>faces</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLuint&gt;&gt;&gt;&gt;</code></h4>
+<div class='docblock'><p>This mesh faces.</p>
+</div><h4 id='method.normals' class='method'><code>fn <a href='#method.normals' class='fnname'>normals</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;&gt;&gt;&gt;</code></h4>
+<div class='docblock'><p>This mesh normals.</p>
+</div><h4 id='method.coords' class='method'><code>fn <a href='#method.coords' class='fnname'>coords</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;&gt;&gt;&gt;</code></h4>
+<div class='docblock'><p>This mesh vertex coordinates.</p>
+</div><h4 id='method.uvs' class='method'><code>fn <a href='#method.uvs' class='fnname'>uvs</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;GLfloat&gt;&gt;&gt;&gt;</code></h4>
+<div class='docblock'><p>This mesh texture coordinates.</p>
+</div><h4 id='method.compute_normals_array' class='method'><code>fn <a href='#method.compute_normals_array' class='fnname'>compute_normals_array</a>(coordinates: &amp;<a href='http://doc.rust-lang.org/std/primitive.slice.html'>[<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;]</a>, faces: &amp;<a href='http://doc.rust-lang.org/std/primitive.slice.html'>[<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLuint&gt;]</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;&gt;</code></h4>
+<div class='docblock'><p>Computes normals from a set of faces.</p>
+</div><h4 id='method.compute_normals' class='method'><code>fn <a href='#method.compute_normals' class='fnname'>compute_normals</a>(coordinates: &amp;<a href='http://doc.rust-lang.org/std/primitive.slice.html'>[<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;]</a>, faces: &amp;<a href='http://doc.rust-lang.org/std/primitive.slice.html'>[<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLuint&gt;]</a>, normals: &amp;mut <a class='struct' href='http://doc.rust-lang.org/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;&gt;)</code></h4>
+<div class='docblock'><p>Computes normals from a set of faces.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&uarr;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&darr;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    <script>
+        var rootPath = "../../";
+        var currentCrate = "kiss3d";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

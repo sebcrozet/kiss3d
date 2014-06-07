@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The kiss3d library documentation.">
+
+    <title>kiss3d::utils::Recorder - Rust</title>
+
+    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
+          rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+</head>
+<body>
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    <section class="sidebar">
+        
+
+        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>utils</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.Recorder.html'>Recorder</a><br/></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Search documentation..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>utils</a>::<a class='struct' href=''>Recorder</a><a class='source' id='src-46597' href='../../src/kiss3d/src/utils/recorder.rs.html#22-41'>[src]</a></h1>
+<pre class='rust struct'>pub struct Recorder {
+    // some fields omitted
+}</pre><div class='docblock'><p>OpenGL rendering video recorder.</p>
+
+<p>Use this to make a video of your crazy 3D scene.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/utils/struct.Recorder.html' title='kiss3d::utils::Recorder'>Recorder</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(path: <a class='struct' href='http://doc.rust-lang.org/std/path/posix/struct.Path.html' title='std::path::posix::Path'>Path</a>, width: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>, height: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>) -&gt; <a class='struct' href='../../kiss3d/utils/struct.Recorder.html' title='kiss3d::utils::Recorder'>Recorder</a></code></h4>
+<div class='docblock'><p>Creates a new video recorder.</p>
+
+<h1 id="arguments:" class='section-header'><a
+                           href="#arguments:">Arguments:</a></h1>
+<ul>
+<li><code>path</code>   - path to the output file.</li>
+<li><code>width</code>  - width of the recorded video.</li>
+<li><code>height</code> - height of the recorded video.</li>
+</ul>
+</div><h4 id='method.new_with_params' class='method'><code>fn <a href='#method.new_with_params' class='fnname'>new_with_params</a>(path: <a class='struct' href='http://doc.rust-lang.org/std/path/posix/struct.Path.html' title='std::path::posix::Path'>Path</a>, width: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>, height: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>, bit_rate: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>&gt;, time_base: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>, <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>)</a>&gt;, gop_size: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>&gt;, max_b_frames: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>&gt;, pix_fmt: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.i32.html'>i32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/utils/struct.Recorder.html' title='kiss3d::utils::Recorder'>Recorder</a></code></h4>
+<div class='docblock'><p>Creates a new video recorder with custom recording parameters.</p>
+
+<h1 id="arguments:-1" class='section-header'><a
+                           href="#arguments:-1">Arguments:</a></h1>
+<ul>
+<li><code>path</code>         - path to the output file.</li>
+<li><code>width</code>        - width of the recorded video.</li>
+<li><code>height</code>       - height of the recorded video.</li>
+<li><code>bit_rate</code>     - the average bit rate. Default value: 400000.</li>
+<li><code>time_base</code>    - this is the fundamental unit of time (in seconds) in terms of which
+               frame timestamps are represented. Default value: (1, 60), i-e, 60fps.</li>
+<li><code>gop_size</code>     - the number of pictures in a group of pictures. Default value: 10.</li>
+<li><code>max_b_frames</code> - maximum number of B-frames between non-B-frames. Default value: 1.</li>
+<li><code>pix_fmt</code>      - pixel format. Default value: <code>avutil::PIX_FMT_YUV420P</code>.</li>
+</ul>
+</div><h4 id='method.snap' class='method'><code>fn <a href='#method.snap' class='fnname'>snap</a>(&amp;mut self, window: &amp;<a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a>)</code></h4>
+<div class='docblock'><p>Captures an image from the window and adds it to the current video.</p>
+</div><h4 id='method.init' class='method'><code>fn <a href='#method.init' class='fnname'>init</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Initializes the recorder.</p>
+
+<p>This is automatically called when the first snapshot is made. Call this explicitly if you
+do not want the extra time overhead when the first snapshot is made.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/utils/struct.Recorder.html' title='kiss3d::utils::Recorder'>Recorder</a></code></h3><div class='methods'><h4 id='method.drop' class='method'><code>fn <a href='#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&uarr;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&darr;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    <script>
+        var rootPath = "../../";
+        var currentCrate = "kiss3d";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The kiss3d library documentation.">
+
+    <title>kiss3d::loader::mtl::MtlMaterial - Rust</title>
+
+    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
+          rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+
+    
+</head>
+<body>
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    <section class="sidebar">
+        
+
+        <p class='location'><a href='../../index.html'>kiss3d</a>&#8203;::<a href='../index.html'>loader</a>&#8203;::<a href='index.html'>mtl</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.MtlMaterial.html'>MtlMaterial</a><br/></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.parse.html'>parse</a><br/><a class='fn ' href='fn.parse_file.html'>parse_file</a><br/></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Search documentation..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'>Struct <a href='../../index.html'>kiss3d</a>::<a href='../index.html'>loader</a>::<a href='index.html'>mtl</a>::<a class='struct' href=''>MtlMaterial</a><a class='source' id='src-17442' href='../../../src/kiss3d/src/loader/mtl.rs.html#118-139'>[src]</a></h1>
+<pre class='rust struct'>pub struct MtlMaterial {
+    pub name: <a class='struct' href='http://doc.rust-lang.org/collections/string/struct.String.html' title='collections::string::String'>String</a>,
+    pub ambiant_texture: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
+    pub diffuse_texture: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
+    pub specular_texture: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
+    pub opacity_map: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
+    pub ambiant: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;,
+    pub diffuse: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;,
+    pub specular: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;,
+    pub shininess: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>,
+    pub alpha: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>,
+}</pre><div class='docblock'><p>Material informations read from a <code>.mtl</code> file.</p>
+</div><h2 class='fields'>Fields</h2>
+<table><tr><td id='structfield.name'><code>name</code></td><td><div class='docblock'><p>Name of the material.</p>
+</div></td></tr><tr><td id='structfield.ambiant_texture'><code>ambiant_texture</code></td><td><div class='docblock'><p>Path to the ambiant texture.</p>
+</div></td></tr><tr><td id='structfield.diffuse_texture'><code>diffuse_texture</code></td><td><div class='docblock'><p>Path to the diffuse texture.</p>
+</div></td></tr><tr><td id='structfield.specular_texture'><code>specular_texture</code></td><td><div class='docblock'><p>Path to the specular texture.</p>
+</div></td></tr><tr><td id='structfield.opacity_map'><code>opacity_map</code></td><td><div class='docblock'><p>Path to the opacity map.</p>
+</div></td></tr><tr><td id='structfield.ambiant'><code>ambiant</code></td><td><div class='docblock'><p>The ambiant color.</p>
+</div></td></tr><tr><td id='structfield.diffuse'><code>diffuse</code></td><td><div class='docblock'><p>The diffuse color.</p>
+</div></td></tr><tr><td id='structfield.specular'><code>specular</code></td><td><div class='docblock'><p>The specular color.</p>
+</div></td></tr><tr><td id='structfield.shininess'><code>shininess</code></td><td><div class='docblock'><p>The shininess.</p>
+</div></td></tr><tr><td id='structfield.alpha'><code>alpha</code></td><td><div class='docblock'><p>Alpha blending.</p>
+</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../../kiss3d/loader/mtl/struct.MtlMaterial.html' title='kiss3d::loader::mtl::MtlMaterial'>MtlMaterial</a></code></h3><div class='methods'><h4 id='method.new_default' class='method'><code>fn <a href='#method.new_default' class='fnname'>new_default</a>(name: <a class='struct' href='http://doc.rust-lang.org/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; <a class='struct' href='../../../kiss3d/loader/mtl/struct.MtlMaterial.html' title='kiss3d::loader::mtl::MtlMaterial'>MtlMaterial</a></code></h4>
+<div class='docblock'><p>Creates a new mtl material with a name and default values.</p>
+</div><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(name: <a class='struct' href='http://doc.rust-lang.org/collections/string/struct.String.html' title='collections::string::String'>String</a>, shininess: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, alpha: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, ambiant: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, diffuse: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, specular: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, ambiant_texture: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;, diffuse_texture: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;, specular_texture: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;, opacity_map: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;) -&gt; <a class='struct' href='../../../kiss3d/loader/mtl/struct.MtlMaterial.html' title='kiss3d::loader::mtl::MtlMaterial'>MtlMaterial</a></code></h4>
+<div class='docblock'><p>Creates a new mtl material.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../../kiss3d/loader/mtl/struct.MtlMaterial.html' title='kiss3d::loader::mtl::MtlMaterial'>MtlMaterial</a></code></h3><div class='methods'><h4 id='method.clone' class='method'><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../../kiss3d/loader/mtl/struct.MtlMaterial.html' title='kiss3d::loader::mtl::MtlMaterial'>MtlMaterial</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, &amp;Self)</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&uarr;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&darr;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    <script>
+        var rootPath = "../../../";
+        var currentCrate = "kiss3d";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    <script async src="../../../search-index.js"></script>
+</body>
+</html>
