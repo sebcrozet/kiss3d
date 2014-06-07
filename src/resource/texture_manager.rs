@@ -3,7 +3,7 @@
 use std::cell::RefCell;
 use std::mem;
 use std::rc::Rc;
-use collections::HashMap;
+use std::collections::HashMap;
 use gl;
 use gl::types::*;
 use stb_image::image::ImageU8;

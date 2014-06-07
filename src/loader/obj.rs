@@ -6,7 +6,7 @@ use std::io::Reader;
 use std::str::Words;
 use std::from_str::FromStr;
 use std::io::IoResult;
-use collections::HashMap;
+use std::collections::HashMap;
 use sync::{Arc, RWLock};
 use gl::types::GLfloat;
 use nalgebra::na::{Vec3, Vec2, Indexable};

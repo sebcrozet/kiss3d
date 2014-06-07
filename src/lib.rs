@@ -103,7 +103,6 @@ extern crate std;
 extern crate libc;
 extern crate sync;
 extern crate time;
-extern crate collections;
 extern crate glfw;
 extern crate gl;
 extern crate nalgebra;
