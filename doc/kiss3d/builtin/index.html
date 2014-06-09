@@ -39,7 +39,7 @@
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'>Module <a href='../index.html'>kiss3d</a>::<a class='mod' href=''>builtin</a><a class='source' id='src-18536' href='../../src/kiss3d/src/builtin/mod.rs.html#1-7'>[src]</a></h1>
+<h1 class='fqn'>Module <a href='../index.html'>kiss3d</a>::<a class='mod' href=''>builtin</a><a class='source' id='src-18654' href='../../src/kiss3d/src/builtin/mod.rs.html#1-9'>[src]</a></h1>
 <div class='docblock'><p>Built-in geometries, shaders and effects.</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
@@ -54,6 +54,13 @@
                         <td><a class='struct' href='struct.ObjectMaterial.html'
                                title='kiss3d::builtin::ObjectMaterial'>ObjectMaterial</a></td>
                         <td class='docblock short'><p>The default material used to draw objects.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='struct' href='struct.UvsMaterial.html'
+                               title='kiss3d::builtin::UvsMaterial'>UvsMaterial</a></td>
+                        <td class='docblock short'><p>A material that draws normals of an object.</p>
 </td>
                     </tr>
                 </table><h2 id='statics' class='section-header'><a href="#statics">Statics</a></h2>
@@ -78,6 +85,16 @@
                         <td><code>pub static OBJECT_VERTEX_SRC: &amp;'static <a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a></code><code> = </code><code>A_VERY_LONG_STRING</code></td>
                         <td class='docblock'><p>Vertex shader of the default object material.</p>
 &nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><code>pub static UVS_FRAGMENT_SRC: &amp;'static <a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a></code><code> = </code><code>ANOTHER_VERY_LONG_STRING</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><code>pub static UVS_VERTEX_SRC: &amp;'static <a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a></code><code> = </code><code>A_VERY_LONG_STRING</code></td>
+                        <td class='docblock'>&nbsp;</td>
                     </tr>
                 </table></section>
     <section id='search' class="content hidden"></section>
@@ -116,11 +133,13 @@
     </div>
 
     <script>
-        var rootPath = "../../";
-        var currentCrate = "kiss3d";
+        window.rootPath = "../../";
+        window.currentCrate = "kiss3d";
+        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
+    
     <script async src="../../search-index.js"></script>
 </body>
 </html>

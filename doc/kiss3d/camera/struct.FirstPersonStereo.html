@@ -39,7 +39,7 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>camera</a>::<a class='struct' href=''>FirstPersonStereo</a><a class='source' id='src-11243' href='../../src/kiss3d/src/camera/first_person_stereo.rs.html#19-50'>[src]</a></h1>
+<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>camera</a>::<a class='struct' href=''>FirstPersonStereo</a><a class='source' id='src-11361' href='../../src/kiss3d/src/camera/first_person_stereo.rs.html#19-50'>[src]</a></h1>
 <pre class='rust struct'>pub struct FirstPersonStereo {
     // some fields omitted
 }</pre><div class='docblock'><p>First-person camera mode.</p>
@@ -50,13 +50,13 @@
 view direction</li>
 <li>Scroll in/out - zoom in/out</li>
 </ul>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/camera/struct.FirstPersonStereo.html' title='kiss3d::camera::FirstPersonStereo'>FirstPersonStereo</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(eye: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, ipd: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>) -&gt; <a class='struct' href='../../kiss3d/camera/struct.FirstPersonStereo.html' title='kiss3d::camera::FirstPersonStereo'>FirstPersonStereo</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/camera/struct.FirstPersonStereo.html' title='kiss3d::camera::FirstPersonStereo'>FirstPersonStereo</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(eye: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, ipd: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>) -&gt; <a class='struct' href='../../kiss3d/camera/struct.FirstPersonStereo.html' title='kiss3d::camera::FirstPersonStereo'>FirstPersonStereo</a></code></h4>
 <div class='docblock'><p>Creates a first person camera with default sensitivity values.</p>
-</div><h4 id='method.new_with_frustrum' class='method'><code>fn <a href='#method.new_with_frustrum' class='fnname'>new_with_frustrum</a>(fov: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, znear: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, zfar: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, eye: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, ipd: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>) -&gt; <a class='struct' href='../../kiss3d/camera/struct.FirstPersonStereo.html' title='kiss3d::camera::FirstPersonStereo'>FirstPersonStereo</a></code></h4>
+</div><h4 id='method.new_with_frustrum' class='method'><code>fn <a href='#method.new_with_frustrum' class='fnname'>new_with_frustrum</a>(fov: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, znear: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, zfar: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, eye: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, ipd: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>) -&gt; <a class='struct' href='../../kiss3d/camera/struct.FirstPersonStereo.html' title='kiss3d::camera::FirstPersonStereo'>FirstPersonStereo</a></code></h4>
 <div class='docblock'><p>Creates a new first person camera with default sensitivity values.</p>
-</div><h4 id='method.look_at_z' class='method'><code>fn <a href='#method.look_at_z' class='fnname'>look_at_z</a>(&amp;mut self, eye: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.look_at_z' class='method'><code>fn <a href='#method.look_at_z' class='fnname'>look_at_z</a>(&amp;mut self, eye: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Changes the orientation and position of the camera to look at the specified point.</p>
-</div><h4 id='method.at' class='method'><code>fn <a href='#method.at' class='fnname'>at</a>(&amp;self) -&gt; <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+</div><h4 id='method.at' class='method'><code>fn <a href='#method.at' class='fnname'>at</a>(&amp;self) -&gt; <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;</code></h4>
 <div class='docblock'><p>The point the camera is looking at.</p>
 </div><h4 id='method.ipd' class='method'><code>fn <a href='#method.ipd' class='fnname'>ipd</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a></code></h4>
 <div class='docblock'><p>return Inter Pupilary Distance</p>
@@ -100,11 +100,13 @@ view direction</li>
     </div>
 
     <script>
-        var rootPath = "../../";
-        var currentCrate = "kiss3d";
+        window.rootPath = "../../";
+        window.currentCrate = "kiss3d";
+        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
+    
     <script async src="../../search-index.js"></script>
 </body>
 </html>

@@ -108,6 +108,9 @@
 <span id='68'>68</span>
 <span id='69'>69</span>
 <span id='70'>70</span>
+<span id='71'>71</span>
+<span id='72'>72</span>
+<span id='73'>73</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! A resource manager to load materials.
 </span>
@@ -115,7 +118,7 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cell</span>::<span class='ident'>RefCell</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span>;
 <span class='kw'>use</span> <span class='ident'>resource</span>::<span class='ident'>Material</span>;
-<span class='kw'>use</span> <span class='ident'>builtin</span>::{<span class='ident'>ObjectMaterial</span>, <span class='ident'>NormalsMaterial</span>};
+<span class='kw'>use</span> <span class='ident'>builtin</span>::{<span class='ident'>ObjectMaterial</span>, <span class='ident'>NormalsMaterial</span>, <span class='ident'>UvsMaterial</span>};
 
 <span class='macro'>local_data_key</span><span class='macro'>!</span>(<span class='ident'>KEY_MATERIAL_MANAGER</span>: <span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>MaterialManager</span><span class='op'>&gt;</span>)
 
@@ -143,6 +146,9 @@
 
         <span class='kw'>let</span> <span class='ident'>nm</span> <span class='op'>=</span> <span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='ident'>RefCell</span>::<span class='ident'>new</span>(<span class='kw'>box</span> <span class='ident'>NormalsMaterial</span>::<span class='ident'>new</span>() <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Material</span>:<span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>));
         <span class='ident'>materials</span>.<span class='ident'>insert</span>(<span class='string'>&quot;normals&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>nm</span>.<span class='ident'>clone</span>());
+
+        <span class='kw'>let</span> <span class='ident'>um</span> <span class='op'>=</span> <span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='ident'>RefCell</span>::<span class='ident'>new</span>(<span class='kw'>box</span> <span class='ident'>UvsMaterial</span>::<span class='ident'>new</span>() <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Material</span>:<span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>));
+        <span class='ident'>materials</span>.<span class='ident'>insert</span>(<span class='string'>&quot;uvs&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>um</span>.<span class='ident'>clone</span>());
 
         <span class='ident'>MaterialManager</span> {
             <span class='ident'>default_material</span>: <span class='ident'>om</span>,
@@ -217,11 +223,13 @@
     </div>
 
     <script>
-        var rootPath = "../../../../";
-        var currentCrate = "kiss3d";
+        window.rootPath = "../../../../";
+        window.currentCrate = "kiss3d";
+        window.playgroundUrl = "";
     </script>
     <script src="../../../../jquery.js"></script>
     <script src="../../../../main.js"></script>
+    
     <script async src="../../../../search-index.js"></script>
 </body>
 </html>

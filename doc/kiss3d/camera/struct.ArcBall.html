@@ -39,7 +39,7 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>camera</a>::<a class='struct' href=''>ArcBall</a><a class='source' id='src-8236' href='../../src/kiss3d/src/camera/arc_ball.rs.html#17-41'>[src]</a></h1>
+<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>camera</a>::<a class='struct' href=''>ArcBall</a><a class='source' id='src-8354' href='../../src/kiss3d/src/camera/arc_ball.rs.html#17-41'>[src]</a></h1>
 <pre class='rust struct'>pub struct ArcBall {
     // some fields omitted
 }</pre><div class='docblock'><p>Arc-ball camera mode.</p>
@@ -54,11 +54,11 @@ direction</li>
 <li>Scroll in/out - zoom in/out</li>
 <li>Enter key - set the focus point to the origin</li>
 </ul>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(eye: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(eye: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
 <div class='docblock'><p>Create a new arc-ball camera.</p>
-</div><h4 id='method.new_with_frustrum' class='method'><code>fn <a href='#method.new_with_frustrum' class='fnname'>new_with_frustrum</a>(fov: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, znear: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, zfar: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, eye: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
+</div><h4 id='method.new_with_frustrum' class='method'><code>fn <a href='#method.new_with_frustrum' class='fnname'>new_with_frustrum</a>(fov: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, znear: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, zfar: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, eye: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
 <div class='docblock'><p>Creates a new arc ball camera with default sensitivity values.</p>
-</div><h4 id='method.at' class='method'><code>fn <a href='#method.at' class='fnname'>at</a>(&amp;self) -&gt; <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+</div><h4 id='method.at' class='method'><code>fn <a href='#method.at' class='fnname'>at</a>(&amp;self) -&gt; <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;</code></h4>
 <div class='docblock'><p>The point the arc-ball is looking at.</p>
 </div><h4 id='method.yaw' class='method'><code>fn <a href='#method.yaw' class='fnname'>yaw</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a></code></h4>
 <div class='docblock'><p>The arc-ball camera <code>yaw</code>.</p>
@@ -72,11 +72,11 @@ direction</li>
 <div class='docblock'><p>The distance from the camera position to its view point.</p>
 </div><h4 id='method.set_dist' class='method'><code>fn <a href='#method.set_dist' class='fnname'>set_dist</a>(&amp;mut self, dist: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>)</code></h4>
 <div class='docblock'><p>Move the camera such that it is at a given distance from the view point.</p>
-</div><h4 id='method.look_at_z' class='method'><code>fn <a href='#method.look_at_z' class='fnname'>look_at_z</a>(&amp;mut self, eye: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.look_at_z' class='method'><code>fn <a href='#method.look_at_z' class='fnname'>look_at_z</a>(&amp;mut self, eye: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Move and orient the camera such that it looks at a specific point.</p>
 </div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/core/fmt/trait.Show.html' title='core::fmt::Show'>Show</a> for <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h3><div class='methods'><h4 id='method.fmt' class='method'><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
 </div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h3><div class='methods'><h4 id='method.clone' class='method'><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
-<h4 id='method.clone_from' class='method'><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, &amp;Self)</code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -114,11 +114,13 @@ direction</li>
     </div>
 
     <script>
-        var rootPath = "../../";
-        var currentCrate = "kiss3d";
+        window.rootPath = "../../";
+        window.currentCrate = "kiss3d";
+        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
+    
     <script async src="../../search-index.js"></script>
 </body>
 </html>

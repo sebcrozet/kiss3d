@@ -39,7 +39,7 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>point_renderer</a>::<a class='struct' href=''>PointRenderer</a><a class='source' id='src-18120' href='../../src/kiss3d/src/point_renderer.rs.html#13-20'>[src]</a></h1>
+<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>point_renderer</a>::<a class='struct' href=''>PointRenderer</a><a class='source' id='src-18238' href='../../src/kiss3d/src/point_renderer.rs.html#13-20'>[src]</a></h1>
 <pre class='rust struct'>pub struct PointRenderer {
     // some fields omitted
 }</pre><div class='docblock'><p>Structure which manages the display of short-living points.</p>
@@ -47,7 +47,7 @@
 <div class='docblock'><p>Creates a new points manager.</p>
 </div><h4 id='method.needs_rendering' class='method'><code>fn <a href='#method.needs_rendering' class='fnname'>needs_rendering</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Indicates whether some points have to be drawn.</p>
-</div><h4 id='method.draw_point' class='method'><code>fn <a href='#method.draw_point' class='fnname'>draw_point</a>(&amp;mut self, pt: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;, color: <a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;)</code></h4>
+</div><h4 id='method.draw_point' class='method'><code>fn <a href='#method.draw_point' class='fnname'>draw_point</a>(&amp;mut self, pt: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;, color: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;)</code></h4>
 <div class='docblock'><p>Adds a line to be drawn during the next frame. Lines are not persistent between frames.
 This method must be called for each line to draw, and at each update loop iteration.</p>
 </div><h4 id='method.render' class='method'><code>fn <a href='#method.render' class='fnname'>render</a>(&amp;mut self, pass: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>, camera: &amp;mut Camera)</code></h4>
@@ -89,11 +89,13 @@ This method must be called for each line to draw, and at each update loop iterat
     </div>
 
     <script>
-        var rootPath = "../../";
-        var currentCrate = "kiss3d";
+        window.rootPath = "../../";
+        window.currentCrate = "kiss3d";
+        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
+    
     <script async src="../../search-index.js"></script>
 </body>
 </html>

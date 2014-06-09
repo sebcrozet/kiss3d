@@ -45,14 +45,18 @@
 <span id='5'>5</span>
 <span id='6'>6</span>
 <span id='7'>7</span>
+<span id='8'>8</span>
+<span id='9'>9</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Built-in geometries, shaders and effects.
 </span>
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>builtin</span>::<span class='ident'>object_material</span>::{<span class='ident'>OBJECT_VERTEX_SRC</span>, <span class='ident'>OBJECT_FRAGMENT_SRC</span>, <span class='ident'>ObjectMaterial</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>builtin</span>::<span class='ident'>normals_material</span>::{<span class='ident'>NORMAL_VERTEX_SRC</span>, <span class='ident'>NORMAL_FRAGMENT_SRC</span>, <span class='ident'>NormalsMaterial</span>};
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>builtin</span>::<span class='ident'>uvs_material</span>::{<span class='ident'>UVS_VERTEX_SRC</span>, <span class='ident'>UVS_FRAGMENT_SRC</span>, <span class='ident'>UvsMaterial</span>};
 
 <span class='kw'>mod</span> <span class='ident'>object_material</span>;
 <span class='kw'>mod</span> <span class='ident'>normals_material</span>;
+<span class='kw'>mod</span> <span class='ident'>uvs_material</span>;
 </pre>
 </section>
     <section id='search' class="content hidden"></section>
@@ -91,11 +95,13 @@
     </div>
 
     <script>
-        var rootPath = "../../../../";
-        var currentCrate = "kiss3d";
+        window.rootPath = "../../../../";
+        window.currentCrate = "kiss3d";
+        window.playgroundUrl = "";
     </script>
     <script src="../../../../jquery.js"></script>
     <script src="../../../../main.js"></script>
+    
     <script async src="../../../../search-index.js"></script>
 </body>
 </html>

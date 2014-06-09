@@ -24,7 +24,7 @@
     <section class="sidebar">
         
 
-        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>builtin</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.NormalsMaterial.html'>NormalsMaterial</a><br/><a class='struct current' href='struct.ObjectMaterial.html'>ObjectMaterial</a><br/></div>
+        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>builtin</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.NormalsMaterial.html'>NormalsMaterial</a><br/><a class='struct current' href='struct.ObjectMaterial.html'>ObjectMaterial</a><br/><a class='struct ' href='struct.UvsMaterial.html'>UvsMaterial</a><br/></div>
     </section>
 
     <nav class="sub">
@@ -39,13 +39,13 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>builtin</a>::<a class='struct' href=''>ObjectMaterial</a><a class='source' id='src-18572' href='../../src/kiss3d/src/builtin/object_material.rs.html#16-28'>[src]</a></h1>
+<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>builtin</a>::<a class='struct' href=''>ObjectMaterial</a><a class='source' id='src-18694' href='../../src/kiss3d/src/builtin/object_material.rs.html#16-28'>[src]</a></h1>
 <pre class='rust struct'>pub struct ObjectMaterial {
     // some fields omitted
 }</pre><div class='docblock'><p>The default material used to draw objects.</p>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/builtin/struct.ObjectMaterial.html' title='kiss3d::builtin::ObjectMaterial'>ObjectMaterial</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/builtin/struct.ObjectMaterial.html' title='kiss3d::builtin::ObjectMaterial'>ObjectMaterial</a></code></h4>
 <div class='docblock'><p>Creates a new <code>ObjectMaterial</code>.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> for <a class='struct' href='../../kiss3d/builtin/struct.ObjectMaterial.html' title='kiss3d::builtin::ObjectMaterial'>ObjectMaterial</a></code></h3><div class='methods'><h4 id='method.render' class='method'><code>fn <a href='#method.render' class='fnname'>render</a>(&amp;mut self, pass: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>, transform: &amp;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, scale: &amp;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, camera: &amp;mut Camera, light: &amp;<a class='type' href='../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a>, data: &amp;<a class='struct' href='../../kiss3d/scene/struct.ObjectData.html' title='kiss3d::scene::ObjectData'>ObjectData</a>, mesh: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>)</code></h4>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> for <a class='struct' href='../../kiss3d/builtin/struct.ObjectMaterial.html' title='kiss3d::builtin::ObjectMaterial'>ObjectMaterial</a></code></h3><div class='methods'><h4 id='method.render' class='method'><code>fn <a href='#method.render' class='fnname'>render</a>(&amp;mut self, pass: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>, transform: &amp;<a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, scale: &amp;<a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, camera: &amp;mut Camera, light: &amp;<a class='type' href='../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a>, data: &amp;<a class='struct' href='../../kiss3d/scene/struct.ObjectData.html' title='kiss3d::scene::ObjectData'>ObjectData</a>, mesh: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>)</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -83,11 +83,13 @@
     </div>
 
     <script>
-        var rootPath = "../../";
-        var currentCrate = "kiss3d";
+        window.rootPath = "../../";
+        window.currentCrate = "kiss3d";
+        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
+    
     <script async src="../../search-index.js"></script>
 </body>
 </html>

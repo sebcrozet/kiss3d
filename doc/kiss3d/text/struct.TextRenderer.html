@@ -39,13 +39,13 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>text</a>::<a class='struct' href=''>TextRenderer</a><a class='source' id='src-44465' href='../../src/kiss3d/src/text/renderer.rs.html#35-44'>[src]</a></h1>
+<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>text</a>::<a class='struct' href=''>TextRenderer</a><a class='source' id='src-45177' href='../../src/kiss3d/src/text/renderer.rs.html#35-44'>[src]</a></h1>
 <pre class='rust struct'>pub struct TextRenderer {
     // some fields omitted
 }</pre><div class='docblock'><p>A ttf text renderer.</p>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/text/struct.TextRenderer.html' title='kiss3d::text::TextRenderer'>TextRenderer</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/text/struct.TextRenderer.html' title='kiss3d::text::TextRenderer'>TextRenderer</a></code></h4>
 <div class='docblock'><p>Creates a new text renderer with <code>font</code> as the default font.</p>
-</div><h4 id='method.draw_text' class='method'><code>fn <a href='#method.draw_text' class='fnname'>draw_text</a>(&amp;mut self, text: &amp;<a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a>, pos: &amp;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, font: &amp;<a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a>&gt;, color: &amp;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.draw_text' class='method'><code>fn <a href='#method.draw_text' class='fnname'>draw_text</a>(&amp;mut self, text: &amp;<a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a>, pos: &amp;<a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, font: &amp;<a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a>&gt;, color: &amp;<a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Adds a piece of text to be drawn during the next frame. The text is not persistent between
 frames. This method must be called for each text to draw, and at each update loop
 iteration.</p>
@@ -88,11 +88,13 @@ iteration.</p>
     </div>
 
     <script>
-        var rootPath = "../../";
-        var currentCrate = "kiss3d";
+        window.rootPath = "../../";
+        window.currentCrate = "kiss3d";
+        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
+    
     <script async src="../../search-index.js"></script>
 </body>
 </html>

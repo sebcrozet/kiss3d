@@ -162,8 +162,8 @@
             <span class='ident'>meshes</span>: <span class='ident'>HashMap</span>::<span class='ident'>new</span>()
         };
 
-        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>res</span>.<span class='ident'>add_trimesh</span>(<span class='ident'>procedural</span>::<span class='ident'>unit_sphere</span>(<span class='number'>50</span>, <span class='number'>50</span>), <span class='boolval'>false</span>, <span class='string'>&quot;sphere&quot;</span>);
-        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>res</span>.<span class='ident'>add_trimesh</span>(<span class='ident'>procedural</span>::<span class='ident'>unit_cube</span>(), <span class='boolval'>false</span>, <span class='string'>&quot;cube&quot;</span>);
+        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>res</span>.<span class='ident'>add_trimesh</span>(<span class='ident'>procedural</span>::<span class='ident'>unit_sphere</span>(<span class='number'>50</span>, <span class='number'>50</span>, <span class='boolval'>true</span>), <span class='boolval'>false</span>, <span class='string'>&quot;sphere&quot;</span>);
+        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>res</span>.<span class='ident'>add_trimesh</span>(<span class='ident'>procedural</span>::<span class='ident'>unit_cuboid</span>(), <span class='boolval'>false</span>, <span class='string'>&quot;cube&quot;</span>);
         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>res</span>.<span class='ident'>add_trimesh</span>(<span class='ident'>procedural</span>::<span class='ident'>unit_cone</span>(<span class='number'>50</span>), <span class='boolval'>false</span>, <span class='string'>&quot;cone&quot;</span>);
         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>res</span>.<span class='ident'>add_trimesh</span>(<span class='ident'>procedural</span>::<span class='ident'>unit_cylinder</span>(<span class='number'>50</span>), <span class='boolval'>false</span>, <span class='string'>&quot;cylinder&quot;</span>);
 
@@ -259,11 +259,13 @@
     </div>
 
     <script>
-        var rootPath = "../../../../";
-        var currentCrate = "kiss3d";
+        window.rootPath = "../../../../";
+        window.currentCrate = "kiss3d";
+        window.playgroundUrl = "";
     </script>
     <script src="../../../../jquery.js"></script>
     <script src="../../../../main.js"></script>
+    
     <script async src="../../../../search-index.js"></script>
 </body>
 </html>

@@ -39,19 +39,20 @@
     </nav>
 
     <section id='main' class="content trait">
-<h1 class='fqn'>Trait <a href='../../index.html'>kiss3d</a>::<a href='../index.html'>resource</a>::<a href='index.html'>material</a>::<a class='trait' href=''>Material</a><a class='source' id='src-33191' href='../../../src/kiss3d/src/resource/material.rs.html#10-21'>[src]</a></h1>
+<h1 class='fqn'>Trait <a href='../../index.html'>kiss3d</a>::<a href='../index.html'>resource</a>::<a href='index.html'>material</a>::<a class='trait' href=''>Material</a><a class='source' id='src-33903' href='../../../src/kiss3d/src/resource/material.rs.html#10-21'>[src]</a></h1>
 <pre class='rust trait'>pub trait Material {
-    fn <a href='#tymethod.render' class='fnname'>render</a>(&amp;mut self, pass: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>, transform: &amp;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, scale: &amp;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, camera: &amp;mut Camera, light: &amp;<a class='type' href='../../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a>, data: &amp;<a class='struct' href='../../../kiss3d/scene/struct.ObjectData.html' title='kiss3d::scene::ObjectData'>ObjectData</a>, mesh: &amp;mut <a class='struct' href='../../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>);
+    fn <a href='#tymethod.render' class='fnname'>render</a>(&amp;mut self, pass: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>, transform: &amp;<a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, scale: &amp;<a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, camera: &amp;mut Camera, light: &amp;<a class='type' href='../../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a>, data: &amp;<a class='struct' href='../../../kiss3d/scene/struct.ObjectData.html' title='kiss3d::scene::ObjectData'>ObjectData</a>, mesh: &amp;mut <a class='struct' href='../../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>);
 }</pre><div class='docblock'><p>Trait implemented by materials.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.render' class='method'><code>fn <a href='#tymethod.render' class='fnname'>render</a>(&amp;mut self, pass: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>, transform: &amp;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, scale: &amp;<a class='struct' href='http://www.rust-ci.org/sebcrozet/nalgebra/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, camera: &amp;mut Camera, light: &amp;<a class='type' href='../../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a>, data: &amp;<a class='struct' href='../../../kiss3d/scene/struct.ObjectData.html' title='kiss3d::scene::ObjectData'>ObjectData</a>, mesh: &amp;mut <a class='struct' href='../../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>)</code></h3><div class='docblock'><p>Renders an object using this material.</p>
+        <h3 id='tymethod.render' class='method'><code>fn <a href='#tymethod.render' class='fnname'>render</a>(&amp;mut self, pass: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>, transform: &amp;<a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, scale: &amp;<a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, camera: &amp;mut Camera, light: &amp;<a class='type' href='../../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a>, data: &amp;<a class='struct' href='../../../kiss3d/scene/struct.ObjectData.html' title='kiss3d::scene::ObjectData'>ObjectData</a>, mesh: &amp;mut <a class='struct' href='../../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>)</code></h3><div class='docblock'><p>Renders an object using this material.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
     <li><code>impl <a class='trait' href='../../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> for <a class='struct' href='../../../kiss3d/builtin/struct.ObjectMaterial.html' title='kiss3d::builtin::ObjectMaterial'>ObjectMaterial</a></code></li>
 <li><code>impl <a class='trait' href='../../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> for <a class='struct' href='../../../kiss3d/builtin/struct.NormalsMaterial.html' title='kiss3d::builtin::NormalsMaterial'>NormalsMaterial</a></code></li>
+<li><code>impl <a class='trait' href='../../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> for <a class='struct' href='../../../kiss3d/builtin/struct.UvsMaterial.html' title='kiss3d::builtin::UvsMaterial'>UvsMaterial</a></code></li>
 </ul><script type="text/javascript" async
                               src="../../../implementors/kiss3d/resource/material/trait.Material.js">
                       </script></section>
@@ -91,11 +92,13 @@
     </div>
 
     <script>
-        var rootPath = "../../../";
-        var currentCrate = "kiss3d";
+        window.rootPath = "../../../";
+        window.currentCrate = "kiss3d";
+        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
+    
     <script async src="../../../search-index.js"></script>
 </body>
 </html>

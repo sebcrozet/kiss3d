@@ -39,10 +39,10 @@
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'>Crate <a class='mod' href=''>kiss3d</a><a class='source' id='src-0' href='../src/kiss3d/src/lib.rs.html#1-129'>[src]</a></h1>
+<h1 class='fqn'>Crate <a class='mod' href=''>kiss3d</a><a class='source' id='src-0' href='../src/kiss3d/src/lib.rs.html#1-127'>[src]</a></h1>
 <div class='docblock'>
 <h1 id="kiss3d" class='section-header'><a
-                           href="#kiss3d">kiss3d</a></h1>
+                           href="#kiss3d">Kiss3d</a></h1>
 <p>Keep It Simple, Stupid 3d graphics engine.</p>
 
 <p>This library is born from the frustration in front of the fact that today’s 3D
@@ -56,11 +56,9 @@ write beautiful animations or games. They have a lot of feature; too much
 feature if you only want to draw a few geometries on the screen.</li>
 </ul>
 
-<p><strong>kiss3d</strong> is not designed to be feature-complete or fast.
+<p><strong>Kiss3d</strong> is not designed to be feature-complete or fast.
 It is designed to be able to draw simple geometric figures and play with them
 with one-liners.</p>
-
-<p>An on-line version of this documentation is available <a href="http://www.rust-ci.org/sebcrozet/kiss3d/doc/kiss3d/index.html">here</a>.</p>
 
 <h2 id="features" class='section-header'><a
                            href="#features">Features</a></h2>
@@ -71,7 +69,7 @@ with one-liners.</p>
 <li>a first-person camera is available too and user-defined cameras are possible.</li>
 <li>display boxes, spheres, cones, cylinders, quads and lines.</li>
 <li>change an object color or texture.</li>
-<li>change an object transform (we use the <a href="https://github.com/sebcrozet/nalgebra">nalgebra</a> library
+<li>change an object transform (we use the <a href="http://nalgebra.org">nalgebra</a> library
 to do that).  An object cannot be scaled though.</li>
 <li>create basic post-processing effects.</li>
 </ul>
@@ -114,7 +112,7 @@ to do that).  An object cannot be scaled though.</li>
 <p>You will need the last rust compiler from the <code>master</code> branch.
 If you encounter problems, make sure you have the last compiler version before creating an issue.</p>
 
-<p>The simplest way to build <strong>kiss3d</strong> and all its dependencies is to do a
+<p>The simplest way to build <strong>Kiss3d</strong> and all its dependencies is to do a
 recursive clone:</p>
 <pre class='rust '>
 <span class='ident'>git</span> <span class='ident'>clone</span> <span class='op'>-</span><span class='op'>-</span><span class='ident'>recursive</span> <span class='ident'>git</span>:<span class='comment'>//github.com/sebcrozet/kiss3d.git
@@ -130,7 +128,7 @@ Use <code>make doc</code> to compile the documentation on the <code>doc</code> f
 <h2 id="contributions" class='section-header'><a
                            href="#contributions">Contributions</a></h2>
 <p>I’d love to see people improving this library for their own needs. However, keep in mind that
-<strong>kiss3d</strong> is KISS. One-liner features (from the user point of view) are preferred.</p>
+<strong>Kiss3d</strong> is KISS. One-liner features (from the user point of view) are preferred.</p>
 </div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                     <tr>
@@ -253,11 +251,13 @@ Use <code>make doc</code> to compile the documentation on the <code>doc</code> f
     </div>
 
     <script>
-        var rootPath = "../";
-        var currentCrate = "kiss3d";
+        window.rootPath = "../";
+        window.currentCrate = "kiss3d";
+        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
+    
     <script async src="../search-index.js"></script>
 </body>
 </html>
