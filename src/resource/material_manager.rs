@@ -4,7 +4,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use resource::Material;
-use builtin::{ObjectMaterial, NormalsMaterial};
+use builtin::{ObjectMaterial, NormalsMaterial, UvsMaterial};
 
 local_data_key!(KEY_MATERIAL_MANAGER: RefCell<MaterialManager>)
 
@@ -32,6 +32,9 @@ impl MaterialManager {
 
         let nm = Rc::new(RefCell::new(box NormalsMaterial::new() as Box<Material:'static>));
         materials.insert("normals".to_string(), nm.clone());
+
+        let um = Rc::new(RefCell::new(box UvsMaterial::new() as Box<Material:'static>));
+        materials.insert("uvs".to_string(), um.clone());
 
         MaterialManager {
             default_material: om,

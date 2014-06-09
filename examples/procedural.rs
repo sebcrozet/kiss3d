@@ -21,7 +21,7 @@ fn main() {
         /*
          * A cube.
          */
-        let cube  = procedural::cube(&Vec3::new(0.7f32, 0.2, 0.4));
+        let cube  = procedural::cuboid(&Vec3::new(0.7f32, 0.2, 0.4));
         let mut c = window.add_trimesh(cube, na::one());
         c.append_translation(&Vec3::new(1.0, 0.0, 0.0));
         c.set_texture_from_file(&Path::new("media/kitten.png"), "kitten");
@@ -29,7 +29,7 @@ fn main() {
         /*
          * A sphere.
          */
-        let sphere = procedural::sphere(&0.4f32, 20, 20);
+        let sphere = procedural::sphere(&0.4f32, 20, 20, true);
         let mut s  = window.add_trimesh(sphere, na::one());
         s.set_texture_with_name("kitten");
 

@@ -157,6 +157,17 @@ impl SceneNodeData {
         self.apply_to_objects_mut(&mut |o| o.set_material(material.clone()))
     }
 
+    /// Sets the material of the objects contained by this node and its children.
+    ///
+    /// The material must already have been registered as `name`.
+    #[inline]
+    pub fn set_material_with_name(&mut self, name: &str) {
+        let material = MaterialManager::get_global_manager(|tm| tm.get(name).unwrap_or_else(
+            || fail!("Invalid attempt to use the unregistered material: {}", name)));
+
+        self.set_material(material)
+    }
+
     /// Sets the width of the lines drawn for the objects contained by this node and its children.
     #[inline]
     pub fn set_lines_width(&mut self, width: f32) {
@@ -794,6 +805,12 @@ impl SceneNode {
     #[inline]
     pub fn set_material(&mut self, material: Rc<RefCell<Box<Material:'static>>>) {
         self.data_mut().set_material(material)
+    }
+
+    /// Sets the material of the objects contained by this node and its children.
+    #[inline]
+    pub fn set_material_with_name(&mut self, name: &str) {
+        self.data_mut().set_material_with_name(name)
     }
 
     /// Sets the width of the lines drawn for the objects contained by this node and its children.
