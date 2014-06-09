@@ -15,7 +15,7 @@ graphics library are:
 It is designed to be able to draw simple geometric figures and play with them
 with one-liners.
 
-An on-line version of this documentation is available [here](http://www.rust-ci.org/sebcrozet/kiss3d/doc/kiss3d/index.html).
+An on-line version of this documentation is available [here](http://kiss3d.org).
 
 ## Features
 Most features are one-liners.
@@ -24,7 +24,7 @@ Most features are one-liners.
 * a first-person camera is available too and user-defined cameras are possible.
 * display boxes, spheres, cones, cylinders, quads and lines.
 * change an object color or texture.
-* change an object transform (we use the [nalgebra](https://github.com/sebcrozet/nalgebra) library
+* change an object transform (we use the [nalgebra](http://nalgebra.org) library
   to do that).
 * create basic post-processing effects.
 
@@ -90,4 +90,4 @@ I’d love to see people improving this library for their own needs. However, ke
 
 ## Acknowledgements
 
-Thanks to all the Rustafarians for their help, and their OpenGl/ffmpeg/stb-image/etc. bindings.
+Thanks to all the Rustafarians for their help, and their OpenGL/ffmpeg/stb-image/etc. bindings.

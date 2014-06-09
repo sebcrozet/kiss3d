@@ -1,5 +1,5 @@
 /*!
-# kiss3d
+# Kiss3d
 
 Keep It Simple, Stupid 3d graphics engine.
 
@@ -12,11 +12,9 @@ graphics library are:
   write beautiful animations or games. They have a lot of feature; too much
   feature if you only want to draw a few geometries on the screen.
 
-**kiss3d** is not designed to be feature-complete or fast.
+**Kiss3d** is not designed to be feature-complete or fast.
 It is designed to be able to draw simple geometric figures and play with them
 with one-liners.
-
-An on-line version of this documentation is available [here](http://www.rust-ci.org/sebcrozet/kiss3d/doc/kiss3d/index.html).
 
 ## Features
 Most features are one-liners.
@@ -25,7 +23,7 @@ Most features are one-liners.
 * a first-person camera is available too and user-defined cameras are possible.
 * display boxes, spheres, cones, cylinders, quads and lines.
 * change an object color or texture.
-* change an object transform (we use the [nalgebra](https://github.com/sebcrozet/nalgebra) library
+* change an object transform (we use the [nalgebra](http://nalgebra.org) library
   to do that).  An object cannot be scaled though.
 * create basic post-processing effects.
 
@@ -65,7 +63,7 @@ Some controls are handled by default by the engine (they can be overridden by th
 You will need the last rust compiler from the `master` branch.
 If you encounter problems, make sure you have the last compiler version before creating an issue.
 
-The simplest way to build **kiss3d** and all its dependencies is to do a
+The simplest way to build **Kiss3d** and all its dependencies is to do a
 recursive clone:
 
 
@@ -81,7 +79,7 @@ Use `make doc` to compile the documentation on the `doc` folder.
 
 ## Contributions
 I’d love to see people improving this library for their own needs. However, keep in mind that
-**kiss3d** is KISS. One-liner features (from the user point of view) are preferred.
+**Kiss3d** is KISS. One-liner features (from the user point of view) are preferred.
 */
 
 #![crate_id = "kiss3d#0.1"]
@@ -97,7 +95,7 @@ I’d love to see people improving this library for their own needs. However, ke
 #![feature(globs)]
 #![feature(macro_rules)]
 #![feature(managed_boxes)]
-#![doc(html_root_url = "http://www.rust-ci.org/kiss3d/nalgebra/doc")]
+#![doc(html_root_url = "http://kiss3d.org/doc")]
 
 extern crate std;
 extern crate libc;
