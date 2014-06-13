@@ -15,8 +15,7 @@ pub struct PointRenderer {
     pos:        ShaderAttribute<Vec3<f32>>,
     color:      ShaderAttribute<Vec3<f32>>,
     view:       ShaderUniform<Mat4<f32>>,
-    points:     GPUVector<Vec3<GLfloat>>,
-    max_points: uint
+    points:     GPUVector<Vec3<GLfloat>>
 }
 
 impl PointRenderer {
@@ -28,7 +27,6 @@ impl PointRenderer {
 
         PointRenderer {
             points:      GPUVector::new(Vec::new(), ArrayBuffer, StreamDraw),
-            max_points: 0,
             pos:        shader.get_attrib::<Vec3<f32>>("position").unwrap(),
             color:      shader.get_attrib::<Vec3<f32>>("color").unwrap(),
             view:       shader.get_uniform::<Mat4<f32>>("view").unwrap(),

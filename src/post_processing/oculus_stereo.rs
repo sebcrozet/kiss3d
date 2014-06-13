@@ -12,7 +12,6 @@ mod error;
 /// An post-processing effect to support the oculus rift.
 pub struct OculusStereo {
     shader:       Shader,
-    time:         f32,
     fbo_vertices: GPUVector<Vec2<f32>>,
     fbo_texture:  ShaderUniform<GLint>,
     v_coord:      ShaderAttribute<Vec2<GLfloat>>,
@@ -44,7 +43,6 @@ impl OculusStereo {
         shader.use_program();
 
         OculusStereo {
-            time:         0.0,
             fbo_texture:  shader.get_uniform("fbo_texture").unwrap(),
             fbo_vertices: fbo_vertices,
             v_coord:      shader.get_attrib("v_coord").unwrap(),

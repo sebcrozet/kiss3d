@@ -23,8 +23,7 @@ pub struct ObjectMaterial {
     transform:  ShaderUniform<Mat4<f32>>,
     scale:      ShaderUniform<Mat3<f32>>,
     ntransform: ShaderUniform<Mat3<f32>>,
-    view:       ShaderUniform<Mat4<f32>>,
-    tex:        ShaderUniform<GLuint>
+    view:       ShaderUniform<Mat4<f32>>
 }
 
 impl ObjectMaterial {
@@ -46,7 +45,6 @@ impl ObjectMaterial {
             scale:      shader.get_uniform("scale").unwrap(),
             ntransform: shader.get_uniform("ntransform").unwrap(),
             view:       shader.get_uniform("view").unwrap(),
-            tex:        shader.get_uniform("tex").unwrap(),
             shader:     shader
         }
     }
@@ -184,7 +182,7 @@ static A_VERY_LONG_STRING: &'static str =
         ws_normal   = normalize(ntransform * scale * normal);
     }";
 
-// phong lighting (heavily) inspired
+// phong-like lighting (heavily) inspired
 // by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
 static ANOTHER_VERY_LONG_STRING: &'static str =
    "#version 120

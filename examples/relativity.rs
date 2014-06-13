@@ -206,7 +206,6 @@ struct RelativisticMaterial {
     scale:           ShaderUniform<Mat3<f32>>,
     ntransform:      ShaderUniform<Mat3<f32>>,
     view:            ShaderUniform<Mat4<f32>>,
-    tex:             ShaderUniform<GLuint>,
     light_vel:       ShaderUniform<GLfloat>,
     rel_vel:         ShaderUniform<Vec3<f32>>,
     rot:             ShaderUniform<Rot3<f32>>,
@@ -237,7 +236,6 @@ impl RelativisticMaterial {
             scale:           shader.get_uniform("scale").unwrap(),
             ntransform:      shader.get_uniform("ntransform").unwrap(),
             view:            shader.get_uniform("view").unwrap(),
-            tex:             shader.get_uniform("tex").unwrap(),
             shader:          shader
         }
     }
