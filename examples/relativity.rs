@@ -11,7 +11,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::io::Reader;
 use sync::{Arc, RWLock};
-use gl::types::{GLint, GLuint, GLfloat};
+use gl::types::{GLint, GLfloat};
 use nalgebra::na::{Vec2, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
 use nalgebra::na;
 use kiss3d::window::Window;
