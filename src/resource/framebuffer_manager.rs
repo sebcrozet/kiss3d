@@ -145,7 +145,8 @@ impl FramebufferManager {
                 self.curr_depth = 0;
             },
             Offscreen(ref o) => {
-                self.do_select(self.fbo);
+                let fbo = self.fbo;
+                self.do_select(fbo);
 
                 if self.curr_color != o.texture {
                     verify!(gl::FramebufferTexture2D(gl::FRAMEBUFFER,

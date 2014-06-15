@@ -451,7 +451,8 @@ impl<'a> Window<'a> {
         }
 
         // usr_window.framebuffer_size_callback(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        usr_window.set_light(usr_window.light_mode);
+        let light = usr_window.light_mode.clone();
+        usr_window.set_light(light);
 
         callback(&mut usr_window);
     }

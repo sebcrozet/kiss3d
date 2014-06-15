@@ -4,6 +4,7 @@ use nalgebra::na::Vec3;
 use gl::types::GLfloat;
 
 /// The light configuration.
+#[deriving(Clone)]
 pub enum Light {
     /// A light with an absolute world position.
     Absolute(Vec3<GLfloat>),
