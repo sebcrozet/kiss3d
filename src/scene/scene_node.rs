@@ -153,7 +153,7 @@ impl SceneNodeData {
     // we are on a leaf? (to avoid the call to a closure required by the apply_to_*).
     /// Sets the material of the objects contained by this node and its children.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material:'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material + 'static>>>) {
         self.apply_to_objects_mut(&mut |o| o.set_material(material.clone()))
     }
 
@@ -803,7 +803,7 @@ impl SceneNode {
 
     /// Sets the material of the objects contained by this node and its children.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material:'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material + 'static>>>) {
         self.data_mut().set_material(material)
     }
 

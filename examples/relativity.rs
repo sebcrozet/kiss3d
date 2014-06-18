@@ -34,7 +34,7 @@ fn main() {
         let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
         let font         = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
         let context      = Arc::new(RWLock::new(Context::new(1000.0, na::zero(), eye)));
-        let material     = Rc::new(RefCell::new(box RelativisticMaterial::new(context.clone()) as Box<Material:'static>));
+        let material     = Rc::new(RefCell::new(box RelativisticMaterial::new(context.clone()) as Box<Material + 'static>));
 
         window.set_camera(&mut observer as &mut Camera);
         window.set_framerate_limit(Some(60));
