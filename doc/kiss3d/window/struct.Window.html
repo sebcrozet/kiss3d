@@ -23,8 +23,7 @@
 
     <section class="sidebar">
         
-
-        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>window</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.Window.html'>Window</a><br/></div>
+        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>window</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.Event.html'>Event</a><a class='struct ' href='struct.EventManager.html'>EventManager</a><a class='struct ' href='struct.Events.html'>Events</a><a class='struct ' href='struct.RenderFrame.html'>RenderFrame</a><a class='struct ' href='struct.RenderFrames.html'>RenderFrames</a><a class='struct current' href='struct.Window.html'>Window</a></div>
     </section>
 
     <nav class="sub">
@@ -32,33 +31,39 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Search documentation..."
+                       placeholder="Click or press 'S' to search, '?' for more options..."
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>window</a>::<a class='struct' href=''>Window</a><a class='source' id='src-66' href='../../src/kiss3d/src/window.rs.html#35-52'>[src]</a></h1>
+<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>window</a>::<a class='struct' href=''>Window</a><a class='source' id='src-72' href='../../src/kiss3d/src/window/window.rs.html#34-49'>[src]</a></h1>
 <pre class='rust struct'>pub struct Window&lt;'a&gt; {
     // some fields omitted
 }</pre><div class='docblock'><p>Structure representing a window and a 3D scene.</p>
 
 <p>This is the main interface with the 3d engine.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a>&lt;'a&gt;</code></h3><div class='methods'><h4 id='method.context' class='method'><code>fn <a href='#method.context' class='fnname'>context</a>&lt;'r&gt;(&amp;'r self) -&gt; &amp;'r Glfw</code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a>&lt;'a&gt;</code></h3><div class='methods'><h4 id='method.iter' class='method'><code>fn <a href='#method.iter' class='fnname'>iter</a>&lt;'b&gt;(&amp;'b mut self) -&gt; <a class='struct' href='../../kiss3d/window/struct.RenderFrames.html' title='kiss3d::window::RenderFrames'>RenderFrames</a>&lt;'b, 'a&gt;</code></h4>
+<div class='docblock'><p>Gets an iterator to the rendering frames.</p>
+
+<p>Uses this to start your render loop. The <code>RenderFrames</code> iterator iters though the frames
+that are drawn on the window.</p>
+</div><h4 id='method.iter_with_camera' class='method'><code>fn <a href='#method.iter_with_camera' class='fnname'>iter_with_camera</a>&lt;'b&gt;(&amp;'b mut self, camera: <a class='struct' href='http://doc.rust-lang.org/alloc/owned/struct.Box.html' title='alloc::owned::Box'>Box</a>&lt;Camera&gt;) -&gt; <a class='struct' href='../../kiss3d/window/struct.RenderFrames.html' title='kiss3d::window::RenderFrames'>RenderFrames</a>&lt;'b, 'a&gt;</code></h4>
+<div class='docblock'><p>Gets an iterator to the rendering frames with the camera <code>camera</code>.</p>
+
+<p>Uses this to start your render loop. The <code>RenderFrames</code> iterator iters though the frames
+that are drawn on the window.</p>
+</div><h4 id='method.context' class='method'><code>fn <a href='#method.context' class='fnname'>context</a>&lt;'r&gt;(&amp;'r self) -&gt; &amp;'r Glfw</code></h4>
 <div class='docblock'><p>Access the glfw context.</p>
 </div><h4 id='method.glfw_window' class='method'><code>fn <a href='#method.glfw_window' class='fnname'>glfw_window</a>&lt;'r&gt;(&amp;'r self) -&gt; &amp;'r Window</code></h4>
 <div class='docblock'><p>Access the glfw window.</p>
-</div><h4 id='method.set_post_processing_effect' class='method'><code>fn <a href='#method.set_post_processing_effect' class='fnname'>set_post_processing_effect</a>(&amp;mut self, effect: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'a mut <a class='trait' href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a>&gt;)</code></h4>
-<div class='docblock'><p>Sets the current processing effect.</p>
 </div><h4 id='method.width' class='method'><code>fn <a href='#method.width' class='fnname'>width</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a></code></h4>
 <div class='docblock'><p>The window width.</p>
 </div><h4 id='method.height' class='method'><code>fn <a href='#method.height' class='fnname'>height</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a></code></h4>
 <div class='docblock'><p>The window height.</p>
-</div><h4 id='method.camera' class='method'><code>fn <a href='#method.camera' class='fnname'>camera</a>&lt;'b&gt;(&amp;'b self) -&gt; &amp;'b &amp;'a mut Camera</code></h4>
-<div class='docblock'><p>The current camera.</p>
-</div><h4 id='method.set_camera' class='method'><code>fn <a href='#method.set_camera' class='fnname'>set_camera</a>(&amp;mut self, camera: &amp;'a mut Camera)</code></h4>
-<div class='docblock'><p>The current camera.</p>
+</div><h4 id='method.size' class='method'><code>fn <a href='#method.size' class='fnname'>size</a>(&amp;self) -&gt; <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+<div class='docblock'><p>The size of the window.</p>
 </div><h4 id='method.set_framerate_limit' class='method'><code>fn <a href='#method.set_framerate_limit' class='fnname'>set_framerate_limit</a>(&amp;mut self, fps: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.u64.html'>u64</a>&gt;)</code></h4>
 <div class='docblock'><p>Sets the maximum number of frames per second. Cannot be 0. <code>None</code> means there is no limit.</p>
 </div><h4 id='method.close' class='method'><code>fn <a href='#method.close' class='fnname'>close</a>(&amp;mut self)</code></h4>
@@ -163,46 +168,42 @@ update.</li>
 </ul>
 </div><h4 id='method.add_quad_with_vertices' class='method'><code>fn <a href='#method.add_quad_with_vertices' class='fnname'>add_quad_with_vertices</a>(&amp;mut self, vertices: &amp;<a href='http://doc.rust-lang.org/std/primitive.slice.html'>[<a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;]</a>, nhpoints: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>, nvpoints: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Adds a double-sided quad with the specified vertices.</p>
-</div><h4 id='method.project' class='method'><code>fn <a href='#method.project' class='fnname'>project</a>(&amp;self, world_coord: &amp;<a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;</code></h4>
-<div class='docblock'><p>Converts a 3d point to 2d screen coordinates.</p>
-</div><h4 id='method.unproject' class='method'><code>fn <a href='#method.unproject' class='fnname'>unproject</a>(&amp;self, window_coord: &amp;<a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a href='http://doc.rust-lang.org/std/primitive.tuple.html'>(<a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;)</a></code></h4>
-<div class='docblock'><p>Converts a point in 2d screen coordinates to a ray (a 3d position and a direction).</p>
-</div><h4 id='method.poll_events' class='method'><code>fn <a href='#method.poll_events' class='fnname'>poll_events</a>(&amp;mut self, event_handler: |&amp;mut <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a>, &amp;WindowEvent| -&gt; <a href='http://doc.rust-lang.org/std/primitive.bool.html'>bool</a>)</code></h4>
-<div class='docblock'><p>Poll events and pass them to a user-defined function. If the function returns <code>true</code>, the
-default engine event handler (camera, framebuffer size, etc.) is executed, if it returns
-<code>false</code>, the default engine event handler is not executed. Return <code>false</code> if you want to
-override the default engine behaviour.</p>
-</div><h4 id='method.render_loop' class='method'><code>fn <a href='#method.render_loop' class='fnname'>render_loop</a>(&amp;mut self, callback: |&amp;mut <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a>|)</code></h4>
-<div class='docblock'><p>Starts an infinite loop polling events, calling an user-defined callback, and drawing the
-scene.</p>
+</div><h4 id='method.handle_event' class='method'><code>fn <a href='#method.handle_event' class='fnname'>handle_event</a>(&amp;mut self, event: &amp;WindowEvent) -&gt; <a href='http://doc.rust-lang.org/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Handles an event with the given camera.</p>
+
+<p>This will handle the <code>FramebufferSizeEvent</code> to update the viewport size, and the <code>Escape</code>
+key release event to close the window.</p>
+
+<p>Returns <code>true</code> if an event has been handled.</p>
+</div><h4 id='method.is_closed' class='method'><code>fn <a href='#method.is_closed' class='fnname'>is_closed</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Returns whether this window is closed or not.</p>
 </div><h4 id='method.set_light' class='method'><code>fn <a href='#method.set_light' class='fnname'>set_light</a>(&amp;mut self, pos: <a class='type' href='../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a>)</code></h4>
 <div class='docblock'><p>Sets the light mode. Only one light is supported.</p>
-</div><h4 id='method.spawn_hidden' class='method'><code>fn <a href='#method.spawn_hidden' class='fnname'>spawn_hidden</a>(title: &amp;<a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a>, callback: |&amp;mut <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a>|)</code></h4>
+</div><h4 id='method.new_hidden' class='method'><code>fn <a href='#method.new_hidden' class='fnname'>new_hidden</a>(title: &amp;<a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a></code></h4>
 <div class='docblock'><p>Opens a window, hide it then calls a user-defined procedure.</p>
 
 <h1 id="arguments-7" class='section-header'><a
                            href="#arguments-7">Arguments</a></h1>
 <ul>
 <li><code>title</code> - the window title</li>
-<li><code>callback</code> - a callback called once the window has been created</li>
 </ul>
-</div><h4 id='method.spawn' class='method'><code>fn <a href='#method.spawn' class='fnname'>spawn</a>(title: &amp;<a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a>, callback: |&amp;mut <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a>|)</code></h4>
+</div><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(title: &amp;<a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a></code></h4>
 <div class='docblock'><p>Opens a window then calls a user-defined procedure.</p>
 
 <h1 id="arguments-8" class='section-header'><a
                            href="#arguments-8">Arguments</a></h1>
 <ul>
 <li><code>title</code> - the window title</li>
-<li><code>callback</code> - a callback called once the window has been created</li>
 </ul>
-</div><h4 id='method.spawn_size' class='method'><code>fn <a href='#method.spawn_size' class='fnname'>spawn_size</a>(title: &amp;<a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a>, width: <a href='http://doc.rust-lang.org/std/primitive.u32.html'>u32</a>, height: <a href='http://doc.rust-lang.org/std/primitive.u32.html'>u32</a>, callback: |&amp;mut <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a>|)</code></h4>
+</div><h4 id='method.new_with_size' class='method'><code>fn <a href='#method.new_with_size' class='fnname'>new_with_size</a>(title: &amp;<a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a>, width: <a href='http://doc.rust-lang.org/std/primitive.u32.html'>u32</a>, height: <a href='http://doc.rust-lang.org/std/primitive.u32.html'>u32</a>) -&gt; <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a></code></h4>
 <div class='docblock'><p>Opens a window with a custom size then calls a user-defined procedure.</p>
 
 <h1 id="arguments-9" class='section-header'><a
                            href="#arguments-9">Arguments</a></h1>
 <ul>
-<li><code>title</code> - the window title</li>
-<li><code>callback</code> - a callback called once the window has been created</li>
+<li><code>title</code> - the window title.</li>
+<li><code>width</code> - the window width.</li>
+<li><code>height</code> - the window height.</li>
 </ul>
 </div><h4 id='method.scene' class='method'><code>fn <a href='#method.scene' class='fnname'>scene</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Reference to the scene associated with this window.</p>
@@ -216,6 +217,8 @@ scene.</p>
 <ul>
 <li><code>out</code> - the output buffer. It is automatically resized.</li>
 </ul>
+</div><h4 id='method.draw' class='method'><code>fn <a href='#method.draw' class='fnname'>draw</a>(&amp;mut self, camera: &amp;mut Camera, post_processing: &amp;mut <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;&amp;mut <a class='trait' href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a>&gt;)</code></h4>
+<div class='docblock'><p>Draws the scene with the given camera and post-processing effect.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 
@@ -229,9 +232,9 @@ scene.</p>
                 <dd>Show this help dialog</dd>
                 <dt>S</dt>
                 <dd>Focus the search field</dd>
-                <dt>&uarr;</dt>
+                <dt>&larrb;</dt>
                 <dd>Move up in search results</dd>
-                <dt>&darr;</dt>
+                <dt>&rarrb;</dt>
                 <dd>Move down in search results</dd>
                 <dt>&#9166;</dt>
                 <dd>Go to active search result</dd>

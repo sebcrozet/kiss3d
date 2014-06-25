@@ -23,7 +23,6 @@
 
     <section class="sidebar">
         
-
         
     </section>
 
@@ -32,7 +31,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Search documentation..."
+                       placeholder="Click or press 'S' to search, '?' for more options..."
                        type="search">
             </div>
         </form>
@@ -250,8 +249,6 @@
 <span id='210'>210</span>
 <span id='211'>211</span>
 <span id='212'>212</span>
-<span id='213'>213</span>
-<span id='214'>214</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>;
@@ -267,8 +264,8 @@
 <span class='attribute'>#[<span class='ident'>path</span> <span class='op'>=</span> <span class='string'>&quot;../error.rs&quot;</span>]</span>
 <span class='kw'>mod</span> <span class='ident'>error</span>;
 
-<span class='doccomment'>/// The default material used to draw objects.
-</span><span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ObjectMaterial</span> {
+<span class='doccomment'>/// The default material used to draw objects.</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ObjectMaterial</span> {
     <span class='ident'>shader</span>:     <span class='ident'>Shader</span>,
     <span class='ident'>pos</span>:        <span class='ident'>ShaderAttribute</span><span class='op'>&lt;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
     <span class='ident'>normal</span>:     <span class='ident'>ShaderAttribute</span><span class='op'>&lt;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
@@ -278,13 +275,12 @@
     <span class='ident'>transform</span>:  <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>Mat4</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
     <span class='ident'>scale</span>:      <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>Mat3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
     <span class='ident'>ntransform</span>: <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>Mat3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
-    <span class='ident'>view</span>:       <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>Mat4</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
-    <span class='ident'>tex</span>:        <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;</span>
+    <span class='ident'>view</span>:       <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>Mat4</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>
 }
 
 <span class='kw'>impl</span> <span class='ident'>ObjectMaterial</span> {
-    <span class='doccomment'>/// Creates a new `ObjectMaterial`.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>ObjectMaterial</span> {<span class='comment'>
+    <span class='doccomment'>/// Creates a new `ObjectMaterial`.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>ObjectMaterial</span> {<span class='comment'>
         // load the shader
         </span><span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>shader</span> <span class='op'>=</span> <span class='ident'>Shader</span>::<span class='ident'>new_from_str</span>(<span class='ident'>OBJECT_VERTEX_SRC</span>, <span class='ident'>OBJECT_FRAGMENT_SRC</span>);
 
@@ -301,7 +297,6 @@
             <span class='ident'>scale</span>:      <span class='ident'>shader</span>.<span class='ident'>get_uniform</span>(<span class='string'>&quot;scale&quot;</span>).<span class='ident'>unwrap</span>(),
             <span class='ident'>ntransform</span>: <span class='ident'>shader</span>.<span class='ident'>get_uniform</span>(<span class='string'>&quot;ntransform&quot;</span>).<span class='ident'>unwrap</span>(),
             <span class='ident'>view</span>:       <span class='ident'>shader</span>.<span class='ident'>get_uniform</span>(<span class='string'>&quot;view&quot;</span>).<span class='ident'>unwrap</span>(),
-            <span class='ident'>tex</span>:        <span class='ident'>shader</span>.<span class='ident'>get_uniform</span>(<span class='string'>&quot;tex&quot;</span>).<span class='ident'>unwrap</span>(),
             <span class='ident'>shader</span>:     <span class='ident'>shader</span>
         }
     }
@@ -412,10 +407,10 @@
     }
 }
 
-<span class='doccomment'>/// Vertex shader of the default object material.
-</span><span class='kw'>pub</span> <span class='kw'>static</span> <span class='ident'>OBJECT_VERTEX_SRC</span>:   <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='ident'>A_VERY_LONG_STRING</span>;
-<span class='doccomment'>/// Fragment shader of the default object material.
-</span><span class='kw'>pub</span> <span class='kw'>static</span> <span class='ident'>OBJECT_FRAGMENT_SRC</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='ident'>ANOTHER_VERY_LONG_STRING</span>;
+<span class='doccomment'>/// Vertex shader of the default object material.</span>
+<span class='kw'>pub</span> <span class='kw'>static</span> <span class='ident'>OBJECT_VERTEX_SRC</span>:   <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='ident'>A_VERY_LONG_STRING</span>;
+<span class='doccomment'>/// Fragment shader of the default object material.</span>
+<span class='kw'>pub</span> <span class='kw'>static</span> <span class='ident'>OBJECT_FRAGMENT_SRC</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='ident'>ANOTHER_VERY_LONG_STRING</span>;
 
 <span class='kw'>static</span> <span class='ident'>A_VERY_LONG_STRING</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span>
    <span class='string'>&quot;#version 120
@@ -439,7 +434,7 @@
         ws_normal   = normalize(ntransform * scale * normal);
     }&quot;</span>;<span class='comment'>
 
-// phong lighting (heavily) inspired
+// phong-like lighting (heavily) inspired
 // by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
 </span><span class='kw'>static</span> <span class='ident'>ANOTHER_VERY_LONG_STRING</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span>
    <span class='string'>&quot;#version 120
@@ -481,9 +476,9 @@
                 <dd>Show this help dialog</dd>
                 <dt>S</dt>
                 <dd>Focus the search field</dd>
-                <dt>&uarr;</dt>
+                <dt>&larrb;</dt>
                 <dd>Move up in search results</dd>
-                <dt>&darr;</dt>
+                <dt>&rarrb;</dt>
                 <dd>Move down in search results</dd>
                 <dt>&#9166;</dt>
                 <dd>Go to active search result</dd>

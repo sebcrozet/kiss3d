@@ -23,7 +23,6 @@
 
     <section class="sidebar">
         
-
         
     </section>
 
@@ -32,7 +31,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Search documentation..."
+                       placeholder="Click or press 'S' to search, '?' for more options..."
                        type="search">
             </div>
         </form>
@@ -208,11 +207,9 @@
 <span id='168'>168</span>
 <span id='169'>169</span>
 <span id='170'>170</span>
-<span id='171'>171</span>
-<span id='172'>172</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! Post processing effect to support the Oculus Rift.
-</span>
+<span class='doccomment'>//! Post processing effect to support the Oculus Rift.</span>
+
 <span class='kw'>use</span> <span class='ident'>gl</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>::<span class='ident'>types</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>nalgebra</span>::<span class='ident'>na</span>::<span class='ident'>Vec2</span>;
@@ -222,10 +219,9 @@
 <span class='attribute'>#[<span class='ident'>path</span> <span class='op'>=</span> <span class='string'>&quot;../error.rs&quot;</span>]</span>
 <span class='kw'>mod</span> <span class='ident'>error</span>;
 
-<span class='doccomment'>/// An post-processing effect to support the oculus rift.
-</span><span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>OculusStereo</span> {
+<span class='doccomment'>/// An post-processing effect to support the oculus rift.</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>OculusStereo</span> {
     <span class='ident'>shader</span>:       <span class='ident'>Shader</span>,
-    <span class='ident'>time</span>:         <span class='ident'>f32</span>,
     <span class='ident'>fbo_vertices</span>: <span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
     <span class='ident'>fbo_texture</span>:  <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>GLint</span><span class='op'>&gt;</span>,
     <span class='ident'>v_coord</span>:      <span class='ident'>ShaderAttribute</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>,
@@ -240,8 +236,8 @@
 }
 
 <span class='kw'>impl</span> <span class='ident'>OculusStereo</span> {
-    <span class='doccomment'>/// Creates a new OculusStereo post processing effect.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>OculusStereo</span> {
+    <span class='doccomment'>/// Creates a new OculusStereo post processing effect.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>OculusStereo</span> {
         <span class='kw'>let</span> <span class='ident'>fbo_vertices</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>  <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(
             <span class='ident'>Vec2</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='number'>1.0</span>, <span class='op'>-</span><span class='number'>1.0</span>),
             <span class='ident'>Vec2</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>, <span class='op'>-</span><span class='number'>1.0</span>),
@@ -257,7 +253,6 @@
         <span class='ident'>shader</span>.<span class='ident'>use_program</span>();
 
         <span class='ident'>OculusStereo</span> {
-            <span class='ident'>time</span>:         <span class='number'>0.0</span>,
             <span class='ident'>fbo_texture</span>:  <span class='ident'>shader</span>.<span class='ident'>get_uniform</span>(<span class='string'>&quot;fbo_texture&quot;</span>).<span class='ident'>unwrap</span>(),
             <span class='ident'>fbo_vertices</span>: <span class='ident'>fbo_vertices</span>,
             <span class='ident'>v_coord</span>:      <span class='ident'>shader</span>.<span class='ident'>get_attrib</span>(<span class='string'>&quot;v_coord&quot;</span>).<span class='ident'>unwrap</span>(),
@@ -397,9 +392,9 @@ void main()
                 <dd>Show this help dialog</dd>
                 <dt>S</dt>
                 <dd>Focus the search field</dd>
-                <dt>&uarr;</dt>
+                <dt>&larrb;</dt>
                 <dd>Move up in search results</dd>
-                <dt>&darr;</dt>
+                <dt>&rarrb;</dt>
                 <dd>Move down in search results</dd>
                 <dt>&#9166;</dt>
                 <dd>Go to active search result</dd>

@@ -23,7 +23,6 @@
 
     <section class="sidebar">
         
-
         
     </section>
 
@@ -32,7 +31,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Search documentation..."
+                       placeholder="Click or press 'S' to search, '?' for more options..."
                        type="search">
             </div>
         </form>
@@ -557,118 +556,24 @@
 <span id='517'>517</span>
 <span id='518'>518</span>
 <span id='519'>519</span>
-<span id='520'>520</span>
-<span id='521'>521</span>
-<span id='522'>522</span>
-<span id='523'>523</span>
-<span id='524'>524</span>
-<span id='525'>525</span>
-<span id='526'>526</span>
-<span id='527'>527</span>
-<span id='528'>528</span>
-<span id='529'>529</span>
-<span id='530'>530</span>
-<span id='531'>531</span>
-<span id='532'>532</span>
-<span id='533'>533</span>
-<span id='534'>534</span>
-<span id='535'>535</span>
-<span id='536'>536</span>
-<span id='537'>537</span>
-<span id='538'>538</span>
-<span id='539'>539</span>
-<span id='540'>540</span>
-<span id='541'>541</span>
-<span id='542'>542</span>
-<span id='543'>543</span>
-<span id='544'>544</span>
-<span id='545'>545</span>
-<span id='546'>546</span>
-<span id='547'>547</span>
-<span id='548'>548</span>
-<span id='549'>549</span>
-<span id='550'>550</span>
-<span id='551'>551</span>
-<span id='552'>552</span>
-<span id='553'>553</span>
-<span id='554'>554</span>
-<span id='555'>555</span>
-<span id='556'>556</span>
-<span id='557'>557</span>
-<span id='558'>558</span>
-<span id='559'>559</span>
-<span id='560'>560</span>
-<span id='561'>561</span>
-<span id='562'>562</span>
-<span id='563'>563</span>
-<span id='564'>564</span>
-<span id='565'>565</span>
-<span id='566'>566</span>
-<span id='567'>567</span>
-<span id='568'>568</span>
-<span id='569'>569</span>
-<span id='570'>570</span>
-<span id='571'>571</span>
-<span id='572'>572</span>
-<span id='573'>573</span>
-<span id='574'>574</span>
-<span id='575'>575</span>
-<span id='576'>576</span>
-<span id='577'>577</span>
-<span id='578'>578</span>
-<span id='579'>579</span>
-<span id='580'>580</span>
-<span id='581'>581</span>
-<span id='582'>582</span>
-<span id='583'>583</span>
-<span id='584'>584</span>
-<span id='585'>585</span>
-<span id='586'>586</span>
-<span id='587'>587</span>
-<span id='588'>588</span>
-<span id='589'>589</span>
-<span id='590'>590</span>
-<span id='591'>591</span>
-<span id='592'>592</span>
-<span id='593'>593</span>
-<span id='594'>594</span>
-<span id='595'>595</span>
-<span id='596'>596</span>
-<span id='597'>597</span>
-<span id='598'>598</span>
-<span id='599'>599</span>
-<span id='600'>600</span>
-<span id='601'>601</span>
-<span id='602'>602</span>
-<span id='603'>603</span>
-<span id='604'>604</span>
-<span id='605'>605</span>
-<span id='606'>606</span>
-<span id='607'>607</span>
-<span id='608'>608</span>
-<span id='609'>609</span>
-<span id='610'>610</span>
-<span id='611'>611</span>
-<span id='612'>612</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! The kiss3d window.
-</span><span class='comment'>/*
+<span class='doccomment'>//! The kiss3d window.</span><span class='comment'>
+/*
  * FIXME: this file is too big. Some heavy refactoring need to be done here.
  */
 
 </span><span class='kw'>use</span> <span class='ident'>glfw</span>;
 <span class='kw'>use</span> <span class='ident'>glfw</span>::<span class='ident'>Context</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>timer</span>::<span class='ident'>Timer</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Zero</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cell</span>::<span class='ident'>RefCell</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Rc</span>;
 <span class='kw'>use</span> <span class='ident'>libc</span>;
 <span class='kw'>use</span> <span class='ident'>time</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>::<span class='ident'>types</span>::<span class='op'>*</span>;
-<span class='kw'>use</span> <span class='ident'>nalgebra</span>::<span class='ident'>na</span>::{<span class='ident'>Vec2</span>, <span class='ident'>Vec3</span>, <span class='ident'>Vec4</span>};
-<span class='kw'>use</span> <span class='ident'>nalgebra</span>::<span class='ident'>na</span>;
-<span class='kw'>use</span> <span class='ident'>camera</span>::{<span class='ident'>Camera</span>, <span class='ident'>ArcBall</span>};
+<span class='kw'>use</span> <span class='ident'>nalgebra</span>::<span class='ident'>na</span>::{<span class='ident'>Vec2</span>, <span class='ident'>Vec3</span>};
+<span class='kw'>use</span> <span class='ident'>ncollide</span>::<span class='ident'>procedural</span>::<span class='ident'>TriMesh</span>;
+<span class='kw'>use</span> <span class='ident'>camera</span>::<span class='ident'>Camera</span>;
 <span class='kw'>use</span> <span class='ident'>scene</span>::<span class='ident'>SceneNode</span>;
 <span class='kw'>use</span> <span class='ident'>line_renderer</span>::<span class='ident'>LineRenderer</span>;
 <span class='kw'>use</span> <span class='ident'>point_renderer</span>::<span class='ident'>PointRenderer</span>;
@@ -676,16 +581,16 @@
 <span class='kw'>use</span> <span class='ident'>resource</span>::{<span class='ident'>FramebufferManager</span>, <span class='ident'>RenderTarget</span>, <span class='ident'>Texture</span>, <span class='ident'>TextureManager</span>, <span class='ident'>Mesh</span>, <span class='ident'>Material</span>};
 <span class='kw'>use</span> <span class='ident'>light</span>::{<span class='ident'>Light</span>, <span class='ident'>Absolute</span>, <span class='ident'>StickToCamera</span>};
 <span class='kw'>use</span> <span class='ident'>text</span>::{<span class='ident'>TextRenderer</span>, <span class='ident'>Font</span>};
-<span class='kw'>use</span> <span class='ident'>ncollide</span>::<span class='ident'>procedural</span>::<span class='ident'>TriMesh</span>;
+<span class='kw'>use</span> <span class='ident'>render_frame</span>::<span class='ident'>RenderFrames</span>;
 
 
 <span class='kw'>static</span> <span class='ident'>DEFAULT_WIDTH</span>:  <span class='ident'>u32</span> <span class='op'>=</span> <span class='number'>800u32</span>;
 <span class='kw'>static</span> <span class='ident'>DEFAULT_HEIGHT</span>: <span class='ident'>u32</span> <span class='op'>=</span> <span class='number'>600u32</span>;
 
-<span class='doccomment'>/// Structure representing a window and a 3D scene.
-</span><span class='doccomment'>///
-</span><span class='doccomment'>/// This is the main interface with the 3d engine.
-</span><span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Window</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {<span class='comment'>
+<span class='doccomment'>/// Structure representing a window and a 3D scene.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// This is the main interface with the 3d engine.</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Window</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {<span class='comment'>
     // XXX: this is not on a RefCell since mutability is _not_ needed for the glfw window.
     // glfw-rs is doing something very wrong here.
     </span><span class='ident'>events</span>:                     <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>Receiver</span><span class='op'>&lt;</span>(<span class='ident'>f64</span>, <span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span>)<span class='op'>&gt;&gt;</span>,
@@ -693,87 +598,86 @@
     <span class='ident'>window</span>:                     <span class='ident'>glfw</span>::<span class='ident'>Window</span>,
     <span class='ident'>max_ms_per_frame</span>:           <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span>,
     <span class='ident'>scene</span>:                      <span class='ident'>SceneNode</span>,
-    <span class='ident'>camera</span>:                     <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Camera</span>,
     <span class='ident'>light_mode</span>:                 <span class='ident'>Light</span>,<span class='comment'> // FIXME: move that to the scene graph
     </span><span class='ident'>background</span>:                 <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span>,
     <span class='ident'>line_renderer</span>:              <span class='ident'>LineRenderer</span>,
     <span class='ident'>point_renderer</span>:             <span class='ident'>PointRenderer</span>,
     <span class='ident'>text_renderer</span>:              <span class='ident'>TextRenderer</span>,
     <span class='ident'>framebuffer_manager</span>:        <span class='ident'>FramebufferManager</span>,
-    <span class='ident'>post_processing</span>:            <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>PostProcessingEffect</span><span class='op'>&gt;</span>,
-    <span class='ident'>post_process_render_target</span>: <span class='ident'>RenderTarget</span>
+    <span class='ident'>post_process_render_target</span>: <span class='ident'>RenderTarget</span>,
+    <span class='ident'>timer</span>:                      <span class='ident'>Timer</span>,
+    <span class='ident'>curr_time</span>:                  <span class='ident'>u64</span>
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Window</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Access the glfw context.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>RenderFrames</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span>, <span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+        <span class='kw'>let</span> <span class='ident'>events</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>events</span>.<span class='ident'>clone</span>();
+
+        <span class='ident'>RenderFrames</span>::<span class='ident'>new</span>(<span class='ident'>events</span>, <span class='self'>self</span>)
+    }
+
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>iter_with_camera</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>camera</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Camera</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>RenderFrames</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span>, <span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+        <span class='kw'>let</span> <span class='ident'>events</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>events</span>.<span class='ident'>clone</span>();
+
+        <span class='ident'>RenderFrames</span>::<span class='ident'>new_with_camera</span>(<span class='ident'>events</span>, <span class='self'>self</span>, <span class='ident'>camera</span>)
+    }
+
+    <span class='doccomment'>/// Access the glfw context.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>context</span><span class='op'>&lt;</span><span class='lifetime'>&#39;r</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;r</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;r</span> <span class='ident'>glfw</span>::<span class='ident'>Glfw</span> {
         <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;r</span> <span class='self'>self</span>.<span class='ident'>glfw</span>
     }
 
-    <span class='doccomment'>/// Access the glfw window.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Access the glfw window.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>glfw_window</span><span class='op'>&lt;</span><span class='lifetime'>&#39;r</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;r</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;r</span> <span class='ident'>glfw</span>::<span class='ident'>Window</span> {
         <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;r</span> <span class='self'>self</span>.<span class='ident'>window</span>
     }
 
-    <span class='doccomment'>/// Sets the current processing effect.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_post_processing_effect</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>effect</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>PostProcessingEffect</span><span class='op'>&gt;</span>) {
-        <span class='self'>self</span>.<span class='ident'>post_processing</span> <span class='op'>=</span> <span class='ident'>effect</span>;
-    }
-
-    <span class='doccomment'>/// The window width.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// The window width.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>width</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span> {
         <span class='kw'>let</span> (<span class='ident'>w</span>, _) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>window</span>.<span class='ident'>get_size</span>();
 
         <span class='ident'>w</span> <span class='kw'>as</span> <span class='ident'>f32</span>
     }
 
-    <span class='doccomment'>/// The window height.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// The window height.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>height</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span> {
         <span class='kw'>let</span> (_, <span class='ident'>h</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>window</span>.<span class='ident'>get_size</span>();
 
         <span class='ident'>h</span> <span class='kw'>as</span> <span class='ident'>f32</span>
     }
 
-    <span class='doccomment'>/// The current camera.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>camera</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Camera</span> {
-        <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='self'>self</span>.<span class='ident'>camera</span>
-    }
-
-    <span class='doccomment'>/// The current camera.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_camera</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>camera</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Camera</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>size</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> (<span class='ident'>w</span>, <span class='ident'>h</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>window</span>.<span class='ident'>get_size</span>();
 
-        <span class='self'>self</span>.<span class='ident'>camera</span> <span class='op'>=</span> <span class='ident'>camera</span>;
-        <span class='self'>self</span>.<span class='ident'>camera</span>.<span class='ident'>handle_event</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>window</span>, <span class='kw-2'>&amp;</span><span class='ident'>glfw</span>::<span class='ident'>FramebufferSizeEvent</span>(<span class='ident'>w</span>, <span class='ident'>h</span>));
+        <span class='ident'>Vec2</span>::<span class='ident'>new</span>(<span class='ident'>w</span> <span class='kw'>as</span> <span class='ident'>f32</span>, <span class='ident'>h</span> <span class='kw'>as</span> <span class='ident'>f32</span>)
     }
 
-    <span class='doccomment'>/// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_framerate_limit</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>fps</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>max_ms_per_frame</span> <span class='op'>=</span> <span class='ident'>fps</span>.<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>f</span><span class='op'>|</span> { <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>f</span> <span class='op'>!=</span> <span class='number'>0</span>); <span class='number'>1000</span> <span class='op'>/</span> <span class='ident'>f</span> })
     }
 
-    <span class='doccomment'>/// Closes the window.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Closes the window.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>close</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='self'>self</span>.<span class='ident'>window</span>.<span class='ident'>set_should_close</span>(<span class='boolval'>true</span>)
     }
 
-    <span class='doccomment'>/// Hides the window, without closing it. Use `show` to make it visible again.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Hides the window, without closing it. Use `show` to make it visible again.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>hide</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='self'>self</span>.<span class='ident'>window</span>.<span class='ident'>hide</span>()
     }
 
-    <span class='doccomment'>/// Makes the window visible. Use `hide` to hide it.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Makes the window visible. Use `hide` to hide it.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>show</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='self'>self</span>.<span class='ident'>window</span>.<span class='ident'>show</span>()
     }<span class='comment'>
@@ -786,135 +690,135 @@
     //     self.wireframe_mode = mode;
     // }
 
-    </span><span class='doccomment'>/// Sets the background color.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    </span><span class='doccomment'>/// Sets the background color.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_background_color</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>f32</span>, <span class='ident'>g</span>: <span class='ident'>GLfloat</span>, <span class='ident'>b</span>: <span class='ident'>f32</span>) {
         <span class='self'>self</span>.<span class='ident'>background</span>.<span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>r</span>;
         <span class='self'>self</span>.<span class='ident'>background</span>.<span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>g</span>;
         <span class='self'>self</span>.<span class='ident'>background</span>.<span class='ident'>z</span> <span class='op'>=</span> <span class='ident'>b</span>;
     }
 
-    <span class='doccomment'>/// Adds a line to be drawn during the next frame.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Adds a line to be drawn during the next frame.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>draw_line</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>a</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>b</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>color</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>line_renderer</span>.<span class='ident'>draw_line</span>(<span class='ident'>a</span>.<span class='ident'>clone</span>(), <span class='ident'>b</span>.<span class='ident'>clone</span>(), <span class='ident'>color</span>.<span class='ident'>clone</span>());
     }
 
-    <span class='doccomment'>/// Adds a point to be drawn during the next frame.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Adds a point to be drawn during the next frame.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>draw_point</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>pt</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>color</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>point_renderer</span>.<span class='ident'>draw_point</span>(<span class='ident'>pt</span>.<span class='ident'>clone</span>(), <span class='ident'>color</span>.<span class='ident'>clone</span>());
     }
 
-    <span class='doccomment'>/// Adds a string to be drawn during the next frame.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Adds a string to be drawn during the next frame.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>draw_text</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>text</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>pos</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>font</span>: <span class='kw-2'>&amp;</span><span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>Font</span><span class='op'>&gt;</span>, <span class='ident'>color</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>text_renderer</span>.<span class='ident'>draw_text</span>(<span class='ident'>text</span>, <span class='ident'>pos</span>, <span class='ident'>font</span>, <span class='ident'>color</span>);
     }
 
-    <span class='doccomment'>/// Removes an object from the scene.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>sn</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>SceneNode</span>) {
+    <span class='doccomment'>/// Removes an object from the scene.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>sn</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>SceneNode</span>) {
         <span class='ident'>sn</span>.<span class='ident'>unlink</span>()
     }
 
-    <span class='doccomment'>/// Adds a group to the scene.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// A group is a node not containing any object.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_group</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='doccomment'>/// Adds a group to the scene.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// A group is a node not containing any object.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_group</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='self'>self</span>.<span class='ident'>scene</span>.<span class='ident'>add_group</span>()
     }
 
-    <span class='doccomment'>/// Adds an obj model to the scene.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// # Arguments
-</span>    <span class='doccomment'>/// * `path`  - relative path to the obj file.
-</span>    <span class='doccomment'>/// * `scale` - scale to apply to the model.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_obj</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>, <span class='ident'>mtl_dir</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>, <span class='ident'>scale</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='doccomment'>/// Adds an obj model to the scene.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Arguments</span>
+    <span class='doccomment'>/// * `path`  - relative path to the obj file.</span>
+    <span class='doccomment'>/// * `scale` - scale to apply to the model.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_obj</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>, <span class='ident'>mtl_dir</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>, <span class='ident'>scale</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='self'>self</span>.<span class='ident'>scene</span>.<span class='ident'>add_obj</span>(<span class='ident'>path</span>, <span class='ident'>mtl_dir</span>, <span class='ident'>scale</span>)
     }
 
-    <span class='doccomment'>/// Adds an unnamed mesh to the scene.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_mesh</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>mesh</span>: <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>Mesh</span><span class='op'>&gt;&gt;</span>, <span class='ident'>scale</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='doccomment'>/// Adds an unnamed mesh to the scene.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_mesh</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>mesh</span>: <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>Mesh</span><span class='op'>&gt;&gt;</span>, <span class='ident'>scale</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='self'>self</span>.<span class='ident'>scene</span>.<span class='ident'>add_mesh</span>(<span class='ident'>mesh</span>, <span class='ident'>scale</span>)
     }
 
-    <span class='doccomment'>/// Creates and adds a new object using the geometry generated by a given procedural generator.
-</span>    <span class='doccomment'>/// Creates and adds a new object using a mesh descriptor.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_trimesh</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>descr</span>: <span class='ident'>TriMesh</span><span class='op'>&lt;</span><span class='ident'>f32</span>, <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>, <span class='ident'>scale</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='doccomment'>/// Creates and adds a new object using the geometry generated by a given procedural generator.</span>
+    <span class='doccomment'>/// Creates and adds a new object using a mesh descriptor.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_trimesh</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>descr</span>: <span class='ident'>TriMesh</span><span class='op'>&lt;</span><span class='ident'>f32</span>, <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>, <span class='ident'>scale</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='self'>self</span>.<span class='ident'>scene</span>.<span class='ident'>add_trimesh</span>(<span class='ident'>descr</span>, <span class='ident'>scale</span>)
     }
 
-    <span class='doccomment'>/// Creates and adds a new object using the geometry registered as `geometry_name`.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_geom_with_name</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>geometry_name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scale</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>SceneNode</span><span class='op'>&gt;</span> {
+    <span class='doccomment'>/// Creates and adds a new object using the geometry registered as `geometry_name`.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_geom_with_name</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>geometry_name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scale</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>SceneNode</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>scene</span>.<span class='ident'>add_geom_with_name</span>(<span class='ident'>geometry_name</span>, <span class='ident'>scale</span>)
     }
 
-    <span class='doccomment'>/// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// # Arguments
-</span>    <span class='doccomment'>/// * `wx` - the cube extent along the z axis
-</span>    <span class='doccomment'>/// * `wy` - the cube extent along the y axis
-</span>    <span class='doccomment'>/// * `wz` - the cube extent along the z axis
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_cube</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>wx</span>: <span class='ident'>GLfloat</span>, <span class='ident'>wy</span>: <span class='ident'>GLfloat</span>, <span class='ident'>wz</span>: <span class='ident'>GLfloat</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='doccomment'>/// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Arguments</span>
+    <span class='doccomment'>/// * `wx` - the cube extent along the z axis</span>
+    <span class='doccomment'>/// * `wy` - the cube extent along the y axis</span>
+    <span class='doccomment'>/// * `wz` - the cube extent along the z axis</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_cube</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>wx</span>: <span class='ident'>GLfloat</span>, <span class='ident'>wy</span>: <span class='ident'>GLfloat</span>, <span class='ident'>wz</span>: <span class='ident'>GLfloat</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='self'>self</span>.<span class='ident'>scene</span>.<span class='ident'>add_cube</span>(<span class='ident'>wx</span>, <span class='ident'>wy</span>, <span class='ident'>wz</span>)
     }
 
-    <span class='doccomment'>/// Adds a sphere to the scene. The sphere is initially centered at (0, 0, 0).
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// # Arguments
-</span>    <span class='doccomment'>/// * `r` - the sphere radius
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_sphere</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>GLfloat</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='doccomment'>/// Adds a sphere to the scene. The sphere is initially centered at (0, 0, 0).</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Arguments</span>
+    <span class='doccomment'>/// * `r` - the sphere radius</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_sphere</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>GLfloat</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='self'>self</span>.<span class='ident'>scene</span>.<span class='ident'>add_sphere</span>(<span class='ident'>r</span>)
     }
 
-    <span class='doccomment'>/// Adds a cone to the scene. The cone is initially centered at (0, 0, 0) and points toward the
-</span>    <span class='doccomment'>/// positive `y` axis.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// # Arguments
-</span>    <span class='doccomment'>/// * `h` - the cone height
-</span>    <span class='doccomment'>/// * `r` - the cone base radius
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_cone</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>GLfloat</span>, <span class='ident'>h</span>: <span class='ident'>GLfloat</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='doccomment'>/// Adds a cone to the scene. The cone is initially centered at (0, 0, 0) and points toward the</span>
+    <span class='doccomment'>/// positive `y` axis.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Arguments</span>
+    <span class='doccomment'>/// * `h` - the cone height</span>
+    <span class='doccomment'>/// * `r` - the cone base radius</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_cone</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>GLfloat</span>, <span class='ident'>h</span>: <span class='ident'>GLfloat</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='self'>self</span>.<span class='ident'>scene</span>.<span class='ident'>add_cone</span>(<span class='ident'>r</span>, <span class='ident'>h</span>)
     }
 
-    <span class='doccomment'>/// Adds a cylinder to the scene. The cylinder is initially centered at (0, 0, 0) and has its
-</span>    <span class='doccomment'>/// principal axis aligned with the `y` axis.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// # Arguments
-</span>    <span class='doccomment'>/// * `h` - the cylinder height
-</span>    <span class='doccomment'>/// * `r` - the cylinder base radius
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_cylinder</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>GLfloat</span>, <span class='ident'>h</span>: <span class='ident'>GLfloat</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='doccomment'>/// Adds a cylinder to the scene. The cylinder is initially centered at (0, 0, 0) and has its</span>
+    <span class='doccomment'>/// principal axis aligned with the `y` axis.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Arguments</span>
+    <span class='doccomment'>/// * `h` - the cylinder height</span>
+    <span class='doccomment'>/// * `r` - the cylinder base radius</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_cylinder</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>GLfloat</span>, <span class='ident'>h</span>: <span class='ident'>GLfloat</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='self'>self</span>.<span class='ident'>scene</span>.<span class='ident'>add_cylinder</span>(<span class='ident'>r</span>, <span class='ident'>h</span>)
     }
 
-    <span class='doccomment'>/// Adds a capsule to the scene. The capsule is initially centered at (0, 0, 0) and has its
-</span>    <span class='doccomment'>/// principal axis aligned with the `y` axis.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// # Arguments
-</span>    <span class='doccomment'>/// * `h` - the capsule height
-</span>    <span class='doccomment'>/// * `r` - the capsule caps radius
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_capsule</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>GLfloat</span>, <span class='ident'>h</span>: <span class='ident'>GLfloat</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='doccomment'>/// Adds a capsule to the scene. The capsule is initially centered at (0, 0, 0) and has its</span>
+    <span class='doccomment'>/// principal axis aligned with the `y` axis.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Arguments</span>
+    <span class='doccomment'>/// * `h` - the capsule height</span>
+    <span class='doccomment'>/// * `r` - the capsule caps radius</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_capsule</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>GLfloat</span>, <span class='ident'>h</span>: <span class='ident'>GLfloat</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='self'>self</span>.<span class='ident'>scene</span>.<span class='ident'>add_capsule</span>(<span class='ident'>r</span>, <span class='ident'>h</span>)
     }
 
-    <span class='doccomment'>/// Adds a double-sided quad to the scene. The quad is initially centered at (0, 0, 0). The
-</span>    <span class='doccomment'>/// quad itself is composed of a user-defined number of triangles regularly spaced on a grid.
-</span>    <span class='doccomment'>/// This is the main way to draw height maps.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// # Arguments
-</span>    <span class='doccomment'>/// * `w` - the quad width.
-</span>    <span class='doccomment'>/// * `h` - the quad height.
-</span>    <span class='doccomment'>/// * `wsubdivs` - number of horizontal subdivisions. This correspond to the number of squares
-</span>    <span class='doccomment'>/// which will be placed horizontally on each line. Must not be `0`.
-</span>    <span class='doccomment'>/// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
-</span>    <span class='doccomment'>/// which will be placed vertically on each line. Must not be `0`.
-</span>    <span class='doccomment'>/// update.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_quad</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>w</span>: <span class='ident'>f32</span>, <span class='ident'>h</span>: <span class='ident'>f32</span>, <span class='ident'>usubdivs</span>: <span class='ident'>uint</span>, <span class='ident'>vsubdivs</span>: <span class='ident'>uint</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='doccomment'>/// Adds a double-sided quad to the scene. The quad is initially centered at (0, 0, 0). The</span>
+    <span class='doccomment'>/// quad itself is composed of a user-defined number of triangles regularly spaced on a grid.</span>
+    <span class='doccomment'>/// This is the main way to draw height maps.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Arguments</span>
+    <span class='doccomment'>/// * `w` - the quad width.</span>
+    <span class='doccomment'>/// * `h` - the quad height.</span>
+    <span class='doccomment'>/// * `wsubdivs` - number of horizontal subdivisions. This correspond to the number of squares</span>
+    <span class='doccomment'>/// which will be placed horizontally on each line. Must not be `0`.</span>
+    <span class='doccomment'>/// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares</span>
+    <span class='doccomment'>/// which will be placed vertically on each line. Must not be `0`.</span>
+    <span class='doccomment'>/// update.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_quad</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>w</span>: <span class='ident'>f32</span>, <span class='ident'>h</span>: <span class='ident'>f32</span>, <span class='ident'>usubdivs</span>: <span class='ident'>uint</span>, <span class='ident'>vsubdivs</span>: <span class='ident'>uint</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='self'>self</span>.<span class='ident'>scene</span>.<span class='ident'>add_quad</span>(<span class='ident'>w</span>, <span class='ident'>h</span>, <span class='ident'>usubdivs</span>, <span class='ident'>vsubdivs</span>)
     }
 
-    <span class='doccomment'>/// Adds a double-sided quad with the specified vertices.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_quad_with_vertices</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>,
+    <span class='doccomment'>/// Adds a double-sided quad with the specified vertices.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_quad_with_vertices</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>,
                                   <span class='ident'>vertices</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>],
                                   <span class='ident'>nhpoints</span>: <span class='ident'>uint</span>,
                                   <span class='ident'>nvpoints</span>: <span class='ident'>uint</span>)
@@ -927,136 +831,59 @@
         <span class='ident'>TextureManager</span>::<span class='ident'>get_global_manager</span>(<span class='op'>|</span><span class='ident'>tm</span><span class='op'>|</span> <span class='ident'>tm</span>.<span class='ident'>add</span>(<span class='ident'>path</span>, <span class='ident'>name</span>))
     }
 
-    <span class='doccomment'>/// Converts a 3d point to 2d screen coordinates.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>project</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>world_coord</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>h_world_coord</span> <span class='op'>=</span> <span class='ident'>na</span>::<span class='ident'>to_homogeneous</span>(<span class='ident'>world_coord</span>);
-        <span class='kw'>let</span> <span class='ident'>h_normalized_coord</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>camera</span>.<span class='ident'>transformation</span>() <span class='op'>*</span> <span class='ident'>h_world_coord</span>;
-
-        <span class='kw'>let</span> <span class='ident'>normalized_coord</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>na</span>::<span class='ident'>from_homogeneous</span>(<span class='kw-2'>&amp;</span><span class='ident'>h_normalized_coord</span>);
-
-        <span class='kw'>let</span> (<span class='ident'>w</span>, <span class='ident'>h</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>window</span>.<span class='ident'>get_size</span>();
-
-        <span class='ident'>Vec2</span>::<span class='ident'>new</span>(
-            (<span class='number'>1.0</span> <span class='op'>+</span> <span class='ident'>normalized_coord</span>.<span class='ident'>x</span>) <span class='op'>*</span> (<span class='ident'>w</span> <span class='kw'>as</span> <span class='ident'>f32</span>) <span class='op'>/</span> <span class='number'>2.0</span>,
-            (<span class='number'>1.0</span> <span class='op'>+</span> <span class='ident'>normalized_coord</span>.<span class='ident'>y</span>) <span class='op'>*</span> (<span class='ident'>h</span> <span class='kw'>as</span> <span class='ident'>f32</span>) <span class='op'>/</span> <span class='number'>2.0</span>)
-    }
-
-    <span class='doccomment'>/// Converts a point in 2d screen coordinates to a ray (a 3d position and a direction).
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unproject</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>window_coord</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> (<span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
-        <span class='kw'>let</span> (<span class='ident'>w</span>, <span class='ident'>h</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>window</span>.<span class='ident'>get_size</span>();
-
-        <span class='kw'>let</span> <span class='ident'>normalized_coord</span> <span class='op'>=</span> <span class='ident'>Vec2</span>::<span class='ident'>new</span>(
-            <span class='number'>2.0</span> <span class='op'>*</span> <span class='ident'>window_coord</span>.<span class='ident'>x</span>  <span class='op'>/</span> (<span class='ident'>w</span> <span class='kw'>as</span> <span class='ident'>f32</span>) <span class='op'>-</span> <span class='number'>1.0</span>,
-            <span class='number'>2.0</span> <span class='op'>*</span> <span class='op'>-</span><span class='ident'>window_coord</span>.<span class='ident'>y</span> <span class='op'>/</span> (<span class='ident'>h</span> <span class='kw'>as</span> <span class='ident'>f32</span>) <span class='op'>+</span> <span class='number'>1.0</span>);
-
-        <span class='kw'>let</span> <span class='ident'>normalized_begin</span> <span class='op'>=</span> <span class='ident'>Vec4</span>::<span class='ident'>new</span>(<span class='ident'>normalized_coord</span>.<span class='ident'>x</span>, <span class='ident'>normalized_coord</span>.<span class='ident'>y</span>, <span class='op'>-</span><span class='number'>1.0</span>, <span class='number'>1.0</span>);
-        <span class='kw'>let</span> <span class='ident'>normalized_end</span>   <span class='op'>=</span> <span class='ident'>Vec4</span>::<span class='ident'>new</span>(<span class='ident'>normalized_coord</span>.<span class='ident'>x</span>, <span class='ident'>normalized_coord</span>.<span class='ident'>y</span>, <span class='number'>1.0</span>, <span class='number'>1.0</span>);
-
-        <span class='kw'>let</span> <span class='ident'>cam</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>camera</span>.<span class='ident'>inv_transformation</span>();
-
-        <span class='kw'>let</span> <span class='ident'>h_unprojected_begin</span> <span class='op'>=</span> <span class='ident'>cam</span> <span class='op'>*</span> <span class='ident'>normalized_begin</span>;
-        <span class='kw'>let</span> <span class='ident'>h_unprojected_end</span>   <span class='op'>=</span> <span class='ident'>cam</span> <span class='op'>*</span> <span class='ident'>normalized_end</span>;
-
-        <span class='kw'>let</span> <span class='ident'>unprojected_begin</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>na</span>::<span class='ident'>from_homogeneous</span>(<span class='kw-2'>&amp;</span><span class='ident'>h_unprojected_begin</span>);
-        <span class='kw'>let</span> <span class='ident'>unprojected_end</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>   <span class='op'>=</span> <span class='ident'>na</span>::<span class='ident'>from_homogeneous</span>(<span class='kw-2'>&amp;</span><span class='ident'>h_unprojected_end</span>);
-
-        (<span class='ident'>unprojected_begin</span>, <span class='ident'>na</span>::<span class='ident'>normalize</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>unprojected_end</span> <span class='op'>-</span> <span class='ident'>unprojected_begin</span>)))
-    }<span class='comment'>
-
-    /* XXX
-    /// The list of objects on the scene.
-    pub fn objects&lt;&#39;r&gt;(&amp;&#39;r self) -&gt; &amp;&#39;r [Object] {
-        self.objects.as_slice()
-    }
-
-    /// The list of objects on the scene.
-    pub fn objects_mut&lt;&#39;r&gt;(&amp;&#39;r mut self) -&gt; &amp;&#39;r mut [Object] {
-        self.objects.as_mut_slice()
-    }
-    */
-
-    </span><span class='doccomment'>/// Poll events and pass them to a user-defined function. If the function returns `true`, the
-</span>    <span class='doccomment'>/// default engine event handler (camera, framebuffer size, etc.) is executed, if it returns
-</span>    <span class='doccomment'>/// `false`, the default engine event handler is not executed. Return `false` if you want to
-</span>    <span class='doccomment'>/// override the default engine behaviour.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>poll_events</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>event_handler</span>: <span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Window</span>, <span class='kw-2'>&amp;</span><span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span><span class='op'>|</span> <span class='op'>-&gt;</span> <span class='ident'>bool</span>) {<span class='comment'>
-        // redispatch them
-        </span><span class='kw'>let</span> <span class='ident'>events</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>events</span>.<span class='ident'>clone</span>();<span class='comment'> // FIXME: this is very ugly
-        </span><span class='kw'>for</span> <span class='ident'>event</span> <span class='kw'>in</span> <span class='ident'>glfw</span>::<span class='ident'>flush_messages</span>(<span class='ident'>events</span>.<span class='ident'>deref</span>()) {
-            <span class='kw'>if</span> <span class='ident'>event_handler</span>(<span class='self'>self</span>, <span class='ident'>event</span>.<span class='ident'>ref1</span>()) {
-                <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>event</span>.<span class='ident'>ref1</span>() {
-                    <span class='ident'>glfw</span>::<span class='ident'>KeyEvent</span>(<span class='ident'>glfw</span>::<span class='ident'>KeyEscape</span>, _, <span class='ident'>glfw</span>::<span class='ident'>Release</span>, _) <span class='op'>=&gt;</span> {
-                        <span class='self'>self</span>.<span class='ident'>close</span>();
-                        <span class='kw'>continue</span>
-                    },
-                    <span class='ident'>glfw</span>::<span class='ident'>FramebufferSizeEvent</span>(<span class='ident'>w</span>, <span class='ident'>h</span>) <span class='op'>=&gt;</span> {
-                        <span class='self'>self</span>.<span class='ident'>update_viewport</span>(<span class='ident'>w</span> <span class='kw'>as</span> <span class='ident'>f32</span>, <span class='ident'>h</span> <span class='kw'>as</span> <span class='ident'>f32</span>);
-                    },
-                    _ <span class='op'>=&gt;</span> { }
-                }
-
-                <span class='self'>self</span>.<span class='ident'>camera</span>.<span class='ident'>handle_event</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>window</span>, <span class='ident'>event</span>.<span class='ident'>ref1</span>())
-            }
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>handle_event</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>event</span>: <span class='kw-2'>&amp;</span><span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span>, <span class='ident'>camera</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Camera</span>) {
+        <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>event</span> {
+            <span class='ident'>glfw</span>::<span class='ident'>KeyEvent</span>(<span class='ident'>glfw</span>::<span class='ident'>KeyEscape</span>, _, <span class='ident'>glfw</span>::<span class='ident'>Release</span>, _) <span class='op'>=&gt;</span> {
+                <span class='self'>self</span>.<span class='ident'>close</span>();
+                <span class='kw'>return</span>
+            },
+            <span class='ident'>glfw</span>::<span class='ident'>FramebufferSizeEvent</span>(<span class='ident'>w</span>, <span class='ident'>h</span>) <span class='op'>=&gt;</span> {
+                <span class='self'>self</span>.<span class='ident'>update_viewport</span>(<span class='ident'>w</span> <span class='kw'>as</span> <span class='ident'>f32</span>, <span class='ident'>h</span> <span class='kw'>as</span> <span class='ident'>f32</span>);
+            },
+            _ <span class='op'>=&gt;</span> { }
         }
+
+        <span class='ident'>camera</span>.<span class='ident'>handle_event</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>window</span>, <span class='ident'>event</span>)
     }
 
-    <span class='doccomment'>/// Starts an infinite loop polling events, calling an user-defined callback, and drawing the
-</span>    <span class='doccomment'>/// scene.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>render_loop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>callback</span>: <span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Window</span><span class='op'>|</span> <span class='op'>-&gt;</span> ()) {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>timer</span> <span class='op'>=</span> <span class='ident'>Timer</span>::<span class='ident'>new</span>().<span class='ident'>unwrap</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>curr</span>  <span class='op'>=</span> <span class='ident'>time</span>::<span class='ident'>precise_time_ns</span>();
+    <span class='doccomment'>/// Returns whether this window is closed or not.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_closed</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='boolval'>false</span><span class='comment'> // FIXME
+    </span>}
 
-        <span class='kw'>while</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>window</span>.<span class='ident'>should_close</span>() {<span class='comment'>
-            // collect events
-            </span><span class='self'>self</span>.<span class='ident'>glfw</span>.<span class='ident'>poll_events</span>();
-
-            <span class='ident'>callback</span>(<span class='self'>self</span>);
-
-            <span class='self'>self</span>.<span class='ident'>poll_events</span>(<span class='op'>|</span>_, _<span class='op'>|</span> <span class='boolval'>true</span>);
-
-            <span class='self'>self</span>.<span class='ident'>draw</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>curr</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>timer</span>)
-        }
-    }
-
-    <span class='doccomment'>/// Sets the light mode. Only one light is supported.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_light</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>pos</span>: <span class='ident'>Light</span>) {
+    <span class='doccomment'>/// Sets the light mode. Only one light is supported.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_light</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>pos</span>: <span class='ident'>Light</span>) {
         <span class='self'>self</span>.<span class='ident'>light_mode</span> <span class='op'>=</span> <span class='ident'>pos</span>;
+    }
+
+    <span class='doccomment'>/// Opens a window, hide it then calls a user-defined procedure.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Arguments</span>
+    <span class='doccomment'>/// * `title` - the window title</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_hidden</span>(<span class='ident'>title</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Window</span> {
+        <span class='ident'>Window</span>::<span class='ident'>do_new</span>(<span class='ident'>title</span>, <span class='boolval'>true</span>, <span class='ident'>DEFAULT_WIDTH</span>, <span class='ident'>DEFAULT_HEIGHT</span>)
+    }
+
+    <span class='doccomment'>/// Opens a window then calls a user-defined procedure.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Arguments</span>
+    <span class='doccomment'>/// * `title` - the window title</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>title</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Window</span> {
+        <span class='ident'>Window</span>::<span class='ident'>do_new</span>(<span class='ident'>title</span>, <span class='boolval'>false</span>, <span class='ident'>DEFAULT_WIDTH</span>, <span class='ident'>DEFAULT_HEIGHT</span>)
+    }
+
+    <span class='doccomment'>/// Opens a window with a custom size then calls a user-defined procedure.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Arguments</span>
+    <span class='doccomment'>/// * `title` - the window title.</span>
+    <span class='doccomment'>/// * `width` - the window width.</span>
+    <span class='doccomment'>/// * `height` - the window height.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_with_size</span>(<span class='ident'>title</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>width</span>: <span class='ident'>u32</span>, <span class='ident'>height</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>Window</span> {
+        <span class='ident'>Window</span>::<span class='ident'>do_new</span>(<span class='ident'>title</span>, <span class='boolval'>false</span>, <span class='ident'>width</span>, <span class='ident'>height</span>)
     }<span class='comment'>
 
-    // FIXME /// The camera used to render the scene.
-    // FIXME pub fn camera(&amp;self) -&gt; &amp;Camera {
-    // FIXME     self.camera.clone()
-    // FIXME }
-
-    </span><span class='doccomment'>/// Opens a window, hide it then calls a user-defined procedure.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// # Arguments
-</span>    <span class='doccomment'>/// * `title` - the window title
-</span>    <span class='doccomment'>/// * `callback` - a callback called once the window has been created
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>spawn_hidden</span>(<span class='ident'>title</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>callback</span>: <span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Window</span><span class='op'>|</span> <span class='op'>-&gt;</span> ()) {
-        <span class='ident'>Window</span>::<span class='ident'>do_spawn</span>(<span class='ident'>title</span>, <span class='boolval'>true</span>, <span class='ident'>DEFAULT_WIDTH</span>, <span class='ident'>DEFAULT_HEIGHT</span>, <span class='ident'>callback</span>)
-    }
-
-    <span class='doccomment'>/// Opens a window then calls a user-defined procedure.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// # Arguments
-</span>    <span class='doccomment'>/// * `title` - the window title
-</span>    <span class='doccomment'>/// * `callback` - a callback called once the window has been created
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>spawn</span>(<span class='ident'>title</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>callback</span>: <span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Window</span><span class='op'>|</span> <span class='op'>-&gt;</span> ()) {
-        <span class='ident'>Window</span>::<span class='ident'>do_spawn</span>(<span class='ident'>title</span>, <span class='boolval'>false</span>, <span class='ident'>DEFAULT_WIDTH</span>, <span class='ident'>DEFAULT_HEIGHT</span>, <span class='ident'>callback</span>)
-    }
-
-    <span class='doccomment'>/// Opens a window with a custom size then calls a user-defined procedure.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// # Arguments
-</span>    <span class='doccomment'>/// * `title` - the window title
-</span>    <span class='doccomment'>/// * `callback` - a callback called once the window has been created
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>spawn_size</span>(<span class='ident'>title</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>width</span>: <span class='ident'>u32</span>, <span class='ident'>height</span>: <span class='ident'>u32</span>, <span class='ident'>callback</span>: <span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Window</span><span class='op'>|</span> <span class='op'>-&gt;</span> ()) {
-        <span class='ident'>Window</span>::<span class='ident'>do_spawn</span>(<span class='ident'>title</span>, <span class='boolval'>false</span>, <span class='ident'>width</span>, <span class='ident'>height</span>, <span class='ident'>callback</span>)
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>do_spawn</span>(<span class='ident'>title</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>hide</span>: <span class='ident'>bool</span>, <span class='ident'>width</span>: <span class='ident'>u32</span>, <span class='ident'>height</span>: <span class='ident'>u32</span>, <span class='ident'>callback</span>: <span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Window</span><span class='op'>|</span> <span class='op'>-&gt;</span> ()) {<span class='comment'>
+    // FIXME: make this pub?
+    </span><span class='kw'>fn</span> <span class='ident'>do_new</span>(<span class='ident'>title</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>hide</span>: <span class='ident'>bool</span>, <span class='ident'>width</span>: <span class='ident'>u32</span>, <span class='ident'>height</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>Window</span> {<span class='comment'>
         // FIXME: glfw::set_error_callback(~ErrorCallback);
 
         </span><span class='kw'>let</span> <span class='ident'>glfw</span> <span class='op'>=</span> <span class='ident'>glfw</span>::<span class='ident'>init</span>(<span class='ident'>glfw</span>::<span class='ident'>FAIL_ON_ERRORS</span>).<span class='ident'>unwrap</span>();
@@ -1068,23 +895,21 @@
         <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>load_with</span>(<span class='op'>|</span><span class='ident'>name</span><span class='op'>|</span> <span class='ident'>glfw</span>.<span class='ident'>get_proc_address</span>(<span class='ident'>name</span>)));
         <span class='ident'>init_gl</span>();
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>camera</span>   <span class='op'>=</span> <span class='ident'>ArcBall</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='ident'>Vec3</span>::<span class='ident'>z</span>(), <span class='ident'>Zero</span>::<span class='ident'>zero</span>());
-
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>usr_window</span> <span class='op'>=</span> <span class='ident'>Window</span> {
             <span class='ident'>max_ms_per_frame</span>:      <span class='prelude-val'>None</span>,
             <span class='ident'>glfw</span>:                  <span class='ident'>glfw</span>,
             <span class='ident'>window</span>:                <span class='ident'>window</span>,
             <span class='ident'>events</span>:                <span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='ident'>events</span>),
             <span class='ident'>scene</span>:                 <span class='ident'>SceneNode</span>::<span class='ident'>new_empty</span>(),
-            <span class='ident'>camera</span>:                <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>camera</span> <span class='kw'>as</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Camera</span>,
             <span class='ident'>light_mode</span>:            <span class='ident'>Absolute</span>(<span class='ident'>Vec3</span>::<span class='ident'>new</span>(<span class='number'>0.0</span>, <span class='number'>10.0</span>, <span class='number'>0.0</span>)),
             <span class='ident'>background</span>:            <span class='ident'>Vec3</span>::<span class='ident'>new</span>(<span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>),
             <span class='ident'>line_renderer</span>:         <span class='ident'>LineRenderer</span>::<span class='ident'>new</span>(),
             <span class='ident'>point_renderer</span>:        <span class='ident'>PointRenderer</span>::<span class='ident'>new</span>(),
             <span class='ident'>text_renderer</span>:         <span class='ident'>TextRenderer</span>::<span class='ident'>new</span>(),
-            <span class='ident'>post_processing</span>:       <span class='prelude-val'>None</span>,
             <span class='ident'>post_process_render_target</span>: <span class='ident'>FramebufferManager</span>::<span class='ident'>new_render_target</span>(<span class='ident'>width</span> <span class='kw'>as</span> <span class='ident'>uint</span>, <span class='ident'>height</span> <span class='kw'>as</span> <span class='ident'>uint</span>),
             <span class='ident'>framebuffer_manager</span>:   <span class='ident'>FramebufferManager</span>::<span class='ident'>new</span>(),
+            <span class='ident'>timer</span>:                 <span class='ident'>Timer</span>::<span class='ident'>new</span>().<span class='ident'>unwrap</span>(),
+            <span class='ident'>curr_time</span>:             <span class='ident'>time</span>::<span class='ident'>precise_time_ns</span>()
         };<span class='comment'>
 
         // setup callbacks
@@ -1094,39 +919,35 @@
         <span class='ident'>usr_window</span>.<span class='ident'>window</span>.<span class='ident'>set_cursor_pos_polling</span>(<span class='boolval'>true</span>);
         <span class='ident'>usr_window</span>.<span class='ident'>window</span>.<span class='ident'>set_scroll_polling</span>(<span class='boolval'>true</span>);
 
-        <span class='kw'>let</span> (<span class='ident'>w</span>, <span class='ident'>h</span>) <span class='op'>=</span> <span class='ident'>usr_window</span>.<span class='ident'>window</span>.<span class='ident'>get_size</span>();
-        <span class='ident'>usr_window</span>.<span class='ident'>camera</span>.<span class='ident'>handle_event</span>(
-            <span class='kw-2'>&amp;</span><span class='ident'>usr_window</span>.<span class='ident'>window</span>,
-            <span class='kw-2'>&amp;</span><span class='ident'>glfw</span>::<span class='ident'>FramebufferSizeEvent</span>(<span class='ident'>w</span>, <span class='ident'>h</span>));
-
         <span class='kw'>if</span> <span class='ident'>hide</span> {
             <span class='ident'>usr_window</span>.<span class='ident'>window</span>.<span class='ident'>hide</span>()
         }<span class='comment'>
 
         // usr_window.framebuffer_size_callback(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        </span><span class='ident'>usr_window</span>.<span class='ident'>set_light</span>(<span class='ident'>usr_window</span>.<span class='ident'>light_mode</span>);
+        </span><span class='kw'>let</span> <span class='ident'>light</span> <span class='op'>=</span> <span class='ident'>usr_window</span>.<span class='ident'>light_mode</span>.<span class='ident'>clone</span>();
+        <span class='ident'>usr_window</span>.<span class='ident'>set_light</span>(<span class='ident'>light</span>);
 
-        <span class='ident'>callback</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>usr_window</span>);
+        <span class='ident'>usr_window</span>
     }
 
-    <span class='doccomment'>/// Reference to the scene associated with this window.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Reference to the scene associated with this window.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>scene</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>SceneNode</span> {
         <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>.<span class='ident'>scene</span>
     }
 
-    <span class='doccomment'>/// Mutable reference to the scene associated with this window.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Mutable reference to the scene associated with this window.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>scene_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>SceneNode</span> {
         <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>scene</span>
     }<span class='comment'>
 
     // FIXME: give more options for the snap size and offset.
-    </span><span class='doccomment'>/// Read the pixels currently displayed to the screen.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// # Arguments:
-</span>    <span class='doccomment'>/// * `out` - the output buffer. It is automatically resized.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>snap</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>out</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>) {
+    </span><span class='doccomment'>/// Read the pixels currently displayed to the screen.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Arguments:</span>
+    <span class='doccomment'>/// * `out` - the output buffer. It is automatically resized.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>snap</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>out</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>) {
         <span class='kw'>let</span> (<span class='ident'>width</span>, <span class='ident'>height</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>window</span>.<span class='ident'>get_size</span>();
 
         <span class='kw'>let</span> <span class='ident'>size</span> <span class='op'>=</span> (<span class='ident'>width</span> <span class='op'>*</span> <span class='ident'>height</span> <span class='op'>*</span> <span class='number'>3</span>) <span class='kw'>as</span> <span class='ident'>uint</span>;
@@ -1149,15 +970,15 @@
         }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>draw</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>curr</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>u64</span>, <span class='ident'>timer</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Timer</span>) {
-        <span class='self'>self</span>.<span class='ident'>camera</span>.<span class='ident'>update</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>window</span>);
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>draw</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>camera</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Camera</span>, <span class='ident'>post_processing</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>PostProcessingEffect</span><span class='op'>&gt;</span>) {
+        <span class='ident'>camera</span>.<span class='ident'>update</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>window</span>);
 
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>light_mode</span> {
             <span class='ident'>StickToCamera</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>set_light</span>(<span class='ident'>StickToCamera</span>),
             _             <span class='op'>=&gt;</span> { }
         }
 
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>post_processing</span>.<span class='ident'>is_some</span>() {<span class='comment'>
+        <span class='kw'>if</span> <span class='ident'>post_processing</span>.<span class='ident'>is_some</span>() {<span class='comment'>
             // if we need post-processing, render to our own frame buffer
             </span><span class='self'>self</span>.<span class='ident'>framebuffer_manager</span>.<span class='ident'>select</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>post_process_render_target</span>);
         }
@@ -1165,15 +986,15 @@
             <span class='self'>self</span>.<span class='ident'>framebuffer_manager</span>.<span class='ident'>select</span>(<span class='kw-2'>&amp;</span><span class='ident'>FramebufferManager</span>::<span class='ident'>screen</span>());
         }
 
-        <span class='kw'>for</span> <span class='ident'>pass</span> <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0u</span>, <span class='self'>self</span>.<span class='ident'>camera</span>.<span class='ident'>num_passes</span>()) {
-            <span class='self'>self</span>.<span class='ident'>camera</span>.<span class='ident'>start_pass</span>(<span class='ident'>pass</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>window</span>);
-            <span class='self'>self</span>.<span class='ident'>render_scene</span>(<span class='ident'>pass</span>);
+        <span class='kw'>for</span> <span class='ident'>pass</span> <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0u</span>, <span class='ident'>camera</span>.<span class='ident'>num_passes</span>()) {
+            <span class='ident'>camera</span>.<span class='ident'>start_pass</span>(<span class='ident'>pass</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>window</span>);
+            <span class='self'>self</span>.<span class='ident'>render_scene</span>(<span class='ident'>camera</span>, <span class='ident'>pass</span>);
         }
-        <span class='self'>self</span>.<span class='ident'>camera</span>.<span class='ident'>render_complete</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>window</span>);
+        <span class='ident'>camera</span>.<span class='ident'>render_complete</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>window</span>);
 
         <span class='kw'>let</span> <span class='ident'>w</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>width</span>();
         <span class='kw'>let</span> <span class='ident'>h</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>height</span>();
-        <span class='kw'>let</span> (<span class='ident'>znear</span>, <span class='ident'>zfar</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>camera</span>.<span class='ident'>clip_planes</span>();<span class='comment'>
+        <span class='kw'>let</span> (<span class='ident'>znear</span>, <span class='ident'>zfar</span>) <span class='op'>=</span> <span class='ident'>camera</span>.<span class='ident'>clip_planes</span>();<span class='comment'>
 
         // FIXME: remove this completely?
         // swatch off the wireframe mode for post processing and text rendering.
@@ -1181,7 +1002,7 @@
         //     verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
         // }
 
-        </span><span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>post_processing</span> {
+        </span><span class='kw'>match</span> <span class='op'>*</span><span class='ident'>post_processing</span> {
             <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>p</span>) <span class='op'>=&gt;</span> {<span class='comment'>
                 // switch back to the screen framebuffer …
                 </span><span class='self'>self</span>.<span class='ident'>framebuffer_manager</span>.<span class='ident'>select</span>(<span class='kw-2'>&amp;</span><span class='ident'>FramebufferManager</span>::<span class='ident'>screen</span>());<span class='comment'>
@@ -1202,20 +1023,20 @@
         </span><span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>max_ms_per_frame</span> {
             <span class='prelude-val'>None</span>     <span class='op'>=&gt;</span> { },
             <span class='prelude-val'>Some</span>(<span class='ident'>ms</span>) <span class='op'>=&gt;</span> {
-                <span class='kw'>let</span> <span class='ident'>elapsed</span> <span class='op'>=</span> (<span class='ident'>time</span>::<span class='ident'>precise_time_ns</span>() <span class='op'>-</span> <span class='op'>*</span><span class='ident'>curr</span>) <span class='op'>/</span> <span class='number'>1000000</span>;
+                <span class='kw'>let</span> <span class='ident'>elapsed</span> <span class='op'>=</span> (<span class='ident'>time</span>::<span class='ident'>precise_time_ns</span>() <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>curr_time</span>) <span class='op'>/</span> <span class='number'>1000000</span>;
                 <span class='kw'>if</span> <span class='ident'>elapsed</span> <span class='op'>&lt;</span> <span class='ident'>ms</span> {
-                    <span class='ident'>timer</span>.<span class='ident'>sleep</span>(<span class='ident'>ms</span> <span class='op'>-</span> <span class='ident'>elapsed</span>);
+                    <span class='self'>self</span>.<span class='ident'>timer</span>.<span class='ident'>sleep</span>(<span class='ident'>ms</span> <span class='op'>-</span> <span class='ident'>elapsed</span>);
                 }
             }
         }
 
-        <span class='op'>*</span><span class='ident'>curr</span> <span class='op'>=</span> <span class='ident'>time</span>::<span class='ident'>precise_time_ns</span>();<span class='comment'>
+        <span class='self'>self</span>.<span class='ident'>curr_time</span> <span class='op'>=</span> <span class='ident'>time</span>::<span class='ident'>precise_time_ns</span>();<span class='comment'>
 
         // self.transparent_objects.clear();
         // self.opaque_objects.clear();
     </span>}
 
-    <span class='kw'>fn</span> <span class='ident'>render_scene</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>pass</span>: <span class='ident'>uint</span>) {<span class='comment'>
+    <span class='kw'>fn</span> <span class='ident'>render_scene</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>camera</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Camera</span>, <span class='ident'>pass</span>: <span class='ident'>uint</span>) {<span class='comment'>
         // Activate the default texture
         </span><span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>ActiveTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE0</span>));<span class='comment'>
         // Clear the screen to black
@@ -1224,22 +1045,14 @@
         <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>Clear</span>(<span class='ident'>gl</span>::<span class='ident'>DEPTH_BUFFER_BIT</span>));
 
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>line_renderer</span>.<span class='ident'>needs_rendering</span>() {
-            <span class='self'>self</span>.<span class='ident'>line_renderer</span>.<span class='ident'>render</span>(<span class='ident'>pass</span>, <span class='self'>self</span>.<span class='ident'>camera</span>);
+            <span class='self'>self</span>.<span class='ident'>line_renderer</span>.<span class='ident'>render</span>(<span class='ident'>pass</span>, <span class='ident'>camera</span>);
         }
 
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>point_renderer</span>.<span class='ident'>needs_rendering</span>() {
-            <span class='self'>self</span>.<span class='ident'>point_renderer</span>.<span class='ident'>render</span>(<span class='ident'>pass</span>, <span class='self'>self</span>.<span class='ident'>camera</span>);
-        }<span class='comment'>
+            <span class='self'>self</span>.<span class='ident'>point_renderer</span>.<span class='ident'>render</span>(<span class='ident'>pass</span>, <span class='ident'>camera</span>);
+        }
 
-        // XXX: remove this completely?
-        // if self.wireframe_mode {
-        //     verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE));
-        // }
-        // else {
-        //     verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
-        // }
-
-        </span><span class='self'>self</span>.<span class='ident'>scene</span>.<span class='ident'>data_mut</span>().<span class='ident'>render</span>(<span class='ident'>pass</span>, <span class='self'>self</span>.<span class='ident'>camera</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>light_mode</span>);
+        <span class='self'>self</span>.<span class='ident'>scene</span>.<span class='ident'>data_mut</span>().<span class='ident'>render</span>(<span class='ident'>pass</span>, <span class='ident'>camera</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>light_mode</span>);
     }
 
 
@@ -1277,9 +1090,9 @@
                 <dd>Show this help dialog</dd>
                 <dt>S</dt>
                 <dd>Focus the search field</dd>
-                <dt>&uarr;</dt>
+                <dt>&larrb;</dt>
                 <dd>Move up in search results</dd>
-                <dt>&darr;</dt>
+                <dt>&rarrb;</dt>
                 <dd>Move down in search results</dd>
                 <dt>&#9166;</dt>
                 <dd>Go to active search result</dd>

@@ -23,7 +23,6 @@
 
     <section class="sidebar">
         
-
         
     </section>
 
@@ -32,7 +31,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Search documentation..."
+                       placeholder="Click or press 'S' to search, '?' for more options..."
                        type="search">
             </div>
         </form>
@@ -51,18 +50,20 @@
 <span id='11'>11</span>
 <span id='12'>12</span>
 <span id='13'>13</span>
+<span id='14'>14</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! Lights.
-</span>
+<span class='doccomment'>//! Lights.</span>
+
 <span class='kw'>use</span> <span class='ident'>nalgebra</span>::<span class='ident'>na</span>::<span class='ident'>Vec3</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>::<span class='ident'>types</span>::<span class='ident'>GLfloat</span>;
 
-<span class='doccomment'>/// The light configuration.
-</span><span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Light</span> {
-    <span class='doccomment'>/// A light with an absolute world position.
-</span>    <span class='ident'>Absolute</span>(<span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span>),
-    <span class='doccomment'>/// A light superimposed with the camera position.
-</span>    <span class='ident'>StickToCamera</span>
+<span class='doccomment'>/// The light configuration.</span>
+<span class='attribute'>#[<span class='ident'>deriving</span>(<span class='ident'>Clone</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Light</span> {
+    <span class='doccomment'>/// A light with an absolute world position.</span>
+    <span class='ident'>Absolute</span>(<span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span>),
+    <span class='doccomment'>/// A light superimposed with the camera position.</span>
+    <span class='ident'>StickToCamera</span>
 }
 
 </pre>
@@ -79,9 +80,9 @@
                 <dd>Show this help dialog</dd>
                 <dt>S</dt>
                 <dd>Focus the search field</dd>
-                <dt>&uarr;</dt>
+                <dt>&larrb;</dt>
                 <dd>Move up in search results</dd>
-                <dt>&darr;</dt>
+                <dt>&rarrb;</dt>
                 <dd>Move down in search results</dd>
                 <dt>&#9166;</dt>
                 <dd>Go to active search result</dd>

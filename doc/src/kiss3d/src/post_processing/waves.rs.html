@@ -23,7 +23,6 @@
 
     <section class="sidebar">
         
-
         
     </section>
 
@@ -32,7 +31,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Search documentation..."
+                       placeholder="Click or press 'S' to search, '?' for more options..."
                        type="search">
             </div>
         </form>
@@ -148,8 +147,8 @@
 <span id='108'>108</span>
 <span id='109'>109</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! An useless post-process effect: waves deformations.
-</span><span class='comment'>
+<span class='doccomment'>//! An useless post-process effect: waves deformations.</span><span class='comment'>
+
 // This a simple post-process. I do this only to learn how works post-processing; so it might be
 // useless for anybody else.
 // This is inspired _a lot_ by: http://en.wikibooks.org/wiki/Opengl::Programming/Post-Processing
@@ -163,10 +162,10 @@
 <span class='attribute'>#[<span class='ident'>path</span> <span class='op'>=</span> <span class='string'>&quot;../error.rs&quot;</span>]</span>
 <span class='kw'>mod</span> <span class='ident'>error</span>;
 
-<span class='doccomment'>/// An useless post-processing effect mainly to test that everything works correctly.
-</span><span class='doccomment'>///
-</span><span class='doccomment'>/// It deforms the displayed scene with a wave effect.
-</span><span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Waves</span> {
+<span class='doccomment'>/// An useless post-processing effect mainly to test that everything works correctly.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// It deforms the displayed scene with a wave effect.</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Waves</span> {
     <span class='ident'>shader</span>:       <span class='ident'>Shader</span>,
     <span class='ident'>time</span>:         <span class='ident'>f32</span>,
     <span class='ident'>offset</span>:       <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span>,
@@ -176,8 +175,8 @@
 }
 
 <span class='kw'>impl</span> <span class='ident'>Waves</span> {
-    <span class='doccomment'>/// Creates a new Waves post processing effect.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Waves</span> {
+    <span class='doccomment'>/// Creates a new Waves post processing effect.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Waves</span> {
         <span class='kw'>let</span> <span class='ident'>fbo_vertices</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>  <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(
             <span class='ident'>Vec2</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='number'>1.0</span>, <span class='op'>-</span><span class='number'>1.0</span>),
             <span class='ident'>Vec2</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>, <span class='op'>-</span><span class='number'>1.0</span>),
@@ -271,9 +270,9 @@
                 <dd>Show this help dialog</dd>
                 <dt>S</dt>
                 <dd>Focus the search field</dd>
-                <dt>&uarr;</dt>
+                <dt>&larrb;</dt>
                 <dd>Move up in search results</dd>
-                <dt>&darr;</dt>
+                <dt>&rarrb;</dt>
                 <dd>Move down in search results</dd>
                 <dt>&#9166;</dt>
                 <dd>Go to active search result</dd>

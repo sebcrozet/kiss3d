@@ -23,7 +23,6 @@
 
     <section class="sidebar">
         
-
         
     </section>
 
@@ -32,7 +31,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Search documentation..."
+                       placeholder="Click or press 'S' to search, '?' for more options..."
                        type="search">
             </div>
         </form>
@@ -231,9 +230,10 @@
 <span id='191'>191</span>
 <span id='192'>192</span>
 <span id='193'>193</span>
+<span id='194'>194</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! Resource manager to allocate and switch between framebuffers.
-</span>
+<span class='doccomment'>//! Resource manager to allocate and switch between framebuffers.</span>
+
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>kinds</span>::<span class='ident'>marker</span>::<span class='ident'>NoCopy</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>;
@@ -242,40 +242,40 @@
 <span class='attribute'>#[<span class='ident'>path</span> <span class='op'>=</span> <span class='string'>&quot;../error.rs&quot;</span>]</span>
 <span class='kw'>mod</span> <span class='ident'>error</span>;
 
-<span class='doccomment'>/// The target to every rendering call.
-</span><span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>RenderTarget</span> {
-    <span class='doccomment'>/// The screen (main framebuffer).
-</span>    <span class='ident'>Screen</span>,
-    <span class='doccomment'>/// An off-screen buffer.
-</span>    <span class='ident'>Offscreen</span>(<span class='ident'>OffscreenBuffers</span>)
-}<span class='comment'>
+<span class='doccomment'>/// The target to every rendering call.</span>
+<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>RenderTarget</span> {
+    <span class='doccomment'>/// The screen (main framebuffer).</span>
+    <span class='ident'>Screen</span>,
+    <span class='doccomment'>/// An off-screen buffer.</span>
+    <span class='ident'>Offscreen</span>(<span class='ident'>OffscreenBuffers</span>)
+}
 
-// FIXME: pub ?
-</span><span class='kw'>struct</span> <span class='ident'>OffscreenBuffers</span> {
+<span class='doccomment'>/// OpenGL identifiers to an off-screen buffer.</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>OffscreenBuffers</span> {
     <span class='ident'>texture</span>: <span class='ident'>GLuint</span>,
     <span class='ident'>depth</span>:   <span class='ident'>GLuint</span>,
     <span class='ident'>ncpy</span>:    <span class='ident'>NoCopy</span>
 }
 
 <span class='kw'>impl</span> <span class='ident'>RenderTarget</span> {
-    <span class='doccomment'>/// Returns an opengl handle to the off-screen texture buffer.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>texture_id</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='doccomment'>/// Returns an opengl handle to the off-screen texture buffer.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>texture_id</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>Screen</span>           <span class='op'>=&gt;</span> <span class='number'>0</span>,
             <span class='ident'>Offscreen</span>(<span class='kw-2'>ref</span> <span class='ident'>o</span>) <span class='op'>=&gt;</span> <span class='ident'>o</span>.<span class='ident'>texture</span>
         }
     }
 
-    <span class='doccomment'>/// Returns an opengl handle to the off-screen depth buffer.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>depth_id</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='doccomment'>/// Returns an opengl handle to the off-screen depth buffer.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>depth_id</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>Screen</span>           <span class='op'>=&gt;</span> <span class='number'>0</span>,
             <span class='ident'>Offscreen</span>(<span class='kw-2'>ref</span> <span class='ident'>o</span>) <span class='op'>=&gt;</span> <span class='ident'>o</span>.<span class='ident'>depth</span>
         }
     }
 
-    <span class='doccomment'>/// Resizes this render target.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>resize</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>w</span>: <span class='ident'>f32</span>, <span class='ident'>h</span>: <span class='ident'>f32</span>) {
+    <span class='doccomment'>/// Resizes this render target.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>resize</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>w</span>: <span class='ident'>f32</span>, <span class='ident'>h</span>: <span class='ident'>f32</span>) {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>Screen</span> <span class='op'>=&gt;</span> {
                 <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>Viewport</span>(<span class='number'>0</span>, <span class='number'>0</span>, <span class='ident'>w</span> <span class='kw'>as</span> <span class='ident'>i32</span>, <span class='ident'>h</span> <span class='kw'>as</span> <span class='ident'>i32</span>));
@@ -300,9 +300,9 @@
     }
 }
 
-<span class='doccomment'>/// A framebuffer manager. It is a simple to to switch between an off-screen framebuffer and the
-</span><span class='doccomment'>/// default (window) framebuffer.
-</span><span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>FramebufferManager</span> {
+<span class='doccomment'>/// A framebuffer manager. It is a simple to to switch between an off-screen framebuffer and the</span>
+<span class='doccomment'>/// default (window) framebuffer.</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>FramebufferManager</span> {
     <span class='ident'>curr_fbo</span>:   <span class='ident'>GLuint</span>,
     <span class='ident'>curr_color</span>: <span class='ident'>GLuint</span>,
     <span class='ident'>curr_depth</span>: <span class='ident'>GLuint</span>,
@@ -310,8 +310,8 @@
 }
 
 <span class='kw'>impl</span> <span class='ident'>FramebufferManager</span> {
-    <span class='doccomment'>/// Creates a new framebuffer manager.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>FramebufferManager</span> {<span class='comment'>
+    <span class='doccomment'>/// Creates a new framebuffer manager.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>FramebufferManager</span> {<span class='comment'>
         // create an off-screen framebuffer
         </span><span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fbo</span>: <span class='ident'>GLuint</span> <span class='op'>=</span> <span class='number'>0</span>;
 
@@ -328,9 +328,9 @@
         }
     }
 
-    <span class='doccomment'>/// Creates a new render target. A render target is the combination of a color buffer and a
-</span>    <span class='doccomment'>/// depth buffer.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_render_target</span>(<span class='ident'>width</span>: <span class='ident'>uint</span>, <span class='ident'>height</span>: <span class='ident'>uint</span>) <span class='op'>-&gt;</span> <span class='ident'>RenderTarget</span> {
+    <span class='doccomment'>/// Creates a new render target. A render target is the combination of a color buffer and a</span>
+    <span class='doccomment'>/// depth buffer.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_render_target</span>(<span class='ident'>width</span>: <span class='ident'>uint</span>, <span class='ident'>height</span>: <span class='ident'>uint</span>) <span class='op'>-&gt;</span> <span class='ident'>RenderTarget</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fbo_texture</span>: <span class='ident'>GLuint</span> <span class='op'>=</span> <span class='number'>0</span>;
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fbo_depth</span>:   <span class='ident'>GLuint</span> <span class='op'>=</span> <span class='number'>0</span>;<span class='comment'>
 
@@ -365,13 +365,13 @@
         <span class='ident'>Offscreen</span>(<span class='ident'>OffscreenBuffers</span> { <span class='ident'>texture</span>: <span class='ident'>fbo_texture</span>, <span class='ident'>depth</span>: <span class='ident'>fbo_depth</span>, <span class='ident'>ncpy</span>: <span class='ident'>NoCopy</span> })
     }
 
-    <span class='doccomment'>/// Returns the render target associated with the screen.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>screen</span>() <span class='op'>-&gt;</span> <span class='ident'>RenderTarget</span> {
+    <span class='doccomment'>/// Returns the render target associated with the screen.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>screen</span>() <span class='op'>-&gt;</span> <span class='ident'>RenderTarget</span> {
         <span class='ident'>Screen</span>
     }
 
-    <span class='doccomment'>/// Selects a specific render target
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>select</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>target</span>: <span class='kw-2'>&amp;</span><span class='ident'>RenderTarget</span>) {
+    <span class='doccomment'>/// Selects a specific render target</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>select</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>target</span>: <span class='kw-2'>&amp;</span><span class='ident'>RenderTarget</span>) {
         <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>target</span> {
             <span class='ident'>Screen</span> <span class='op'>=&gt;</span> {
                 <span class='self'>self</span>.<span class='ident'>do_select</span>(<span class='number'>0</span>);
@@ -379,7 +379,8 @@
                 <span class='self'>self</span>.<span class='ident'>curr_depth</span> <span class='op'>=</span> <span class='number'>0</span>;
             },
             <span class='ident'>Offscreen</span>(<span class='kw-2'>ref</span> <span class='ident'>o</span>) <span class='op'>=&gt;</span> {
-                <span class='self'>self</span>.<span class='ident'>do_select</span>(<span class='self'>self</span>.<span class='ident'>fbo</span>);
+                <span class='kw'>let</span> <span class='ident'>fbo</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>fbo</span>;
+                <span class='self'>self</span>.<span class='ident'>do_select</span>(<span class='ident'>fbo</span>);
 
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>curr_color</span> <span class='op'>!=</span> <span class='ident'>o</span>.<span class='ident'>texture</span> {
                     <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>FramebufferTexture2D</span>(<span class='ident'>gl</span>::<span class='ident'>FRAMEBUFFER</span>,
@@ -439,9 +440,9 @@
                 <dd>Show this help dialog</dd>
                 <dt>S</dt>
                 <dd>Focus the search field</dd>
-                <dt>&uarr;</dt>
+                <dt>&larrb;</dt>
                 <dd>Move up in search results</dd>
-                <dt>&darr;</dt>
+                <dt>&rarrb;</dt>
                 <dd>Move down in search results</dd>
                 <dt>&#9166;</dt>
                 <dd>Go to active search result</dd>

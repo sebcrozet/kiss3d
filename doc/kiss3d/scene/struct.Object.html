@@ -23,8 +23,7 @@
 
     <section class="sidebar">
         
-
-        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>scene</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.Object.html'>Object</a><br/><a class='struct ' href='struct.ObjectData.html'>ObjectData</a><br/><a class='struct ' href='struct.SceneNode.html'>SceneNode</a><br/><a class='struct ' href='struct.SceneNodeData.html'>SceneNodeData</a><br/></div>
+        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>scene</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.Object.html'>Object</a><a class='struct ' href='struct.ObjectData.html'>ObjectData</a><a class='struct ' href='struct.SceneNode.html'>SceneNode</a><a class='struct ' href='struct.SceneNodeData.html'>SceneNodeData</a></div>
     </section>
 
     <nav class="sub">
@@ -32,14 +31,14 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Search documentation..."
+                       placeholder="Click or press 'S' to search, '?' for more options..."
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>scene</a>::<a class='struct' href=''>Object</a><a class='source' id='src-3888' href='../../src/kiss3d/src/scene/object.rs.html#78-83'>[src]</a></h1>
+<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>scene</a>::<a class='struct' href=''>Object</a><a class='source' id='src-4382' href='../../src/kiss3d/src/scene/object.rs.html#78-83'>[src]</a></h1>
 <pre class='rust struct'>pub struct Object {
     // some fields omitted
 }</pre><div class='docblock'><p>A 3d objects on the scene.</p>
@@ -53,9 +52,9 @@
 <div class='docblock'><p>Enables or disables backface culling for this object.</p>
 </div><h4 id='method.set_user_data' class='method'><code>fn <a href='#method.set_user_data' class='fnname'>set_user_data</a>(&amp;mut self, user_data: <a class='struct' href='http://doc.rust-lang.org/alloc/owned/struct.Box.html' title='alloc::owned::Box'>Box</a>&lt;<a class='trait' href='http://doc.rust-lang.org/core/any/trait.Any.html' title='core::any::Any'>Any</a>&gt;)</code></h4>
 <div class='docblock'><p>Attaches user-defined data to this object.</p>
-</div><h4 id='method.material' class='method'><code>fn <a href='#method.material' class='fnname'>material</a>(&amp;self) -&gt; <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='http://doc.rust-lang.org/alloc/owned/struct.Box.html' title='alloc::owned::Box'>Box</a>&lt;<a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a>:'static&gt;&gt;&gt;</code></h4>
+</div><h4 id='method.material' class='method'><code>fn <a href='#method.material' class='fnname'>material</a>(&amp;self) -&gt; <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='http://doc.rust-lang.org/alloc/owned/struct.Box.html' title='alloc::owned::Box'>Box</a>&lt;<a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> + 'static&gt;&gt;&gt;</code></h4>
 <div class='docblock'><p>Gets the material of this object.</p>
-</div><h4 id='method.set_material' class='method'><code>fn <a href='#method.set_material' class='fnname'>set_material</a>(&amp;mut self, material: <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='http://doc.rust-lang.org/alloc/owned/struct.Box.html' title='alloc::owned::Box'>Box</a>&lt;<a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a>:'static&gt;&gt;&gt;)</code></h4>
+</div><h4 id='method.set_material' class='method'><code>fn <a href='#method.set_material' class='fnname'>set_material</a>(&amp;mut self, material: <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='http://doc.rust-lang.org/alloc/owned/struct.Box.html' title='alloc::owned::Box'>Box</a>&lt;<a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> + 'static&gt;&gt;&gt;)</code></h4>
 <div class='docblock'><p>Sets the material of this object.</p>
 </div><h4 id='method.set_lines_width' class='method'><code>fn <a href='#method.set_lines_width' class='fnname'>set_lines_width</a>(&amp;mut self, width: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>)</code></h4>
 <div class='docblock'><p>Sets the width of the lines drawn for this object.</p>
@@ -122,9 +121,9 @@
                 <dd>Show this help dialog</dd>
                 <dt>S</dt>
                 <dd>Focus the search field</dd>
-                <dt>&uarr;</dt>
+                <dt>&larrb;</dt>
                 <dd>Move up in search results</dd>
-                <dt>&darr;</dt>
+                <dt>&rarrb;</dt>
                 <dd>Move down in search results</dd>
                 <dt>&#9166;</dt>
                 <dd>Go to active search result</dd>

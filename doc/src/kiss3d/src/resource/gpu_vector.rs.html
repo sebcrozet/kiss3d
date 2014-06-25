@@ -23,7 +23,6 @@
 
     <section class="sidebar">
         
-
         
     </section>
 
@@ -32,7 +31,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Search documentation..."
+                       placeholder="Click or press 'S' to search, '?' for more options..."
                        type="search">
             </div>
         </form>
@@ -359,8 +358,8 @@
 <span id='319'>319</span>
 <span id='320'>320</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! Wrapper for an OpenGL buffer object.
-</span>
+<span class='doccomment'>//! Wrapper for an OpenGL buffer object.</span>
+
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>::<span class='ident'>types</span>::<span class='op'>*</span>;
@@ -397,8 +396,8 @@
 }<span class='comment'>
 
 // FIXME: generalize this for any resource: GPUResource
-</span><span class='doccomment'>/// A vector of elements that can be loaded to the GPU, on the RAM, or both.
-</span><span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+</span><span class='doccomment'>/// A vector of elements that can be loaded to the GPU, on the RAM, or both.</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='ident'>trash</span>:      <span class='ident'>bool</span>,
     <span class='ident'>len</span>:        <span class='ident'>uint</span>,
     <span class='ident'>buf_type</span>:   <span class='ident'>BufferType</span>,
@@ -410,8 +409,8 @@
 // FIXME: implement Clone
 
 </span><span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>GLPrimitive</span><span class='op'>&gt;</span> <span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Creates a new `GPUVector` that is not yet uploaded to the GPU.
-</span>    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>, <span class='ident'>buf_type</span>: <span class='ident'>BufferType</span>, <span class='ident'>alloc_type</span>: <span class='ident'>AllocationType</span>) <span class='op'>-&gt;</span> <span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+    <span class='doccomment'>/// Creates a new `GPUVector` that is not yet uploaded to the GPU.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>, <span class='ident'>buf_type</span>: <span class='ident'>BufferType</span>, <span class='ident'>alloc_type</span>: <span class='ident'>AllocationType</span>) <span class='op'>-&gt;</span> <span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
         <span class='ident'>GPUVector</span> {
             <span class='ident'>trash</span>:      <span class='boolval'>true</span>,
             <span class='ident'>len</span>:        <span class='ident'>data</span>.<span class='ident'>len</span>(),
@@ -422,8 +421,8 @@
         }
     }
 
-    <span class='doccomment'>/// The length of this vector.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// The length of this vector.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>len</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>uint</span> {
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>trash</span> {
             <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>data</span> {
@@ -437,46 +436,46 @@
         }
     }
 
-    <span class='doccomment'>/// Mutably accesses the vector if it is available on RAM.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// This method will mark this vector as `trash`.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Mutably accesses the vector if it is available on RAM.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This method will mark this vector as `trash`.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>trash</span> <span class='op'>=</span> <span class='boolval'>true</span>;
 
         <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>
     }
 
-    <span class='doccomment'>/// Immutably accesses the vector if it is available on RAM.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Immutably accesses the vector if it is available on RAM.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> {
         <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>.<span class='ident'>data</span>
     }
 
-    <span class='doccomment'>/// Returns `true` if this vector is already uploaded to the GPU.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Returns `true` if this vector is already uploaded to the GPU.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_on_gpu</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='self'>self</span>.<span class='ident'>handle</span>.<span class='ident'>is_some</span>()
     }
 
-    <span class='doccomment'>/// Returns `true` if the cpu data and gpu data are out of sync.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Returns `true` if the cpu data and gpu data are out of sync.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>trash</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='self'>self</span>.<span class='ident'>trash</span>
     }
 
-    <span class='doccomment'>/// Returns `true` if this vector is available on RAM.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// Note that a `GPUVector` may be both on RAM and on the GPU.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Returns `true` if this vector is available on RAM.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Note that a `GPUVector` may be both on RAM and on the GPU.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_on_ram</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>is_some</span>()
     }
 
-    <span class='doccomment'>/// Loads the vector from the RAM to the GPU.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// If the vector is not available on RAM or already loaded to the GPU, nothing will happen.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Loads the vector from the RAM to the GPU.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// If the vector is not available on RAM or already loaded to the GPU, nothing will happen.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>load_to_gpu</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>is_on_gpu</span>() {
             <span class='kw'>let</span> <span class='ident'>buf_type</span>   <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>buf_type</span>;
@@ -506,10 +505,10 @@
         <span class='self'>self</span>.<span class='ident'>trash</span> <span class='op'>=</span> <span class='boolval'>false</span>;
     }
 
-    <span class='doccomment'>/// Binds this vector to the appropriate gpu array.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// This does not associate this buffer with any shader attribute.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Binds this vector to the appropriate gpu array.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This does not associate this buffer with any shader attribute.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>bind</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='self'>self</span>.<span class='ident'>load_to_gpu</span>();
 
@@ -517,19 +516,19 @@
         <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindBuffer</span>(<span class='self'>self</span>.<span class='ident'>buf_type</span>.<span class='ident'>to_gl</span>(), <span class='ident'>handle</span>));
     }
 
-    <span class='doccomment'>/// Unbind this vector to the corresponding gpu buffer.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Unbind this vector to the corresponding gpu buffer.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unbind</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_on_gpu</span>() {
             <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindBuffer</span>(<span class='self'>self</span>.<span class='ident'>buf_type</span>.<span class='ident'>to_gl</span>(), <span class='number'>0</span>));
         }
     }
 
-    <span class='doccomment'>/// Loads the vector from the GPU to the RAM.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// If the vector is not available on the GPU or already loaded to the RAM, nothing will
-</span>    <span class='doccomment'>/// happen.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Loads the vector from the GPU to the RAM.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// If the vector is not available on the GPU or already loaded to the RAM, nothing will</span>
+    <span class='doccomment'>/// happen.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>load_to_ram</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>is_on_ram</span>() <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>is_on_gpu</span>() {
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='self'>self</span>.<span class='ident'>trash</span>);
@@ -542,8 +541,8 @@
         }
     }
 
-    <span class='doccomment'>/// Unloads this resource from the GPU.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Unloads this resource from the GPU.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unload_from_gpu</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>handle</span>.<span class='ident'>as_ref</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span>(_, <span class='kw-2'>ref</span> <span class='ident'>h</span>)<span class='op'>|</span> <span class='kw'>unsafe</span> { <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>DeleteBuffers</span>(<span class='number'>1</span>, <span class='kw-2'>&amp;</span><span class='ident'>h</span>.<span class='ident'>handle</span>())) });
         <span class='self'>self</span>.<span class='ident'>len</span>    <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>len</span>();
@@ -551,10 +550,10 @@
         <span class='self'>self</span>.<span class='ident'>trash</span>  <span class='op'>=</span> <span class='boolval'>false</span>;
     }
 
-    <span class='doccomment'>/// Removes this resource from the RAM.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// This is useful to save memory for vectors required on the GPU only.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Removes this resource from the RAM.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This is useful to save memory for vectors required on the GPU only.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unload_from_ram</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>trash</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>is_on_gpu</span>() {
             <span class='self'>self</span>.<span class='ident'>load_to_gpu</span>();
@@ -565,22 +564,22 @@
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>GLPrimitive</span><span class='op'>&gt;</span> <span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Returns this vector as an owned vector if it is available on RAM.
-</span>    <span class='doccomment'>///
-</span>    <span class='doccomment'>/// If it has been uploaded to the GPU, and unloaded from the RAM, call `load_to_ram` first to
-</span>    <span class='doccomment'>/// make the data accessible.
-</span>    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Returns this vector as an owned vector if it is available on RAM.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// If it has been uploaded to the GPU, and unloaded from the RAM, call `load_to_ram` first to</span>
+    <span class='doccomment'>/// make the data accessible.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>to_owned</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>as_ref</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>d</span><span class='op'>|</span> <span class='ident'>d</span>.<span class='ident'>clone</span>())
     }
 }
 
-<span class='doccomment'>/// Type of gpu buffer.
-</span><span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>BufferType</span> {
-    <span class='doccomment'>/// An array buffer bindable to a gl::ARRAY_BUFFER.
-</span>    <span class='ident'>ArrayBuffer</span>,
-    <span class='doccomment'>/// An array buffer bindable to a gl::ELEMENT_ARRAY_BUFFER.
-</span>    <span class='ident'>ElementArrayBuffer</span>
+<span class='doccomment'>/// Type of gpu buffer.</span>
+<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>BufferType</span> {
+    <span class='doccomment'>/// An array buffer bindable to a gl::ARRAY_BUFFER.</span>
+    <span class='ident'>ArrayBuffer</span>,
+    <span class='doccomment'>/// An array buffer bindable to a gl::ELEMENT_ARRAY_BUFFER.</span>
+    <span class='ident'>ElementArrayBuffer</span>
 }
 
 <span class='kw'>impl</span> <span class='ident'>BufferType</span> {
@@ -593,14 +592,14 @@
     }
 }
 
-<span class='doccomment'>/// Allocation type of gpu buffers.
-</span><span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>AllocationType</span> {
-    <span class='doccomment'>/// STATIC_DRAW allocation type.
-</span>    <span class='ident'>StaticDraw</span>,
-    <span class='doccomment'>/// DYNAMIC_DRAW allocation type.
-</span>    <span class='ident'>DynamicDraw</span>,
-    <span class='doccomment'>/// STREAM_DRAW allocation type.
-</span>    <span class='ident'>StreamDraw</span>
+<span class='doccomment'>/// Allocation type of gpu buffers.</span>
+<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>AllocationType</span> {
+    <span class='doccomment'>/// STATIC_DRAW allocation type.</span>
+    <span class='ident'>StaticDraw</span>,
+    <span class='doccomment'>/// DYNAMIC_DRAW allocation type.</span>
+    <span class='ident'>DynamicDraw</span>,
+    <span class='doccomment'>/// STREAM_DRAW allocation type.</span>
+    <span class='ident'>StreamDraw</span>
 }
 
 <span class='kw'>impl</span> <span class='ident'>AllocationType</span> {
@@ -614,8 +613,8 @@
     }
 }
 
-<span class='doccomment'>/// Allocates and uploads a buffer to the gpu.
-</span><span class='attribute'>#[<span class='ident'>inline</span>]</span>
+<span class='doccomment'>/// Allocates and uploads a buffer to the gpu.</span>
+<span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>upload_buffer</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>GLPrimitive</span><span class='op'>&gt;</span>(<span class='ident'>buf</span>:             <span class='kw-2'>&amp;</span>[<span class='ident'>T</span>],
                                      <span class='ident'>buf_type</span>:        <span class='ident'>BufferType</span>,
                                      <span class='ident'>allocation_type</span>: <span class='ident'>AllocationType</span>)
@@ -631,10 +630,10 @@
     <span class='ident'>buf_id</span>
 }
 
-<span class='doccomment'>/// Downloads a buffer from the gpu.
-</span><span class='doccomment'>///
-</span><span class='doccomment'>/// 
-</span><span class='attribute'>#[<span class='ident'>inline</span>]</span>
+<span class='doccomment'>/// Downloads a buffer from the gpu.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// </span>
+<span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>download_buffer</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>GLPrimitive</span><span class='op'>&gt;</span>(<span class='ident'>buf_id</span>: <span class='ident'>GLuint</span>, <span class='ident'>buf_type</span>: <span class='ident'>BufferType</span>, <span class='ident'>out</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>]) {
     <span class='kw'>unsafe</span> {
         <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindBuffer</span>(<span class='ident'>buf_type</span>.<span class='ident'>to_gl</span>(), <span class='ident'>buf_id</span>));
@@ -646,10 +645,10 @@
     }
 }
 
-<span class='doccomment'>/// Updates a buffer to the gpu.
-</span><span class='doccomment'>///
-</span><span class='doccomment'>/// Returns the number of element the bufer on the gpu can hold.
-</span><span class='attribute'>#[<span class='ident'>inline</span>]</span>
+<span class='doccomment'>/// Updates a buffer to the gpu.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Returns the number of element the bufer on the gpu can hold.</span>
+<span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>update_buffer</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>GLPrimitive</span><span class='op'>&gt;</span>(<span class='ident'>buf</span>:                 <span class='kw-2'>&amp;</span>[<span class='ident'>T</span>],
                                      <span class='ident'>gpu_buf_len</span>:         <span class='ident'>uint</span>,
                                      <span class='ident'>gpu_buf_id</span>:          <span class='ident'>GLuint</span>,
@@ -693,9 +692,9 @@
                 <dd>Show this help dialog</dd>
                 <dt>S</dt>
                 <dd>Focus the search field</dd>
-                <dt>&uarr;</dt>
+                <dt>&larrb;</dt>
                 <dd>Move up in search results</dd>
-                <dt>&darr;</dt>
+                <dt>&rarrb;</dt>
                 <dd>Move down in search results</dd>
                 <dt>&#9166;</dt>
                 <dd>Go to active search result</dd>

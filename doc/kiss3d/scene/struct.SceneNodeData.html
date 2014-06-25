@@ -23,8 +23,7 @@
 
     <section class="sidebar">
         
-
-        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>scene</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.Object.html'>Object</a><br/><a class='struct ' href='struct.ObjectData.html'>ObjectData</a><br/><a class='struct ' href='struct.SceneNode.html'>SceneNode</a><br/><a class='struct current' href='struct.SceneNodeData.html'>SceneNodeData</a><br/></div>
+        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>scene</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.Object.html'>Object</a><a class='struct ' href='struct.ObjectData.html'>ObjectData</a><a class='struct ' href='struct.SceneNode.html'>SceneNode</a><a class='struct current' href='struct.SceneNodeData.html'>SceneNodeData</a></div>
     </section>
 
     <nav class="sub">
@@ -32,14 +31,14 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Search documentation..."
+                       placeholder="Click or press 'S' to search, '?' for more options..."
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>scene</a>::<a class='struct' href=''>SceneNodeData</a><a class='source' id='src-4799' href='../../src/kiss3d/src/scene/scene_node.rs.html#16-26'>[src]</a></h1>
+<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>scene</a>::<a class='struct' href=''>SceneNodeData</a><a class='source' id='src-5292' href='../../src/kiss3d/src/scene/scene_node.rs.html#16-26'>[src]</a></h1>
 <pre class='rust struct'>pub struct SceneNodeData {
     // some fields omitted
 }</pre><div class='docblock'><p>The datas contained by a <code>SceneNode</code>.</p>
@@ -65,7 +64,7 @@
 <h1 id="failure-1" class='section-header'><a
                            href="#failure-1">Failure</a></h1>
 <p>Fails of this node does not contains an object.</p>
-</div><h4 id='method.set_material' class='method'><code>fn <a href='#method.set_material' class='fnname'>set_material</a>(&amp;mut self, material: <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='http://doc.rust-lang.org/alloc/owned/struct.Box.html' title='alloc::owned::Box'>Box</a>&lt;<a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a>:'static&gt;&gt;&gt;)</code></h4>
+</div><h4 id='method.set_material' class='method'><code>fn <a href='#method.set_material' class='fnname'>set_material</a>(&amp;mut self, material: <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='http://doc.rust-lang.org/alloc/owned/struct.Box.html' title='alloc::owned::Box'>Box</a>&lt;<a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> + 'static&gt;&gt;&gt;)</code></h4>
 <div class='docblock'><p>Sets the material of the objects contained by this node and its children.</p>
 </div><h4 id='method.set_material_with_name' class='method'><code>fn <a href='#method.set_material_with_name' class='fnname'>set_material_with_name</a>(&amp;mut self, name: &amp;<a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a>)</code></h4>
 <div class='docblock'><p>Sets the material of the objects contained by this node and its children.</p>
@@ -206,9 +205,9 @@ invalidated.</p>
                 <dd>Show this help dialog</dd>
                 <dt>S</dt>
                 <dd>Focus the search field</dd>
-                <dt>&uarr;</dt>
+                <dt>&larrb;</dt>
                 <dd>Move up in search results</dd>
-                <dt>&darr;</dt>
+                <dt>&rarrb;</dt>
                 <dd>Move down in search results</dd>
                 <dt>&#9166;</dt>
                 <dd>Go to active search result</dd>
