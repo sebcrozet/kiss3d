@@ -42,28 +42,27 @@
 <span class="k">extern</span> <span class="n">crate</span> <span class="n">kiss3d</span><span class="p">;</span>
 <span class="k">extern</span> <span class="n">crate</span> <span class="n">nalgebra</span><span class="p">;</span>
 
-<span class="k">use</span> <span class="n">nalgebra</span><span class="o">::</span><span class="n">na</span><span class="o">::</span><span class="n">Vec3</span><span class="p">;</span>
-<span class="k">use</span> <span class="n">kiss3d</span><span class="o">::</span><span class="n">window</span><span class="o">::</span><span class="n">Window</span><span class="p">;</span>
-<span class="k">use</span> <span class="n">kiss3d</span><span class="o">::</span><span class="n">light</span><span class="p">;</span>
+<span class="kn">use</span> <span class="n">nalgebra</span><span class="o">::</span><span class="n">na</span><span class="o">::</span><span class="n">Vec3</span><span class="p">;</span>
+<span class="kn">use</span> <span class="n">kiss3d</span><span class="o">::</span><span class="n">window</span><span class="o">::</span><span class="n">Window</span><span class="p">;</span>
+<span class="kn">use</span> <span class="n">kiss3d</span><span class="o">::</span><span class="n">light</span><span class="p">;</span>
 
 <span class="cp">#[start]</span>
-<span class="k">fn</span> <span class="n">start</span><span class="p">(</span><span class="n">argc</span><span class="o">:</span> <span class="k">int</span><span class="p">,</span> <span class="n">argv</span><span class="o">:</span> <span class="o">**</span><span class="k">u8</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">int</span> <span class="p">{</span>
+<span class="k">fn</span> <span class="n">start</span><span class="p">(</span><span class="n">argc</span><span class="o">:</span> <span class="kt">int</span><span class="p">,</span> <span class="n">argv</span><span class="o">:</span> <span class="o">**</span><span class="kt">u8</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">int</span> <span class="p">{</span>
     <span class="n">native</span><span class="o">::</span><span class="n">start</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">main</span><span class="p">)</span>
 <span class="p">}</span>
 
 <span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">Window</span><span class="o">::</span><span class="n">spawn</span><span class="p">(</span><span class="s">"Kiss3d: cube"</span><span class="p">,</span> <span class="o">|</span><span class="n">window</span><span class="o">|</span> <span class="p">{</span>
-        <span class="k">let</span> <span class="k">mut</span> <span class="n">c</span> <span class="o">=</span> <span class="n">window</span><span class="p">.</span><span class="n">add_cube</span><span class="p">(</span><span class="m">1.0</span><span class="p">,</span> <span class="m">1.0</span><span class="p">,</span> <span class="m">1.0</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="k">mut</span> <span class="n">window</span> <span class="o">=</span> <span class="n">Window</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="s">"Kiss3d: cube"</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="k">mut</span> <span class="n">c</span>      <span class="o">=</span> <span class="n">window</span><span class="p">.</span><span class="n">add_cube</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
 
-        <span class="n">c</span><span class="p">.</span><span class="n">set_color</span><span class="p">(</span><span class="m">1.0</span><span class="p">,</span> <span class="m">0.0</span><span class="p">,</span> <span class="m">0.0</span><span class="p">);</span>
+    <span class="n">c</span><span class="p">.</span><span class="n">set_color</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">);</span>
 
-        <span class="n">window</span><span class="p">.</span><span class="n">set_light</span><span class="p">(</span><span class="n">light</span><span class="o">::</span><span class="n">StickToCamera</span><span class="p">);</span>
+    <span class="n">window</span><span class="p">.</span><span class="n">set_light</span><span class="p">(</span><span class="n">light</span><span class="o">::</span><span class="n">StickToCamera</span><span class="p">);</span>
 
-        <span class="n">window</span><span class="p">.</span><span class="n">render_loop</span><span class="p">(</span><span class="o">|</span><span class="n">_</span><span class="o">|</span> <span class="p">{</span>
-            <span class="n">c</span><span class="p">.</span><span class="n">prepend_to_local_rotation</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Vec3</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="m">0.0</span><span class="k">f32</span><span class="p">,</span> <span class="m">0.014</span><span class="p">,</span> <span class="m">0.0</span><span class="p">))</span>
-        <span class="p">})</span>
-    <span class="p">})</span>
-<span class="p">}</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="n">window</span><span class="p">.</span><span class="n">iter</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">c</span><span class="p">.</span><span class="n">prepend_to_local_rotation</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Vec3</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mf">0.0</span><span class="k">f32</span><span class="p">,</span> <span class="mf">0.014</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span> 
 </pre></div>
 
 <p>For more, check out the <a href="doc/kiss3d/">online documentation</a>.</p>
