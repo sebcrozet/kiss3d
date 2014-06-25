@@ -7,7 +7,7 @@ extern crate nalgebra;
 use nalgebra::na::Vec3;
 use nalgebra::na;
 use kiss3d::window::Window;
-use kiss3d::camera::{Camera, ArcBall, FirstPerson};
+use kiss3d::camera::{ArcBall, FirstPerson};
 use kiss3d::light;
 
 #[start]
@@ -17,41 +17,44 @@ fn start(argc: int, argv: **u8) -> int {
 
 fn main()
 {
-    Window::spawn("Kiss3d: camera", |window| {
-        window.set_light(light::StickToCamera);
+    let eye              = Vec3::new(10.0f32, 10.0, 10.0);
+    let at               = na::zero();
+    let mut first_person = FirstPerson::new(eye, at);
+    let mut arc_ball     = ArcBall::new(eye, at);
+    let mut use_arc_ball = true;
 
-        // Replace the default arc-ball camera so that we can control it
-        let eye              = Vec3::new(10.0f32, 10.0, 10.0);
-        let at               = na::zero();
-        let mut arc_ball     = ArcBall::new(eye, at);
-        let mut first_person = FirstPerson::new(eye, at);
+    let mut window = Window::new("Kiss3d: camera");
+    window.set_light(light::StickToCamera);
 
-        window.set_camera(&mut arc_ball as &mut Camera);
+    for mut frame in window.iter() {
+        // rotate the arc-ball camera.
+        let curr_yaw = arc_ball.yaw();
+        arc_ball.set_yaw(curr_yaw + 0.05);
 
-        window.render_loop(|w| {
-            w.poll_events(|w, event| {
-                match *event {
-                    glfw::KeyEvent(key, _, glfw::Release, _) => {
-                        if key == glfw::Key1 {
-                            w.set_camera(&mut arc_ball as &mut Camera)
-                        }
-                        else if key == glfw::Key2 {
-                            w.set_camera(&mut first_person as &mut Camera)
-                        }
+        // update the current camera.
+        for event in frame.events().iter() {
+            match event.value {
+                glfw::KeyEvent(key, _, glfw::Release, _) => {
+                    if key == glfw::Key1 {
+                        use_arc_ball = true
                     }
-                    _ => { }
+                    else if key == glfw::Key2 {
+                        use_arc_ball = false
+                    }
                 }
-                true
-            });
+                _ => { }
+            }
+        }
 
-            w.draw_line(&na::zero(), &Vec3::x(), &Vec3::x());
-            w.draw_line(&na::zero(), &Vec3::y(), &Vec3::y());
-            w.draw_line(&na::zero(), &Vec3::z(), &Vec3::z());
+        if use_arc_ball {
+            frame.set_camera(&mut arc_ball)
+        }
+        else {
+            frame.set_camera(&mut first_person)
+        }
 
-            let curr_yaw = arc_ball.yaw();
-
-            // rotate the arc-ball camera
-            arc_ball.set_yaw(curr_yaw + 0.05);
-        });
-    })
+        frame.draw_line(&na::zero(), &Vec3::x(), &Vec3::x());
+        frame.draw_line(&na::zero(), &Vec3::y(), &Vec3::y());
+        frame.draw_line(&na::zero(), &Vec3::z(), &Vec3::z());
+    }
 }

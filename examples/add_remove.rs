@@ -11,22 +11,21 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: add_remove", |window| {
-        let mut c     = window.add_cube(1.0, 1.0, 1.0);
-        let mut added = true;
+    let mut window = Window::new("Kiss3d: add_remove");
+    let mut c      = window.add_cube(1.0, 1.0, 1.0);
+    let mut added  = true;
 
-        window.set_light(light::StickToCamera);
+    window.set_light(light::StickToCamera);
 
-        window.render_loop(|w| {
-            if added {
-                w.remove(&mut c);
-            }
-            else {
-                c = w.add_cube(1.0, 1.0, 1.0);
-                c.set_color(1.0, 0.0, 0.0);
-            }
+    for mut frame in window.iter() {
+        if added {
+            frame.window().remove(&mut c);
+        }
+        else {
+            c = frame.window().add_cube(1.0, 1.0, 1.0);
+            c.set_color(1.0, 0.0, 0.0);
+        }
 
-            added = !added;
-        });
-    })
+        added = !added;
+    }
 }

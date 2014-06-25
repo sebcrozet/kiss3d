@@ -13,16 +13,16 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: text", |window| {
-        let bigfont   = Font::new(&Path::new("media/font/Inconsolata.otf"), 120);
-        let smallfont = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
+    let mut window = Window::new("Kiss3d: text");
 
-        window.render_loop(|w| {
-            w.draw_text("Hello birds!", &na::zero(), &bigfont, &Vec3::new(0.0, 1.0, 1.0));
+    let bigfont   = Font::new(&Path::new("media/font/Inconsolata.otf"), 120);
+    let smallfont = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
 
-            let ascii = " !\"#$%&'`()*+,-_./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^abcdefghijklmnopqrstuvwxyz{|}~";
+    for mut frame in window.iter() {
+        frame.draw_text("Hello birds!", &na::zero(), &bigfont, &Vec3::new(0.0, 1.0, 1.0));
 
-            w.draw_text(ascii, &Vec2::new(0.0, 120.0), &smallfont, &Vec3::new(1.0, 1.0, 0.0))
-        })
-    })
+        let ascii = " !\"#$%&'`()*+,-_./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^abcdefghijklmnopqrstuvwxyz{|}~";
+
+        frame.draw_text(ascii, &Vec2::new(0.0, 120.0), &smallfont, &Vec3::new(1.0, 1.0, 0.0))
+    }
 }

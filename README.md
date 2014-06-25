@@ -45,17 +45,16 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: cube", |window| {
-        let mut c = window.add_cube(1.0, 1.0, 1.0);
+    let mut window = Window::new("Kiss3d: cube");
+    let mut c      = window.add_cube(1.0, 1.0, 1.0);
 
-        c.set_color(1.0, 0.0, 0.0);
+    c.set_color(1.0, 0.0, 0.0);
 
-        window.set_light(light::StickToCamera);
+    window.set_light(light::StickToCamera);
 
-        window.render_loop(|_| {
-            c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
-        })
-    })
+    for _ in window.iter() {
+        c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
+    }
 }
 ```
 
@@ -67,7 +66,7 @@ Some controls are handled by default by the engine (they can be overridden by th
 * `enter`: look at the origin (0.0, 0.0, 0.0).
 
 ## Compilation
-You will need the last rust compiler from the `master` branch.
+You will need the last nightly build of the [rust compiler](http://www.rust-lang.org).
 If you encounter problems, make sure you have the last compiler version before creating an issue.
 
 The simplest way to build **kiss3d** and all its dependencies is to do a

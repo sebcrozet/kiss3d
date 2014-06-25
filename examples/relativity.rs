@@ -27,75 +27,77 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: relativity", |window| {
-        let eye          = Vec3::new(0.0f32, -399.0, 400.0);
-        let at           = Vec3::new(0.0f32, -399.0, 0.0);
-        let fov          = 45.0f32.to_radians();
-        let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
-        let font         = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
-        let context      = Arc::new(RWLock::new(Context::new(1000.0, na::zero(), eye)));
-        let material     = Rc::new(RefCell::new(box RelativisticMaterial::new(context.clone()) as Box<Material + 'static>));
+    let mut window = Window::new("Kiss3d: relativity");
 
-        window.set_camera(&mut observer as &mut Camera);
-        window.set_framerate_limit(Some(60));
+    let eye          = Vec3::new(0.0f32, -399.0, 400.0);
+    let at           = Vec3::new(0.0f32, -399.0, 0.0);
+    let fov          = 45.0f32.to_radians();
+    let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
+    let font         = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
+    let context      = Arc::new(RWLock::new(Context::new(1000.0, na::zero(), eye)));
+    let material     = Rc::new(RefCell::new(box RelativisticMaterial::new(context.clone()) as Box<Material + 'static>));
 
-        let mut c = window.add_quad(800.0, 800.0, 40, 40);
-        c.set_material(material.clone());
-        c.set_texture_from_file(&Path::new("media/kitten.png"), "kitten");
+    window.set_framerate_limit(Some(60));
 
-        let mut c = window.add_quad(800.0, 800.0, 40, 40);
-        c.append_rotation(&(Vec3::x() * 90.0f32.to_radians()));
-        c.append_translation(&(Vec3::new(0.0, -400.0, 400.0)));
-        c.set_material(material.clone());
-        c.set_texture_with_name("kitten");
+    let mut c = window.add_quad(800.0, 800.0, 40, 40);
+    c.set_material(material.clone());
+    c.set_texture_from_file(&Path::new("media/kitten.png"), "kitten");
 
-        let mut c = window.add_quad(800.0, 800.0, 40, 40);
-        c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
-        c.append_translation(&(Vec3::new(400.0, 0.0, 400.0)));
-        c.set_material(material.clone());
-        c.set_texture_with_name("kitten");
+    let mut c = window.add_quad(800.0, 800.0, 40, 40);
+    c.append_rotation(&(Vec3::x() * 90.0f32.to_radians()));
+    c.append_translation(&(Vec3::new(0.0, -400.0, 400.0)));
+    c.set_material(material.clone());
+    c.set_texture_with_name("kitten");
 
-        let mut c = window.add_quad(800.0, 800.0, 40, 40);
-        c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
-        c.append_translation(&(Vec3::new(-400.0, 0.0, 400.0)));
-        c.set_material(material.clone());
-        c.set_texture_with_name("kitten");
+    let mut c = window.add_quad(800.0, 800.0, 40, 40);
+    c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
+    c.append_translation(&(Vec3::new(400.0, 0.0, 400.0)));
+    c.set_material(material.clone());
+    c.set_texture_with_name("kitten");
 
-        window.set_light(StickToCamera);
+    let mut c = window.add_quad(800.0, 800.0, 40, 40);
+    c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
+    c.append_translation(&(Vec3::new(-400.0, 0.0, 400.0)));
+    c.set_material(material.clone());
+    c.set_texture_with_name("kitten");
 
-        /*
-         * Render
-         */
-        window.render_loop(|w| {
-            let mut c = context.write();
+    window.set_light(StickToCamera);
 
-            w.poll_events(|_, event| {
-                match *event {
-                    glfw::KeyEvent(code, _, glfw::Release, _) => {
-                        if code == glfw::Key1 {
-                            c.speed_of_light = c.speed_of_light + 100.0;
-                        }
-                        else if code == glfw::Key2 {
-                            c.speed_of_light = (c.speed_of_light - 100.0).max(0.1);
-                        }
-                    },
-                    _ => { }
-                }
+    /*
+     * Render
+     */
+    for mut frame in window.iter() {
+        let mut c = context.write();
 
-                true
-            });
+        for event in frame.events().iter() {
+            match event.value {
+                glfw::KeyEvent(code, _, glfw::Release, _) => {
+                    if code == glfw::Key1 {
+                        c.speed_of_light = c.speed_of_light + 100.0;
+                    }
+                    else if code == glfw::Key2 {
+                        c.speed_of_light = (c.speed_of_light - 100.0).max(0.1);
+                    }
+                },
+                _ => { }
+            }
+        }
 
-            let obs_vel = observer.velocity;
-            let sop = na::norm(&obs_vel);
+        let obs_vel = observer.velocity;
+        let sop = na::norm(&obs_vel);
 
-            w.draw_text(format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop).as_slice(),
-            &na::zero(), &font, &Vec3::new(1.0, 1.0, 1.0));
+        frame.draw_text(
+            format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop).as_slice(),
+            &na::zero(),
+            &font,
+            &Vec3::new(1.0, 1.0, 1.0));
 
-            observer.max_vel  = c.speed_of_light * 0.85;
-            c.speed_of_player = obs_vel;
-            c.position        = observer.eye();
-        })
-    })
+        observer.max_vel  = c.speed_of_light * 0.85;
+        c.speed_of_player = obs_vel;
+        c.position        = observer.eye();
+
+        frame.set_camera(&mut observer as &mut Camera);
+    }
 }
 
 struct InertialCamera {
@@ -313,6 +315,13 @@ impl Material for RelativisticMaterial {
         self.color.upload(data.color());
 
         mesh.bind(&mut self.pos, &mut self.normal, &mut self.tex_coord);
+
+        if data.backface_culling_enabled() {
+            gl::Enable(gl::CULL_FACE);
+        }
+        else {
+            gl::Disable(gl::CULL_FACE);
+        }
 
         unsafe {
             gl::ActiveTexture(gl::TEXTURE0);

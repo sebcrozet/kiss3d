@@ -12,15 +12,14 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: cube", |window| {
-        let mut c = window.add_cube(1.0, 1.0, 1.0);
+    let mut window = Window::new("Kiss3d: cube");
+    let mut c      = window.add_cube(1.0, 1.0, 1.0);
 
-        c.set_color(1.0, 0.0, 0.0);
+    c.set_color(1.0, 0.0, 0.0);
 
-        window.set_light(light::StickToCamera);
+    window.set_light(light::StickToCamera);
 
-        window.render_loop(|_| {
-            c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
-        })
-    })
+    for _ in window.iter() {
+        c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
+    }
 }

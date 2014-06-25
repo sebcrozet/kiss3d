@@ -13,21 +13,21 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: recording", |window| {
-        let mut c = window.add_cone(0.5, 1.0);
+    let mut window = Window::new("Kiss3d: recording");
 
-        c.set_color(1.0, 0.0, 0.0);
+    let mut c = window.add_cone(0.5, 1.0);
 
-        window.set_light(light::StickToCamera);
+    c.set_color(1.0, 0.0, 0.0);
 
-        let mut recorder = Recorder::new(Path::new("test.mpg"),
-                                         window.width()  as uint,
-                                         window.height() as uint);
+    window.set_light(light::StickToCamera);
 
-        window.render_loop(|window| {
-            c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
+    let mut recorder = Recorder::new(Path::new("test.mpg"),
+    window.width()  as uint,
+    window.height() as uint);
 
-            recorder.snap(window);
-        })
-    })
+    for mut frame in window.iter() {
+        c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
+
+        recorder.snap(frame.window());
+    }
 }

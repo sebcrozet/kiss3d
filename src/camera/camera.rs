@@ -1,5 +1,6 @@
 use glfw;
-use nalgebra::na::{Vec3, Mat4, Iso3};
+use nalgebra::na::{Vec2, Vec3, Vec4, Mat4, Iso3};
+use nalgebra::na;
 use resource::ShaderUniform;
 
 /// Trait every camera must implement.
@@ -41,11 +42,48 @@ pub trait Camera {
     }
 
     /// The number of passes required by this camera.
+    #[inline]
     fn num_passes(&self) -> uint { 1u }
 
     /// Indicates that a pass will begin.
+    #[inline]
     fn start_pass(&self, _pass: uint, _window: &glfw::Window) { }
 
     /// Indicates that the scene has been rendered and the post-processing is being run.
+    #[inline]
     fn render_complete(&self, _window: &glfw::Window) { }
+
+    /// Converts a 3d point to 2d screen coordinates, assuming the screen has the size `size`.
+    fn project(&self, world_coord: &Vec3<f32>, size: &Vec2<f32>) -> Vec2<f32> {
+        let h_world_coord      = na::to_homogeneous(world_coord);
+        let h_normalized_coord = self.transformation() * h_world_coord;
+
+        let normalized_coord: Vec3<f32> = na::from_homogeneous(&h_normalized_coord);
+
+        Vec2::new(
+            (1.0 + normalized_coord.x) * size.x / 2.0,
+            (1.0 + normalized_coord.y) * size.y / 2.0)
+    }
+
+    /// Converts a point in 2d screen coordinates to a ray (a 3d position and a direction).
+    ///
+    /// The screen is assumed to have a size given by `size`.
+    fn unproject(&self, window_coord: &Vec2<f32>, size: &Vec2<f32>) -> (Vec3<f32>, Vec3<f32>) {
+        let normalized_coord = Vec2::new(
+            2.0 * window_coord.x  / size.x - 1.0,
+            2.0 * -window_coord.y / size.y + 1.0);
+
+        let normalized_begin = Vec4::new(normalized_coord.x, normalized_coord.y, -1.0, 1.0);
+        let normalized_end   = Vec4::new(normalized_coord.x, normalized_coord.y, 1.0, 1.0);
+
+        let cam = self.inv_transformation();
+
+        let h_unprojected_begin = cam * normalized_begin;
+        let h_unprojected_end   = cam * normalized_end;
+
+        let unprojected_begin: Vec3<f32> = na::from_homogeneous(&h_unprojected_begin);
+        let unprojected_end:   Vec3<f32> = na::from_homogeneous(&h_unprojected_end);
+
+        (unprojected_begin, na::normalize(&(unprojected_end - unprojected_begin)))
+    }
 }

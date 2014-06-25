@@ -9,9 +9,10 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: window", |window| {
-        window.set_background_color(0.0, 0.0, 0.3);
+    let mut window = Window::new("Kiss3d: window");
 
-        window.render_loop(|_| {})
-    })
+    window.set_background_color(0.0, 0.0, 0.3);
+
+    for _ in window.iter() {
+    }
 }

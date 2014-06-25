@@ -30,25 +30,30 @@ Most features are one-liners.
 As an example, having a red, rotating cube with the light attached to the camera is as simple as:
 
 ```rust
+extern crate native;
 extern crate kiss3d;
 extern crate nalgebra;
 
-use nalgebra::na::{Vec3, Rotation};
+use nalgebra::na::Vec3;
 use kiss3d::window::Window;
 use kiss3d::light;
 
+#[start]
+fn start(argc: int, argv: **u8) -> int {
+    native::start(argc, argv, main)
+}
+
 fn main() {
-    Window::spawn("Kiss3d: cube", proc(window) {
-        let mut c = window.add_cube(1.0, 1.0, 1.0);
+    let mut window = Window::new("Kiss3d: cube");
+    let mut c      = window.add_cube(1.0, 1.0, 1.0);
 
-        c.set_color(1.0, 0.0, 0.0);
+    c.set_color(1.0, 0.0, 0.0);
 
-        window.set_light(light::StickToCamera);
+    window.set_light(light::StickToCamera);
 
-        window.render_loop(|_| {
-            c.prepend_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
-        })
-    })
+    for _ in window.iter() {
+        c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
+    }
 }
 ```
 
@@ -60,7 +65,7 @@ Some controls are handled by default by the engine (they can be overridden by th
 * `enter`: look at the origin (0.0, 0.0, 0.0).
 
 ## Compilation
-You will need the last rust compiler from the `master` branch.
+You will need the last nightly build of the [rust compiler](http://www.rust-lang.org).
 If you encounter problems, make sure you have the last compiler version before creating an issue.
 
 The simplest way to build **Kiss3d** and all its dependencies is to do a
@@ -88,13 +93,14 @@ I’d love to see people improving this library for their own needs. However, ke
 #![deny(unnecessary_parens)]
 #![deny(non_uppercase_statics)]
 #![deny(unnecessary_qualification)]
-#![deny(missing_doc)]
+#![warn(missing_doc)] // FIXME: should be denied.
 #![deny(unused_result)]
 #![deny(unnecessary_typecast)]
-#![warn(visible_private_types)] // FIXME: should be denied
+#![warn(visible_private_types)] // FIXME: should be denied.
 #![feature(globs)]
 #![feature(macro_rules)]
 #![feature(managed_boxes)]
+#![feature(unsafe_destructor)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
 
 extern crate std;

@@ -16,8 +16,8 @@ pub enum RenderTarget {
     Offscreen(OffscreenBuffers)
 }
 
-// FIXME: pub ?
-struct OffscreenBuffers {
+/// OpenGL identifiers to an off-screen buffer.
+pub struct OffscreenBuffers {
     texture: GLuint,
     depth:   GLuint,
     ncpy:    NoCopy

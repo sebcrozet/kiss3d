@@ -21,16 +21,15 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: custom_material", |window| {
-        let mut c    = window.add_sphere(1.0);
-        let material = Rc::new(RefCell::new(box NormalMaterial::new() as Box<Material + 'static>));
+    let mut window = Window::new("Kiss3d: custom_material");
+    let mut c      = window.add_sphere(1.0);
+    let material   = Rc::new(RefCell::new(box NormalMaterial::new() as Box<Material + 'static>));
 
-        c.set_material(material);
+    c.set_material(material);
 
-        window.render_loop(|_| {
-            c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
-        })
-    })
+    for _ in window.iter() {
+        c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
+    }
 }
 
 // A material that draws normals

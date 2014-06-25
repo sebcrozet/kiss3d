@@ -13,25 +13,25 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: quad", |window| {
-        let mut c = window.add_quad(5.0, 4.0, 500, 400);
-        
-        c.set_color(random(), random(), random());
+    let mut window = Window::new("Kiss3d: quad");
 
-        let mut time = 0.016f32;
+    let mut c = window.add_quad(5.0, 4.0, 500, 400);
 
-        window.set_light(light::StickToCamera);
+    c.set_color(random(), random(), random());
 
-        window.render_loop(|_| {
-            c.modify_vertices(&mut |coords| {
-                for v in coords.mut_iter() {
-                    v.z = time.sin() * (((v.x + time) * 4.0).cos() +
-                          time.sin() * ((v.y + time) * 4.0 + time).cos()) / 2.0
-                }
-            });
-            c.recompute_normals();
+    let mut time = 0.016f32;
 
-            time = time + 0.016;
-        })
-    })
+    window.set_light(light::StickToCamera);
+
+    for _ in window.iter() {
+        c.modify_vertices(&mut |coords| {
+            for v in coords.mut_iter() {
+                v.z = time.sin() * (((v.x + time) * 4.0).cos() +
+                                    time.sin() * ((v.y + time) * 4.0 + time).cos()) / 2.0
+            }
+        });
+        c.recompute_normals();
+
+        time = time + 0.016;
+    }
 }

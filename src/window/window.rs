@@ -6,16 +6,15 @@
 use glfw;
 use glfw::Context;
 use std::io::timer::Timer;
-use std::num::Zero;
 use std::cell::RefCell;
 use std::rc::Rc;
 use libc;
 use time;
 use gl;
 use gl::types::*;
-use nalgebra::na::{Vec2, Vec3, Vec4};
-use nalgebra::na;
-use camera::{Camera, ArcBall};
+use nalgebra::na::{Vec2, Vec3};
+use ncollide::procedural::TriMesh;
+use camera::Camera;
 use scene::SceneNode;
 use line_renderer::LineRenderer;
 use point_renderer::PointRenderer;
@@ -23,7 +22,7 @@ use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, RenderTarget, Texture, TextureManager, Mesh, Material};
 use light::{Light, Absolute, StickToCamera};
 use text::{TextRenderer, Font};
-use ncollide::procedural::TriMesh;
+use window::RenderFrames;
 
 
 static DEFAULT_WIDTH:  u32 = 800u32;
@@ -33,25 +32,46 @@ static DEFAULT_HEIGHT: u32 = 600u32;
 ///
 /// This is the main interface with the 3d engine.
 pub struct Window<'a> {
-    // XXX: this is not on a RefCell since mutability is _not_ needed for the glfw window.
-    // glfw-rs is doing something very wrong here.
     events:                     Rc<Receiver<(f64, glfw::WindowEvent)>>,
     glfw:                       glfw::Glfw,
     window:                     glfw::Window,
     max_ms_per_frame:           Option<u64>,
     scene:                      SceneNode,
-    camera:                     &'a mut Camera,
     light_mode:                 Light, // FIXME: move that to the scene graph
     background:                 Vec3<GLfloat>,
     line_renderer:              LineRenderer,
     point_renderer:             PointRenderer,
     text_renderer:              TextRenderer,
     framebuffer_manager:        FramebufferManager,
-    post_processing:            Option<&'a mut PostProcessingEffect>,
-    post_process_render_target: RenderTarget
+    post_process_render_target: RenderTarget,
+    timer:                      Timer,
+    curr_time:                  u64
 }
 
 impl<'a> Window<'a> {
+    // FIXME: this doc is sooo unhelpful.
+    /// Gets an iterator to the rendering frames.
+    ///
+    /// Uses this to start your render loop. The `RenderFrames` iterator iters though the frames
+    /// that are drawn on the window.
+    #[inline]
+    pub fn iter<'b>(&'b mut self) -> RenderFrames<'b, 'a> {
+        let events = self.events.clone();
+
+        RenderFrames::new(events, self)
+    }
+
+    /// Gets an iterator to the rendering frames with the camera `camera`.
+    ///
+    /// Uses this to start your render loop. The `RenderFrames` iterator iters though the frames
+    /// that are drawn on the window.
+    #[inline]
+    pub fn iter_with_camera<'b>(&'b mut self, camera: Box<Camera>) -> RenderFrames<'b, 'a> {
+        let events = self.events.clone();
+
+        RenderFrames::new_with_camera(events, self, camera)
+    }
+
     /// Access the glfw context.
     #[inline]
     pub fn context<'r>(&'r self) -> &'r glfw::Glfw {
@@ -62,12 +82,6 @@ impl<'a> Window<'a> {
     #[inline]
     pub fn glfw_window<'r>(&'r self) -> &'r glfw::Window {
         &'r self.window
-    }
-
-    /// Sets the current processing effect.
-    #[inline]
-    pub fn set_post_processing_effect(&mut self, effect: Option<&'a mut PostProcessingEffect>) {
-        self.post_processing = effect;
     }
 
     /// The window width.
@@ -86,19 +100,12 @@ impl<'a> Window<'a> {
         h as f32
     }
 
-    /// The current camera.
+    /// The size of the window.
     #[inline]
-    pub fn camera<'b>(&'b self) -> &'b &'a mut Camera {
-        &'b self.camera
-    }
-
-    /// The current camera.
-    #[inline]
-    pub fn set_camera(&mut self, camera: &'a mut Camera) {
+    pub fn size(&self) -> Vec2<f32> {
         let (w, h) = self.window.get_size();
 
-        self.camera = camera;
-        self.camera.handle_event(&self.window, &glfw::FramebufferSizeEvent(w, h));
+        Vec2::new(w as f32, h as f32)
     }
 
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
@@ -125,14 +132,6 @@ impl<'a> Window<'a> {
         self.window.show()
     }
 
-    // XXX: remove this completely?
-    // /// Switch on or off wireframe rendering mode. When set to `true`, everything in the scene will
-    // /// be drawn using wireframes. Wireframe rendering mode cannot be enabled on a per-object basis.
-    // #[inline]
-    // pub fn set_wireframe_mode(&mut self, mode: bool) {
-    //     self.wireframe_mode = mode;
-    // }
-
     /// Sets the background color.
     #[inline]
     pub fn set_background_color(&mut self, r: f32, g: GLfloat, b: f32) {
@@ -141,18 +140,21 @@ impl<'a> Window<'a> {
         self.background.z = b;
     }
 
+    // XXX: remove this (moved to the render_frame).
     /// Adds a line to be drawn during the next frame.
     #[inline]
     pub fn draw_line(&mut self, a: &Vec3<f32>, b: &Vec3<f32>, color: &Vec3<f32>) {
         self.line_renderer.draw_line(a.clone(), b.clone(), color.clone());
     }
 
+    // XXX: remove this (moved to the render_frame).
     /// Adds a point to be drawn during the next frame.
     #[inline]
     pub fn draw_point(&mut self, pt: &Vec3<f32>, color: &Vec3<f32>) {
         self.point_renderer.draw_point(pt.clone(), color.clone());
     }
 
+    // XXX: remove this (moved to the render_frame).
     /// Adds a string to be drawn during the next frame.
     #[inline]
     pub fn draw_text(&mut self, text: &str, pos: &Vec2<f32>, font: &Rc<Font>, color: &Vec3<f32>) {
@@ -274,96 +276,29 @@ impl<'a> Window<'a> {
         TextureManager::get_global_manager(|tm| tm.add(path, name))
     }
 
-    /// Converts a 3d point to 2d screen coordinates.
-    pub fn project(&self, world_coord: &Vec3<f32>) -> Vec2<f32> {
-        let h_world_coord = na::to_homogeneous(world_coord);
-        let h_normalized_coord = self.camera.transformation() * h_world_coord;
-
-        let normalized_coord: Vec3<f32> = na::from_homogeneous(&h_normalized_coord);
-
-        let (w, h) = self.window.get_size();
-
-        Vec2::new(
-            (1.0 + normalized_coord.x) * (w as f32) / 2.0,
-            (1.0 + normalized_coord.y) * (h as f32) / 2.0)
-    }
-
-    /// Converts a point in 2d screen coordinates to a ray (a 3d position and a direction).
-    pub fn unproject(&self, window_coord: &Vec2<f32>) -> (Vec3<f32>, Vec3<f32>) {
-        let (w, h) = self.window.get_size();
-
-        let normalized_coord = Vec2::new(
-            2.0 * window_coord.x  / (w as f32) - 1.0,
-            2.0 * -window_coord.y / (h as f32) + 1.0);
-
-        let normalized_begin = Vec4::new(normalized_coord.x, normalized_coord.y, -1.0, 1.0);
-        let normalized_end   = Vec4::new(normalized_coord.x, normalized_coord.y, 1.0, 1.0);
-
-        let cam = self.camera.inv_transformation();
-
-        let h_unprojected_begin = cam * normalized_begin;
-        let h_unprojected_end   = cam * normalized_end;
-
-        let unprojected_begin: Vec3<f32> = na::from_homogeneous(&h_unprojected_begin);
-        let unprojected_end: Vec3<f32>   = na::from_homogeneous(&h_unprojected_end);
-
-        (unprojected_begin, na::normalize(&(unprojected_end - unprojected_begin)))
-    }
-
-    /* XXX
-    /// The list of objects on the scene.
-    pub fn objects<'r>(&'r self) -> &'r [Object] {
-        self.objects.as_slice()
-    }
-
-    /// The list of objects on the scene.
-    pub fn objects_mut<'r>(&'r mut self) -> &'r mut [Object] {
-        self.objects.as_mut_slice()
-    }
-    */
-
-    /// Poll events and pass them to a user-defined function. If the function returns `true`, the
-    /// default engine event handler (camera, framebuffer size, etc.) is executed, if it returns
-    /// `false`, the default engine event handler is not executed. Return `false` if you want to
-    /// override the default engine behaviour.
-    #[inline]
-    pub fn poll_events(&mut self, event_handler: |&mut Window, &glfw::WindowEvent| -> bool) {
-        // redispatch them
-        let events = self.events.clone(); // FIXME: this is very ugly
-        for event in glfw::flush_messages(events.deref()) {
-            if event_handler(self, event.ref1()) {
-                match *event.ref1() {
-                    glfw::KeyEvent(glfw::KeyEscape, _, glfw::Release, _) => {
-                        self.close();
-                        continue
-                    },
-                    glfw::FramebufferSizeEvent(w, h) => {
-                        self.update_viewport(w as f32, h as f32);
-                    },
-                    _ => { }
-                }
-
-                self.camera.handle_event(&self.window, event.ref1())
-            }
+    /// Handles an event with the given camera.
+    ///
+    /// This will handle the `FramebufferSizeEvent` to update the viewport size, and the `Escape`
+    /// key release event to close the window.
+    ///
+    /// Returns `true` if an event has been handled.
+    pub fn handle_event(&mut self, event: &glfw::WindowEvent) -> bool {
+        match *event {
+            glfw::KeyEvent(glfw::KeyEscape, _, glfw::Release, _) => {
+                self.close();
+                true
+            },
+            glfw::FramebufferSizeEvent(w, h) => {
+                self.update_viewport(w as f32, h as f32);
+                true
+            },
+            _ => false
         }
     }
 
-    /// Starts an infinite loop polling events, calling an user-defined callback, and drawing the
-    /// scene.
-    pub fn render_loop(&mut self, callback: |&mut Window| -> ()) {
-        let mut timer = Timer::new().unwrap();
-        let mut curr  = time::precise_time_ns();
-
-        while !self.window.should_close() {
-            // collect events
-            self.glfw.poll_events();
-
-            callback(self);
-
-            self.poll_events(|_, _| true);
-
-            self.draw(&mut curr, &mut timer)
-        }
+    /// Returns whether this window is closed or not.
+    pub fn is_closed(&self) -> bool {
+        false // FIXME
     }
 
     /// Sets the light mode. Only one light is supported.
@@ -371,39 +306,34 @@ impl<'a> Window<'a> {
         self.light_mode = pos;
     }
 
-    // FIXME /// The camera used to render the scene.
-    // FIXME pub fn camera(&self) -> &Camera {
-    // FIXME     self.camera.clone()
-    // FIXME }
-
     /// Opens a window, hide it then calls a user-defined procedure.
     ///
     /// # Arguments
     /// * `title` - the window title
-    /// * `callback` - a callback called once the window has been created
-    pub fn spawn_hidden(title: &str, callback: |&mut Window| -> ()) {
-        Window::do_spawn(title, true, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
+    pub fn new_hidden(title: &str) -> Window {
+        Window::do_new(title, true, DEFAULT_WIDTH, DEFAULT_HEIGHT)
     }
 
     /// Opens a window then calls a user-defined procedure.
     ///
     /// # Arguments
     /// * `title` - the window title
-    /// * `callback` - a callback called once the window has been created
-    pub fn spawn(title: &str, callback: |&mut Window| -> ()) {
-        Window::do_spawn(title, false, DEFAULT_WIDTH, DEFAULT_HEIGHT, callback)
+    pub fn new(title: &str) -> Window {
+        Window::do_new(title, false, DEFAULT_WIDTH, DEFAULT_HEIGHT)
     }
 
     /// Opens a window with a custom size then calls a user-defined procedure.
     ///
     /// # Arguments
-    /// * `title` - the window title
-    /// * `callback` - a callback called once the window has been created
-    pub fn spawn_size(title: &str, width: u32, height: u32, callback: |&mut Window| -> ()) {
-        Window::do_spawn(title, false, width, height, callback)
+    /// * `title` - the window title.
+    /// * `width` - the window width.
+    /// * `height` - the window height.
+    pub fn new_with_size(title: &str, width: u32, height: u32) -> Window {
+        Window::do_new(title, false, width, height)
     }
 
-    fn do_spawn(title: &str, hide: bool, width: u32, height: u32, callback: |&mut Window| -> ()) {
+    // FIXME: make this pub?
+    fn do_new(title: &str, hide: bool, width: u32, height: u32) -> Window {
         // FIXME: glfw::set_error_callback(~ErrorCallback);
 
         let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
@@ -415,23 +345,21 @@ impl<'a> Window<'a> {
         verify!(gl::load_with(|name| glfw.get_proc_address(name)));
         init_gl();
 
-        let mut camera   = ArcBall::new(-Vec3::z(), Zero::zero());
-
         let mut usr_window = Window {
             max_ms_per_frame:      None,
             glfw:                  glfw,
             window:                window,
             events:                Rc::new(events),
             scene:                 SceneNode::new_empty(),
-            camera:                &mut camera as &mut Camera,
             light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
             background:            Vec3::new(0.0, 0.0, 0.0),
             line_renderer:         LineRenderer::new(),
             point_renderer:        PointRenderer::new(),
             text_renderer:         TextRenderer::new(),
-            post_processing:       None,
             post_process_render_target: FramebufferManager::new_render_target(width as uint, height as uint),
             framebuffer_manager:   FramebufferManager::new(),
+            timer:                 Timer::new().unwrap(),
+            curr_time:             time::precise_time_ns()
         };
 
         // setup callbacks
@@ -441,11 +369,6 @@ impl<'a> Window<'a> {
         usr_window.window.set_cursor_pos_polling(true);
         usr_window.window.set_scroll_polling(true);
 
-        let (w, h) = usr_window.window.get_size();
-        usr_window.camera.handle_event(
-            &usr_window.window,
-            &glfw::FramebufferSizeEvent(w, h));
-
         if hide {
             usr_window.window.hide()
         }
@@ -454,7 +377,7 @@ impl<'a> Window<'a> {
         let light = usr_window.light_mode.clone();
         usr_window.set_light(light);
 
-        callback(&mut usr_window);
+        usr_window
     }
 
     /// Reference to the scene associated with this window.
@@ -497,15 +420,16 @@ impl<'a> Window<'a> {
         }
     }
 
-    fn draw(&mut self, curr: &mut u64, timer: &mut Timer) {
-        self.camera.update(&self.window);
+    /// Draws the scene with the given camera and post-processing effect.
+    pub fn draw(&mut self, camera: &mut Camera, post_processing: &mut Option<&mut PostProcessingEffect>) {
+        camera.update(&self.window);
 
         match self.light_mode {
             StickToCamera => self.set_light(StickToCamera),
             _             => { }
         }
 
-        if self.post_processing.is_some() {
+        if post_processing.is_some() {
             // if we need post-processing, render to our own frame buffer
             self.framebuffer_manager.select(&self.post_process_render_target);
         }
@@ -513,15 +437,15 @@ impl<'a> Window<'a> {
             self.framebuffer_manager.select(&FramebufferManager::screen());
         }
 
-        for pass in range(0u, self.camera.num_passes()) {
-            self.camera.start_pass(pass, &self.window);
-            self.render_scene(pass);
+        for pass in range(0u, camera.num_passes()) {
+            camera.start_pass(pass, &self.window);
+            self.render_scene(camera, pass);
         }
-        self.camera.render_complete(&self.window);
+        camera.render_complete(&self.window);
 
         let w = self.width();
         let h = self.height();
-        let (znear, zfar) = self.camera.clip_planes();
+        let (znear, zfar) = camera.clip_planes();
 
         // FIXME: remove this completely?
         // swatch off the wireframe mode for post processing and text rendering.
@@ -529,7 +453,7 @@ impl<'a> Window<'a> {
         //     verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
         // }
 
-        match self.post_processing {
+        match *post_processing {
             Some(ref mut p) => {
                 // switch back to the screen framebuffer …
                 self.framebuffer_manager.select(&FramebufferManager::screen());
@@ -550,20 +474,20 @@ impl<'a> Window<'a> {
         match self.max_ms_per_frame {
             None     => { },
             Some(ms) => {
-                let elapsed = (time::precise_time_ns() - *curr) / 1000000;
+                let elapsed = (time::precise_time_ns() - self.curr_time) / 1000000;
                 if elapsed < ms {
-                    timer.sleep(ms - elapsed);
+                    self.timer.sleep(ms - elapsed);
                 }
             }
         }
 
-        *curr = time::precise_time_ns();
+        self.curr_time = time::precise_time_ns();
 
         // self.transparent_objects.clear();
         // self.opaque_objects.clear();
     }
 
-    fn render_scene(&mut self, pass: uint) {
+    fn render_scene(&mut self, camera: &mut Camera, pass: uint) {
         // Activate the default texture
         verify!(gl::ActiveTexture(gl::TEXTURE0));
         // Clear the screen to black
@@ -572,22 +496,14 @@ impl<'a> Window<'a> {
         verify!(gl::Clear(gl::DEPTH_BUFFER_BIT));
 
         if self.line_renderer.needs_rendering() {
-            self.line_renderer.render(pass, self.camera);
+            self.line_renderer.render(pass, camera);
         }
 
         if self.point_renderer.needs_rendering() {
-            self.point_renderer.render(pass, self.camera);
+            self.point_renderer.render(pass, camera);
         }
 
-        // XXX: remove this completely?
-        // if self.wireframe_mode {
-        //     verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE));
-        // }
-        // else {
-        //     verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
-        // }
-
-        self.scene.data_mut().render(pass, self.camera, &self.light_mode);
+        self.scene.data_mut().render(pass, camera, &self.light_mode);
     }
 
 

@@ -12,18 +12,17 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-    Window::spawn("Kiss3d: lines", |window| {
+    let mut window = Window::new("Kiss3d: lines");
 
-        window.set_light(light::StickToCamera);
+    window.set_light(light::StickToCamera);
 
-        window.render_loop(|w| {
-            let a = Vec3::new(-0.1, -0.1, 0.0);
-            let b = Vec3::new(0.0, 0.1, 0.0);
-            let c = Vec3::new(0.1, -0.1, 0.0);
+    for mut frame in window.iter() {
+        let a = Vec3::new(-0.1, -0.1, 0.0);
+        let b = Vec3::new(0.0, 0.1, 0.0);
+        let c = Vec3::new(0.1, -0.1, 0.0);
 
-            w.draw_line(&a, &b, &Vec3::x());
-            w.draw_line(&b, &c, &Vec3::y());
-            w.draw_line(&c, &a, &Vec3::z());
-        })
-    })
+        frame.draw_line(&a, &b, &Vec3::x());
+        frame.draw_line(&b, &c, &Vec3::y());
+        frame.draw_line(&c, &a, &Vec3::z());
+    }
 }
