@@ -13,18 +13,17 @@ ncollide_path=lib/ncollide/lib
 libs=-L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path) -L$(freetype_path) -L$(ffmpeg_path) -L$(ncollide_path)
 build_cmd= rustc -Llib  $(libs) --opt-level 3 --out-dir $(kiss3d_bin_path)
 
-all: kiss3d kiss3d_recording
+all: kiss3d
 
 kiss3d:
 	mkdir -p $(kiss3d_lib_path)
 	rustc src/lib.rs --opt-level 3 --out-dir $(kiss3d_lib_path) $(libs)
 
-kiss3d_recording: deps_recording
+kiss3d_tools: deps_recording
 	mkdir -p $(kiss3d_lib_path)
 	rustc src/tools/kiss3d_recording.rs --opt-level 3 -L lib --out-dir $(kiss3d_lib_path) $(libs)
 
 test: examples
-
 
 examples:
 	mkdir -p $(kiss3d_bin_path)
@@ -50,6 +49,9 @@ examples:
 	$(build_cmd) ./examples/window.rs 
 	$(build_cmd) ./examples/wireframe.rs 
 	$(build_cmd) ./examples/stereo.rs 
+
+
+examples_tools:
 	$(build_cmd) ./examples/recording.rs
 
 doc:
@@ -100,5 +102,6 @@ cargo:
 
 .PHONY:doc
 .PHONY:examples
+.PHONY:examples_tools
 .PHONY:kiss3d
-.PHONY:kiss3d_recording
+.PHONY:kiss3d_tools
