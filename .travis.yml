@@ -20,11 +20,11 @@ script:
   - cd lib/ncollide
   - git submodule init
   - git submodule update
-    cd ../..
+  - cd ../..
   - cd lib/gl-rs
   - git submodule init
   - git submodule update
-    cd ../..
+  - cd ../..
   - make deps
   - make kiss3d
   - make test
