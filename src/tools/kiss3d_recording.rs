@@ -1,18 +1,43 @@
+/*!
+ * Video recorder for the `kiss3d` graphics engine.
+ */
+
+#![crate_id = "kiss3d_recording#0.1"]
+#![crate_type = "lib"]
+#![deny(non_camel_case_types)]
+#![deny(unnecessary_parens)]
+#![deny(non_uppercase_statics)]
+#![deny(unnecessary_qualification)]
+#![warn(missing_doc)] // FIXME: should be denied.
+#![deny(unused_result)]
+#![deny(unnecessary_typecast)]
+#![warn(visible_private_types)] // FIXME: should be denied.
+#![feature(globs)]
+#![feature(macro_rules)]
+#![feature(managed_boxes)]
+#![feature(unsafe_destructor)]
+#![doc(html_root_url = "http://kiss3d.org/doc")]
+
+extern crate std;
+extern crate libc;
+extern crate sync;
+extern crate avcodec  = "avcodec55";
+extern crate avutil   = "avutil52";
+extern crate avformat = "avformat55";
+extern crate swscale  = "swscale2";
+extern crate kiss3d;
+
 // inspired by the muxing sample: http://ffmpeg.org/doxygen/trunk/muxing_8c-source.html
 
 use libc::c_void;
-use swscale;
 use swscale::Struct_SwsContext;
-use avcodec;
 use avcodec::{AVCodec, AVCodecContext, AVPacket};
-use avformat;
 use avformat::{AVFormatContext, AVStream};
-use avutil;
 use avutil::{AVFrame, Struct_AVRational};
 use std::ptr;
 use std::mem;
 use sync::one::{Once, ONCE_INIT};
-use window::Window;
+use kiss3d::window::Window;
 
 static mut avformat_init: Once = ONCE_INIT;
 

@@ -1,11 +1,12 @@
 extern crate native;
 extern crate kiss3d;
+extern crate kiss3d_recording;
 extern crate nalgebra;
 
 use nalgebra::na::Vec3;
 use kiss3d::window::Window;
 use kiss3d::light;
-use kiss3d::utils::Recorder;
+use kiss3d_recording::Recorder;
 
 #[start]
 fn start(argc: int, argv: **u8) -> int {

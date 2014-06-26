@@ -13,9 +13,15 @@ ncollide_path=lib/ncollide/lib
 libs=-L$(glfw_lib_path) -L$(gl_lib_path) -L$(nalgebra_lib_path) -L$(stb_image_lib_path) -L$(freetype_path) -L$(ffmpeg_path) -L$(ncollide_path)
 build_cmd= rustc -Llib  $(libs) --opt-level 3 --out-dir $(kiss3d_bin_path)
 
-all:
+all: kiss3d kiss3d_recording
+
+kiss3d:
 	mkdir -p $(kiss3d_lib_path)
 	rustc src/lib.rs --opt-level 3 --out-dir $(kiss3d_lib_path) $(libs)
+
+kiss3d_recording: deps_recording
+	mkdir -p $(kiss3d_lib_path)
+	rustc src/tools/kiss3d_recording.rs --opt-level 3 -L lib --out-dir $(kiss3d_lib_path) $(libs)
 
 test: examples
 
@@ -39,12 +45,12 @@ examples:
 	$(build_cmd) ./examples/primitives_scale.rs 
 	$(build_cmd) ./examples/procedural.rs 
 	$(build_cmd) ./examples/quad.rs 
-	$(build_cmd) ./examples/recording.rs
 	$(build_cmd) ./examples/text.rs 
 	$(build_cmd) ./examples/texturing.rs 
 	$(build_cmd) ./examples/window.rs 
 	$(build_cmd) ./examples/wireframe.rs 
 	$(build_cmd) ./examples/stereo.rs 
+	$(build_cmd) ./examples/recording.rs
 
 doc:
 	mkdir -p $(kiss3d_doc_path)
@@ -53,16 +59,15 @@ doc:
 distcheck:
 	rm -rf $(tmp)
 	git clone --recursive . $(tmp)
-	make -C $(tmp) cargo
-	rm -rf $(tmp)
-	git clone --recursive . $(tmp)
 	make -C $(tmp) deps
 	make -C $(tmp)
 	make -C $(tmp) examples
 	rm -rf $(tmp)
+	git clone --recursive . $(tmp)
+	make -C $(tmp) cargo
+	rm -rf $(tmp)
 
 deps:
-	cd lib/rust-ffmpeg; ./build.sh
 	make lib -C $(glfw_path)
 	make -C lib/nalgebra
 	make deps -C lib/ncollide
@@ -74,6 +79,9 @@ deps:
 	cd lib/rust-freetype; ./configure
 	make clean -C lib/rust-freetype
 	make -C lib/rust-freetype
+
+deps_recording:
+	cd lib/rust-ffmpeg; ./build.sh
 
 # manually compile ncollide and rust-fmpeg as they cannot support cargo yet.
 deps_for_cargo:
@@ -92,3 +100,5 @@ cargo:
 
 .PHONY:doc
 .PHONY:examples
+.PHONY:kiss3d
+.PHONY:kiss3d_recording

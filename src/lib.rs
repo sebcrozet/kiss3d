@@ -113,10 +113,6 @@ extern crate nalgebra;
 extern crate ncollide = "ncollide3df32";
 extern crate stb_image;
 extern crate freetype;
-extern crate avcodec = "avcodec55";
-extern crate avutil  = "avutil52";
-extern crate avformat = "avformat55";
-extern crate swscale = "swscale2";
 
 mod error;
 pub mod window;
@@ -130,4 +126,3 @@ pub mod builtin;
 pub mod post_processing;
 pub mod resource;
 pub mod text;
-pub mod utils;
