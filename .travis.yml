@@ -17,6 +17,14 @@ script:
   - cd ..
   - git submodule init
   - git submodule update
+  - cd lib/ncollide
+  - git submodule init
+  - git submodule update
+    cd ../..
+  - cd lib/gl-rs
+  - git submodule init
+  - git submodule update
+    cd ../..
   - make deps
   - make kiss3d
   - make test
