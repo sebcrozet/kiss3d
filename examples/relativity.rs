@@ -29,13 +29,13 @@ fn start(argc: int, argv: **u8) -> int {
 fn main() {
     let mut window = Window::new("Kiss3d: relativity");
 
-    let eye          = Vec3::new(0.0f32, -399.0, 400.0);
-    let at           = Vec3::new(0.0f32, -399.0, 0.0);
-    let fov          = 45.0f32.to_radians();
-    let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
-    let font         = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
-    let context      = Arc::new(RWLock::new(Context::new(1000.0, na::zero(), eye)));
-    let material     = Rc::new(RefCell::new(box RelativisticMaterial::new(context.clone()) as Box<Material + 'static>));
+    let eye      = Vec3::new(0.0f32, -399.0, 400.0);
+    let at       = Vec3::new(0.0f32, -399.0, 0.0);
+    let fov      = 45.0f32.to_radians();
+    let observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
+    let font     = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
+    let context  = Arc::new(RWLock::new(Context::new(1000.0, na::zero(), eye)));
+    let material = Rc::new(RefCell::new(box RelativisticMaterial::new(context.clone()) as Box<Material + 'static>));
 
     window.set_framerate_limit(Some(60));
 
@@ -66,7 +66,7 @@ fn main() {
     /*
      * Render
      */
-    for mut frame in window.iter() {
+    for mut frame in window.iter_with_camera(observer) {
         let mut c = context.write();
 
         for event in frame.events().iter() {
@@ -83,7 +83,7 @@ fn main() {
             }
         }
 
-        let obs_vel = observer.velocity;
+        let obs_vel = frame.default_camera().velocity;
         let sop = na::norm(&obs_vel);
 
         frame.draw_text(
@@ -92,11 +92,9 @@ fn main() {
             &font,
             &Vec3::new(1.0, 1.0, 1.0));
 
-        observer.max_vel  = c.speed_of_light * 0.85;
+        frame.default_camera().max_vel  = c.speed_of_light * 0.85;
         c.speed_of_player = obs_vel;
-        c.position        = observer.eye();
-
-        frame.set_camera(&mut observer as &mut Camera);
+        c.position        = frame.default_camera().eye();
     }
 }
 

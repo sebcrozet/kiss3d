@@ -13,6 +13,7 @@ use time;
 use gl;
 use gl::types::*;
 use nalgebra::na::{Vec2, Vec3};
+use nalgebra::na;
 use ncollide::procedural::TriMesh;
 use camera::Camera;
 use scene::SceneNode;
@@ -23,6 +24,7 @@ use resource::{FramebufferManager, RenderTarget, Texture, TextureManager, Mesh, 
 use light::{Light, Absolute, StickToCamera};
 use text::{TextRenderer, Font};
 use window::RenderFrames;
+use camera::ArcBall;
 
 
 static DEFAULT_WIDTH:  u32 = 800u32;
@@ -55,10 +57,8 @@ impl<'a> Window<'a> {
     /// Uses this to start your render loop. The `RenderFrames` iterator iters though the frames
     /// that are drawn on the window.
     #[inline]
-    pub fn iter<'b>(&'b mut self) -> RenderFrames<'b, 'a> {
-        let events = self.events.clone();
-
-        RenderFrames::new(events, self)
+    pub fn iter<'b>(&'b mut self) -> RenderFrames<'b, 'a, ArcBall> {
+        self.iter_with_camera(ArcBall::new(-Vec3::z(), na::zero()))
     }
 
     /// Gets an iterator to the rendering frames with the camera `camera`.
@@ -66,7 +66,7 @@ impl<'a> Window<'a> {
     /// Uses this to start your render loop. The `RenderFrames` iterator iters though the frames
     /// that are drawn on the window.
     #[inline]
-    pub fn iter_with_camera<'b>(&'b mut self, camera: Box<Camera>) -> RenderFrames<'b, 'a> {
+    pub fn iter_with_camera<'b, C: 'static + Camera>(&'b mut self, camera: C) -> RenderFrames<'b, 'a, C> {
         let events = self.events.clone();
 
         RenderFrames::new_with_camera(events, self, camera)
