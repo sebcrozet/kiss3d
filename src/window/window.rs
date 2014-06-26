@@ -509,7 +509,7 @@ impl<'a> Window<'a> {
 
     fn update_viewport(&mut self, w: f32, h: f32) {
         // Update the viewport
-        verify!(gl::Scissor(0 as i32, 0 as i32, w as i32, h as i32));
+        verify!(gl::Scissor(0, 0, w as i32, h as i32));
         FramebufferManager::screen().resize(w, h);
         self.post_process_render_target.resize(w, h);
     }
