@@ -93,6 +93,7 @@ deps_for_cargo:
 	make clean -C lib/rust-stb-image
 	make -C lib/rust-stb-image
 	cd lib/rust-ffmpeg; ./build.sh
+	mkdir -p target/deps/
 	cp lib/ncollide/lib/* target/deps/.
 	cp lib/rust-ffmpeg/lib/* target/deps/.
 	cp lib/rust-stb-image/libstb* target/deps/.
