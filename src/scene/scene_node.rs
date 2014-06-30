@@ -54,8 +54,8 @@ impl SceneNodeData {
     }
 
     fn remove(&mut self, o: &SceneNode) {
-        match self.children.iter().rposition(|e| o.data.deref() as *RefCell<SceneNodeData> as uint ==
-                                                 e.data.deref() as *RefCell<SceneNodeData> as uint ) {
+        match self.children.iter().rposition(|e| o.data.deref() as *const RefCell<SceneNodeData> as uint ==
+                                                 e.data.deref() as *const RefCell<SceneNodeData> as uint ) {
             Some(i) => {
                 let _ = self.children.swap_remove(i);
             },

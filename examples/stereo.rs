@@ -10,7 +10,7 @@ use kiss3d::camera::FirstPersonStereo;
 use kiss3d::post_processing::OculusStereo;
 
 #[start]
-fn start(argc: int, argv: **u8) -> int {
+fn start(argc: int, argv: *const *const u8) -> int {
     native::start(argc, argv, main)
 }
 

@@ -13,15 +13,15 @@ crate_type = [ "dylib" ]
 [dependencies.nalgebra]
 git = "https://github.com/sebcrozet/nalgebra"
 
-[dependencies.gl-rs]
-git = "https://github.com/sebcrozet/gl-rs"
-
-[dependencies.glfw-rs]
-git = "https://github.com/sebcrozet/glfw-rs"
-
-[dependencies.rust-freetype]
-git = "https://github.com/sebcrozet/rust-freetype"
-
+# [dependencies.gl-rs]
+# git = "https://github.com/sebcrozet/gl-rs"
+# 
+# [dependencies.glfw-rs]
+# git = "https://github.com/sebcrozet/glfw-rs"
+# 
+# [dependencies.rust-freetype]
+# git = "https://github.com/sebcrozet/rust-freetype"
+# 
 # [[bin]]
 # name = "post_processing"
 # path = "./examples/post_processing.rs"

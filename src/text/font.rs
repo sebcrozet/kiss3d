@@ -125,7 +125,7 @@ impl Font {
                     verify!(gl::TexSubImage2D(
                                 gl::TEXTURE_2D, 0, offset.x, offset.y,
                                 glyph.dimensions.x as i32, glyph.dimensions.y as i32,
-                                gl::RED, gl::UNSIGNED_BYTE, glyph.buffer.get(0) as *u8 as *c_void));
+                                gl::RED, gl::UNSIGNED_BYTE, glyph.buffer.get(0) as *const u8 as *const c_void));
                 }
 
                 /* Calculate the position in the texture. */

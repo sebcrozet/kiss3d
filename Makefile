@@ -87,15 +87,22 @@ deps_recording:
 
 # manually compile ncollide and rust-fmpeg as they cannot support cargo yet.
 deps_for_cargo:
-	make deps  -C lib/ncollide
+	mkdir -p target/deps/
+	make lib -C $(glfw_path)
+	make -C lib/nalgebra
+	make deps -C lib/ncollide
 	make 3df32 -C lib/ncollide
+	make -C lib/gl-rs
 	cd lib/rust-stb-image; ./configure
 	make clean -C lib/rust-stb-image
 	make -C lib/rust-stb-image
-	cd lib/rust-ffmpeg; ./build.sh
-	mkdir -p target/deps/
+	cd lib/rust-freetype; ./configure
+	make clean -C lib/rust-freetype
+	make -C lib/rust-freetype
 	cp lib/ncollide/lib/* target/deps/.
-	cp lib/rust-ffmpeg/lib/* target/deps/.
+	cp lib/rust-freetype/*.rlib target/deps/.
+	cp lib/gl-rs/lib/*.rlib target/deps/.
+	cp lib/glfw-rs/lib/*.rlib target/deps/.
 	cp lib/rust-stb-image/libstb* target/deps/.
 
 cargo:
