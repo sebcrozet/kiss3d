@@ -46,11 +46,10 @@ impl Font {
         unsafe {
             let _ = freetype::FT_Init_FreeType(&font.library);
 
-            path.as_str().expect("Invalid path.").to_c_str().with_ref(|c_str| {
-                if freetype::FT_New_Face(font.library, c_str, 0, &mut font.face) != 0 {
-                    fail!("Failed to create TTF face.");
-                }
-            });
+            let c_str = path.as_str().expect("Invalid path.").to_c_str();
+            if freetype::FT_New_Face(font.library, c_str.as_ptr(), 0, &mut font.face) != 0 {
+                fail!("Failed to create TTF face.");
+            }
 
             let _ = freetype::FT_Set_Pixel_Sizes(font.face, 0, size as c_uint);
             verify!(gl::ActiveTexture(gl::TEXTURE0));

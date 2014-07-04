@@ -65,6 +65,7 @@ fn main() {
         Vec3::new(0.0f32, 2.0, 2.0), Vec3::new(1.0, 2.0, 3.0), Vec3::new(2.0, 2.0, 3.0), Vec3::new(3.0, 2.0, 2.0),
         Vec3::new(0.0f32, 3.0, 0.0), Vec3::new(1.0, 3.0, 2.0), Vec3::new(2.0, 3.0, 2.0), Vec3::new(3.0, 3.0, 0.0)
     ];
+    let chull  = procedural::convex_hull3d(control_points.as_slice());
     let bezier = procedural::bezier_surface(control_points, 4, 4, 100, 100);
     let mut b  = window.add_trimesh(bezier, na::one());
     b.append_translation(&Vec3::new(-1.5, -1.5, 0.0));
@@ -107,9 +108,16 @@ fn main() {
     let end_cap     = ArrowheadCap::new(2.0f32, 2.0, 0.5);
     let mut pattern = PolylinePattern::new(&pattern, true, start_cap, end_cap);
     let mesh        = pattern.stroke(&mut path);
-    let mut m = window.add_trimesh(mesh, Vec3::new(0.5f32, 0.5, 0.5));
+    let mut m       = window.add_trimesh(mesh, Vec3::new(0.5f32, 0.5, 0.5));
     m.append_translation(&Vec3::new(4.0, -1.0, 0.0));
     m.set_color(1.0, 1.0, 0.0);
+
+    /*
+     * Convex hull of the path stroke.
+     */
+    let mut m = window.add_trimesh(chull, na::one());
+    m.append_translation(&Vec3::new(-1.5, -1.5, 0.0));
+    m.set_color(0.0, 1.0, 1.0);
 
     /*
      *

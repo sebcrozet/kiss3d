@@ -31,7 +31,7 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
         match tag {
             None    => { },
             Some(w) => {
-                if w.len() != 0 && w[0] != ('#' as u8) {
+                if w.len() != 0 && w.as_bytes()[0] != ('#' as u8) {
                     let mut p = line.words().peekable();
                     let     _ = p.next();
 

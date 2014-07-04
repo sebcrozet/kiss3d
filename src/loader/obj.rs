@@ -59,7 +59,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
         match tag {
             None    => { },
             Some(w) => {
-                if w.len() != 0 && w[0] != ('#' as u8) {
+                if w.len() != 0 && w.as_bytes()[0] != ('#' as u8) {
                     match w {
                         "v"      => coords.push(parse_v_or_vn(l, words)),
                         "vn"     => if !ignore_normals { normals.push(parse_v_or_vn(l, words)) },
