@@ -6,6 +6,7 @@ extern crate nalgebra;
 use std::rand;
 use nalgebra::na;
 use nalgebra::na::{Vec2, Vec3, Translation};
+use ncollide::parametric::ParametricSurface;
 use ncollide::procedural::{Polyline, TriMesh};
 use ncollide::procedural::path::{PolylinePath, PolylinePattern, StrokePattern, ArrowheadCap};
 use ncollide::procedural;
@@ -148,6 +149,15 @@ fn main() {
     let polyline = procedural::convex_hull2d(points);
 
     /*
+     * Uniform parametric surface mesher.
+     */
+    let ball  = ParametricBananas;
+    let mesh  = procedural::parametric_surface_uniform(&ball, 100, 100);
+    let mut m = window.add_trimesh(mesh, Vec3::new(0.5, 0.5, 0.5));
+    m.set_texture_from_file(&Path::new("media/banana.jpg"), "banana");
+    m.append_translation(&Vec3::new(-3.5, 0.0, 0.0));
+
+    /*
      *
      * Rendering.
      *
@@ -177,4 +187,80 @@ fn draw_polyline(frame: &mut RenderFrame<ArcBall>, polyline: &Polyline<f32, Vec2
         frame.draw_point(&Vec3::new(pt.x, pt.y, 0.0), &Vec3::x());
     }
 
+}
+
+// see https://www.pacifict.com/Examples/Example22.html
+struct ParametricBananas;
+
+impl ParametricSurface for ParametricBananas {
+    fn at(&self, u: f32, v: f32)    -> Vec3<f32> {
+        let pi = Float::pi();
+
+        Vec3::new(
+            (2.0 + (2.0 * pi * v).sin() * (2.0 * pi * u).sin()) * (3.0 * pi * v).sin(),
+            (2.0 * pi * v).sin() * (2.0 * pi * u).cos() + 4.0 * v - 2.0,
+            (2.0 + (2.0 * pi * v).sin() * (2.0 * pi * u).sin()) * (3.0 * pi * v).cos()
+        )
+    }
+
+    fn at_u(&self, u: f32, v: f32)  -> Vec3<f32> {
+        let pi = Float::pi();
+
+        Vec3::new(
+            2.0 * pi * (2.0 * pi * u).cos() * (2.0 * pi * v).sin() * (3.0 * pi * v).sin(),
+            -2.0 * pi * (2.0 * pi * u).sin() * (2.0 * pi * v).sin(),
+            2.0 * pi * (2.0 * pi * u).cos() * (2.0 * pi * v).sin() * (3.0 * pi * v).cos(),
+        )
+    }
+
+    fn at_v(&self, u: f32, v: f32)  -> Vec3<f32> {
+        let pi: f32 = Float::pi();
+
+        Vec3::new(
+            pi * (2.0 * pi * u).sin() * ((pi * v).sin() + (5.0 * pi * v).sin()) +
+            3.0 * pi * (3.0 * pi * v).cos() * ((2.0 * pi * u).sin() * (2.0 * pi * v).sin() + 2.0),
+
+            4.0 + 2.0 * pi * (2.0 * pi * u).cos() * (2.0 * pi * v).cos(),
+
+            pi * (2.0 * pi * u).sin() * ((pi * v).cos() + (5.0 * pi * v).cos()) -
+            3.0 * pi * (3.0 * pi * v).sin() * ((2.0 * pi * u).sin() * (2.0 * pi * v).sin() + 2.0),
+        )
+    }
+
+    fn at_uu(&self, u: f32, v: f32) -> Vec3<f32> {
+        let pi = Float::pi();
+
+        Vec3::new(
+            -4.0 * pi * pi * (2.0 * pi * u).sin() * (2.0 * pi * v).sin() * (3.0 * pi * v).sin(),
+            -4.0 * pi * pi * (2.0 * pi * u).cos() * (2.0 * pi * v).sin(),
+            -4.0 * pi * pi * (2.0 * pi * u).sin() * (2.0 * pi * v).sin() * (3.0 * pi * v).cos(),
+        )
+    }
+
+    fn at_vv(&self, u: f32, v: f32) -> Vec3<f32> {
+        let pi: f32 = Float::pi();
+
+        Vec3::new(
+            pi * pi *
+            (6.0 * ((pi * v).cos() + (5.0 * pi * v).cos()) * (2.0 * pi * u).sin()
+            - 18.0 * (3.0 * pi * v).sin()
+            - 13.0 * (2.0 * pi * u).sin() * (2.0 * pi * v).sin() * (3.0 * pi * v).sin()),
+
+            -4.0 * pi * pi * (2.0 * pi * u).cos() * (2.0 * pi * v).sin(),
+
+            -pi * pi * ((3.0 * pi * v).cos() * (18.0 + 13.0 * (2.0 * pi * u).sin() * (2.0 * pi * v).sin())
+            + 6.0 * (2.0 * pi * u).sin() * ((pi * v).sin() + (5.0 * pi * v).sin()))
+
+        )
+    }
+
+    fn at_uv(&self, u: f32, v: f32) -> Vec3<f32> {
+        let pi: f32 = Float::pi();
+
+        Vec3::new(
+            pi * pi * (2.0 * pi * u).cos() * (-(pi * v).sin() + 5.0 * (5.0 * pi * v).sin()),
+            -4.0 * pi * pi * (2.0 * pi * v).cos() * (2.0 * pi * u).sin(),
+            pi * pi * (2.0 * pi * u).cos() * (5.0 * (5.0 * pi * v).cos() - (pi * v).cos())
+        )
+    }
 }
