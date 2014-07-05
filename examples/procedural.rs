@@ -3,12 +3,15 @@ extern crate ncollide = "ncollide3df32";
 extern crate kiss3d;
 extern crate nalgebra;
 
+use std::rand;
 use nalgebra::na;
-use nalgebra::na::{Vec3, Translation};
+use nalgebra::na::{Vec2, Vec3, Translation};
+use ncollide::procedural::{Polyline, TriMesh};
 use ncollide::procedural::path::{PolylinePath, PolylinePattern, StrokePattern, ArrowheadCap};
 use ncollide::procedural;
 use ncollide::utils;
-use kiss3d::window::Window;
+use kiss3d::window::{Window, RenderFrame};
+use kiss3d::camera::ArcBall;
 use kiss3d::light;
 
 #[start]
@@ -65,7 +68,6 @@ fn main() {
         Vec3::new(0.0f32, 2.0, 2.0), Vec3::new(1.0, 2.0, 3.0), Vec3::new(2.0, 2.0, 3.0), Vec3::new(3.0, 2.0, 2.0),
         Vec3::new(0.0f32, 3.0, 0.0), Vec3::new(1.0, 3.0, 2.0), Vec3::new(2.0, 3.0, 2.0), Vec3::new(3.0, 3.0, 0.0)
     ];
-    let chull  = procedural::convex_hull3d(control_points.as_slice());
     let bezier = procedural::bezier_surface(control_points, 4, 4, 100, 100);
     let mut b  = window.add_trimesh(bezier, na::one());
     b.append_translation(&Vec3::new(-1.5, -1.5, 0.0));
@@ -113,11 +115,37 @@ fn main() {
     m.set_color(1.0, 1.0, 0.0);
 
     /*
-     * Convex hull of the path stroke.
+     * Convex hull of 100,000 random 3d points.
      */
-    let mut m = window.add_trimesh(chull, na::one());
-    m.append_translation(&Vec3::new(-1.5, -1.5, 0.0));
-    m.set_color(0.0, 1.0, 1.0);
+    let mut points = Vec::new();
+    for _ in range(0u, 100000) {
+        points.push(rand::random::<Vec3<f32>>() * 2.0f32);
+    }
+
+    let chull  = procedural::convex_hull3d(points.as_slice());
+    let mut mhull = window.add_trimesh(chull, na::one());
+    let mut mpts  = window.add_trimesh(TriMesh::new(points, None, None, None), na::one());
+    mhull.append_translation(&Vec3::new(0.0, 2.0, -1.0));
+    mhull.set_color(0.0, 1.0, 0.0);
+    mhull.set_lines_width(2.0);
+    mhull.set_surface_rendering_activation(false);
+    mhull.set_points_size(10.0);
+    mpts.set_color(0.0, 0.0, 1.0);
+    mpts.append_translation(&Vec3::new(0.0, 2.0, -1.0));
+    mpts.set_points_size(2.0);
+    mpts.set_surface_rendering_activation(false);
+
+    /*
+     * Convex hull of 100,000 random 2d points.
+     */
+    let mut points = Vec::new();
+    let origin     = Vec2::new(3.0f32, 2.0);
+    for _ in range(0u, 100000) {
+        points.push(origin + rand::random::<Vec2<f32>>() * 2.0f32);
+    }
+
+    let points   = points.as_slice();
+    let polyline = procedural::convex_hull2d(points);
 
     /*
      *
@@ -126,6 +154,27 @@ fn main() {
      */
     window.set_light(light::StickToCamera);
 
-    for _ in window.iter() {
+    for mut frame in window.iter() {
+        draw_polyline(&mut frame, &polyline, points)
     }
+}
+
+fn draw_polyline(frame: &mut RenderFrame<ArcBall>, polyline: &Polyline<f32, Vec2<f32>>, points: &[Vec2<f32>]) {
+    for pt in polyline.coords.as_slice().windows(2) {
+        frame.draw_line(&Vec3::new(pt[0].x, pt[0].y, 0.0), &Vec3::new(pt[1].x, pt[1].y, 0.0), &Vec3::y());
+    }
+
+    let last = polyline.coords.len() - 1;
+    frame.draw_line(&Vec3::new(polyline.coords.get(0).x, polyline.coords.get(0).y, 0.0),
+                    &Vec3::new(polyline.coords.get(last).x, polyline.coords.get(last).y, 0.0),
+                    &Vec3::y());
+
+    for pt in points.iter() {
+        frame.draw_point(&Vec3::new(pt.x, pt.y, 0.0), &Vec3::z());
+    }
+
+    for pt in polyline.coords.as_slice().iter() {
+        frame.draw_point(&Vec3::new(pt.x, pt.y, 0.0), &Vec3::x());
+    }
+
 }
