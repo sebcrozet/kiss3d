@@ -83,13 +83,13 @@ impl<T: GLPrimitive> GPUVector<T> {
     pub fn data_mut<'a>(&'a mut self) -> &'a mut Option<Vec<T>> {
         self.trash = true;
 
-        &'a mut self.data
+        &mut self.data
     }
 
     /// Immutably accesses the vector if it is available on RAM.
     #[inline]
     pub fn data<'a>(&'a self) -> &'a Option<Vec<T>> {
-        &'a self.data
+        &self.data
     }
 
     /// Returns `true` if this vector is already uploaded to the GPU.

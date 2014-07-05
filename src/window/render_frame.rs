@@ -58,7 +58,7 @@ impl<'a, 'b, C: 'static + Camera> RenderFrame<'a, 'b, C> {
     /// The window this render frame will be drawing in.
     #[inline]
     pub fn window<'c>(&'c mut self) -> &'c mut Window<'b> {
-        &'c mut *self.window
+        &mut *self.window
     }
 
     /// Sets the current processing effect.
@@ -114,7 +114,7 @@ impl<'a, 'b, C: 'static + Camera> RenderFrame<'a, 'b, C> {
                 let res: &'c mut Camera = *cam;
                 res
             },
-            None      => &'c mut *self.default_cam as &'c mut Camera
+            None      => &mut *self.default_cam as &'c mut Camera
         }
     }
 
@@ -214,7 +214,7 @@ impl<'a, 'b, C: 'static + Camera> RenderFrames<'a, 'b, C> {
             self.window.context().poll_events();
             self.collector.borrow_mut().clear();
 
-            Some(RenderFrame::new(self.window, &'c mut self.camera, self.events.clone(), self.collector.clone()))
+            Some(RenderFrame::new(self.window, &mut self.camera, self.events.clone(), self.collector.clone()))
         }
         else {
             None

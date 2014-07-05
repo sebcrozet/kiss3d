@@ -75,13 +75,13 @@ impl<'a> Window<'a> {
     /// Access the glfw context.
     #[inline]
     pub fn context<'r>(&'r self) -> &'r glfw::Glfw {
-        &'r self.glfw
+        &self.glfw
     }
 
     /// Access the glfw window.
     #[inline]
     pub fn glfw_window<'r>(&'r self) -> &'r glfw::Window {
-        &'r self.window
+        &self.window
     }
 
     /// The window width.
@@ -383,13 +383,13 @@ impl<'a> Window<'a> {
     /// Reference to the scene associated with this window.
     #[inline]
     pub fn scene<'a>(&'a self) -> &'a SceneNode {
-        &'a self.scene
+        &self.scene
     }
 
     /// Mutable reference to the scene associated with this window.
     #[inline]
     pub fn scene_mut<'a>(&'a mut self) -> &'a mut SceneNode {
-        &'a mut self.scene
+        &mut self.scene
     }
 
     // FIXME: give more options for the snap size and offset.

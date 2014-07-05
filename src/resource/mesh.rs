@@ -131,22 +131,22 @@ impl Mesh {
 
     /// This mesh faces.
     pub fn faces<'a>(&'a self) -> &'a Arc<RWLock<GPUVector<Vec3<GLuint>>>> {
-        &'a self.faces
+        &self.faces
     }
 
     /// This mesh normals.
     pub fn normals<'a>(&'a self) -> &'a Arc<RWLock<GPUVector<Vec3<GLfloat>>>> {
-        &'a self.normals
+        &self.normals
     }
 
     /// This mesh vertex coordinates.
     pub fn coords<'a>(&'a self) -> &'a Arc<RWLock<GPUVector<Vec3<GLfloat>>>> {
-        &'a self.coords
+        &self.coords
     }
 
     /// This mesh texture coordinates.
     pub fn uvs<'a>(&'a self) -> &'a Arc<RWLock<GPUVector<Vec2<GLfloat>>>> {
-        &'a self.uvs
+        &self.uvs
     }
 
     /// Computes normals from a set of faces.

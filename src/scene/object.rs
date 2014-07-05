@@ -28,13 +28,13 @@ impl ObjectData {
     /// The texture of this object.
     #[inline]
     pub fn texture<'a>(&'a self) -> &'a Rc<Texture> {
-        &'a self.texture
+        &self.texture
     }
 
     /// The color of this object.
     #[inline]
     pub fn color<'a>(&'a self) -> &'a Vec3<f32> {
-        &'a self.color
+        &self.color
     }
 
     /// The width of the lines draw for this object.
@@ -128,13 +128,13 @@ impl Object {
     /// Gets the data of this object.
     #[inline]
     pub fn data<'a>(&'a self) -> &'a ObjectData {
-        &'a self.data
+        &self.data
     }
 
     /// Gets the data of this object.
     #[inline]
     pub fn data_mut<'a>(&'a mut self) -> &'a mut ObjectData {
-        &'a mut self.data
+        &mut self.data
     }
 
     /// Enables or disables backface culling for this object.
@@ -200,7 +200,7 @@ impl Object {
     /// This object's mesh.
     #[inline]
     pub fn mesh<'a>(&'a self) -> &'a Rc<RefCell<Mesh>> {
-        &'a self.mesh
+        &self.mesh
     }
 
     /// Mutably access the object's vertices.
