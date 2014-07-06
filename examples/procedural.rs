@@ -11,6 +11,7 @@ use ncollide::procedural::{Polyline, TriMesh};
 use ncollide::procedural::path::{PolylinePath, PolylinePattern, StrokePattern, ArrowheadCap};
 use ncollide::procedural;
 use ncollide::utils;
+use ncollide::utils::symbolic::{BivariateFn, sin, cos, u, v};
 use kiss3d::window::{Window, RenderFrame};
 use kiss3d::camera::ArcBall;
 use kiss3d::light;
@@ -151,9 +152,9 @@ fn main() {
     /*
      * Uniform parametric surface mesher.
      */
-    let ball  = ParametricBananas;
-    let mesh  = procedural::parametric_surface_uniform(&ball, 100, 100);
-    let mut m = window.add_trimesh(mesh, Vec3::new(0.5, 0.5, 0.5));
+    let banana = ParametricBananas::new();
+    let mesh   = procedural::parametric_surface_uniform(&banana, 100, 100);
+    let mut m  = window.add_trimesh(mesh, Vec3::new(0.5, 0.5, 0.5));
     m.set_texture_from_file(&Path::new("media/banana.jpg"), "banana");
     m.append_translation(&Vec3::new(-3.5, 0.0, 0.0));
 
@@ -190,77 +191,58 @@ fn draw_polyline(frame: &mut RenderFrame<ArcBall>, polyline: &Polyline<f32, Vec2
 }
 
 // see https://www.pacifict.com/Examples/Example22.html
-struct ParametricBananas;
+
+struct ParametricBananas {
+    // we use trait-objects because we really do not want to know the exact type…
+    x: Box<BivariateFn<f32, f32>>,
+    y: Box<BivariateFn<f32, f32>>,
+    z: Box<BivariateFn<f32, f32>>
+}
+
+impl ParametricBananas {
+    fn new() -> ParametricBananas {
+        let pi: f32 = Float::pi();
+        let u = u();
+        let v = v();
+        let x = (sin(u * 2.0f32 * pi) * sin(v * 2.0f32 * pi) + 2.0f32) * sin(v * 3.0f32 * pi);
+        let y = sin(v * 2.0f32 * pi) * cos(u * 2.0f32 * pi) + v * 4.0f32 - 2.0f32;
+        let z = (sin(u * 2.0f32 * pi) * sin(v * 2.0f32 * pi) + 2.0f32) * cos(v * 3.0f32 * pi);
+
+
+        ParametricBananas {
+            x: box x,
+            y: box y,
+            z: box z
+        }
+    }
+}
 
 impl ParametricSurface for ParametricBananas {
-    fn at(&self, u: f32, v: f32)    -> Vec3<f32> {
-        let pi = Float::pi();
-
-        Vec3::new(
-            (2.0 + (2.0 * pi * v).sin() * (2.0 * pi * u).sin()) * (3.0 * pi * v).sin(),
-            (2.0 * pi * v).sin() * (2.0 * pi * u).cos() + 4.0 * v - 2.0,
-            (2.0 + (2.0 * pi * v).sin() * (2.0 * pi * u).sin()) * (3.0 * pi * v).cos()
-        )
+    fn at(&self, u: f32, v: f32) -> Vec3<f32> {
+        Vec3::new(self.x.d0(u, v), self.y.d0(u, v), self.z.d0(u, v))
     }
 
-    fn at_u(&self, u: f32, v: f32)  -> Vec3<f32> {
-        let pi = Float::pi();
-
-        Vec3::new(
-            2.0 * pi * (2.0 * pi * u).cos() * (2.0 * pi * v).sin() * (3.0 * pi * v).sin(),
-            -2.0 * pi * (2.0 * pi * u).sin() * (2.0 * pi * v).sin(),
-            2.0 * pi * (2.0 * pi * u).cos() * (2.0 * pi * v).sin() * (3.0 * pi * v).cos(),
-        )
+    fn at_u(&self, u: f32, v: f32) -> Vec3<f32> {
+        Vec3::new(self.x.du(u, v), self.y.du(u, v), self.z.du(u, v))
     }
 
     fn at_v(&self, u: f32, v: f32)  -> Vec3<f32> {
-        let pi: f32 = Float::pi();
-
-        Vec3::new(
-            pi * (2.0 * pi * u).sin() * ((pi * v).sin() + (5.0 * pi * v).sin()) +
-            3.0 * pi * (3.0 * pi * v).cos() * ((2.0 * pi * u).sin() * (2.0 * pi * v).sin() + 2.0),
-
-            4.0 + 2.0 * pi * (2.0 * pi * u).cos() * (2.0 * pi * v).cos(),
-
-            pi * (2.0 * pi * u).sin() * ((pi * v).cos() + (5.0 * pi * v).cos()) -
-            3.0 * pi * (3.0 * pi * v).sin() * ((2.0 * pi * u).sin() * (2.0 * pi * v).sin() + 2.0),
-        )
+        Vec3::new(self.x.dv(u, v), self.y.dv(u, v), self.z.dv(u, v))
     }
 
     fn at_uu(&self, u: f32, v: f32) -> Vec3<f32> {
-        let pi = Float::pi();
-
-        Vec3::new(
-            -4.0 * pi * pi * (2.0 * pi * u).sin() * (2.0 * pi * v).sin() * (3.0 * pi * v).sin(),
-            -4.0 * pi * pi * (2.0 * pi * u).cos() * (2.0 * pi * v).sin(),
-            -4.0 * pi * pi * (2.0 * pi * u).sin() * (2.0 * pi * v).sin() * (3.0 * pi * v).cos(),
-        )
+        Vec3::new(self.x.duu(u, v), self.y.duu(u, v), self.z.duu(u, v))
     }
 
     fn at_vv(&self, u: f32, v: f32) -> Vec3<f32> {
-        let pi: f32 = Float::pi();
-
-        Vec3::new(
-            pi * pi *
-            (6.0 * ((pi * v).cos() + (5.0 * pi * v).cos()) * (2.0 * pi * u).sin()
-            - 18.0 * (3.0 * pi * v).sin()
-            - 13.0 * (2.0 * pi * u).sin() * (2.0 * pi * v).sin() * (3.0 * pi * v).sin()),
-
-            -4.0 * pi * pi * (2.0 * pi * u).cos() * (2.0 * pi * v).sin(),
-
-            -pi * pi * ((3.0 * pi * v).cos() * (18.0 + 13.0 * (2.0 * pi * u).sin() * (2.0 * pi * v).sin())
-            + 6.0 * (2.0 * pi * u).sin() * ((pi * v).sin() + (5.0 * pi * v).sin()))
-
-        )
+        Vec3::new(self.x.dvv(u, v), self.y.dvv(u, v), self.z.dvv(u, v))
     }
 
     fn at_uv(&self, u: f32, v: f32) -> Vec3<f32> {
-        let pi: f32 = Float::pi();
+        Vec3::new(self.x.duv(u, v), self.y.duv(u, v), self.z.duv(u, v))
+    }
 
-        Vec3::new(
-            pi * pi * (2.0 * pi * u).cos() * (-(pi * v).sin() + 5.0 * (5.0 * pi * v).sin()),
-            -4.0 * pi * pi * (2.0 * pi * v).cos() * (2.0 * pi * u).sin(),
-            pi * pi * (2.0 * pi * u).cos() * (5.0 * (5.0 * pi * v).cos() - (pi * v).cos())
-        )
+    fn at_uv_nk(&self, u: f32, v: f32, n: uint, k: uint) -> Vec3<f32> {
+        Vec3::new(self.x.duv_nk(u, v, n, k), self.y.duv_nk(u, v, n, k), self.z.duv_nk(u, v, n, k))
     }
 }
