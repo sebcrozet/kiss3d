@@ -14,7 +14,7 @@ fn error(line: uint, err: &str) -> ! {
 /// Parses a mtl file.
 pub fn parse_file(path: &Path) -> IoResult<Vec<MtlMaterial>> {
     match File::open(path) {
-        Ok(mut file) => file.read_to_str().map(|mtl| parse(mtl.as_slice())),
+        Ok(mut file) => file.read_to_string().map(|mtl| parse(mtl.as_slice())),
         Err(e)       => Err(e)
     }
 }

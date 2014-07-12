@@ -27,8 +27,8 @@ impl Shader {
             None
         }
         else {
-            let vshader = File::open(vshader_path).map(|mut v| v.read_to_str());
-            let fshader = File::open(fshader_path).map(|mut f| f.read_to_str());
+            let vshader = File::open(vshader_path).map(|mut v| v.read_to_string());
+            let fshader = File::open(fshader_path).map(|mut f| f.read_to_string());
 
             if vshader.is_err() || fshader.is_err() {
                 return None;

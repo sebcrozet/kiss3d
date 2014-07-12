@@ -31,7 +31,7 @@ fn warn(line: uint, err: &str) {
 /// Parses an obj file.
 pub fn parse_file(path: &Path, mtl_base_dir: &Path, basename: &str) -> IoResult<Vec<(String, Mesh, Option<MtlMaterial>)>> {
     match File::open(path) {
-        Ok(mut file) => file.read_to_str().map(|obj| parse(obj.as_slice(), mtl_base_dir, basename)),
+        Ok(mut file) => file.read_to_string().map(|obj| parse(obj.as_slice(), mtl_base_dir, basename)),
         Err(e)       => Err(e)
     }
 }
@@ -126,7 +126,7 @@ fn parse_usemtl<'a>(l:          uint,
                 else {
                     // multiple usemtls for one group
                     // NOTE: this is a violation of the obj specification, but we support it anyway
-                    let g = curr_group.to_str().append(mname.as_slice());
+                    let g = curr_group.to_string().append(mname.as_slice());
                     let new_group = parse_g(l, g.as_slice().words(), "auto_generated_group_", groups, groups_ids);
 
                     group2mtl.insert(new_group, m.clone());

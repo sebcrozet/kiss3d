@@ -17,11 +17,11 @@ all: kiss3d
 
 kiss3d:
 	mkdir -p $(kiss3d_lib_path)
-	rustc src/lib.rs --opt-level 3 --out-dir $(kiss3d_lib_path) $(libs)
+	rustc src/lib.rs --crate-type dylib --crate-type rlib --opt-level 3 --out-dir $(kiss3d_lib_path) $(libs)
 
 kiss3d_tools: deps_recording
 	mkdir -p $(kiss3d_lib_path)
-	rustc src/tools/kiss3d_recording.rs --opt-level 3 -L lib --out-dir $(kiss3d_lib_path) $(libs)
+	rustc src/tools/kiss3d_recording.rs --crate-type dylib --crate-type rlib --opt-level 3 -L lib --out-dir $(kiss3d_lib_path) $(libs)
 
 test: examples
 
