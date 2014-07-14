@@ -5,6 +5,7 @@
 *.rlib
 *.dSYM
 *.dylib
+target
 bin/camera
 bin/cube
 bin/event
