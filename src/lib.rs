@@ -65,22 +65,15 @@ Some controls are handled by default by the engine (they can be overridden by th
 * `enter`: look at the origin (0.0, 0.0, 0.0).
 
 ## Compilation
-You will need the last nightly build of the [rust compiler](http://www.rust-lang.org).
-If you encounter problems, make sure you have the last compiler version before creating an issue.
+You will need the last nightly build of the [rust compiler](http://www.rust-lang.org)
+and the official package manager: [cargo](https://github.com/rust-lang/cargo).
 
-The simplest way to build **Kiss3d** and all its dependencies is to do a
-recursive clone:
+Simply add the following to your `Cargo.toml` file:
 
-
-    git clone --recursive git://github.com/sebcrozet/kiss3d.git
-    cd kiss3d
-    make deps
-    make
-    make examples
-
-
-The last command will compile examples on the `bin` folder.
-Use `make doc` to compile the documentation on the `doc` folder.
+```
+[dependencies.kiss3d]
+git = "https://github.com/sebcrozet/kiss3d"
+```
 
 ## Contributions
 I’d love to see people improving this library for their own needs. However, keep in mind that
