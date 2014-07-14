@@ -87,8 +87,6 @@ I’d love to see people improving this library for their own needs. However, ke
 **Kiss3d** is KISS. One-liner features (from the user point of view) are preferred.
 */
 
-#![crate_name = "kiss3d"]
-#![crate_type = "lib"]
 #![deny(non_camel_case_types)]
 #![deny(unnecessary_parens)]
 #![deny(non_uppercase_statics)]

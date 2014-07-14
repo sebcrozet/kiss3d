@@ -7,7 +7,6 @@ use std::rand;
 use nalgebra::na;
 use nalgebra::na::{Vec2, Vec3, Translation};
 use ncollide::parametric::ParametricSurface;
-use ncollide::geom::Ball;
 use ncollide::procedural::{Polyline, TriMesh};
 use ncollide::procedural::path::{PolylinePath, PolylinePattern, StrokePattern, ArrowheadCap};
 use ncollide::procedural;
@@ -164,7 +163,7 @@ fn main() {
     /*
      * Uniform parametric surface mesher with max distance error.
      */
-    let banana = Ball::new(1.0);
+    let banana = ParametricBananas::new();
     let mesh   = procedural::parametric_surface_uniform_with_distance_error(&banana, 0.1);
     let mut m  = window.add_trimesh(mesh, Vec3::new(0.5, 0.5, 0.5));
     m.set_texture_with_name("banana");
