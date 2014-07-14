@@ -3,8 +3,6 @@ name    = "kiss3d"
 version = "0.1.0"
 authors = [ "Sébastien Crozet <developer@crozet.re>" ]
 
-build   = "make deps_for_cargo"
-
 [[lib]]
 name       = "kiss3d"
 path       = "src/lib.rs"
@@ -22,8 +20,11 @@ git = "https://github.com/sebcrozet/gl-rs"
 [dependencies.glfw]
 git = "https://github.com/sebcrozet/glfw-rs"
 
-# [dependencies.rust-freetype]
-# git = "https://github.com/sebcrozet/rust-freetype"
+[dependencies.rust-freetype]
+git = "https://github.com/sebcrozet/rust-freetype"
+
+[dependencies.rust-stb-image]
+git = "https://github.com/sebcrozet/rust-stb-image"
 
 [[bin]]
 name = "add_remove"
