@@ -88,6 +88,7 @@ deps_recording:
 # manually compile ncollide and rust-fmpeg as they cannot support cargo yet.
 deps_for_cargo:
 	mkdir -p target/deps/
+	mkdir -p target/release/deps/
 	make -C lib/nalgebra
 	cd lib/rust-stb-image; ./configure
 	make clean -C lib/rust-stb-image
@@ -97,6 +98,8 @@ deps_for_cargo:
 	make -C lib/rust-freetype
 	cp lib/rust-freetype/*.rlib target/deps/.
 	cp lib/rust-stb-image/libstb* target/deps/.
+	cp lib/rust-freetype/*.rlib target/release/deps/.
+	cp lib/rust-stb-image/libstb* target/release/deps/.
 
 cargo:
 	cargo build
