@@ -6,7 +6,6 @@ authors = [ "Sébastien Crozet <developer@crozet.re>" ]
 [[lib]]
 name       = "kiss3d"
 path       = "src/lib.rs"
-crate_type = [ "dylib", "rlib" ]
 
 [dependencies.nalgebra]
 git = "https://github.com/sebcrozet/nalgebra"
