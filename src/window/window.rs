@@ -477,6 +477,11 @@ impl Window {
             Some(cam) => cam
         };
 
+        // XXX: too bad we have to do this at each frame…
+        let w = self.width();
+        let h = self.height();
+        camera.handle_event(&self.window, &glfw::FramebufferSizeEvent(w as i32, h as i32));
+
         camera.update(&self.window);
 
         match self.light_mode {
@@ -499,8 +504,6 @@ impl Window {
         }
         camera.render_complete(&self.window);
 
-        let w = self.width();
-        let h = self.height();
         let (znear, zfar) = camera.clip_planes();
 
         // FIXME: remove this completely?
