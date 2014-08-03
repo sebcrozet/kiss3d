@@ -34,7 +34,7 @@ fn main() {
     let mut oculus_stereo = OculusStereo::new();
 
     while window.render_with_camera_and_effect(&mut camera, &mut oculus_stereo) {
-        for mut event in window.events().iter() {
+        for event in window.events().iter() {
             match event.value {
                 glfw::KeyEvent(glfw::Key1, _, glfw::Release, _) => {
                     let ipd = camera.ipd();
