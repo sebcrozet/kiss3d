@@ -23,7 +23,7 @@ use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, RenderTarget, Texture, TextureManager, Mesh, Material};
 use light::{Light, Absolute, StickToCamera};
 use text::{TextRenderer, Font};
-use window::RenderFrames;
+use window::EventManager;
 use camera::ArcBall;
 
 
@@ -33,8 +33,9 @@ static DEFAULT_HEIGHT: u32 = 600u32;
 /// Structure representing a window and a 3D scene.
 ///
 /// This is the main interface with the 3d engine.
-pub struct Window<'a> {
+pub struct Window {
     events:                     Rc<Receiver<(f64, glfw::WindowEvent)>>,
+    unhandled_events:           Rc<RefCell<Vec<glfw::WindowEvent>>>,
     glfw:                       glfw::Glfw,
     window:                     glfw::Window,
     max_ms_per_frame:           Option<u64>,
@@ -47,29 +48,15 @@ pub struct Window<'a> {
     framebuffer_manager:        FramebufferManager,
     post_process_render_target: RenderTarget,
     timer:                      Timer,
-    curr_time:                  u64
+    curr_time:                  u64,
+    camera:                     Rc<RefCell<ArcBall>>
 }
 
-impl<'a> Window<'a> {
-    // FIXME: this doc is sooo unhelpful.
-    /// Gets an iterator to the rendering frames.
-    ///
-    /// Uses this to start your render loop. The `RenderFrames` iterator iters though the frames
-    /// that are drawn on the window.
+impl Window {
+    /// Indicates whether this window should be closed.
     #[inline]
-    pub fn iter<'b>(&'b mut self) -> RenderFrames<'b, 'a, ArcBall> {
-        self.iter_with_camera(ArcBall::new(-Vec3::z(), na::zero()))
-    }
-
-    /// Gets an iterator to the rendering frames with the camera `camera`.
-    ///
-    /// Uses this to start your render loop. The `RenderFrames` iterator iters though the frames
-    /// that are drawn on the window.
-    #[inline]
-    pub fn iter_with_camera<'b, C: 'static + Camera>(&'b mut self, camera: C) -> RenderFrames<'b, 'a, C> {
-        let events = self.events.clone();
-
-        RenderFrames::new_with_camera(events, self, camera)
+    pub fn should_close(&self) -> bool {
+        self.window.should_close()
     }
 
     /// Access the glfw context.
@@ -276,26 +263,6 @@ impl<'a> Window<'a> {
         TextureManager::get_global_manager(|tm| tm.add(path, name))
     }
 
-    /// Handles an event with the given camera.
-    ///
-    /// This will handle the `FramebufferSizeEvent` to update the viewport size, and the `Escape`
-    /// key release event to close the window.
-    ///
-    /// Returns `true` if an event has been handled.
-    pub fn handle_event(&mut self, event: &glfw::WindowEvent) -> bool {
-        match *event {
-            glfw::KeyEvent(glfw::KeyEscape, _, glfw::Release, _) => {
-                self.close();
-                true
-            },
-            glfw::FramebufferSizeEvent(w, h) => {
-                self.update_viewport(w as f32, h as f32);
-                true
-            },
-            _ => false
-        }
-    }
-
     /// Returns whether this window is closed or not.
     pub fn is_closed(&self) -> bool {
         false // FIXME
@@ -350,6 +317,7 @@ impl<'a> Window<'a> {
             glfw:                  glfw,
             window:                window,
             events:                Rc::new(events),
+            unhandled_events:      Rc::new(RefCell::new(Vec::new())),
             scene:                 SceneNode::new_empty(),
             light_mode:            Absolute(Vec3::new(0.0, 10.0, 0.0)),
             background:            Vec3::new(0.0, 0.0, 0.0),
@@ -359,7 +327,8 @@ impl<'a> Window<'a> {
             post_process_render_target: FramebufferManager::new_render_target(width as uint, height as uint),
             framebuffer_manager:   FramebufferManager::new(),
             timer:                 Timer::new().unwrap(),
-            curr_time:             time::precise_time_ns()
+            curr_time:             time::precise_time_ns(),
+            camera:                Rc::new(RefCell::new(ArcBall::new(Vec3::new(0.0f32, 0.0, -1.0), na::zero())))
         };
 
         // setup callbacks
@@ -420,8 +389,94 @@ impl<'a> Window<'a> {
         }
     }
 
+    /// Gets the events manager that gives access to an event iterator.
+    pub fn events(&self) -> EventManager {
+        EventManager::new(self.events.clone(), self.unhandled_events.clone())
+    }
+
+    /// Poll events and pass them to a user-defined function. If the function returns `true`, the
+    /// default engine event handler (camera, framebuffer size, etc.) is executed, if it returns
+    /// `false`, the default engine event handler is not executed. Return `false` if you want to
+    /// override the default engine behaviour.
+    #[inline]
+    fn handle_events(&mut self, camera: &mut Option<&mut Camera>) {
+        let unhandled_events = self.unhandled_events.clone(); // FIXME: this is very ugly.
+        let events = self.events.clone(); // FIXME: this is very ugly
+
+        for event in unhandled_events.borrow().iter() {
+            self.handle_event(camera, event)
+        }
+
+        for event in glfw::flush_messages(events.deref()) {
+            self.handle_event(camera, event.ref1())
+        }
+
+        unhandled_events.borrow_mut().clear();
+        self.glfw.poll_events();
+    }
+
+    fn handle_event(&mut self, camera: &mut Option<&mut Camera>, event: &glfw::WindowEvent) {
+        match *event {
+            glfw::KeyEvent(glfw::KeyEscape, _, glfw::Release, _) => {
+                self.close();
+            },
+            glfw::FramebufferSizeEvent(w, h) => {
+                self.update_viewport(w as f32, h as f32);
+            },
+            _ => { }
+        }
+
+        match *camera {
+            Some(ref mut cam) => cam.handle_event(&self.window, event),
+            None => self.camera.borrow_mut().handle_event(&self.window, event)
+        }
+    }
+
+    /// Renders the scene using the default camera.
+    ///
+    /// Returns `false` if the window should be closed.
+    pub fn render(&mut self) -> bool {
+        self.render_with(None, None)
+    }
+
+    /// Render using a specific post processing effect.
+    ///
+    /// Returns `false` if the window should be closed.
+    pub fn render_with_effect(&mut self, effect: &mut PostProcessingEffect) -> bool {
+        self.render_with(None, Some(effect))
+    }
+
+    /// Render using a specific camera.
+    ///
+    /// Returns `false` if the window should be closed.
+    pub fn render_with_camera(&mut self, camera: &mut Camera) -> bool {
+        self.render_with(Some(camera), None)
+    }
+
+    /// Render using a specific camera and post processing effect.
+    ///
+    /// Returns `false` if the window should be closed.
+    pub fn render_with_camera_and_effect(&mut self, camera: &mut Camera, effect: &mut PostProcessingEffect) -> bool {
+        self.render_with(Some(camera), Some(effect))
+    }
+
     /// Draws the scene with the given camera and post-processing effect.
-    pub fn draw(&mut self, camera: &mut Camera, post_processing: &mut Option<&mut PostProcessingEffect>) {
+    ///
+    /// Returns `false` if the window should be closed.
+    pub fn render_with(&mut self,
+                       camera:          Option<&mut Camera>,
+                       post_processing: Option<&mut PostProcessingEffect>)
+                       -> bool {
+        let mut camera = camera;
+        self.handle_events(&mut camera);
+
+        let self_cam      = self.camera.clone(); // FIXME: this is ugly.
+        let mut bself_cam = self_cam.borrow_mut();
+        let camera = match camera {
+            None      => bself_cam.deref_mut() as &mut Camera,
+            Some(cam) => cam
+        };
+
         camera.update(&self.window);
 
         match self.light_mode {
@@ -429,6 +484,7 @@ impl<'a> Window<'a> {
             _             => { }
         }
 
+        let mut post_processing = post_processing;
         if post_processing.is_some() {
             // if we need post-processing, render to our own frame buffer
             self.framebuffer_manager.select(&self.post_process_render_target);
@@ -453,7 +509,7 @@ impl<'a> Window<'a> {
         //     verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
         // }
 
-        match *post_processing {
+        match post_processing {
             Some(ref mut p) => {
                 // switch back to the screen framebuffer …
                 self.framebuffer_manager.select(&FramebufferManager::screen());
@@ -485,6 +541,8 @@ impl<'a> Window<'a> {
 
         // self.transparent_objects.clear();
         // self.opaque_objects.clear();
+
+        !self.should_close()
     }
 
     fn render_scene(&mut self, camera: &mut Camera, pass: uint) {

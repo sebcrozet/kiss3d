@@ -17,12 +17,12 @@ fn main() {
 
     window.set_light(light::StickToCamera);
 
-    for mut frame in window.iter() {
+    while window.render() {
         if added {
-            frame.window().remove(&mut c);
+            window.remove(&mut c);
         }
         else {
-            c = frame.window().add_cube(1.0, 1.0, 1.0);
+            c = window.add_cube(1.0, 1.0, 1.0);
             c.set_color(1.0, 0.0, 0.0);
         }
 

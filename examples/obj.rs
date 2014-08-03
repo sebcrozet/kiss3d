@@ -19,7 +19,7 @@ fn main() {
 
     window.set_light(light::StickToCamera);
 
-    for _ in window.iter() {
-        o.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
+    while window.render() {
+        o.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
     }
 }

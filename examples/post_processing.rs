@@ -46,20 +46,20 @@ fn main() {
     let mut time    = 0u;
     let mut counter = 0u;
 
-    for mut frame in window.iter() {
+    while !window.should_close() {
         if time % 200 == 0 {
             time    = 0;
             counter = (counter + 1) % 4;
         }
 
-        match counter {
-            0 => { },
-            1 => frame.set_post_processing_effect(&mut grays),
-            2 => frame.set_post_processing_effect(&mut waves),
-            3 => frame.set_post_processing_effect(&mut sobel),
-            _ => unreachable!()
-        }
-
         time = time + 1;
+
+        let _ = match counter {
+            0 => window.render(),
+            1 => window.render_with_effect(&mut grays),
+            2 => window.render_with_effect(&mut waves),
+            3 => window.render_with_effect(&mut sobel),
+            _ => unreachable!()
+        };
     }
 }

@@ -19,9 +19,9 @@ fn main() {
 
     let mut c = window.add_cube(1.0, 1.0, 1.0);
 
-    let eye    = Vec3::new(0.0f32, 0.0, 10.0);
-    let at     = Vec3::new(0.0f32, 0.0, 0.0);
-    let camera = FirstPersonStereo::new(eye, at, 0.3f32);
+    let eye        = Vec3::new(0.0f32, 0.0, 10.0);
+    let at         = Vec3::new(0.0f32, 0.0, 0.0);
+    let mut camera = FirstPersonStereo::new(eye, at, 0.3f32);
 
     // Position the window correctly. -6/-26 takes care of icewm default
     // window decoration. Should probably just disable decorations (since
@@ -32,29 +32,20 @@ fn main() {
     window.set_light(light::StickToCamera);
 
     let mut oculus_stereo = OculusStereo::new();
-    let mut using_shader  = true;
 
-    for mut frame in window.iter_with_camera(camera) {
-        for mut event in frame.events().iter() {
+    while window.render_with_camera_and_effect(&mut camera, &mut oculus_stereo) {
+        for mut event in window.events().iter() {
             match event.value {
                 glfw::KeyEvent(glfw::Key1, _, glfw::Release, _) => {
-                    let ipd = frame.default_camera().ipd();
-                    frame.default_camera().set_ipd(ipd + 0.1f32);
+                    let ipd = camera.ipd();
+                    camera.set_ipd(ipd + 0.1f32);
                 },
                 glfw::KeyEvent(glfw::Key2, _, glfw::Release, _) => {
-                    let ipd = frame.default_camera().ipd();
-                    frame.default_camera().set_ipd(ipd - 0.1f32);
-                }
-                glfw::KeyEvent(glfw::KeyS, _, glfw::Release, _) => {
-                            using_shader    = !using_shader;
-                            event.inhibited = true;
+                    let ipd = camera.ipd();
+                    camera.set_ipd(ipd - 0.1f32);
                 },
                 _ => { }
             }
-        }
-
-        if using_shader {
-            frame.set_post_processing_effect(&mut oculus_stereo);
         }
     }
 }

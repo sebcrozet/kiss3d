@@ -191,13 +191,13 @@ impl Mesh {
                 normal = cross
             }
     
-            *normals.get_mut(f.x as uint) = *normals.get(f.x as uint) + normal;
-            *normals.get_mut(f.y as uint) = *normals.get(f.y as uint) + normal;
-            *normals.get_mut(f.z as uint) = *normals.get(f.z as uint) + normal;
+            *normals.get_mut(f.x as uint) = (*normals)[f.x as uint] + normal;
+            *normals.get_mut(f.y as uint) = (*normals)[f.y as uint] + normal;
+            *normals.get_mut(f.z as uint) = (*normals)[f.z as uint] + normal;
     
-            *divisor.get_mut(f.x as uint) = *divisor.get(f.x as uint) + 1.0;
-            *divisor.get_mut(f.y as uint) = *divisor.get(f.y as uint) + 1.0;
-            *divisor.get_mut(f.z as uint) = *divisor.get(f.z as uint) + 1.0;
+            *divisor.get_mut(f.x as uint) = divisor[f.x as uint] + 1.0;
+            *divisor.get_mut(f.y as uint) = divisor[f.y as uint] + 1.0;
+            *divisor.get_mut(f.z as uint) = divisor[f.z as uint] + 1.0;
         }
     
         // ... and compute the mean

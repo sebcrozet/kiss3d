@@ -12,8 +12,7 @@ use ncollide::procedural::path::{PolylinePath, PolylinePattern, StrokePattern, A
 use ncollide::procedural;
 use ncollide::utils;
 use ncollide::utils::symbolic::{BivariateFn, sin, cos, u, v};
-use kiss3d::window::{Window, RenderFrame};
-use kiss3d::camera::ArcBall;
+use kiss3d::window::Window;
 use kiss3d::light;
 
 #[start]
@@ -164,7 +163,7 @@ fn main() {
      * Uniform parametric surface mesher with max distance error.
      */
     let banana = ParametricBananas::new();
-    let mesh   = procedural::parametric_surface_uniform_with_distance_error(&banana, 0.1);
+    let mesh   = procedural::parametric_surface_uniform_with_distance_error(&banana, 0.01);
     let mut m  = window.add_trimesh(mesh, Vec3::new(0.5, 0.5, 0.5));
     m.set_texture_with_name("banana");
     m.append_translation(&Vec3::new(-5.5, 0.0, 0.0));
@@ -178,27 +177,27 @@ fn main() {
      */
     window.set_light(light::StickToCamera);
 
-    for mut frame in window.iter() {
-        draw_polyline(&mut frame, &polyline, points)
+    while window.render() {
+        draw_polyline(&mut window, &polyline, points);
     }
 }
 
-fn draw_polyline(frame: &mut RenderFrame<ArcBall>, polyline: &Polyline<f32, Vec2<f32>>, points: &[Vec2<f32>]) {
+fn draw_polyline(window: &mut Window, polyline: &Polyline<f32, Vec2<f32>>, points: &[Vec2<f32>]) {
     for pt in polyline.coords.as_slice().windows(2) {
-        frame.draw_line(&Vec3::new(pt[0].x, pt[0].y, 0.0), &Vec3::new(pt[1].x, pt[1].y, 0.0), &Vec3::y());
+        window.draw_line(&Vec3::new(pt[0].x, pt[0].y, 0.0), &Vec3::new(pt[1].x, pt[1].y, 0.0), &Vec3::y());
     }
 
     let last = polyline.coords.len() - 1;
-    frame.draw_line(&Vec3::new(polyline.coords.get(0).x, polyline.coords.get(0).y, 0.0),
-                    &Vec3::new(polyline.coords.get(last).x, polyline.coords.get(last).y, 0.0),
+    window.draw_line(&Vec3::new(polyline.coords[0].x, polyline.coords[0].y, 0.0),
+                    &Vec3::new(polyline.coords[last].x, polyline.coords[last].y, 0.0),
                     &Vec3::y());
 
     for pt in points.iter() {
-        frame.draw_point(&Vec3::new(pt.x, pt.y, 0.0), &Vec3::z());
+        window.draw_point(&Vec3::new(pt.x, pt.y, 0.0), &Vec3::z());
     }
 
     for pt in polyline.coords.as_slice().iter() {
-        frame.draw_point(&Vec3::new(pt.x, pt.y, 0.0), &Vec3::x());
+        window.draw_point(&Vec3::new(pt.x, pt.y, 0.0), &Vec3::x());
     }
 
 }

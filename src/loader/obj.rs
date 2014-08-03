@@ -208,8 +208,8 @@ fn parse_f<'a>(l:              uint,
         if i > 2 {
             // on the fly triangulation as trangle fan
             let g = groups_ids.get_mut(curr_group);
-            let p1 = *g.get(g.len() - i);
-            let p2 = *g.get(g.len() - 1);
+            let p1 = (*g)[g.len() - i];
+            let p2 = (*g)[g.len() - 1];
             g.push(p1);
             g.push(p2);
         }
@@ -256,7 +256,7 @@ fn parse_f<'a>(l:              uint,
     // there is not enough vertex to form a triangle. Complete it.
     if i < 2 {
         for _ in range(0u, 3 - i) {
-            let last = groups_ids.get(curr_group).last().unwrap().clone();
+            let last = (*groups_ids)[curr_group].last().unwrap().clone();
             groups_ids.get_mut(curr_group).push(last);
         }
     }
@@ -313,16 +313,16 @@ fn reformat(coords:     Vec<Coord>,
         names.push(name);
         mtls.push(group2mtl.find(&i).map(|m| m.clone()));
 
-        for point in groups_ids.get(i).iter() {
+        for point in groups_ids[i].iter() {
             let idx = match vt2id.find(point) {
                 Some(i) => { vertex_ids.push(*i); None },
                 None    => {
                     let idx = resc.len() as u32;
 
-                    resc.push(*coords.get(point.x as uint));
+                    resc.push(coords[point.x as uint]);
 
-                    let _ = resu.as_mut().map(|l| l.push(*uvs.get_ref().get(point.y as uint)));
-                    let _ = resn.as_mut().map(|l| l.push(*normals.get_ref().get(point.z as uint)));
+                    let _ = resu.as_mut().map(|l| l.push((*uvs.get_ref())[point.y as uint]));
+                    let _ = resn.as_mut().map(|l| l.push((*normals.get_ref())[point.z as uint]));
 
                     vertex_ids.push(idx);
 

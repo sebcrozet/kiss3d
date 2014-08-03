@@ -36,7 +36,7 @@ fn main() {
 
     window.set_light(light::StickToCamera);
 
-    for _ in window.iter() {
+    while window.render() {
         c.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
         s.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
         p.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));

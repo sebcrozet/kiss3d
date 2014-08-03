@@ -44,8 +44,8 @@ fn main() {
 
     window.set_light(StickToCamera);
 
-    for mut frame in window.iter() {
+    while window.render() {
         // XXX: applying this to each object individually became complicated…
-        frame.window().scene_mut().append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
+        window.scene_mut().append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
     }
 }

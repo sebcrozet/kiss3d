@@ -15,8 +15,7 @@ fn start(argc: int, argv: *const *const u8) -> int {
     native::start(argc, argv, main)
 }
 
-fn main()
-{
+fn main() {
     let eye              = Vec3::new(10.0f32, 10.0, 10.0);
     let at               = na::zero();
     let mut first_person = FirstPerson::new(eye, at);
@@ -26,13 +25,13 @@ fn main()
     let mut window = Window::new("Kiss3d: camera");
     window.set_light(light::StickToCamera);
 
-    for mut frame in window.iter() {
+    while !window.should_close() {
         // rotate the arc-ball camera.
         let curr_yaw = arc_ball.yaw();
         arc_ball.set_yaw(curr_yaw + 0.05);
 
         // update the current camera.
-        for event in frame.events().iter() {
+        for event in window.events().iter() {
             match event.value {
                 glfw::KeyEvent(key, _, glfw::Release, _) => {
                     if key == glfw::Key1 {
@@ -46,15 +45,15 @@ fn main()
             }
         }
 
+        window.draw_line(&na::zero(), &Vec3::x(), &Vec3::x());
+        window.draw_line(&na::zero(), &Vec3::y(), &Vec3::y());
+        window.draw_line(&na::zero(), &Vec3::z(), &Vec3::z());
+
         if use_arc_ball {
-            frame.set_camera(&mut arc_ball)
+            window.render_with_camera(&mut arc_ball);
         }
         else {
-            frame.set_camera(&mut first_person)
+            window.render_with_camera(&mut first_person);
         }
-
-        frame.draw_line(&na::zero(), &Vec3::x(), &Vec3::x());
-        frame.draw_line(&na::zero(), &Vec3::y(), &Vec3::y());
-        frame.draw_line(&na::zero(), &Vec3::z(), &Vec3::z());
     }
 }

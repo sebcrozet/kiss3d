@@ -1,5 +1,5 @@
 use std::rc::Rc;
-use std::cell::{RefCell, RefMut};
+use std::cell::RefCell;
 use glfw;
 
 /// An event.
@@ -10,7 +10,7 @@ pub struct Event<'a> {
     pub value:     glfw::WindowEvent,
     /// Set this to `true` to prevent the window or the camera from handling the event.
     pub inhibited: bool,
-    inhibitor:     RefMut<'a, Vec<glfw::WindowEvent>>
+    inhibitor:     &'a RefCell<Vec<glfw::WindowEvent>>
 }
 
 #[unsafe_destructor]
@@ -18,7 +18,7 @@ impl<'a> Drop for Event<'a> {
     #[inline]
     fn drop(&mut self) {
         if !self.inhibited {
-            self.inhibitor.push(self.value.clone())
+            self.inhibitor.borrow_mut().push(self.value.clone())
         }
     }
 }
@@ -27,7 +27,7 @@ impl<'a> Event<'a> {
     #[inline]
     fn new(timestamp: f64,
            value:     glfw::WindowEvent,
-           inhibitor: RefMut<'a, Vec<glfw::WindowEvent>>)
+           inhibitor: &'a RefCell<Vec<glfw::WindowEvent>>)
            -> Event<'a> {
         Event {
             timestamp: timestamp,
@@ -41,26 +41,28 @@ impl<'a> Event<'a> {
 /// An iterator through events.
 pub struct Events<'a> {
     stream:    glfw::FlushedMessages<'a, (f64, glfw::WindowEvent)>,
-    inhibitor: Rc<RefCell<Vec<glfw::WindowEvent>>>
+    inhibitor: &'a RefCell<Vec<glfw::WindowEvent>>
 }
 
 impl<'a> Events<'a> {
     #[inline]
     fn new(stream:    glfw::FlushedMessages<'a, (f64, glfw::WindowEvent)>,
-           inhibitor: Rc<RefCell<Vec<glfw::WindowEvent>>>)
+           inhibitor: &'a RefCell<Vec<glfw::WindowEvent>>)
            -> Events<'a> {
         Events {
             stream:    stream,
             inhibitor: inhibitor
         }
     }
+}
 
-    /// Gets the next event.
+
+impl<'a> Iterator<Event<'a>> for Events<'a> {
     #[inline]
-    pub fn next<'b>(&'b mut self) -> Option<Event<'b>> {
+    fn next(&mut self) -> Option<Event<'a>> {
         match self.stream.next() {
             None         => None,
-            Some((t, e)) => Some(Event::new(t, e, self.inhibitor.borrow_mut()))
+            Some((t, e)) => Some(Event::new(t, e, self.inhibitor))
         }
     }
 }
@@ -85,9 +87,9 @@ impl EventManager {
         }
     }
 
-    /// Gets an iterator to the glfw events already detected.
+    /// Gets an iterator to the glfw events already collected.
     #[inline]
     pub fn iter<'a>(&'a mut self) -> Events<'a> {
-        Events::new(glfw::flush_messages(self.events.deref()), self.inhibitor.clone())
+        Events::new(glfw::flush_messages(self.events.deref()), self.inhibitor.deref())
     }
 }

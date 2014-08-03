@@ -27,8 +27,8 @@ fn main() {
 
     c.set_material(material);
 
-    for _ in window.iter() {
-        c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0))
+    while window.render() {
+        c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
     }
 }
 

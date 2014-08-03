@@ -14,8 +14,8 @@ fn start(argc: int, argv: *const *const u8) -> int {
 fn main() {
     let mut window = Window::new("Kiss3d: events");
 
-    for frame in window.iter() {
-        for mut event in frame.events().iter() {
+    while window.render() {
+        for mut event in window.events().iter() {
             match event.value {
                 glfw::KeyEvent(code, _, glfw::Press, _) => {
                     println!("You pressed the key with code: {:?}", code);

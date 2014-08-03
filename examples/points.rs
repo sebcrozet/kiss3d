@@ -16,13 +16,13 @@ fn main() {
 
     window.set_light(light::StickToCamera);
 
-    for mut frame in window.iter() {
+    while window.render() {
         let a = Vec3::new(-0.1, -0.1, 0.0);
         let b = Vec3::new(0.0, 0.1, 0.0);
         let c = Vec3::new(0.1, -0.1, 0.0);
 
-        frame.draw_point(&a, &Vec3::x());
-        frame.draw_point(&b, &Vec3::y());
-        frame.draw_point(&c, &Vec3::z());
+        window.draw_point(&a, &Vec3::x());
+        window.draw_point(&b, &Vec3::y());
+        window.draw_point(&c, &Vec3::z());
     }
 }

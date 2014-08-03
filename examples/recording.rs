@@ -26,9 +26,9 @@ fn main() {
     window.width()  as uint,
     window.height() as uint);
 
-    for mut frame in window.iter() {
+    while window.render() {
         c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
 
-        recorder.snap(frame.window());
+        recorder.snap(&mut window);
     }
 }

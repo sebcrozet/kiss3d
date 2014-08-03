@@ -32,10 +32,10 @@ fn main() {
     let eye      = Vec3::new(0.0f32, -399.0, 400.0);
     let at       = Vec3::new(0.0f32, -399.0, 0.0);
     let fov      = 45.0f32.to_radians();
-    let observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
     let font     = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
     let context  = Arc::new(RWLock::new(Context::new(1000.0, na::zero(), eye)));
     let material = Rc::new(RefCell::new(box RelativisticMaterial::new(context.clone()) as Box<Material + 'static>));
+    let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
 
     window.set_framerate_limit(Some(60));
 
@@ -66,10 +66,10 @@ fn main() {
     /*
      * Render
      */
-    for mut frame in window.iter_with_camera(observer) {
+    while window.render_with_camera(&mut observer) {
         let mut c = context.write();
 
-        for event in frame.events().iter() {
+        for event in window.events().iter() {
             match event.value {
                 glfw::KeyEvent(code, _, glfw::Release, _) => {
                     if code == glfw::Key1 {
@@ -83,18 +83,18 @@ fn main() {
             }
         }
 
-        let obs_vel = frame.default_camera().velocity;
+        let obs_vel = observer.velocity;
         let sop = na::norm(&obs_vel);
 
-        frame.draw_text(
+        window.draw_text(
             format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop).as_slice(),
             &na::zero(),
             &font,
             &Vec3::new(1.0, 1.0, 1.0));
 
-        frame.default_camera().max_vel  = c.speed_of_light * 0.85;
+        observer.max_vel  = c.speed_of_light * 0.85;
         c.speed_of_player = obs_vel;
-        c.position        = frame.default_camera().eye();
+        c.position        = observer.eye();
     }
 }
 

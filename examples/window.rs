@@ -13,6 +13,6 @@ fn main() {
 
     window.set_background_color(0.0, 0.0, 0.3);
 
-    for _ in window.iter() {
+    while window.render() {
     }
 }

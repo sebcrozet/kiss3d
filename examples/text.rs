@@ -18,11 +18,11 @@ fn main() {
     let bigfont   = Font::new(&Path::new("media/font/Inconsolata.otf"), 120);
     let smallfont = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
 
-    for mut frame in window.iter() {
-        frame.draw_text("Hello birds!", &na::zero(), &bigfont, &Vec3::new(0.0, 1.0, 1.0));
+    while window.render() {
+        window.draw_text("Hello birds!", &na::zero(), &bigfont, &Vec3::new(0.0, 1.0, 1.0));
 
         let ascii = " !\"#$%&'`()*+,-_./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^abcdefghijklmnopqrstuvwxyz{|}~";
 
-        frame.draw_text(ascii, &Vec2::new(0.0, 120.0), &smallfont, &Vec3::new(1.0, 1.0, 0.0))
+        window.draw_text(ascii, &Vec2::new(0.0, 120.0), &smallfont, &Vec3::new(1.0, 1.0, 0.0));
     }
 }
