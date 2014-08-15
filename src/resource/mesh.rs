@@ -5,9 +5,9 @@ use sync::{Arc, RWLock};
 use gl::types::*;
 use nalgebra::na::{Vec2, Vec3};
 use nalgebra::na;
+use ncollide::procedural::{TriMesh, UnifiedIndexBuffer};
 use resource::ShaderAttribute;
 use resource::gpu_vector::{GPUVector, DynamicDraw, StaticDraw, ArrayBuffer, ElementArrayBuffer};
-use ncollide::procedural::TriMesh;
 
 #[path = "../error.rs"]
 mod error;
@@ -62,6 +62,44 @@ impl Mesh {
         let TriMesh { coords, normals, uvs, indices } = mesh;
         
         Mesh::new(coords, indices.unwrap_unified(), normals, uvs, dynamic_draw)
+    }
+
+    /// Creates a triangle mesh from this mesh.
+    pub fn to_trimesh(&self) -> Option<TriMesh<GLfloat, Vec3<GLfloat>>> {
+        let unload_coords  = !self.coords.read().is_on_ram();
+        let unload_faces   = !self.faces.read().is_on_ram();
+        let unload_normals = !self.normals.read().is_on_ram();
+        let unload_uvs     = !self.uvs.read().is_on_ram();
+
+        self.coords.write().load_to_ram();
+        self.faces.write().load_to_ram();
+        self.normals.write().load_to_ram();
+        self.uvs.write().load_to_ram();
+
+        let coords  = self.coords.read().to_owned();
+        let faces   = self.faces.read().to_owned();
+        let normals = self.normals.read().to_owned();
+        let uvs     = self.uvs.read().to_owned();
+
+        if unload_coords {
+            self.coords.write().unload_from_ram();
+        }
+        if unload_faces {
+            self.coords.write().unload_from_ram();
+        }
+        if unload_normals {
+            self.coords.write().unload_from_ram();
+        }
+        if unload_uvs {
+            self.coords.write().unload_from_ram();
+        }
+
+        if coords.is_none() || faces.is_none() {
+            None
+        }
+        else {
+            Some(TriMesh::new(coords.unwrap(), normals, uvs, Some(UnifiedIndexBuffer(faces.unwrap()))))
+        }
     }
 
     /// Creates a new mesh. Arguments set to `None` are automatically computed.
