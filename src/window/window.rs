@@ -9,6 +9,7 @@ use std::io::timer::Timer;
 use std::cell::RefCell;
 use std::rc::Rc;
 use libc;
+use std::time::Duration;
 use time;
 use gl;
 use gl::types::*;
@@ -535,7 +536,7 @@ impl Window {
             Some(ms) => {
                 let elapsed = (time::precise_time_ns() - self.curr_time) / 1000000;
                 if elapsed < ms {
-                    self.timer.sleep(ms - elapsed);
+                    self.timer.sleep(Duration::milliseconds((ms - elapsed) as i32));
                 }
             }
         }
