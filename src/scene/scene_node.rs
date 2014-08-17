@@ -728,14 +728,26 @@ impl SceneNode {
     /// This will create a new node serving as a root of the scene described by the obj file. This
     /// newly created node is added to this node's children.
     pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: Vec3<f32>) -> SceneNode {
-        let tex      = TextureManager::get_global_manager(|tm| tm.get_default());
-        let mat      = MaterialManager::get_global_manager(|mm| mm.get_default());
-        let mut root = SceneNode::new(scale, na::one(), None);
-
-        self.add_child(root.clone());
+        let tex = TextureManager::get_global_manager(|tm| tm.get_default());
+        let mat = MaterialManager::get_global_manager(|mm| mm.get_default());
 
         // FIXME: is there some error-handling stuff to do here instead of the `let _`.
-        let _ = MeshManager::load_obj(path, mtl_dir, path.as_str().unwrap()).map(|objs| {
+        let result = MeshManager::load_obj(path, mtl_dir, path.as_str().unwrap()).map(|objs| {
+            let mut root;
+
+            let self_root = objs.len() == 1;
+            let child_scale;
+
+            if self_root {
+                root = self.clone();
+                child_scale = scale;
+            }
+            else {
+                root = SceneNode::new(scale, na::one(), None);
+                self.add_child(root.clone());
+                child_scale = na::one();
+            }
+
             for (_, mesh, mtl) in objs.move_iter() {
                 let mut object = Object::new(
                     mesh,
@@ -763,11 +775,18 @@ impl SceneNode {
                     }
                 }
 
-                let _ = root.add_object(na::one(), na::one(), object);
+                let _ = root.add_object(child_scale, na::one(), object);
+            }
+
+            if self_root {
+                root.data().children.last().expect("There was nothing on this obj file.").clone()
+            }
+            else {
+                root
             }
         });
 
-        root
+        result.unwrap()
     }
 
     /// Applies a closure to each object contained by this node and its children.
