@@ -1,4 +1,5 @@
 extern crate native;
+extern crate time;
 extern crate ncollide = "ncollide3df32";
 extern crate kiss3d;
 extern crate nalgebra;
@@ -166,7 +167,7 @@ fn main() {
     let mesh   = procedural::parametric_surface_uniform_with_distance_error(&banana, 0.01);
     let mut m  = window.add_trimesh(mesh, Vec3::new(0.5, 0.5, 0.5));
     m.set_texture_with_name("banana");
-    m.append_translation(&Vec3::new(-5.5, 0.0, 0.0));
+    m.append_translation(&Vec3::new(-6.0, 0.0, 0.0));
     m.set_surface_rendering_activation(false);
     m.set_lines_width(2.0);
 

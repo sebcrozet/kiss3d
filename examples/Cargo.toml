@@ -31,6 +31,10 @@ name = "custom_mesh_shared"
 path = "./custom_mesh_shared.rs"
 
 [[bin]]
+name = "decomp"
+path = "./decomp.rs"
+
+[[bin]]
 name = "event"
 path = "./event.rs"
 

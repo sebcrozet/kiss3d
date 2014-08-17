@@ -3,7 +3,7 @@ name    = "kiss3d"
 version = "0.1.0"
 authors = [ "Sébastien Crozet <developer@crozet.re>" ]
 
-[[lib]]
+[lib]
 name       = "kiss3d"
 path       = "src/lib.rs"
 
