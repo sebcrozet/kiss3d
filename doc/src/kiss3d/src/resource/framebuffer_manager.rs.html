@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/resource/framebuffer_manager.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>framebuffer_manager.rs.html -- source</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -280,9 +283,9 @@
             <span class='ident'>Screen</span> <span class='op'>=&gt;</span> {
                 <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>Viewport</span>(<span class='number'>0</span>, <span class='number'>0</span>, <span class='ident'>w</span> <span class='kw'>as</span> <span class='ident'>i32</span>, <span class='ident'>h</span> <span class='kw'>as</span> <span class='ident'>i32</span>));
             },
-            <span class='ident'>Offscreen</span>(<span class='kw-2'>ref</span> <span class='ident'>o</span>) <span class='op'>=&gt;</span> {<span class='comment'>
-                // Update the fbo
-                </span><span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>o</span>.<span class='ident'>texture</span>));
+            <span class='ident'>Offscreen</span>(<span class='kw-2'>ref</span> <span class='ident'>o</span>) <span class='op'>=&gt;</span> {
+                <span class='comment'>// Update the fbo</span>
+                <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>o</span>.<span class='ident'>texture</span>));
                 <span class='kw'>unsafe</span> {
                     <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexImage2D</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='number'>0</span>, <span class='ident'>gl</span>::<span class='ident'>RGBA</span> <span class='kw'>as</span> <span class='ident'>GLint</span>, <span class='ident'>w</span> <span class='kw'>as</span> <span class='ident'>GLint</span>, <span class='ident'>h</span> <span class='kw'>as</span> <span class='ident'>GLint</span>, <span class='number'>0</span>,
                     <span class='ident'>gl</span>::<span class='ident'>RGBA</span>, <span class='ident'>gl</span>::<span class='ident'>UNSIGNED_BYTE</span>, <span class='ident'>ptr</span>::<span class='ident'>null</span>()));
@@ -311,14 +314,14 @@
 
 <span class='kw'>impl</span> <span class='ident'>FramebufferManager</span> {
     <span class='doccomment'>/// Creates a new framebuffer manager.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>FramebufferManager</span> {<span class='comment'>
-        // create an off-screen framebuffer
-        </span><span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fbo</span>: <span class='ident'>GLuint</span> <span class='op'>=</span> <span class='number'>0</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>FramebufferManager</span> {
+        <span class='comment'>// create an off-screen framebuffer</span>
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fbo</span>: <span class='ident'>GLuint</span> <span class='op'>=</span> <span class='number'>0</span>;
 
-        <span class='kw'>unsafe</span> { <span class='ident'>gl</span>::<span class='ident'>GenFramebuffers</span>(<span class='number'>1</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fbo</span>); }<span class='comment'>
+        <span class='kw'>unsafe</span> { <span class='ident'>gl</span>::<span class='ident'>GenFramebuffers</span>(<span class='number'>1</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fbo</span>); }
 
-        // ensure that the current framebuffer is the screen
-        </span><span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindFramebuffer</span>(<span class='ident'>gl</span>::<span class='ident'>FRAMEBUFFER</span>, <span class='number'>0</span>));
+        <span class='comment'>// ensure that the current framebuffer is the screen</span>
+        <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindFramebuffer</span>(<span class='ident'>gl</span>::<span class='ident'>FRAMEBUFFER</span>, <span class='number'>0</span>));
 
         <span class='ident'>FramebufferManager</span> {
             <span class='ident'>curr_fbo</span>:   <span class='number'>0</span>,
@@ -332,10 +335,10 @@
     <span class='doccomment'>/// depth buffer.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_render_target</span>(<span class='ident'>width</span>: <span class='ident'>uint</span>, <span class='ident'>height</span>: <span class='ident'>uint</span>) <span class='op'>-&gt;</span> <span class='ident'>RenderTarget</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fbo_texture</span>: <span class='ident'>GLuint</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fbo_depth</span>:   <span class='ident'>GLuint</span> <span class='op'>=</span> <span class='number'>0</span>;<span class='comment'>
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fbo_depth</span>:   <span class='ident'>GLuint</span> <span class='op'>=</span> <span class='number'>0</span>;
 
-        /* Texture */
-        </span><span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>ActiveTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE0</span>));
+        <span class='comment'>/* Texture */</span>
+        <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>ActiveTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE0</span>));
         <span class='kw'>unsafe</span> { <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>GenTextures</span>(<span class='number'>1</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fbo_texture</span>)); }
         <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>fbo_texture</span>));
         <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexParameteri</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>gl</span>::<span class='ident'>TEXTURE_MAG_FILTER</span>, <span class='ident'>gl</span>::<span class='ident'>LINEAR</span> <span class='kw'>as</span> <span class='ident'>GLint</span>));
@@ -346,10 +349,10 @@
             <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexImage2D</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='number'>0</span>, <span class='ident'>gl</span>::<span class='ident'>RGBA</span> <span class='kw'>as</span> <span class='ident'>GLint</span>, <span class='ident'>width</span> <span class='kw'>as</span> <span class='ident'>GLint</span>, <span class='ident'>height</span> <span class='kw'>as</span> <span class='ident'>GLint</span>,
             <span class='number'>0</span>, <span class='ident'>gl</span>::<span class='ident'>RGBA</span>, <span class='ident'>gl</span>::<span class='ident'>UNSIGNED_BYTE</span>, <span class='ident'>ptr</span>::<span class='ident'>null</span>()));
         }
-        <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='number'>0</span>));<span class='comment'>
+        <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='number'>0</span>));
 
-        /* Depth buffer */
-        </span><span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>ActiveTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE1</span>));
+        <span class='comment'>/* Depth buffer */</span>
+        <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>ActiveTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE1</span>));
         <span class='kw'>unsafe</span> { <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>GenTextures</span>(<span class='number'>1</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fbo_depth</span>)); }
         <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>fbo_depth</span>));
         <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexParameteri</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>gl</span>::<span class='ident'>TEXTURE_MAG_FILTER</span>, <span class='ident'>gl</span>::<span class='ident'>LINEAR</span> <span class='kw'>as</span> <span class='ident'>GLint</span>));
@@ -456,12 +459,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../../../";

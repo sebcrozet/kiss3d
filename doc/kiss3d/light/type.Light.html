@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Light` type in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Light">
 
     <title>kiss3d::light::Light - Rust</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -38,16 +41,19 @@
     </nav>
 
     <section id='main' class="content type">
-<h1 class='fqn'>Enum <a href='../index.html'>kiss3d</a>::<a href='index.html'>light</a>::<a class='type' href=''>Light</a><a class='source' id='src-14291' href='../../src/kiss3d/src/light.rs.html#8-13'>[src]</a></h1>
+<h1 class='fqn'><div class='in-band'>Enum <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>light</a>&#8203;::<a class='type' href=''>Light</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-14348' href='../../src/kiss3d/src/light.rs.html#8-13'>[src]</a></div></h1>
 <pre class='rust enum'>pub enum Light {
-    Absolute(<a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;),
+    Absolute(<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>&gt;),
     StickToCamera,
 }</pre><div class='docblock'><p>The light configuration.</p>
 </div><h2 class='variants'>Variants</h2>
-<table><tr><td id='variant.Absolute'><code>Absolute</code></td><td><div class='docblock'><p>A light with an absolute world position.</p>
-</div></td></tr><tr><td id='variant.StickToCamera'><code>StickToCamera</code></td><td><div class='docblock'><p>A light superimposed with the camera position.</p>
-</div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='type' href='../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a></code></h3><div class='methods'><h4 id='method.clone' class='method'><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='type' href='../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a></code></h4>
-<h4 id='method.clone_from' class='method'><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+<table><tr><td id='variant.Absolute'><a class='stability Unmarked' title='No stability level'></a><code>Absolute</code></td><td><div class='docblock'><p>A light with an absolute world position.</p>
+</div></td></tr><tr><td id='variant.StickToCamera'><a class='stability Unmarked' title='No stability level'></a><code>StickToCamera</code></td><td><div class='docblock'><p>A light superimposed with the camera position.</p>
+</div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='type' href='../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a></code></h3><div class='impl-methods'><h4 id='method.clone' class='method'><a class='stability Unstable' title='Unstable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='type' href='../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a></code></h4>
+<h4 id='method.clone_from' class='method'><a class='stability Experimental' title='Experimental: this function is mostly unused'></a><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -77,12 +83,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../";

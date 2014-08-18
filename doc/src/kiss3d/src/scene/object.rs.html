@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/scene/object.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>object.rs.html -- source</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -368,13 +371,13 @@
     <span class='doccomment'>/// The texture of this object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>texture</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>Texture</span><span class='op'>&gt;</span> {
-        <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>.<span class='ident'>texture</span>
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>texture</span>
     }
 
     <span class='doccomment'>/// The color of this object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>color</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
-        <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>.<span class='ident'>color</span>
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>color</span>
     }
 
     <span class='doccomment'>/// The width of the lines draw for this object.</span>
@@ -415,10 +418,10 @@
 <span class='doccomment'>/// A 3d objects on the scene.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// This is the only interface to manipulate the object position, color, vertices and texture.</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Object</span> {<span class='comment'>
-    // FIXME: should Mesh and Object be merged?
-    // (thus removing the need of ObjectData at all.)
-    </span><span class='ident'>data</span>:     <span class='ident'>ObjectData</span>,
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Object</span> {
+    <span class='comment'>// FIXME: should Mesh and Object be merged?</span>
+    <span class='comment'>// (thus removing the need of ObjectData at all.)</span>
+    <span class='ident'>data</span>:     <span class='ident'>ObjectData</span>,
     <span class='ident'>mesh</span>:     <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>Mesh</span><span class='op'>&gt;&gt;</span>
 }
 
@@ -468,13 +471,13 @@
     <span class='doccomment'>/// Gets the data of this object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>ObjectData</span> {
-        <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>.<span class='ident'>data</span>
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>
     }
 
     <span class='doccomment'>/// Gets the data of this object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>ObjectData</span> {
-        <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>
+        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>
     }
 
     <span class='doccomment'>/// Enables or disables backface culling for this object.</span>
@@ -540,7 +543,7 @@
     <span class='doccomment'>/// This object&#39;s mesh.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>mesh</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>Mesh</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>.<span class='ident'>mesh</span>
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>mesh</span>
     }
 
     <span class='doccomment'>/// Mutably access the object&#39;s vertices.</span>
@@ -668,12 +671,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../../../";

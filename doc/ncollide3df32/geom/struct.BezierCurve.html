@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `BezierCurve` struct in crate `ncollide3df32`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, BezierCurve">
+
+    <title>ncollide3df32::geom::BezierCurve - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>geom</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.AnnotatedMinkowskiSum.html'>AnnotatedMinkowskiSum</a><a class='struct ' href='struct.Ball.html'>Ball</a><a class='struct current' href='struct.BezierCurve.html'>BezierCurve</a><a class='struct ' href='struct.BezierCurveEvaluationCache.html'>BezierCurveEvaluationCache</a><a class='struct ' href='struct.BezierSurface.html'>BezierSurface</a><a class='struct ' href='struct.BezierSurfaceEvaluationCache.html'>BezierSurfaceEvaluationCache</a><a class='struct ' href='struct.Capsule.html'>Capsule</a><a class='struct ' href='struct.Compound.html'>Compound</a><a class='struct ' href='struct.CompoundData.html'>CompoundData</a><a class='struct ' href='struct.Cone.html'>Cone</a><a class='struct ' href='struct.Convex.html'>Convex</a><a class='struct ' href='struct.Cuboid.html'>Cuboid</a><a class='struct ' href='struct.Cylinder.html'>Cylinder</a><a class='struct ' href='struct.GeomWithMargin.html'>GeomWithMargin</a><a class='struct ' href='struct.Mesh.html'>Mesh</a><a class='struct ' href='struct.MinkowskiSum.html'>MinkowskiSum</a><a class='struct ' href='struct.Plane.html'>Plane</a><a class='struct ' href='struct.Reflection.html'>Reflection</a><a class='struct ' href='struct.Segment.html'>Segment</a><a class='struct ' href='struct.Torus.html'>Torus</a><a class='struct ' href='struct.Triangle.html'>Triangle</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.ConcaveGeom.html'>ConcaveGeom</a><a class='trait ' href='trait.Geom.html'>Geom</a><a class='trait ' href='trait.MeshElement.html'>MeshElement</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>geom</a>&#8203;::<a class='struct' href=''>BezierCurve</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-13682' href='../../src/ncollide3df32/up/up/src/geom/bezier_curve.rs.html#15-17'>[src]</a></div></h1>
+<pre class='rust struct'>pub struct BezierCurve {
+    // some fields omitted
+}</pre><div class='docblock'><p>Procedural generator of non-rational Bézier curve.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../ncollide3df32/geom/struct.BezierCurve.html' title='ncollide3df32::geom::BezierCurve'>BezierCurve</a></code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(control_points: <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;) -&gt; <a class='struct' href='../../ncollide3df32/geom/struct.BezierCurve.html' title='ncollide3df32::geom::BezierCurve'>BezierCurve</a></code></h4>
+<div class='docblock'><p>Creates a new non-rational bézier curve.</p>
+
+<h1 id="parameters:" class='section-header'><a
+                           href="#parameters:">Parameters:</a></h1>
+<ul>
+<li><code>control_points</code>: The control points of the bézier curve.</li>
+</ul>
+</div><h4 id='method.new_with_degree' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_with_degree' class='fnname'>new_with_degree</a>(degree: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>) -&gt; <a class='struct' href='../../ncollide3df32/geom/struct.BezierCurve.html' title='ncollide3df32::geom::BezierCurve'>BezierCurve</a></code></h4>
+<div class='docblock'><p>Creates a new bézier curve of degree <code>degree</code>.</p>
+
+<p>Its control points are initialized to zero.</p>
+</div><h4 id='method.new_evaluation_cache' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_evaluation_cache' class='fnname'>new_evaluation_cache</a>() -&gt; <a class='struct' href='../../ncollide3df32/geom/struct.BezierCurveEvaluationCache.html' title='ncollide3df32::geom::BezierCurveEvaluationCache'>BezierCurveEvaluationCache</a></code></h4>
+<div class='docblock'><p>Creates a cache to avaluate a bezier curve.</p>
+</div><h4 id='method.control_points' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.control_points' class='fnname'>control_points</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a href='http://doc.rust-lang.org/master/std/primitive.slice.html'>[<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>]</a></code></h4>
+<div class='docblock'><p>The control points of this bézier curve.</p>
+</div><h4 id='method.control_points_mut' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.control_points_mut' class='fnname'>control_points_mut</a>&lt;'a&gt;(&amp;'a mut self) -&gt; &amp;'a mut <a href='http://doc.rust-lang.org/master/std/primitive.slice.html'>[<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>]</a></code></h4>
+<div class='docblock'><p>The control points of this bézier curve.</p>
+</div><h4 id='method.npoints' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.npoints' class='fnname'>npoints</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a></code></h4>
+<div class='docblock'><p>The number of control points per u-iso-curve.</p>
+</div><h4 id='method.degree' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.degree' class='fnname'>degree</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a></code></h4>
+<div class='docblock'><p>The degree of this curve.</p>
+</div><h4 id='method.at' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.at' class='fnname'>at</a>(&amp;self, t: &amp;<a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>, cache: &amp;mut <a class='struct' href='../../ncollide3df32/geom/struct.BezierCurveEvaluationCache.html' title='ncollide3df32::geom::BezierCurveEvaluationCache'>BezierCurveEvaluationCache</a>) -&gt; <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a></code></h4>
+<div class='docblock'><p>Evaluates this bezier curve at the given parameter <code>t</code>.</p>
+</div><h4 id='method.subdivide_at' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.subdivide_at' class='fnname'>subdivide_at</a>(&amp;self, t: &amp;<a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>, out1: &amp;mut <a class='struct' href='../../ncollide3df32/geom/struct.BezierCurve.html' title='ncollide3df32::geom::BezierCurve'>BezierCurve</a>, out2: &amp;mut <a class='struct' href='../../ncollide3df32/geom/struct.BezierCurve.html' title='ncollide3df32::geom::BezierCurve'>BezierCurve</a>)</code></h4>
+<div class='docblock'><p>Subdivides this bezier at the given parameter.</p>
+
+<p>The union of the two resulting curves equals the original one.</p>
+</div><h4 id='method.diff' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.diff' class='fnname'>diff</a>(&amp;self, out: &amp;mut <a class='struct' href='../../ncollide3df32/geom/struct.BezierCurve.html' title='ncollide3df32::geom::BezierCurve'>BezierCurve</a>)</code></h4>
+<div class='docblock'><p>Computes the derivative of this bezier curve.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/ray/trait.RayCast.html' title='ncollide3df32::ray::RayCast'>RayCast</a> for <a class='struct' href='../../ncollide3df32/geom/struct.BezierCurve.html' title='ncollide3df32::geom::BezierCurve'>BezierCurve</a></code></h3><div class='impl-methods'><h4 id='method.toi_and_normal_with_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.toi_and_normal_with_ray' class='fnname'>toi_and_normal_with_ray</a>(&amp;self, _: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, _: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../ncollide3df32/ray/struct.RayIntersection.html' title='ncollide3df32::ray::RayIntersection'>RayIntersection</a>&gt;</code></h4>
+<h4 id='method.toi_with_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.toi_with_ray' class='fnname'>toi_with_ray</a>(&amp;self, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, solid: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>&gt;</code></h4>
+<h4 id='method.toi_and_normal_and_uv_with_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.toi_and_normal_and_uv_with_ray' class='fnname'>toi_and_normal_and_uv_with_ray</a>(&amp;self, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, solid: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../ncollide3df32/ray/struct.RayIntersection.html' title='ncollide3df32::ray::RayIntersection'>RayIntersection</a>&gt;</code></h4>
+<h4 id='method.intersects_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.intersects_ray' class='fnname'>intersects_ray</a>(&amp;self, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.toi_with_transform_and_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.toi_with_transform_and_ray' class='fnname'>toi_with_transform_and_ray</a>(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, solid: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>&gt;</code></h4>
+<h4 id='method.toi_and_normal_with_transform_and_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.toi_and_normal_with_transform_and_ray' class='fnname'>toi_and_normal_with_transform_and_ray</a>(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, solid: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../ncollide3df32/ray/struct.RayIntersection.html' title='ncollide3df32::ray::RayIntersection'>RayIntersection</a>&gt;</code></h4>
+<h4 id='method.toi_and_normal_and_uv_with_transform_and_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.toi_and_normal_and_uv_with_transform_and_ray' class='fnname'>toi_and_normal_and_uv_with_transform_and_ray</a>(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, solid: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../ncollide3df32/ray/struct.RayIntersection.html' title='ncollide3df32::ray::RayIntersection'>RayIntersection</a>&gt;</code></h4>
+<h4 id='method.intersects_with_transform_and_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.intersects_with_transform_and_ray' class='fnname'>intersects_with_transform_and_ray</a>(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/procedural/trait.ToPolyline.html' title='ncollide3df32::procedural::ToPolyline'>ToPolyline</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.u32.html'>u32</a>&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.BezierCurve.html' title='ncollide3df32::geom::BezierCurve'>BezierCurve</a></code></h3><div class='impl-methods'><h4 id='method.to_polyline' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.to_polyline' class='fnname'>to_polyline</a>(&amp;self, nsubdivs: <a href='http://doc.rust-lang.org/master/std/primitive.u32.html'>u32</a>) -&gt; <a class='struct' href='../../ncollide3df32/procedural/struct.Polyline.html' title='ncollide3df32::procedural::Polyline'>Polyline</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>, <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../ncollide3df32/geom/struct.BezierCurve.html' title='ncollide3df32::geom::BezierCurve'>BezierCurve</a></code></h3><div class='impl-methods'><h4 id='method.clone' class='method'><a class='stability Unstable' title='Unstable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../ncollide3df32/geom/struct.BezierCurve.html' title='ncollide3df32::geom::BezierCurve'>BezierCurve</a></code></h4>
+<h4 id='method.clone_from' class='method'><a class='stability Experimental' title='Experimental: this function is mostly unused'></a><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

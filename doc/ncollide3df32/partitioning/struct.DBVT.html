@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `DBVT` struct in crate `ncollide3df32`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, DBVT">
+
+    <title>ncollide3df32::partitioning::DBVT - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>partitioning</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.BVT.html'>BVT</a><a class='struct ' href='struct.BoundingVolumeInterferencesCollector.html'>BoundingVolumeInterferencesCollector</a><a class='struct current' href='struct.DBVT.html'>DBVT</a><a class='struct ' href='struct.DBVTLeaf.html'>DBVTLeaf</a><a class='struct ' href='struct.RayInterferencesCollector.html'>RayInterferencesCollector</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.BVTTVisitor.html'>BVTTVisitor</a><a class='trait ' href='trait.BVTVisitor.html'>BVTVisitor</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.kdtree_partitioner.html'>kdtree_partitioner</a><a class='fn ' href='fn.kdtree_partitioner_with_centers.html'>kdtree_partitioner_with_centers</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>partitioning</a>&#8203;::<a class='struct' href=''>DBVT</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-46287' href='../../src/ncollide3df32/up/up/src/partitioning/dbvt.rs.html#23-27'>[src]</a></div></h1>
+<pre class='rust struct'>pub struct DBVT&lt;B, BV&gt; {
+    // some fields omitted
+}</pre><div class='docblock'><p>A Dynamic Bounding Volume Tree.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;B, BV&gt; <a class='struct' href='../../ncollide3df32/partitioning/struct.DBVT.html' title='ncollide3df32::partitioning::DBVT'>DBVT</a>&lt;B, BV&gt;</code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../ncollide3df32/partitioning/struct.DBVT.html' title='ncollide3df32::partitioning::DBVT'>DBVT</a>&lt;B, BV&gt;</code></h4>
+<div class='docblock'><p>Creates a new Dynamic Bounding Volume Tree.</p>
+</div></div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;BV: 'static + <a class='trait' href='../../ncollide3df32/bounding_volume/trait.BoundingVolume.html' title='ncollide3df32::bounding_volume::BoundingVolume'>BoundingVolume</a> + <a class='trait' href='../../nalgebra/traits/geometry/trait.Translation.html' title='nalgebra::traits::geometry::Translation'>Translation</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt; + <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, B: 'static + <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>&gt; <a class='struct' href='../../ncollide3df32/partitioning/struct.DBVT.html' title='ncollide3df32::partitioning::DBVT'>DBVT</a>&lt;B, BV&gt;</code></h3><div class='impl-methods'><h4 id='method.remove' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.remove' class='fnname'>remove</a>(&amp;mut self, leaf: &amp;mut <a class='struct' href='http://doc.rust-lang.org/master/std/gc/struct.Gc.html' title='std::gc::Gc'>Gc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../ncollide3df32/partitioning/struct.DBVTLeaf.html' title='ncollide3df32::partitioning::DBVTLeaf'>DBVTLeaf</a>&lt;B, BV&gt;&gt;&gt;)</code></h4>
+<div class='docblock'><p>Removes a leaf from the tree. Fails if the tree is empty.</p>
+</div><h4 id='method.insert' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.insert' class='fnname'>insert</a>(&amp;mut self, leaf: <a class='struct' href='http://doc.rust-lang.org/master/std/gc/struct.Gc.html' title='std::gc::Gc'>Gc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../ncollide3df32/partitioning/struct.DBVTLeaf.html' title='ncollide3df32::partitioning::DBVTLeaf'>DBVTLeaf</a>&lt;B, BV&gt;&gt;&gt;)</code></h4>
+<div class='docblock'><p>Inserts a leaf to the tree.</p>
+</div><h4 id='method.visit' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.visit' class='fnname'>visit</a>&lt;Vis: <a class='trait' href='../../ncollide3df32/partitioning/trait.BVTVisitor.html' title='ncollide3df32::partitioning::BVTVisitor'>BVTVisitor</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/std/gc/struct.Gc.html' title='std::gc::Gc'>Gc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../ncollide3df32/partitioning/struct.DBVTLeaf.html' title='ncollide3df32::partitioning::DBVTLeaf'>DBVTLeaf</a>&lt;B, BV&gt;&gt;&gt;, BV&gt;&gt;(&amp;self, visitor: &amp;mut Vis)</code></h4>
+<div class='docblock'><p>Visit this tree using… a visitor!</p>
+</div><h4 id='method.interferences_with_leaf' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.interferences_with_leaf' class='fnname'>interferences_with_leaf</a>(&amp;self, leaf: &amp;<a class='struct' href='../../ncollide3df32/partitioning/struct.DBVTLeaf.html' title='ncollide3df32::partitioning::DBVTLeaf'>DBVTLeaf</a>&lt;B, BV&gt;, out: &amp;mut <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/std/gc/struct.Gc.html' title='std::gc::Gc'>Gc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../ncollide3df32/partitioning/struct.DBVTLeaf.html' title='ncollide3df32::partitioning::DBVTLeaf'>DBVTLeaf</a>&lt;B, BV&gt;&gt;&gt;&gt;)</code></h4>
+<div class='docblock'><p>Finds all leaves which have their bounding boxes intersecting a specific leave&#39;s bounding
+volume.</p>
+
+<h1 id="arguments:" class='section-header'><a
+                           href="#arguments:">Arguments:</a></h1>
+<ul>
+<li><code>to_test</code> - the leaf to check interferences with.</li>
+<li><code>out</code> - will be filled with all leaves intersecting <code>to_test</code>. Note that <code>to_test</code>
+      is not considered intersecting itself.</li>
+</ul>
+</div><h4 id='method.interferences_with_tree' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.interferences_with_tree' class='fnname'>interferences_with_tree</a>(&amp;self, leaf: &amp;<a class='struct' href='../../ncollide3df32/partitioning/struct.DBVT.html' title='ncollide3df32::partitioning::DBVT'>DBVT</a>&lt;B, BV&gt;, out: &amp;mut <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/std/gc/struct.Gc.html' title='std::gc::Gc'>Gc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../ncollide3df32/partitioning/struct.DBVTLeaf.html' title='ncollide3df32::partitioning::DBVTLeaf'>DBVTLeaf</a>&lt;B, BV&gt;&gt;&gt;&gt;)</code></h4>
+<div class='docblock'><p>Finds all interferences between this tree and another one.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

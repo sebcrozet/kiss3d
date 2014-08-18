@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `EventReader` struct in crate `xml`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, EventReader">
+
+    <title>xml::reader::EventReader - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>xml</a>&#8203;::<a href='index.html'>reader</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='config/index.html'>config</a><a class='mod ' href='events/index.html'>events</a></div><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.EventReader.html'>EventReader</a><a class='struct ' href='struct.Events.html'>Events</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>xml</a>&#8203;::<a href='index.html'>reader</a>&#8203;::<a class='struct' href=''>EventReader</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-14226' href='../../src/xml/src/reader/mod.rs.html#20-23'>[src]</a></div></h1>
+<pre class='rust struct'>pub struct EventReader&lt;B&gt; {
+    // some fields omitted
+}</pre><div class='docblock'><p>Simple wrapper around an <code>std::io::Buffer</code> which provides pull-based XML parsing.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;B: <a class='trait' href='http://doc.rust-lang.org/master/std/io/trait.Buffer.html' title='std::io::Buffer'>Buffer</a>&gt; <a class='struct' href='../../xml/reader/struct.EventReader.html' title='xml::reader::EventReader'>EventReader</a>&lt;B&gt;</code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(source: B) -&gt; <a class='struct' href='../../xml/reader/struct.EventReader.html' title='xml::reader::EventReader'>EventReader</a>&lt;B&gt;</code></h4>
+<div class='docblock'><p>Creates a new parser, consuming given <code>Buffer</code>.</p>
+</div><h4 id='method.new_with_config' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_with_config' class='fnname'>new_with_config</a>(source: B, config: <a class='struct' href='../../xml/reader/config/struct.ParserConfig.html' title='xml::reader::config::ParserConfig'>ParserConfig</a>) -&gt; <a class='struct' href='../../xml/reader/struct.EventReader.html' title='xml::reader::EventReader'>EventReader</a>&lt;B&gt;</code></h4>
+<div class='docblock'><p>Creates a new parser with the provded configuration, consuming given <code>Buffer</code>.</p>
+</div><h4 id='method.next' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.next' class='fnname'>next</a>(&amp;mut self) -&gt; <a class='type' href='../../xml/reader/events/type.XmlEvent.html' title='xml::reader::events::XmlEvent'>XmlEvent</a></code></h4>
+<div class='docblock'><p>Pulls and returns next XML event from the stream.</p>
+
+<p>If returned event is <code>xml::event::Error</code> or <code>xml::event::EndDocument</code>, then 
+further calls to this method will return this event again.</p>
+</div><h4 id='method.events' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.events' class='fnname'>events</a>&lt;'a&gt;(&amp;'a mut self) -&gt; <a class='struct' href='../../xml/reader/struct.Events.html' title='xml::reader::Events'>Events</a>&lt;'a, B&gt;</code></h4>
+<div class='docblock'><p>Returns an iterator over XML events.</p>
+
+<p>When the next event is <code>xml::event::Error</code> or <code>xml::event::EndDocument</code>, then
+it will be returned by the iterator once, and then it will stop producing events.</p>
+</div></div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../xml/reader/struct.EventReader.html' title='xml::reader::EventReader'>EventReader</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/std/io/mem/struct.MemReader.html' title='std::io::mem::MemReader'>MemReader</a>&gt;</code></h3><div class='impl-methods'><h4 id='method.new_from_string' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_from_string' class='fnname'>new_from_string</a>(source: <a class='struct' href='http://doc.rust-lang.org/master/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; <a class='struct' href='../../xml/reader/struct.EventReader.html' title='xml::reader::EventReader'>EventReader</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/std/io/mem/struct.MemReader.html' title='std::io::mem::MemReader'>MemReader</a>&gt;</code></h4>
+<div class='docblock'><p>Convenience method to create a reader from an owned string.</p>
+</div><h4 id='method.new_from_bytes' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_from_bytes' class='fnname'>new_from_bytes</a>(source: <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.u8.html'>u8</a>&gt;) -&gt; <a class='struct' href='../../xml/reader/struct.EventReader.html' title='xml::reader::EventReader'>EventReader</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/std/io/mem/struct.MemReader.html' title='std::io::mem::MemReader'>MemReader</a>&gt;</code></h4>
+<div class='docblock'><p>Convenience method to create a reader from an owned vector of bytes.</p>
+</div></div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'r&gt; <a class='struct' href='../../xml/reader/struct.EventReader.html' title='xml::reader::EventReader'>EventReader</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/std/io/mem/struct.BufReader.html' title='std::io::mem::BufReader'>BufReader</a>&lt;'r&gt;&gt;</code></h3><div class='impl-methods'><h4 id='method.new_from_str_slice' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_from_str_slice' class='fnname'>new_from_str_slice</a>(source: &amp;'r <a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../xml/reader/struct.EventReader.html' title='xml::reader::EventReader'>EventReader</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/std/io/mem/struct.BufReader.html' title='std::io::mem::BufReader'>BufReader</a>&lt;'r&gt;&gt;</code></h4>
+<div class='docblock'><p>Convenience method to create a reader from a string slice.</p>
+</div><h4 id='method.new_from_bytes_slice' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_from_bytes_slice' class='fnname'>new_from_bytes_slice</a>(source: &amp;'r <a href='http://doc.rust-lang.org/master/std/primitive.slice.html'>[<a href='http://doc.rust-lang.org/master/std/primitive.u8.html'>u8</a>]</a>) -&gt; <a class='struct' href='../../xml/reader/struct.EventReader.html' title='xml::reader::EventReader'>EventReader</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/std/io/mem/struct.BufReader.html' title='std::io::mem::BufReader'>BufReader</a>&lt;'r&gt;&gt;</code></h4>
+<div class='docblock'><p>Convenience method to create a reader from a slice of bytes.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "xml";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

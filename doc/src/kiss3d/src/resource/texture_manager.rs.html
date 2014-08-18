@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/resource/texture_manager.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>texture_manager.rs.html -- source</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -300,17 +303,17 @@
     <span class='doccomment'>/// Allocates a new texture read from a file. If a texture with same name exists, nothing is</span>
     <span class='doccomment'>/// created and the old texture is returned.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>Texture</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>tex</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>textures</span>.<span class='ident'>find_or_insert_with</span>(<span class='ident'>name</span>.<span class='ident'>to_string</span>(), <span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>Texture</span>::<span class='ident'>new</span>());<span class='comment'>
+        <span class='kw'>let</span> <span class='ident'>tex</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>textures</span>.<span class='ident'>find_or_insert_with</span>(<span class='ident'>name</span>.<span class='ident'>to_string</span>(), <span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>Texture</span>::<span class='ident'>new</span>());
 
-        // FIXME: dont re-load the texture if it already exists!
-        </span><span class='kw'>unsafe</span> {
+        <span class='comment'>// FIXME: dont re-load the texture if it already exists!</span>
+        <span class='kw'>unsafe</span> {
             <span class='kw'>match</span> <span class='ident'>image</span>::<span class='ident'>load</span>(<span class='ident'>path</span>) {
                 <span class='ident'>ImageU8</span>(<span class='kw-2'>mut</span> <span class='ident'>image</span>) <span class='op'>=&gt;</span> {
                     <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>ActiveTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE0</span>));
-                    <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>tex</span>.<span class='ident'>id</span>()));<span class='comment'>
+                    <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>tex</span>.<span class='ident'>id</span>()));
 
-                    // Flip the y axis
-                    </span><span class='kw'>let</span> <span class='ident'>elt_per_row</span> <span class='op'>=</span> <span class='ident'>image</span>.<span class='ident'>width</span> <span class='op'>*</span> <span class='ident'>image</span>.<span class='ident'>depth</span>;
+                    <span class='comment'>// Flip the y axis</span>
+                    <span class='kw'>let</span> <span class='ident'>elt_per_row</span> <span class='op'>=</span> <span class='ident'>image</span>.<span class='ident'>width</span> <span class='op'>*</span> <span class='ident'>image</span>.<span class='ident'>depth</span>;
                     <span class='kw'>for</span> <span class='ident'>j</span> <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0u</span>, <span class='ident'>image</span>.<span class='ident'>height</span> <span class='op'>/</span> <span class='number'>2</span>) {
                         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0u</span>, <span class='ident'>elt_per_row</span>) {
                             <span class='ident'>image</span>.<span class='ident'>data</span>.<span class='ident'>as_mut_slice</span>().<span class='ident'>swap</span>(
@@ -382,12 +385,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../../../";

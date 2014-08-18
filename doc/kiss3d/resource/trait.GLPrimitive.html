@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `GLPrimitive` trait in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, GLPrimitive">
 
     <title>kiss3d::resource::GLPrimitive - Rust</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -38,37 +41,40 @@
     </nav>
 
     <section id='main' class="content trait">
-<h1 class='fqn'>Trait <a href='../index.html'>kiss3d</a>::<a href='index.html'>resource</a>::<a class='trait' href=''>GLPrimitive</a><a class='source' id='src-36612' href='../../src/kiss3d/src/resource/gl_primitive.rs.html#12-19'>[src]</a></h1>
-<pre class='rust trait'>pub trait GLPrimitive: <a class='trait' href='http://doc.rust-lang.org/core/kinds/trait.Copy.html' title='core::kinds::Copy'>Copy</a> {
-    fn <a href='#tymethod.gl_type' class='fnname'>gl_type</a>(_type: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;Self&gt;) -&gt; GLuint;
-    fn <a href='#tymethod.size' class='fnname'>size</a>(_type: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;Self&gt;) -&gt; GLuint;
-    fn <a href='#tymethod.upload' class='fnname'>upload</a>(&amp;self, location: GLuint);
+<h1 class='fqn'><div class='in-band'>Trait <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>resource</a>&#8203;::<a class='trait' href=''>GLPrimitive</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-37826' href='../../src/kiss3d/src/resource/gl_primitive.rs.html#12-19'>[src]</a></div></h1>
+<pre class='rust trait'>pub trait GLPrimitive: <a class='trait' href='http://doc.rust-lang.org/master/core/kinds/trait.Copy.html' title='core::kinds::Copy'>Copy</a> {
+    fn <a href='#tymethod.gl_type' class='fnname'>gl_type</a>(_type: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;Self&gt;) -&gt; <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a>;
+    fn <a href='#tymethod.size' class='fnname'>size</a>(_type: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;Self&gt;) -&gt; <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a>;
+    fn <a href='#tymethod.upload' class='fnname'>upload</a>(&amp;self, location: <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a>);
 }</pre><div class='docblock'><p>Trait implemented by structures that can be uploaded to a uniform or contained by a gpu array.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.gl_type' class='method'><code>fn <a href='#tymethod.gl_type' class='fnname'>gl_type</a>(_type: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;Self&gt;) -&gt; GLuint</code></h3><div class='docblock'><p>The opengl primitive type of this structure content.</p>
-</div><h3 id='tymethod.size' class='method'><code>fn <a href='#tymethod.size' class='fnname'>size</a>(_type: <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;Self&gt;) -&gt; GLuint</code></h3><div class='docblock'><p>The number of elements of type <code>self.gl_type()</code> this structure stores.</p>
-</div><h3 id='tymethod.upload' class='method'><code>fn <a href='#tymethod.upload' class='fnname'>upload</a>(&amp;self, location: GLuint)</code></h3><div class='docblock'><p>Uploads the element to a gpu location.</p>
+        <h3 id='tymethod.gl_type' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.gl_type' class='fnname'>gl_type</a>(_type: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;Self&gt;) -&gt; <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a></code></h3><div class='docblock'><p>The opengl primitive type of this structure content.</p>
+</div><h3 id='tymethod.size' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.size' class='fnname'>size</a>(_type: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;Self&gt;) -&gt; <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a></code></h3><div class='docblock'><p>The number of elements of type <code>self.gl_type()</code> this structure stores.</p>
+</div><h3 id='tymethod.upload' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.upload' class='fnname'>upload</a>(&amp;self, location: <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a>)</code></h3><div class='docblock'><p>Uploads the element to a gpu location.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for GLfloat</code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for GLint</code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for GLuint</code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/mat/struct.Mat2.html' title='nalgebra::structs::mat::Mat2'>Mat2</a>&lt;GLfloat&gt;</code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/rot/struct.Rot2.html' title='nalgebra::structs::rot::Rot2'>Rot2</a>&lt;GLfloat&gt;</code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/mat/struct.Mat3.html' title='nalgebra::structs::mat::Mat3'>Mat3</a>&lt;GLfloat&gt;</code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/rot/struct.Rot3.html' title='nalgebra::structs::rot::Rot3'>Rot3</a>&lt;GLfloat&gt;</code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/mat/struct.Mat4.html' title='nalgebra::structs::mat::Mat4'>Mat4</a>&lt;GLfloat&gt;</code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLfloat&gt;</code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;GLfloat&gt;</code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;GLuint&gt;</code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;GLuint&gt;</code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a href='http://doc.rust-lang.org/std/primitive.tuple.html'>(GLfloat, GLfloat, GLfloat)</a></code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a href='http://doc.rust-lang.org/std/primitive.tuple.html'>(GLfloat, GLfloat)</a></code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a href='http://doc.rust-lang.org/std/primitive.tuple.html'>(GLuint, GLuint)</a></code></li>
-<li><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a href='http://doc.rust-lang.org/std/primitive.tuple.html'>(GLuint, GLuint, GLuint)</a></code></li>
+    <li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='type' href='../../gl/types/type.GLint.html' title='gl::types::GLint'>GLint</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='../../nalgebra/structs/mat/struct.Mat2.html' title='nalgebra::structs::mat::Mat2'>Mat2</a>&lt;<a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>&gt;</code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='../../nalgebra/structs/rot/struct.Rot2.html' title='nalgebra::structs::rot::Rot2'>Rot2</a>&lt;<a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>&gt;</code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='../../nalgebra/structs/mat/struct.Mat3.html' title='nalgebra::structs::mat::Mat3'>Mat3</a>&lt;<a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>&gt;</code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='../../nalgebra/structs/rot/struct.Rot3.html' title='nalgebra::structs::rot::Rot3'>Rot3</a>&lt;<a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>&gt;</code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='../../nalgebra/structs/mat/struct.Mat4.html' title='nalgebra::structs::mat::Mat4'>Mat4</a>&lt;<a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>&gt;</code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>&gt;</code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>&gt;</code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a>&gt;</code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a>&gt;</code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(<a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>)</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(<a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>)</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(<a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a>, <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a>)</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a> for <a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(<a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a>, <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a>, <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a>)</a></code></li>
 </ul><script type="text/javascript" async
                               src="../../implementors/kiss3d/resource/trait.GLPrimitive.js">
                       </script></section>
@@ -100,12 +106,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../";

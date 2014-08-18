@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Segment` struct in crate `ncollide3df32`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Segment">
+
+    <title>ncollide3df32::geom::Segment - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>geom</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.AnnotatedMinkowskiSum.html'>AnnotatedMinkowskiSum</a><a class='struct ' href='struct.Ball.html'>Ball</a><a class='struct ' href='struct.BezierCurve.html'>BezierCurve</a><a class='struct ' href='struct.BezierCurveEvaluationCache.html'>BezierCurveEvaluationCache</a><a class='struct ' href='struct.BezierSurface.html'>BezierSurface</a><a class='struct ' href='struct.BezierSurfaceEvaluationCache.html'>BezierSurfaceEvaluationCache</a><a class='struct ' href='struct.Capsule.html'>Capsule</a><a class='struct ' href='struct.Compound.html'>Compound</a><a class='struct ' href='struct.CompoundData.html'>CompoundData</a><a class='struct ' href='struct.Cone.html'>Cone</a><a class='struct ' href='struct.Convex.html'>Convex</a><a class='struct ' href='struct.Cuboid.html'>Cuboid</a><a class='struct ' href='struct.Cylinder.html'>Cylinder</a><a class='struct ' href='struct.GeomWithMargin.html'>GeomWithMargin</a><a class='struct ' href='struct.Mesh.html'>Mesh</a><a class='struct ' href='struct.MinkowskiSum.html'>MinkowskiSum</a><a class='struct ' href='struct.Plane.html'>Plane</a><a class='struct ' href='struct.Reflection.html'>Reflection</a><a class='struct current' href='struct.Segment.html'>Segment</a><a class='struct ' href='struct.Torus.html'>Torus</a><a class='struct ' href='struct.Triangle.html'>Triangle</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.ConcaveGeom.html'>ConcaveGeom</a><a class='trait ' href='trait.Geom.html'>Geom</a><a class='trait ' href='trait.MeshElement.html'>MeshElement</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>geom</a>&#8203;::<a class='struct' href=''>Segment</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-11192' href='../../src/ncollide3df32/up/up/src/geom/segment.rs.html#9-13'>[src]</a></div></h1>
+<pre class='rust struct'>pub struct Segment {
+    // some fields omitted
+}</pre><div class='docblock'><p>A segment geometry.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(a: <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, b: <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>) -&gt; <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h4>
+<div class='docblock'><p>Creates a new segment from two points.</p>
+
+<p>The segment will have a default margin of 0.04.</p>
+</div><h4 id='method.new_with_margin' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_with_margin' class='fnname'>new_with_margin</a>(a: <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, b: <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, margin: <a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>) -&gt; <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h4>
+<div class='docblock'><p>Creates a new segment from two points and a custom margin.</p>
+</div></div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h3><div class='impl-methods'><h4 id='method.a' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.a' class='fnname'>a</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a></code></h4>
+<div class='docblock'><p>The first point of this segment.</p>
+</div><h4 id='method.b' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.b' class='fnname'>b</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a></code></h4>
+<div class='docblock'><p>The second point of this segment.</p>
+</div><h4 id='method.margin' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.margin' class='fnname'>margin</a>(&amp;self) -&gt; <a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a></code></h4>
+<div class='docblock'><p>The margin surrounding this segment.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasAABB.html' title='ncollide3df32::bounding_volume::HasAABB'>HasAABB</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h3><div class='impl-methods'><h4 id='method.aabb' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.aabb' class='fnname'>aabb</a>(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>) -&gt; <a class='struct' href='../../ncollide3df32/bounding_volume/struct.AABB.html' title='ncollide3df32::bounding_volume::AABB'>AABB</a></code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasBoundingSphere.html' title='ncollide3df32::bounding_volume::HasBoundingSphere'>HasBoundingSphere</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h3><div class='impl-methods'><h4 id='method.bounding_sphere' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.bounding_sphere' class='fnname'>bounding_sphere</a>(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>) -&gt; <a class='struct' href='../../ncollide3df32/bounding_volume/struct.BoundingSphere.html' title='ncollide3df32::bounding_volume::BoundingSphere'>BoundingSphere</a></code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/geom/trait.MeshElement.html' title='ncollide3df32::geom::MeshElement'>MeshElement</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h3><div class='impl-methods'><h4 id='method.nvertices' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.nvertices' class='fnname'>nvertices</a>(_: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a>&gt;) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a></code></h4>
+<h4 id='method.new_with_vertices_and_indices' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_with_vertices_and_indices' class='fnname'>new_with_vertices_and_indices</a>(vs: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.slice.html'>[<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>]</a>, is: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.slice.html'>[<a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>]</a>, margin: <a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>) -&gt; <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/ray/trait.RayCast.html' title='ncollide3df32::ray::RayCast'>RayCast</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h3><div class='impl-methods'><h4 id='method.toi_and_normal_with_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.toi_and_normal_with_ray' class='fnname'>toi_and_normal_with_ray</a>(&amp;self, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, solid: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../ncollide3df32/ray/struct.RayIntersection.html' title='ncollide3df32::ray::RayIntersection'>RayIntersection</a>&gt;</code></h4>
+<h4 id='method.toi_with_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.toi_with_ray' class='fnname'>toi_with_ray</a>(&amp;self, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, solid: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>&gt;</code></h4>
+<h4 id='method.toi_and_normal_and_uv_with_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.toi_and_normal_and_uv_with_ray' class='fnname'>toi_and_normal_and_uv_with_ray</a>(&amp;self, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, solid: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../ncollide3df32/ray/struct.RayIntersection.html' title='ncollide3df32::ray::RayIntersection'>RayIntersection</a>&gt;</code></h4>
+<h4 id='method.intersects_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.intersects_ray' class='fnname'>intersects_ray</a>(&amp;self, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.toi_with_transform_and_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.toi_with_transform_and_ray' class='fnname'>toi_with_transform_and_ray</a>(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, solid: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>&gt;</code></h4>
+<h4 id='method.toi_and_normal_with_transform_and_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.toi_and_normal_with_transform_and_ray' class='fnname'>toi_and_normal_with_transform_and_ray</a>(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, solid: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../ncollide3df32/ray/struct.RayIntersection.html' title='ncollide3df32::ray::RayIntersection'>RayIntersection</a>&gt;</code></h4>
+<h4 id='method.toi_and_normal_and_uv_with_transform_and_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.toi_and_normal_and_uv_with_transform_and_ray' class='fnname'>toi_and_normal_and_uv_with_transform_and_ray</a>(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, solid: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../ncollide3df32/ray/struct.RayIntersection.html' title='ncollide3df32::ray::RayIntersection'>RayIntersection</a>&gt;</code></h4>
+<h4 id='method.intersects_with_transform_and_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.intersects_with_transform_and_ray' class='fnname'>intersects_with_transform_and_ray</a>(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, ray: &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/implicit/trait.HasMargin.html' title='ncollide3df32::implicit::HasMargin'>HasMargin</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h3><div class='impl-methods'><h4 id='method.margin' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.margin' class='fnname'>margin</a>(&amp;self) -&gt; <a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a></code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;_M: <a class='trait' href='../../nalgebra/traits/geometry/trait.Transform.html' title='nalgebra::traits::geometry::Transform'>Transform</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt; + <a class='trait' href='../../nalgebra/traits/geometry/trait.Rotate.html' title='nalgebra::traits::geometry::Rotate'>Rotate</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h3><div class='impl-methods'><h4 id='method.support_point_without_margin' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.support_point_without_margin' class='fnname'>support_point_without_margin</a>(&amp;self, m: &amp;_M, dir: &amp;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>) -&gt; <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a></code></h4>
+<h4 id='method.support_point' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.support_point' class='fnname'>support_point</a>(&amp;self, transform: &amp;Matrix, dir: &amp;Vect) -&gt; Vect</code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;_V, _M&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.PreferedSamplingDirections.html' title='ncollide3df32::implicit::PreferedSamplingDirections'>PreferedSamplingDirections</a>&lt;_V, _M&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h3><div class='impl-methods'><h4 id='method.sample' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.sample' class='fnname'>sample</a>(&amp;self, _: &amp;_M, _: |_V|)</code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/procedural/trait.ToPolyline.html' title='ncollide3df32::procedural::ToPolyline'>ToPolyline</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.unit.html'>()</a>&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h3><div class='impl-methods'><h4 id='method.to_polyline' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.to_polyline' class='fnname'>to_polyline</a>(&amp;self, _: <a href='http://doc.rust-lang.org/master/std/primitive.unit.html'>()</a>) -&gt; <a class='struct' href='../../ncollide3df32/procedural/struct.Polyline.html' title='ncollide3df32::procedural::Polyline'>Polyline</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>, <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h3><div class='impl-methods'><h4 id='method.clone' class='method'><a class='stability Unstable' title='Unstable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h4>
+<h4 id='method.clone_from' class='method'><a class='stability Experimental' title='Experimental: this function is mostly unused'></a><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;__D: <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Decoder.html' title='serialize::serialize::Decoder'>Decoder</a>&lt;__E&gt;, __E&gt; <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Decodable.html' title='serialize::serialize::Decodable'>Decodable</a>&lt;__D, __E&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h3><div class='impl-methods'><h4 id='method.decode' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.decode' class='fnname'>decode</a>(__arg_0: &amp;mut __D) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/result/type.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a>, __E&gt;</code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;__S: <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Encoder.html' title='serialize::serialize::Encoder'>Encoder</a>&lt;__E&gt;, __E&gt; <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Encodable.html' title='serialize::serialize::Encodable'>Encodable</a>&lt;__S, __E&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></h3><div class='impl-methods'><h4 id='method.encode' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.encode' class='fnname'>encode</a>(&amp;self, __arg_0: &amp;mut __S) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/result/type.Result.html' title='core::result::Result'>Result</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.unit.html'>()</a>, __E&gt;</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

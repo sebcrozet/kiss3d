@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ImplicitImplicit` struct in crate `ncollide3df32`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ImplicitImplicit">
+
+    <title>ncollide3df32::narrow::ImplicitImplicit - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>narrow</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='algorithm/index.html'>algorithm</a><a class='mod ' href='closest_points/index.html'>closest_points</a><a class='mod ' href='collide/index.html'>collide</a><a class='mod ' href='surface_selector/index.html'>surface_selector</a><a class='mod ' href='surface_subdivision_tree/index.html'>surface_subdivision_tree</a><a class='mod ' href='toi/index.html'>toi</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.BallBall.html'>BallBall</a><a class='struct ' href='struct.BallBezierSurface.html'>BallBezierSurface</a><a class='struct ' href='struct.BezierSurfaceBall.html'>BezierSurfaceBall</a><a class='struct ' href='struct.BezierSurfaceBezierSurface.html'>BezierSurfaceBezierSurface</a><a class='struct ' href='struct.ConcaveGeomGeom.html'>ConcaveGeomGeom</a><a class='struct ' href='struct.ConcaveGeomGeomFactory.html'>ConcaveGeomGeomFactory</a><a class='struct ' href='struct.Contact.html'>Contact</a><a class='struct ' href='struct.Empty.html'>Empty</a><a class='struct ' href='struct.GeomConcaveGeom.html'>GeomConcaveGeom</a><a class='struct ' href='struct.GeomConcaveGeomFactory.html'>GeomConcaveGeomFactory</a><a class='struct ' href='struct.GeomGeomDispatcher.html'>GeomGeomDispatcher</a><a class='struct current' href='struct.ImplicitImplicit.html'>ImplicitImplicit</a><a class='struct ' href='struct.ImplicitPlane.html'>ImplicitPlane</a><a class='struct ' href='struct.IncrementalContactManifoldGenerator.html'>IncrementalContactManifoldGenerator</a><a class='struct ' href='struct.OneShotContactManifoldGenerator.html'>OneShotContactManifoldGenerator</a><a class='struct ' href='struct.PlaneImplicit.html'>PlaneImplicit</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.CollisionDetector.html'>CollisionDetector</a><a class='trait ' href='trait.CollisionDetectorFactory.html'>CollisionDetectorFactory</a><a class='trait ' href='trait.DynamicCollisionDetector.html'>DynamicCollisionDetector</a><a class='trait ' href='trait.GeomGeomCollisionDetector.html'>GeomGeomCollisionDetector</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>narrow</a>&#8203;::<a class='struct' href=''>ImplicitImplicit</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-23020' href='../../src/ncollide3df32/up/up/src/narrow/implicit_implicit.rs.html#20-24'>[src]</a></div></h1>
+<pre class='rust struct'>pub struct ImplicitImplicit&lt;S, G1, G2&gt; {
+    // some fields omitted
+}</pre><div class='docblock'><p>Persistent collision detector between two shapes having a support mapping function.</p>
+
+<p>It is based on the GJK algorithm.  This detector generates only one contact point. For a full
+manifold generation, see <code>IncrementalContactManifoldGenerator</code>.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;S, G1, G2&gt; <a class='struct' href='../../ncollide3df32/narrow/struct.ImplicitImplicit.html' title='ncollide3df32::narrow::ImplicitImplicit'>ImplicitImplicit</a>&lt;S, G1, G2&gt;</code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(prediction: <a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>, simplex: S) -&gt; <a class='struct' href='../../ncollide3df32/narrow/struct.ImplicitImplicit.html' title='ncollide3df32::narrow::ImplicitImplicit'>ImplicitImplicit</a>&lt;S, G1, G2&gt;</code></h4>
+<div class='docblock'><p>Creates a new persistent collision detector between two geometries with support mapping
+functions.</p>
+
+<p>It is initialized with a pre-created simplex.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;S: <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, G1, G2&gt; <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../ncollide3df32/narrow/struct.ImplicitImplicit.html' title='ncollide3df32::narrow::ImplicitImplicit'>ImplicitImplicit</a>&lt;S, G1, G2&gt;</code></h3><div class='impl-methods'><h4 id='method.clone' class='method'><a class='stability Unstable' title='Unstable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../ncollide3df32/narrow/struct.ImplicitImplicit.html' title='ncollide3df32::narrow::ImplicitImplicit'>ImplicitImplicit</a>&lt;S, G1, G2&gt;</code></h4>
+<h4 id='method.clone_from' class='method'><a class='stability Experimental' title='Experimental: this function is mostly unused'></a><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;S: <a class='trait' href='../../ncollide3df32/narrow/algorithm/simplex/trait.Simplex.html' title='ncollide3df32::narrow::algorithm::simplex::Simplex'>Simplex</a>&lt;AnnotatedPoint&gt;, G1: <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, <a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>&gt; + <a class='trait' href='../../ncollide3df32/implicit/trait.PreferedSamplingDirections.html' title='ncollide3df32::implicit::PreferedSamplingDirections'>PreferedSamplingDirections</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, <a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>&gt;, G2: <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, <a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>&gt; + <a class='trait' href='../../ncollide3df32/implicit/trait.PreferedSamplingDirections.html' title='ncollide3df32::implicit::PreferedSamplingDirections'>PreferedSamplingDirections</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, <a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>&gt;&gt; <a class='trait' href='../../ncollide3df32/narrow/trait.CollisionDetector.html' title='ncollide3df32::narrow::CollisionDetector'>CollisionDetector</a>&lt;G1, G2&gt; for <a class='struct' href='../../ncollide3df32/narrow/struct.ImplicitImplicit.html' title='ncollide3df32::narrow::ImplicitImplicit'>ImplicitImplicit</a>&lt;S, G1, G2&gt;</code></h3><div class='impl-methods'><h4 id='method.update' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.update' class='fnname'>update</a>(&amp;mut self, ma: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, a: &amp;G1, mb: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, b: &amp;G2)</code></h4>
+<h4 id='method.num_colls' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.num_colls' class='fnname'>num_colls</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a></code></h4>
+<h4 id='method.colls' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.colls' class='fnname'>colls</a>(&amp;self, out_colls: &amp;mut <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../ncollide3df32/narrow/struct.Contact.html' title='ncollide3df32::narrow::Contact'>Contact</a>&gt;)</code></h4>
+<h4 id='method.toi' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.toi' class='fnname'>toi</a>(_: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../ncollide3df32/narrow/struct.ImplicitImplicit.html' title='ncollide3df32::narrow::ImplicitImplicit'>ImplicitImplicit</a>&lt;S, G1, G2&gt;&gt;, ma: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, dir: &amp;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _: &amp;<a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>, a: &amp;G1, mb: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, b: &amp;G2) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>&gt;</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;__D: <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Decoder.html' title='serialize::serialize::Decoder'>Decoder</a>&lt;__E&gt;, __E, S: <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Decodable.html' title='serialize::serialize::Decodable'>Decodable</a>&lt;__D, __E&gt;, G1: <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Decodable.html' title='serialize::serialize::Decodable'>Decodable</a>&lt;__D, __E&gt;, G2: <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Decodable.html' title='serialize::serialize::Decodable'>Decodable</a>&lt;__D, __E&gt;&gt; <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Decodable.html' title='serialize::serialize::Decodable'>Decodable</a>&lt;__D, __E&gt; for <a class='struct' href='../../ncollide3df32/narrow/struct.ImplicitImplicit.html' title='ncollide3df32::narrow::ImplicitImplicit'>ImplicitImplicit</a>&lt;S, G1, G2&gt;</code></h3><div class='impl-methods'><h4 id='method.decode' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.decode' class='fnname'>decode</a>(__arg_0: &amp;mut __D) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/result/type.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../ncollide3df32/narrow/struct.ImplicitImplicit.html' title='ncollide3df32::narrow::ImplicitImplicit'>ImplicitImplicit</a>&lt;S, G1, G2&gt;, __E&gt;</code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;__S: <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Encoder.html' title='serialize::serialize::Encoder'>Encoder</a>&lt;__E&gt;, __E, S: <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Encodable.html' title='serialize::serialize::Encodable'>Encodable</a>&lt;__S, __E&gt;, G1: <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Encodable.html' title='serialize::serialize::Encodable'>Encodable</a>&lt;__S, __E&gt;, G2: <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Encodable.html' title='serialize::serialize::Encodable'>Encodable</a>&lt;__S, __E&gt;&gt; <a class='trait' href='http://doc.rust-lang.org/master/serialize/serialize/trait.Encodable.html' title='serialize::serialize::Encodable'>Encodable</a>&lt;__S, __E&gt; for <a class='struct' href='../../ncollide3df32/narrow/struct.ImplicitImplicit.html' title='ncollide3df32::narrow::ImplicitImplicit'>ImplicitImplicit</a>&lt;S, G1, G2&gt;</code></h3><div class='impl-methods'><h4 id='method.encode' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.encode' class='fnname'>encode</a>(&amp;self, __arg_0: &amp;mut __S) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/result/type.Result.html' title='core::result::Result'>Result</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.unit.html'>()</a>, __E&gt;</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

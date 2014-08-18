@@ -3,17 +3,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Event` struct in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Event">
 
     <title>kiss3d::window::Event - Rust</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -21,9 +22,11 @@
     </div>
     <![endif]-->
 
+    
+
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>window</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.Event.html'>Event</a><a class='struct ' href='struct.EventManager.html'>EventManager</a><a class='struct ' href='struct.Events.html'>Events</a><a class='struct ' href='struct.RenderFrame.html'>RenderFrame</a><a class='struct ' href='struct.RenderFrames.html'>RenderFrames</a><a class='struct ' href='struct.Window.html'>Window</a></div>
+        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>window</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.Event.html'>Event</a><a class='struct ' href='struct.EventManager.html'>EventManager</a><a class='struct ' href='struct.Events.html'>Events</a><a class='struct ' href='struct.Window.html'>Window</a></div>
     </section>
 
     <nav class="sub">
@@ -38,18 +41,21 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>window</a>::<a class='struct' href=''>Event</a><a class='source' id='src-3323' href='../../src/kiss3d/src/window/event.rs.html#6-14'>[src]</a></h1>
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>window</a>&#8203;::<a class='struct' href=''>Event</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-3761' href='../../src/kiss3d/src/window/event.rs.html#6-14'>[src]</a></div></h1>
 <pre class='rust struct'>pub struct Event&lt;'a&gt; {
-    pub timestamp: <a href='http://doc.rust-lang.org/std/primitive.f64.html'>f64</a>,
-    pub value: WindowEvent,
-    pub inhibited: <a href='http://doc.rust-lang.org/std/primitive.bool.html'>bool</a>,
+    pub timestamp: <a href='http://doc.rust-lang.org/master/std/primitive.f64.html'>f64</a>,
+    pub value: <a class='type' href='../../glfw/type.WindowEvent.html' title='glfw::WindowEvent'>WindowEvent</a>,
+    pub inhibited: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>,
     // some fields omitted
 }</pre><div class='docblock'><p>An event.</p>
 </div><h2 class='fields'>Fields</h2>
-<table><tr><td id='structfield.timestamp'><code>timestamp</code></td><td><div class='docblock'><p>The event timestamp.</p>
-</div></td></tr><tr><td id='structfield.value'><code>value</code></td><td><div class='docblock'><p>The exact glfw event value. This can be modified to fool the other event handlers.</p>
-</div></td></tr><tr><td id='structfield.inhibited'><code>inhibited</code></td><td><div class='docblock'><p>Set this to <code>true</code> to prevent the window or the camera from handling the event.</p>
-</div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='http://doc.rust-lang.org/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/window/struct.Event.html' title='kiss3d::window::Event'>Event</a>&lt;'a&gt;</code></h3><div class='methods'><h4 id='method.drop' class='method'><code>fn <a href='#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+<table><tr><td id='structfield.timestamp'><a class='stability Unmarked' title='No stability level'></a><code>timestamp</code></td><td><div class='docblock'><p>The event timestamp.</p>
+</div></td></tr><tr><td id='structfield.value'><a class='stability Unmarked' title='No stability level'></a><code>value</code></td><td><div class='docblock'><p>The exact glfw event value. This can be modified to fool the other event handlers.</p>
+</div></td></tr><tr><td id='structfield.inhibited'><a class='stability Unmarked' title='No stability level'></a><code>inhibited</code></td><td><div class='docblock'><p>Set this to <code>true</code> to prevent the window or the camera from handling the event.</p>
+</div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a&gt; <a class='trait' href='http://doc.rust-lang.org/master/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/window/struct.Event.html' title='kiss3d::window::Event'>Event</a>&lt;'a&gt;</code></h3><div class='impl-methods'><h4 id='method.drop' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -79,12 +85,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../";

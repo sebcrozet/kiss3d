@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `SurfaceSubdivisionTree` struct in crate `ncollide3df32`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, SurfaceSubdivisionTree">
+
+    <title>ncollide3df32::narrow::surface_subdivision_tree::SurfaceSubdivisionTree - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>ncollide3df32</a>&#8203;::<a href='../index.html'>narrow</a>&#8203;::<a href='index.html'>surface_subdivision_tree</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.SurfaceSubdivisionTree.html'>SurfaceSubdivisionTree</a><a class='struct ' href='struct.SurfaceSubdivisionTreeCache.html'>SurfaceSubdivisionTreeCache</a><a class='struct ' href='struct.SurfaceSubdivisionTreeRef.html'>SurfaceSubdivisionTreeRef</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><div class='in-band'>Struct <a href='../../index.html'>ncollide3df32</a>&#8203;::<a href='../index.html'>narrow</a>&#8203;::<a href='index.html'>surface_subdivision_tree</a>&#8203;::<a class='struct' href=''>SurfaceSubdivisionTree</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-35742' href='../../../src/ncollide3df32/up/up/src/narrow/surface_subdivision_tree.rs.html#130-136'>[src]</a></div></h1>
+<pre class='rust struct'>pub struct SurfaceSubdivisionTree&lt;D&gt; {
+    // some fields omitted
+}</pre><div class='docblock'><p>A shareable binary tree with a pointer to its parent.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;D: <a class='trait' href='http://doc.rust-lang.org/master/core/kinds/trait.Send.html' title='core::kinds::Send'>Send</a> + <a class='trait' href='http://doc.rust-lang.org/master/core/kinds/trait.Sync.html' title='core::kinds::Sync'>Sync</a>&gt; <a class='struct' href='../../../ncollide3df32/narrow/surface_subdivision_tree/struct.SurfaceSubdivisionTree.html' title='ncollide3df32::narrow::surface_subdivision_tree::SurfaceSubdivisionTree'>SurfaceSubdivisionTree</a>&lt;D&gt;</code></h3><div class='impl-methods'><h4 id='method.new_orphan' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_orphan' class='fnname'>new_orphan</a>(b: <a class='struct' href='../../../ncollide3df32/geom/struct.BezierSurface.html' title='ncollide3df32::geom::BezierSurface'>BezierSurface</a>, data: D, timestamp: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>) -&gt; <a class='struct' href='../../../ncollide3df32/narrow/surface_subdivision_tree/struct.SurfaceSubdivisionTree.html' title='ncollide3df32::narrow::surface_subdivision_tree::SurfaceSubdivisionTree'>SurfaceSubdivisionTree</a>&lt;D&gt;</code></h4>
+<div class='docblock'><p>Creates a new tree with no parent nor children.</p>
+</div><h4 id='method.surface' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.surface' class='fnname'>surface</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a class='struct' href='../../../ncollide3df32/geom/struct.BezierSurface.html' title='ncollide3df32::geom::BezierSurface'>BezierSurface</a></code></h4>
+<div class='docblock'><p>The surface contained by this node.</p>
+</div><h4 id='method.data' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.data' class='fnname'>data</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a D</code></h4>
+<div class='docblock'><p>Reference to the data contained by this node.</p>
+</div><h4 id='method.data_mut' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.data_mut' class='fnname'>data_mut</a>&lt;'a&gt;(&amp;'a mut self) -&gt; &amp;'a mut D</code></h4>
+<div class='docblock'><p>Mutable reference to the data contained by this node.</p>
+</div><h4 id='method.timestamp' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.timestamp' class='fnname'>timestamp</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a></code></h4>
+<div class='docblock'><p>The timestamp of this tree node.</p>
+</div><h4 id='method.set_timestamp' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_timestamp' class='fnname'>set_timestamp</a>(&amp;mut self, timestamp: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>)</code></h4>
+<div class='docblock'><p>Sets the timestamp of this tree node.</p>
+</div><h4 id='method.has_left_child' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.has_left_child' class='fnname'>has_left_child</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Whether or not this node has a left child.</p>
+</div><h4 id='method.has_right_child' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.has_right_child' class='fnname'>has_right_child</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Whether or not this node has a right child.</p>
+</div><h4 id='method.right_child' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.right_child' class='fnname'>right_child</a>(&amp;self) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../../ncollide3df32/narrow/surface_subdivision_tree/struct.SurfaceSubdivisionTree.html' title='ncollide3df32::narrow::surface_subdivision_tree::SurfaceSubdivisionTree'>SurfaceSubdivisionTree</a>&lt;D&gt;&gt;&gt;&gt;</code></h4>
+<div class='docblock'><p>A copy of this node right child.</p>
+</div><h4 id='method.left_child' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.left_child' class='fnname'>left_child</a>(&amp;self) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../../ncollide3df32/narrow/surface_subdivision_tree/struct.SurfaceSubdivisionTree.html' title='ncollide3df32::narrow::surface_subdivision_tree::SurfaceSubdivisionTree'>SurfaceSubdivisionTree</a>&lt;D&gt;&gt;&gt;&gt;</code></h4>
+<div class='docblock'><p>A copy of this node left child.</p>
+</div><h4 id='method.right_child_ref' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.right_child_ref' class='fnname'>right_child_ref</a>&lt;'a&gt;(&amp;'a self) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'a <a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../../ncollide3df32/narrow/surface_subdivision_tree/struct.SurfaceSubdivisionTree.html' title='ncollide3df32::narrow::surface_subdivision_tree::SurfaceSubdivisionTree'>SurfaceSubdivisionTree</a>&lt;D&gt;&gt;&gt;&gt;</code></h4>
+<div class='docblock'><p>A reference to this node right child.</p>
+</div><h4 id='method.left_child_ref' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.left_child_ref' class='fnname'>left_child_ref</a>&lt;'a&gt;(&amp;'a self) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'a <a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../../ncollide3df32/narrow/surface_subdivision_tree/struct.SurfaceSubdivisionTree.html' title='ncollide3df32::narrow::surface_subdivision_tree::SurfaceSubdivisionTree'>SurfaceSubdivisionTree</a>&lt;D&gt;&gt;&gt;&gt;</code></h4>
+<div class='docblock'><p>A reference to this node left child.</p>
+</div><h4 id='method.set_right_child' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_right_child' class='fnname'>set_right_child</a>(&amp;mut self, child: <a class='struct' href='../../../ncollide3df32/narrow/surface_subdivision_tree/struct.SurfaceSubdivisionTree.html' title='ncollide3df32::narrow::surface_subdivision_tree::SurfaceSubdivisionTree'>SurfaceSubdivisionTree</a>&lt;D&gt;)</code></h4>
+<div class='docblock'><p>Sets the right child of this node.</p>
+</div><h4 id='method.set_left_child' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_left_child' class='fnname'>set_left_child</a>(&amp;mut self, child: <a class='struct' href='../../../ncollide3df32/narrow/surface_subdivision_tree/struct.SurfaceSubdivisionTree.html' title='ncollide3df32::narrow::surface_subdivision_tree::SurfaceSubdivisionTree'>SurfaceSubdivisionTree</a>&lt;D&gt;)</code></h4>
+<div class='docblock'><p>Sets the left child of this node.</p>
+</div><h4 id='method.is_right_child' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.is_right_child' class='fnname'>is_right_child</a>(&amp;self, child: &amp;<a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../../ncollide3df32/narrow/surface_subdivision_tree/struct.SurfaceSubdivisionTree.html' title='ncollide3df32::narrow::surface_subdivision_tree::SurfaceSubdivisionTree'>SurfaceSubdivisionTree</a>&lt;D&gt;&gt;&gt;) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Returns <code>true</code> if <code>child</code> is the right child of this node.</p>
+</div><h4 id='method.is_left_child' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.is_left_child' class='fnname'>is_left_child</a>(&amp;self, child: &amp;<a class='struct' href='http://doc.rust-lang.org/alloc/arc/struct.Arc.html' title='alloc::arc::Arc'>Arc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/sync/lock/struct.RWLock.html' title='sync::lock::RWLock'>RWLock</a>&lt;<a class='struct' href='../../../ncollide3df32/narrow/surface_subdivision_tree/struct.SurfaceSubdivisionTree.html' title='ncollide3df32::narrow::surface_subdivision_tree::SurfaceSubdivisionTree'>SurfaceSubdivisionTree</a>&lt;D&gt;&gt;&gt;) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Returns <code>true</code> if <code>child</code> is the left child of this node.</p>
+</div><h4 id='method.remove_right_child' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.remove_right_child' class='fnname'>remove_right_child</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Removes the right child of this node.</p>
+</div><h4 id='method.remove_left_child' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.remove_left_child' class='fnname'>remove_left_child</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Removes the left child of this node.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script async src="../../../search-index.js"></script>
+</body>
+</html>

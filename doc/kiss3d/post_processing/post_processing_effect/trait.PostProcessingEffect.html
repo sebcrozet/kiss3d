@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `PostProcessingEffect` trait in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, PostProcessingEffect">
 
     <title>kiss3d::post_processing::post_processing_effect::PostProcessingEffect - Rust</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -38,9 +41,12 @@
     </nav>
 
     <section id='main' class="content trait">
-<h1 class='fqn'>Trait <a href='../../index.html'>kiss3d</a>::<a href='../index.html'>post_processing</a>::<a href='index.html'>post_processing_effect</a>::<a class='trait' href=''>PostProcessingEffect</a><a class='source' id='src-22498' href='../../../src/kiss3d/src/post_processing/post_processing_effect.rs.html#9-19'>[src]</a></h1>
+<h1 class='fqn'><div class='in-band'>Trait <a href='../../index.html'>kiss3d</a>&#8203;::<a href='../index.html'>post_processing</a>&#8203;::<a href='index.html'>post_processing_effect</a>&#8203;::<a class='trait' href=''>PostProcessingEffect</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-22647' href='../../../src/kiss3d/src/post_processing/post_processing_effect.rs.html#9-19'>[src]</a></div></h1>
 <pre class='rust trait'>pub trait PostProcessingEffect {
-    fn <a href='#tymethod.update' class='fnname'>update</a>(&amp;mut self, dt: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, w: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, h: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, znear: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, zfar: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>);
+    fn <a href='#tymethod.update' class='fnname'>update</a>(&amp;mut self, dt: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, w: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, h: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, znear: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, zfar: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>);
     fn <a href='#tymethod.draw' class='fnname'>draw</a>(&amp;mut self, target: &amp;<a class='type' href='../../../kiss3d/resource/type.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a>);
 }</pre><div class='docblock'><p>Trait of post processing effect.</p>
 
@@ -49,8 +55,8 @@ rendered on a texture.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.update' class='method'><code>fn <a href='#tymethod.update' class='fnname'>update</a>(&amp;mut self, dt: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, w: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, h: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, znear: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, zfar: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>)</code></h3><div class='docblock'><p>Updates the post processing effect.</p>
-</div><h3 id='tymethod.draw' class='method'><code>fn <a href='#tymethod.draw' class='fnname'>draw</a>(&amp;mut self, target: &amp;<a class='type' href='../../../kiss3d/resource/type.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a>)</code></h3><div class='docblock'><p>Render the effect.</p>
+        <h3 id='tymethod.update' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.update' class='fnname'>update</a>(&amp;mut self, dt: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, w: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, h: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, znear: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, zfar: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>)</code></h3><div class='docblock'><p>Updates the post processing effect.</p>
+</div><h3 id='tymethod.draw' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.draw' class='fnname'>draw</a>(&amp;mut self, target: &amp;<a class='type' href='../../../kiss3d/resource/type.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a>)</code></h3><div class='docblock'><p>Render the effect.</p>
 
 <h1 id="arguments:" class='section-header'><a
                            href="#arguments:">Arguments:</a></h1>
@@ -62,10 +68,10 @@ rendered on a texture.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.Waves.html' title='kiss3d::post_processing::Waves'>Waves</a></code></li>
-<li><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.Grayscales.html' title='kiss3d::post_processing::Grayscales'>Grayscales</a></code></li>
-<li><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.SobelEdgeHighlight.html' title='kiss3d::post_processing::SobelEdgeHighlight'>SobelEdgeHighlight</a></code></li>
-<li><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.OculusStereo.html' title='kiss3d::post_processing::OculusStereo'>OculusStereo</a></code></li>
+    <li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.Waves.html' title='kiss3d::post_processing::Waves'>Waves</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.Grayscales.html' title='kiss3d::post_processing::Grayscales'>Grayscales</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.SobelEdgeHighlight.html' title='kiss3d::post_processing::SobelEdgeHighlight'>SobelEdgeHighlight</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.OculusStereo.html' title='kiss3d::post_processing::OculusStereo'>OculusStereo</a></code></li>
 </ul><script type="text/javascript" async
                               src="../../../implementors/kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.js">
                       </script></section>
@@ -97,12 +103,14 @@ rendered on a texture.</p>
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../../";

@@ -3,17 +3,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `EventManager` struct in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, EventManager">
 
     <title>kiss3d::window::EventManager - Rust</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -21,9 +22,11 @@
     </div>
     <![endif]-->
 
+    
+
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>window</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.Event.html'>Event</a><a class='struct current' href='struct.EventManager.html'>EventManager</a><a class='struct ' href='struct.Events.html'>Events</a><a class='struct ' href='struct.RenderFrame.html'>RenderFrame</a><a class='struct ' href='struct.RenderFrames.html'>RenderFrames</a><a class='struct ' href='struct.Window.html'>Window</a></div>
+        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>window</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.Event.html'>Event</a><a class='struct current' href='struct.EventManager.html'>EventManager</a><a class='struct ' href='struct.Events.html'>Events</a><a class='struct ' href='struct.Window.html'>Window</a></div>
     </section>
 
     <nav class="sub">
@@ -38,16 +41,19 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>window</a>::<a class='struct' href=''>EventManager</a><a class='source' id='src-3481' href='../../src/kiss3d/src/window/event.rs.html#71-74'>[src]</a></h1>
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>window</a>&#8203;::<a class='struct' href=''>EventManager</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-3938' href='../../src/kiss3d/src/window/event.rs.html#73-76'>[src]</a></div></h1>
 <pre class='rust struct'>pub struct EventManager {
     // some fields omitted
 }</pre><div class='docblock'><p>A stand-alone object that provides an iterator though glfw events.</p>
 
 <p>It is not lifetime-bound to the main window.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/window/struct.EventManager.html' title='kiss3d::window::EventManager'>EventManager</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(events: <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/sync/comm/struct.Receiver.html' title='sync::comm::Receiver'>Receiver</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/std/primitive.f64.html'>f64</a>, WindowEvent)</a>&gt;&gt;, inhibitor: <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='http://doc.rust-lang.org/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;WindowEvent&gt;&gt;&gt;) -&gt; <a class='struct' href='../../kiss3d/window/struct.EventManager.html' title='kiss3d::window::EventManager'>EventManager</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../kiss3d/window/struct.EventManager.html' title='kiss3d::window::EventManager'>EventManager</a></code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(events: <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/sync/comm/struct.Receiver.html' title='sync::comm::Receiver'>Receiver</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/master/std/primitive.f64.html'>f64</a>, <a class='type' href='../../glfw/type.WindowEvent.html' title='glfw::WindowEvent'>WindowEvent</a>)</a>&gt;&gt;, inhibitor: <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='type' href='../../glfw/type.WindowEvent.html' title='glfw::WindowEvent'>WindowEvent</a>&gt;&gt;&gt;) -&gt; <a class='struct' href='../../kiss3d/window/struct.EventManager.html' title='kiss3d::window::EventManager'>EventManager</a></code></h4>
 <div class='docblock'><p>Creates a new event manager.</p>
-</div><h4 id='method.iter' class='method'><code>fn <a href='#method.iter' class='fnname'>iter</a>&lt;'a&gt;(&amp;'a mut self) -&gt; <a class='struct' href='../../kiss3d/window/struct.Events.html' title='kiss3d::window::Events'>Events</a>&lt;'a&gt;</code></h4>
-<div class='docblock'><p>Gets an iterator to the glfw events already detected.</p>
+</div><h4 id='method.iter' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.iter' class='fnname'>iter</a>&lt;'a&gt;(&amp;'a mut self) -&gt; <a class='struct' href='../../kiss3d/window/struct.Events.html' title='kiss3d::window::Events'>Events</a>&lt;'a&gt;</code></h4>
+<div class='docblock'><p>Gets an iterator to the glfw events already collected.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 
@@ -77,12 +83,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../";

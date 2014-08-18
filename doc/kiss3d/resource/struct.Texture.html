@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Texture` struct in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Texture">
 
     <title>kiss3d::resource::Texture - Rust</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -38,15 +41,18 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>resource</a>::<a class='struct' href=''>Texture</a><a class='source' id='src-30607' href='../../src/kiss3d/src/resource/texture_manager.rs.html#16-18'>[src]</a></h1>
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>resource</a>&#8203;::<a class='struct' href=''>Texture</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-31411' href='../../src/kiss3d/src/resource/texture_manager.rs.html#16-18'>[src]</a></div></h1>
 <pre class='rust struct'>pub struct Texture {
     // some fields omitted
 }</pre><div class='docblock'><p>A gpu texture. It contains the texture id provided by opengl and is automatically released.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a>&gt;</code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a></code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a>&gt;</code></h4>
 <div class='docblock'><p>Allocates a new texture on the gpu. The texture is not configured.</p>
-</div><h4 id='method.id' class='method'><code>fn <a href='#method.id' class='fnname'>id</a>(&amp;self) -&gt; GLuint</code></h4>
+</div><h4 id='method.id' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.id' class='fnname'>id</a>(&amp;self) -&gt; <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a></code></h4>
 <div class='docblock'><p>The opengl-provided texture id.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a></code></h3><div class='methods'><h4 id='method.drop' class='method'><code>fn <a href='#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/master/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a></code></h3><div class='impl-methods'><h4 id='method.drop' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -76,12 +82,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../";

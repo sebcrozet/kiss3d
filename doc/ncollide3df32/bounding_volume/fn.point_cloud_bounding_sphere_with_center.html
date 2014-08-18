@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `point_cloud_bounding_sphere_with_center` fn in crate `ncollide3df32`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, point_cloud_bounding_sphere_with_center">
+
+    <title>ncollide3df32::bounding_volume::point_cloud_bounding_sphere_with_center - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>bounding_volume</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.AABB.html'>AABB</a><a class='struct ' href='struct.BoundingSphere.html'>BoundingSphere</a><a class='struct ' href='struct.SpacializedCone.html'>SpacializedCone</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.BoundingVolume.html'>BoundingVolume</a><a class='trait ' href='trait.HasAABB.html'>HasAABB</a><a class='trait ' href='trait.HasBoundingSphere.html'>HasBoundingSphere</a><a class='trait ' href='trait.HasBoundingVolume.html'>HasBoundingVolume</a><a class='trait ' href='trait.LooseBoundingVolume.html'>LooseBoundingVolume</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.ball_aabb.html'>ball_aabb</a><a class='fn ' href='fn.implicit_shape_aabb.html'>implicit_shape_aabb</a><a class='fn ' href='fn.point_cloud_aabb.html'>point_cloud_aabb</a><a class='fn ' href='fn.point_cloud_bounding_sphere.html'>point_cloud_bounding_sphere</a><a class='fn current' href='fn.point_cloud_bounding_sphere_with_center.html'>point_cloud_bounding_sphere_with_center</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content fn">
+<h1 class='fqn'><div class='in-band'>Function <a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>bounding_volume</a>&#8203;::<a class='fn' href=''>point_cloud_bounding_sphere_with_center</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-3737' href='../../src/ncollide3df32/up/up/src/bounding_volume/bounding_sphere_utils.rs.html#8-20'>[src]</a></div></h1>
+<pre class='rust fn'>pub fn point_cloud_bounding_sphere_with_center&lt;N: <a class='trait' href='http://doc.rust-lang.org/master/core/num/trait.Float.html' title='core::num::Float'>Float</a>, V: <a class='trait' href='../../nalgebra/traits/structure/trait.FloatVec.html' title='nalgebra::traits::structure::FloatVec'>FloatVec</a>&lt;N&gt;&gt;(pts: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.slice.html'>[V]</a>, center: V) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(V, N)</a></pre><div class='docblock'><p>Computes the bounding sphere of a set of point, given its center.</p>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

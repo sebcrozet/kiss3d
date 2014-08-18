@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Glyph` struct in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Glyph">
 
     <title>kiss3d::text::Glyph - Rust</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -38,11 +41,14 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>text</a>::<a class='struct' href=''>Glyph</a><a class='source' id='src-42941' href='../../src/kiss3d/src/text/glyph.rs.html#9-20'>[src]</a></h1>
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>text</a>&#8203;::<a class='struct' href=''>Glyph</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-44741' href='../../src/kiss3d/src/text/glyph.rs.html#9-20'>[src]</a></div></h1>
 <pre class='rust struct'>pub struct Glyph {
     // some fields omitted
 }</pre><div class='docblock'><p>A ttf glyph.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/text/struct.Glyph.html' title='kiss3d::text::Glyph'>Glyph</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(tex: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, advance: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, dimensions: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, offset: <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>&gt;, buffer: <a class='struct' href='http://doc.rust-lang.org/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.u8.html'>u8</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/text/struct.Glyph.html' title='kiss3d::text::Glyph'>Glyph</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../kiss3d/text/struct.Glyph.html' title='kiss3d::text::Glyph'>Glyph</a></code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(tex: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, advance: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, dimensions: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, offset: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, buffer: <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.u8.html'>u8</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/text/struct.Glyph.html' title='kiss3d::text::Glyph'>Glyph</a></code></h4>
 <div class='docblock'><p>Creates a new empty glyph.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -73,12 +79,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../";

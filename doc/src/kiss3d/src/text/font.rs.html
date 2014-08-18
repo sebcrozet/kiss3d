@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/text/font.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>font.rs.html -- source</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -216,13 +219,12 @@
 <span id='177'>177</span>
 <span id='178'>178</span>
 <span id='179'>179</span>
-<span id='180'>180</span>
 </pre><pre class='rust '>
-<span class='comment'>// This whole file is strongly inspired by: https://github.com/jeaye/q3/blob/master/src/client/ui/ttf/font.rs
-// available under the BSD-3 licence.
-// It has been modified to work with gl-rs, nalgebra, and rust-freetype
+<span class='comment'>// This whole file is strongly inspired by: https://github.com/jeaye/q3/blob/master/src/client/ui/ttf/font.rs</span>
+<span class='comment'>// available under the BSD-3 licence.</span>
+<span class='comment'>// It has been modified to work with gl-rs, nalgebra, and rust-freetype</span>
 
-</span><span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Rc</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Rc</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>;
@@ -254,8 +256,8 @@
     <span class='doccomment'>/// Loads a new ttf font.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>, <span class='ident'>size</span>: <span class='ident'>i32</span>) <span class='op'>-&gt;</span> <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>Font</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>font</span> <span class='op'>=</span> <span class='ident'>Font</span> {
-            <span class='ident'>library</span>:          <span class='ident'>ptr</span>::<span class='ident'>null</span>(),
-            <span class='ident'>face</span>:             <span class='ident'>ptr</span>::<span class='ident'>null</span>(),
+            <span class='ident'>library</span>:          <span class='ident'>ptr</span>::<span class='ident'>mut_null</span>(),
+            <span class='ident'>face</span>:             <span class='ident'>ptr</span>::<span class='ident'>mut_null</span>(),
             <span class='ident'>texture_atlas</span>:    <span class='number'>0</span>,
             <span class='ident'>atlas_dimensions</span>: <span class='ident'>na</span>::<span class='ident'>zero</span>(),
             <span class='ident'>glyphs</span>:           <span class='ident'>Vec</span>::<span class='ident'>from_fn</span>(<span class='number'>128</span>, <span class='op'>|</span>_<span class='op'>|</span> <span class='prelude-val'>None</span>),
@@ -264,13 +266,12 @@
         };
 
         <span class='kw'>unsafe</span> {
-            <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>freetype</span>::<span class='ident'>FT_Init_FreeType</span>(<span class='kw-2'>&amp;</span><span class='ident'>font</span>.<span class='ident'>library</span>);
+            <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>freetype</span>::<span class='ident'>FT_Init_FreeType</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>font</span>.<span class='ident'>library</span>);
 
-            <span class='ident'>path</span>.<span class='ident'>as_str</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Invalid path.&quot;</span>).<span class='ident'>to_c_str</span>().<span class='ident'>with_ref</span>(<span class='op'>|</span><span class='ident'>c_str</span><span class='op'>|</span> {
-                <span class='kw'>if</span> <span class='ident'>freetype</span>::<span class='ident'>FT_New_Face</span>(<span class='ident'>font</span>.<span class='ident'>library</span>, <span class='ident'>c_str</span>, <span class='number'>0</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>font</span>.<span class='ident'>face</span>) <span class='op'>!=</span> <span class='number'>0</span> {
-                    <span class='macro'>fail</span><span class='macro'>!</span>(<span class='string'>&quot;Failed to create TTF face.&quot;</span>);
-                }
-            });
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>c_str</span> <span class='op'>=</span> <span class='ident'>path</span>.<span class='ident'>as_str</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Invalid path.&quot;</span>).<span class='ident'>to_c_str</span>();
+            <span class='kw'>if</span> <span class='ident'>freetype</span>::<span class='ident'>FT_New_Face</span>(<span class='ident'>font</span>.<span class='ident'>library</span>, <span class='ident'>c_str</span>.<span class='ident'>as_mut_ptr</span>(), <span class='number'>0</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>font</span>.<span class='ident'>face</span>) <span class='op'>!=</span> <span class='number'>0</span> {
+                <span class='macro'>fail</span><span class='macro'>!</span>(<span class='string'>&quot;Failed to create TTF face.&quot;</span>);
+            }
 
             <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>freetype</span>::<span class='ident'>FT_Set_Pixel_Sizes</span>(<span class='ident'>font</span>.<span class='ident'>face</span>, <span class='number'>0</span>, <span class='ident'>size</span> <span class='kw'>as</span> <span class='ident'>c_uint</span>);
             <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>ActiveTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE0</span>));
@@ -283,10 +284,10 @@
             <span class='kw'>for</span> <span class='ident'>curr</span> <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0u</span>, <span class='number'>128</span>) {
                 <span class='kw'>if</span> <span class='ident'>freetype</span>::<span class='ident'>FT_Load_Char</span>(<span class='ident'>font</span>.<span class='ident'>face</span>, <span class='ident'>curr</span> <span class='kw'>as</span> <span class='ident'>u64</span>, <span class='ident'>freetype</span>::<span class='ident'>FT_LOAD_RENDER</span> <span class='kw'>as</span> <span class='ident'>i32</span>) <span class='op'>!=</span> <span class='number'>0</span> {
                     <span class='kw'>continue</span>;
-                }<span class='comment'>
+                }
 
-                /* If we&#39;ve exhausted the width for this row, add another. */
-                </span><span class='kw'>if</span> <span class='ident'>row_width</span> <span class='op'>+</span> (<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap</span>.<span class='ident'>width</span> <span class='op'>+</span> <span class='number'>1</span> <span class='op'>&gt;=</span> <span class='ident'>max_width</span> {
+                <span class='comment'>/* If we&#39;ve exhausted the width for this row, add another. */</span>
+                <span class='kw'>if</span> <span class='ident'>row_width</span> <span class='op'>+</span> (<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap</span>.<span class='ident'>width</span> <span class='op'>+</span> <span class='number'>1</span> <span class='op'>&gt;=</span> <span class='ident'>max_width</span> {
                     <span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>cmp</span>::<span class='ident'>max</span>(<span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>x</span>, <span class='ident'>row_width</span> <span class='kw'>as</span> <span class='ident'>uint</span>);
                     <span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>y</span> <span class='op'>+</span> <span class='ident'>row_height</span>;
                     <span class='ident'>row_width</span> <span class='op'>=</span> <span class='number'>0</span>; <span class='ident'>row_height</span> <span class='op'>=</span> <span class='number'>0</span>;
@@ -295,7 +296,7 @@
                 <span class='kw'>let</span> <span class='ident'>advance</span>    <span class='op'>=</span> <span class='ident'>Vec2</span>::<span class='ident'>new</span>(((<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>advance</span>.<span class='ident'>x</span> <span class='op'>&gt;&gt;</span> <span class='number'>6</span>) <span class='kw'>as</span> <span class='ident'>f32</span>, ((<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>advance</span>.<span class='ident'>y</span> <span class='op'>&gt;&gt;</span> <span class='number'>6</span>) <span class='kw'>as</span> <span class='ident'>f32</span>);
                 <span class='kw'>let</span> <span class='ident'>dimensions</span> <span class='op'>=</span> <span class='ident'>Vec2</span>::<span class='ident'>new</span>((<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap</span>.<span class='ident'>width</span> <span class='kw'>as</span> <span class='ident'>f32</span>, (<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap</span>.<span class='ident'>rows</span> <span class='kw'>as</span> <span class='ident'>f32</span>);
                 <span class='kw'>let</span> <span class='ident'>offset</span>     <span class='op'>=</span> <span class='ident'>Vec2</span>::<span class='ident'>new</span>((<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap_left</span> <span class='kw'>as</span> <span class='ident'>f32</span>, (<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap_top</span> <span class='kw'>as</span> <span class='ident'>f32</span>);
-                <span class='kw'>let</span> <span class='ident'>buffer</span>     <span class='op'>=</span> <span class='ident'>raw</span>::<span class='ident'>from_buf</span>((<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap</span>.<span class='ident'>buffer</span>, (<span class='ident'>dimensions</span>.<span class='ident'>x</span> <span class='op'>*</span> <span class='ident'>dimensions</span>.<span class='ident'>y</span>) <span class='kw'>as</span> <span class='ident'>uint</span>);
+                <span class='kw'>let</span> <span class='ident'>buffer</span>     <span class='op'>=</span> <span class='ident'>raw</span>::<span class='ident'>from_buf</span>(<span class='kw-2'>&amp;</span><span class='op'>*</span>(<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap</span>.<span class='ident'>buffer</span>, (<span class='ident'>dimensions</span>.<span class='ident'>x</span> <span class='op'>*</span> <span class='ident'>dimensions</span>.<span class='ident'>y</span>) <span class='kw'>as</span> <span class='ident'>uint</span>);
                 <span class='kw'>let</span> <span class='ident'>glyph</span>      <span class='op'>=</span> <span class='ident'>Glyph</span>::<span class='ident'>new</span>(<span class='ident'>na</span>::<span class='ident'>zero</span>(), <span class='ident'>advance</span>, <span class='ident'>dimensions</span>, <span class='ident'>offset</span>, <span class='ident'>buffer</span>);
                     
 
@@ -307,27 +308,27 @@
             }
 
             <span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>num</span>::<span class='ident'>next_power_of_two</span>(<span class='ident'>cmp</span>::<span class='ident'>max</span>(<span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>x</span>, <span class='ident'>row_width</span> <span class='kw'>as</span> <span class='ident'>uint</span>));
-            <span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>num</span>::<span class='ident'>next_power_of_two</span>(<span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>y</span> <span class='op'>+</span> <span class='ident'>row_height</span>);<span class='comment'>
+            <span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>num</span>::<span class='ident'>next_power_of_two</span>(<span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>y</span> <span class='op'>+</span> <span class='ident'>row_height</span>);
 
-            /* We&#39;re using 1 byte alignment buffering. */
-            </span><span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>PixelStorei</span>(<span class='ident'>gl</span>::<span class='ident'>UNPACK_ALIGNMENT</span>, <span class='number'>1</span>));
+            <span class='comment'>/* We&#39;re using 1 byte alignment buffering. */</span>
+            <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>PixelStorei</span>(<span class='ident'>gl</span>::<span class='ident'>UNPACK_ALIGNMENT</span>, <span class='number'>1</span>));
 
             <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>GenTextures</span>(<span class='number'>1</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>font</span>.<span class='ident'>texture_atlas</span>));
             <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>font</span>.<span class='ident'>texture_atlas</span>));
             <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexImage2D</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='number'>0</span>, <span class='ident'>gl</span>::<span class='ident'>RGB</span> <span class='kw'>as</span> <span class='ident'>GLint</span>,
                                    <span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>i32</span>, <span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>i32</span>,
-                                   <span class='number'>0</span>, <span class='ident'>gl</span>::<span class='ident'>RED</span>, <span class='ident'>gl</span>::<span class='ident'>UNSIGNED_BYTE</span>, <span class='ident'>ptr</span>::<span class='ident'>null</span>()));<span class='comment'>
+                                   <span class='number'>0</span>, <span class='ident'>gl</span>::<span class='ident'>RED</span>, <span class='ident'>gl</span>::<span class='ident'>UNSIGNED_BYTE</span>, <span class='ident'>ptr</span>::<span class='ident'>null</span>()));
 
-            /* Clamp to the edge to avoid artifacts when scaling. */
-            </span><span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexParameteri</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>gl</span>::<span class='ident'>TEXTURE_WRAP_S</span>, <span class='ident'>gl</span>::<span class='ident'>CLAMP_TO_EDGE</span> <span class='kw'>as</span> <span class='ident'>i32</span>));
-            <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexParameteri</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>gl</span>::<span class='ident'>TEXTURE_WRAP_T</span>, <span class='ident'>gl</span>::<span class='ident'>CLAMP_TO_EDGE</span> <span class='kw'>as</span> <span class='ident'>i32</span>));<span class='comment'>
+            <span class='comment'>/* Clamp to the edge to avoid artifacts when scaling. */</span>
+            <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexParameteri</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>gl</span>::<span class='ident'>TEXTURE_WRAP_S</span>, <span class='ident'>gl</span>::<span class='ident'>CLAMP_TO_EDGE</span> <span class='kw'>as</span> <span class='ident'>i32</span>));
+            <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexParameteri</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>gl</span>::<span class='ident'>TEXTURE_WRAP_T</span>, <span class='ident'>gl</span>::<span class='ident'>CLAMP_TO_EDGE</span> <span class='kw'>as</span> <span class='ident'>i32</span>));
 
-            /* Linear filtering usually looks best for text. */
-            </span><span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexParameteri</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>gl</span>::<span class='ident'>TEXTURE_MIN_FILTER</span>, <span class='ident'>gl</span>::<span class='ident'>LINEAR</span> <span class='kw'>as</span> <span class='ident'>i32</span>));
-            <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexParameteri</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>gl</span>::<span class='ident'>TEXTURE_MAG_FILTER</span>, <span class='ident'>gl</span>::<span class='ident'>LINEAR</span> <span class='kw'>as</span> <span class='ident'>i32</span>));<span class='comment'>
+            <span class='comment'>/* Linear filtering usually looks best for text. */</span>
+            <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexParameteri</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>gl</span>::<span class='ident'>TEXTURE_MIN_FILTER</span>, <span class='ident'>gl</span>::<span class='ident'>LINEAR</span> <span class='kw'>as</span> <span class='ident'>i32</span>));
+            <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexParameteri</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>gl</span>::<span class='ident'>TEXTURE_MAG_FILTER</span>, <span class='ident'>gl</span>::<span class='ident'>LINEAR</span> <span class='kw'>as</span> <span class='ident'>i32</span>));
 
-            /* Copy all glyphs into the texture atlas. */
-            </span><span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>offset</span>: <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>na</span>::<span class='ident'>zero</span>();
+            <span class='comment'>/* Copy all glyphs into the texture atlas. */</span>
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>offset</span>: <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>na</span>::<span class='ident'>zero</span>();
             <span class='ident'>row_height</span> <span class='op'>=</span> <span class='number'>0</span>;
             <span class='kw'>for</span> <span class='ident'>curr</span> <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0u</span>, <span class='number'>128</span>) {
                 <span class='kw'>let</span> <span class='ident'>glyph</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>font</span>.<span class='ident'>glyphs</span>.<span class='ident'>get_mut</span>(<span class='ident'>curr</span>) {
@@ -345,20 +346,20 @@
                     <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexSubImage2D</span>(
                                 <span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='number'>0</span>, <span class='ident'>offset</span>.<span class='ident'>x</span>, <span class='ident'>offset</span>.<span class='ident'>y</span>,
                                 <span class='ident'>glyph</span>.<span class='ident'>dimensions</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>i32</span>, <span class='ident'>glyph</span>.<span class='ident'>dimensions</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>i32</span>,
-                                <span class='ident'>gl</span>::<span class='ident'>RED</span>, <span class='ident'>gl</span>::<span class='ident'>UNSIGNED_BYTE</span>, <span class='ident'>glyph</span>.<span class='ident'>buffer</span>.<span class='ident'>get</span>(<span class='number'>0</span>) <span class='kw'>as</span> <span class='op'>*</span><span class='ident'>u8</span> <span class='kw'>as</span> <span class='op'>*</span><span class='ident'>c_void</span>));
-                }<span class='comment'>
+                                <span class='ident'>gl</span>::<span class='ident'>RED</span>, <span class='ident'>gl</span>::<span class='ident'>UNSIGNED_BYTE</span>, <span class='ident'>glyph</span>.<span class='ident'>buffer</span>.<span class='ident'>get</span>(<span class='number'>0</span>) <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>));
+                }
 
-                /* Calculate the position in the texture. */
-                </span><span class='ident'>glyph</span>.<span class='ident'>tex</span>.<span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>offset</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>f32</span> <span class='op'>/</span> (<span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>f32</span>);
+                <span class='comment'>/* Calculate the position in the texture. */</span>
+                <span class='ident'>glyph</span>.<span class='ident'>tex</span>.<span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>offset</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>f32</span> <span class='op'>/</span> (<span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>f32</span>);
                 <span class='ident'>glyph</span>.<span class='ident'>tex</span>.<span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>offset</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>f32</span> <span class='op'>/</span> (<span class='ident'>font</span>.<span class='ident'>atlas_dimensions</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>f32</span>);
 
                 <span class='ident'>offset</span>.<span class='ident'>x</span>   <span class='op'>=</span> <span class='ident'>offset</span>.<span class='ident'>x</span> <span class='op'>+</span> <span class='ident'>glyph</span>.<span class='ident'>dimensions</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>i32</span>;
                 <span class='ident'>row_height</span> <span class='op'>=</span> <span class='ident'>cmp</span>::<span class='ident'>max</span>(<span class='ident'>row_height</span>, <span class='ident'>glyph</span>.<span class='ident'>dimensions</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>uint</span>);
             }
-        }<span class='comment'>
+        }
 
-        /* Reset the state. */
-        </span><span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>PixelStorei</span>(<span class='ident'>gl</span>::<span class='ident'>UNPACK_ALIGNMENT</span>, <span class='number'>4</span>));
+        <span class='comment'>/* Reset the state. */</span>
+        <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>PixelStorei</span>(<span class='ident'>gl</span>::<span class='ident'>UNPACK_ALIGNMENT</span>, <span class='number'>4</span>));
 
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>font</span>.<span class='ident'>height</span> <span class='op'>&gt;</span> <span class='number'>0</span>);
 
@@ -428,12 +429,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../../../";

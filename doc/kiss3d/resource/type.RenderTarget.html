@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `RenderTarget` type in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, RenderTarget">
 
     <title>kiss3d::resource::RenderTarget - Rust</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -38,19 +41,22 @@
     </nav>
 
     <section id='main' class="content type">
-<h1 class='fqn'>Enum <a href='../index.html'>kiss3d</a>::<a href='index.html'>resource</a>::<a class='type' href=''>RenderTarget</a><a class='source' id='src-25695' href='../../src/kiss3d/src/resource/framebuffer_manager.rs.html#12-17'>[src]</a></h1>
+<h1 class='fqn'><div class='in-band'>Enum <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>resource</a>&#8203;::<a class='type' href=''>RenderTarget</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-26053' href='../../src/kiss3d/src/resource/framebuffer_manager.rs.html#12-17'>[src]</a></div></h1>
 <pre class='rust enum'>pub enum RenderTarget {
     Screen,
     Offscreen(<a class='struct' href='../../kiss3d/resource/struct.OffscreenBuffers.html' title='kiss3d::resource::OffscreenBuffers'>OffscreenBuffers</a>),
 }</pre><div class='docblock'><p>The target to every rendering call.</p>
 </div><h2 class='variants'>Variants</h2>
-<table><tr><td id='variant.Screen'><code>Screen</code></td><td><div class='docblock'><p>The screen (main framebuffer).</p>
-</div></td></tr><tr><td id='variant.Offscreen'><code>Offscreen</code></td><td><div class='docblock'><p>An off-screen buffer.</p>
-</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='type' href='../../kiss3d/resource/type.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a></code></h3><div class='methods'><h4 id='method.texture_id' class='method'><code>fn <a href='#method.texture_id' class='fnname'>texture_id</a>(&amp;self) -&gt; GLuint</code></h4>
+<table><tr><td id='variant.Screen'><a class='stability Unmarked' title='No stability level'></a><code>Screen</code></td><td><div class='docblock'><p>The screen (main framebuffer).</p>
+</div></td></tr><tr><td id='variant.Offscreen'><a class='stability Unmarked' title='No stability level'></a><code>Offscreen</code></td><td><div class='docblock'><p>An off-screen buffer.</p>
+</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='type' href='../../kiss3d/resource/type.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a></code></h3><div class='impl-methods'><h4 id='method.texture_id' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.texture_id' class='fnname'>texture_id</a>(&amp;self) -&gt; <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a></code></h4>
 <div class='docblock'><p>Returns an opengl handle to the off-screen texture buffer.</p>
-</div><h4 id='method.depth_id' class='method'><code>fn <a href='#method.depth_id' class='fnname'>depth_id</a>(&amp;self) -&gt; GLuint</code></h4>
+</div><h4 id='method.depth_id' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.depth_id' class='fnname'>depth_id</a>(&amp;self) -&gt; <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a></code></h4>
 <div class='docblock'><p>Returns an opengl handle to the off-screen depth buffer.</p>
-</div><h4 id='method.resize' class='method'><code>fn <a href='#method.resize' class='fnname'>resize</a>(&amp;mut self, w: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>, h: <a href='http://doc.rust-lang.org/std/primitive.f32.html'>f32</a>)</code></h4>
+</div><h4 id='method.resize' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.resize' class='fnname'>resize</a>(&amp;mut self, w: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, h: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>)</code></h4>
 <div class='docblock'><p>Resizes this render target.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -81,12 +87,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../";

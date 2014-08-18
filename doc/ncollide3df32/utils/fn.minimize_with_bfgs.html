@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `minimize_with_bfgs` fn in crate `ncollide3df32`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, minimize_with_bfgs">
+
+    <title>ncollide3df32::utils::minimize_with_bfgs - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>utils</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='symbolic/index.html'>symbolic</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.BacktrackingLineSearch.html'>BacktrackingLineSearch</a><a class='struct ' href='struct.HashablePartialEq.html'>HashablePartialEq</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.AnyPrivate.html'>AnyPrivate</a><a class='trait ' href='trait.AsBytes.html'>AsBytes</a><a class='trait ' href='trait.LineSearch.html'>LineSearch</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.bfgs.html'>bfgs</a><a class='fn ' href='fn.binom.html'>binom</a><a class='fn ' href='fn.center.html'>center</a><a class='fn ' href='fn.center_reduce.html'>center_reduce</a><a class='fn ' href='fn.circumcircle.html'>circumcircle</a><a class='fn ' href='fn.cov.html'>cov</a><a class='fn ' href='fn.cov_and_center.html'>cov_and_center</a><a class='fn ' href='fn.dcos.html'>dcos</a><a class='fn ' href='fn.dsin.html'>dsin</a><a class='fn ' href='fn.is_affinely_dependent_triangle.html'>is_affinely_dependent_triangle</a><a class='fn ' href='fn.is_point_in_triangle.html'>is_point_in_triangle</a><a class='fn ' href='fn.maximize_with_newton.html'>maximize_with_newton</a><a class='fn current' href='fn.minimize_with_bfgs.html'>minimize_with_bfgs</a><a class='fn ' href='fn.newton.html'>newton</a><a class='fn ' href='fn.project_homogeneous.html'>project_homogeneous</a><a class='fn ' href='fn.project_homogeneous_to.html'>project_homogeneous_to</a><a class='fn ' href='fn.remove_unused_points.html'>remove_unused_points</a><a class='fn ' href='fn.sort3.html'>sort3</a><a class='fn ' href='fn.tetrahedron_center.html'>tetrahedron_center</a><a class='fn ' href='fn.tetrahedron_signed_volume.html'>tetrahedron_signed_volume</a><a class='fn ' href='fn.tetrahedron_volume.html'>tetrahedron_volume</a><a class='fn ' href='fn.triangle_area.html'>triangle_area</a><a class='fn ' href='fn.triangle_perimeter.html'>triangle_perimeter</a><a class='fn ' href='fn.triangulate.html'>triangulate</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content fn">
+<h1 class='fqn'><div class='in-band'>Function <a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>utils</a>&#8203;::<a class='fn' href=''>minimize_with_bfgs</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-86369' href='../../src/ncollide3df32/up/up/src/utils/optimization.rs.html#63-100'>[src]</a></div></h1>
+<pre class='rust fn'>pub fn minimize_with_bfgs&lt;N: <a class='trait' href='http://doc.rust-lang.org/master/core/cmp/trait.PartialOrd.html' title='core::cmp::PartialOrd'>PartialOrd</a> + <a class='trait' href='http://doc.rust-lang.org/master/core/num/trait.Zero.html' title='core::num::Zero'>Zero</a> + <a class='trait' href='../../nalgebra/traits/structure/trait.Cast.html' title='nalgebra::traits::structure::Cast'>Cast</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f64.html'>f64</a>&gt; + <a class='trait' href='http://doc.rust-lang.org/master/core/num/trait.Float.html' title='core::num::Float'>Float</a> + <a class='trait' href='http://doc.rust-lang.org/master/rand/trait.Rand.html' title='rand::Rand'>Rand</a>, V: <a class='trait' href='../../nalgebra/traits/structure/trait.FloatVec.html' title='nalgebra::traits::structure::FloatVec'>FloatVec</a>&lt;N&gt; + <a class='trait' href='../../nalgebra/traits/operations/trait.Outer.html' title='nalgebra::traits::operations::Outer'>Outer</a>&lt;M&gt; + <a class='trait' href='../../nalgebra/traits/operations/trait.PartialOrd.html' title='nalgebra::traits::operations::PartialOrd'>PartialOrd</a> + <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='../../nalgebra/traits/structure/trait.Indexable.html' title='nalgebra::traits::structure::Indexable'>Indexable</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, N&gt; + <a class='trait' href='http://doc.rust-lang.org/master/rand/trait.Rand.html' title='rand::Rand'>Rand</a>, M: <a class='trait' href='../../nalgebra/traits/structure/trait.Mat.html' title='nalgebra::traits::structure::Mat'>Mat</a>&lt;V, V&gt; + <a class='trait' href='http://doc.rust-lang.org/master/core/ops/trait.Mul.html' title='core::ops::Mul'>Mul</a>&lt;M, M&gt; + <a class='trait' href='http://doc.rust-lang.org/master/core/ops/trait.Add.html' title='core::ops::Add'>Add</a>&lt;M, M&gt; + <a class='trait' href='http://doc.rust-lang.org/master/core/ops/trait.Sub.html' title='core::ops::Sub'>Sub</a>&lt;M, M&gt; + <a class='trait' href='../../nalgebra/traits/operations/trait.Inv.html' title='nalgebra::traits::operations::Inv'>Inv</a> + <a class='trait' href='http://doc.rust-lang.org/master/core/num/trait.One.html' title='core::num::One'>One</a> + <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='../../nalgebra/traits/operations/trait.ScalarMul.html' title='nalgebra::traits::operations::ScalarMul'>ScalarMul</a>&lt;N&gt;&gt;(niter: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, num_guesses: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, domain_min: &amp;V, domain_max: &amp;V, f: &amp;mut |&amp;V| -&gt; N, df: &amp;mut |&amp;V| -&gt; V) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(V, N)</a></pre><div class='docblock'><p>Minimizes a function using the bfgs method.</p>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

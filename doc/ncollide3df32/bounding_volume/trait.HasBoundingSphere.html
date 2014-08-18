@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `HasBoundingSphere` trait in crate `ncollide3df32`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, HasBoundingSphere">
+
+    <title>ncollide3df32::bounding_volume::HasBoundingSphere - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>bounding_volume</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.AABB.html'>AABB</a><a class='struct ' href='struct.BoundingSphere.html'>BoundingSphere</a><a class='struct ' href='struct.SpacializedCone.html'>SpacializedCone</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.BoundingVolume.html'>BoundingVolume</a><a class='trait ' href='trait.HasAABB.html'>HasAABB</a><a class='trait current' href='trait.HasBoundingSphere.html'>HasBoundingSphere</a><a class='trait ' href='trait.HasBoundingVolume.html'>HasBoundingVolume</a><a class='trait ' href='trait.LooseBoundingVolume.html'>LooseBoundingVolume</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.ball_aabb.html'>ball_aabb</a><a class='fn ' href='fn.implicit_shape_aabb.html'>implicit_shape_aabb</a><a class='fn ' href='fn.point_cloud_aabb.html'>point_cloud_aabb</a><a class='fn ' href='fn.point_cloud_bounding_sphere.html'>point_cloud_bounding_sphere</a><a class='fn ' href='fn.point_cloud_bounding_sphere_with_center.html'>point_cloud_bounding_sphere_with_center</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><div class='in-band'>Trait <a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>bounding_volume</a>&#8203;::<a class='trait' href=''>HasBoundingSphere</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-2161' href='../../src/ncollide3df32/up/up/src/bounding_volume/bounding_sphere.rs.html#9-12'>[src]</a></div></h1>
+<pre class='rust trait'>pub trait HasBoundingSphere {
+    fn <a href='#tymethod.bounding_sphere' class='fnname'>bounding_sphere</a>(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>) -&gt; <a class='struct' href='../../ncollide3df32/bounding_volume/struct.BoundingSphere.html' title='ncollide3df32::bounding_volume::BoundingSphere'>BoundingSphere</a>;
+}</pre><div class='docblock'><p>Trait implemented by objects having a bounding sphere.</p>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.bounding_sphere' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.bounding_sphere' class='fnname'>bounding_sphere</a>(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>) -&gt; <a class='struct' href='../../ncollide3df32/bounding_volume/struct.BoundingSphere.html' title='ncollide3df32::bounding_volume::BoundingSphere'>BoundingSphere</a></code></h3><div class='docblock'><p>The object bounding sphere.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasBoundingSphere.html' title='ncollide3df32::bounding_volume::HasBoundingSphere'>HasBoundingSphere</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Cuboid.html' title='ncollide3df32::geom::Cuboid'>Cuboid</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasBoundingSphere.html' title='ncollide3df32::bounding_volume::HasBoundingSphere'>HasBoundingSphere</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Cylinder.html' title='ncollide3df32::geom::Cylinder'>Cylinder</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasBoundingSphere.html' title='ncollide3df32::bounding_volume::HasBoundingSphere'>HasBoundingSphere</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Ball.html' title='ncollide3df32::geom::Ball'>Ball</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasBoundingSphere.html' title='ncollide3df32::bounding_volume::HasBoundingSphere'>HasBoundingSphere</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Cone.html' title='ncollide3df32::geom::Cone'>Cone</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasBoundingSphere.html' title='ncollide3df32::bounding_volume::HasBoundingSphere'>HasBoundingSphere</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Capsule.html' title='ncollide3df32::geom::Capsule'>Capsule</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasBoundingSphere.html' title='ncollide3df32::bounding_volume::HasBoundingSphere'>HasBoundingSphere</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Plane.html' title='ncollide3df32::geom::Plane'>Plane</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasBoundingSphere.html' title='ncollide3df32::bounding_volume::HasBoundingSphere'>HasBoundingSphere</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Convex.html' title='ncollide3df32::geom::Convex'>Convex</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasBoundingSphere.html' title='ncollide3df32::bounding_volume::HasBoundingSphere'>HasBoundingSphere</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Compound.html' title='ncollide3df32::geom::Compound'>Compound</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasBoundingSphere.html' title='ncollide3df32::bounding_volume::HasBoundingSphere'>HasBoundingSphere</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Triangle.html' title='ncollide3df32::geom::Triangle'>Triangle</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasBoundingSphere.html' title='ncollide3df32::bounding_volume::HasBoundingSphere'>HasBoundingSphere</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasBoundingSphere.html' title='ncollide3df32::bounding_volume::HasBoundingSphere'>HasBoundingSphere</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Mesh.html' title='ncollide3df32::geom::Mesh'>Mesh</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/bounding_volume/trait.HasBoundingSphere.html' title='ncollide3df32::bounding_volume::HasBoundingSphere'>HasBoundingSphere</a> for <a class='struct' href='../../ncollide3df32/geom/struct.BezierSurface.html' title='ncollide3df32::geom::BezierSurface'>BezierSurface</a></code></li>
+</ul><script type="text/javascript" async
+                              src="../../implementors/ncollide3df32/bounding_volume/trait.HasBoundingSphere.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

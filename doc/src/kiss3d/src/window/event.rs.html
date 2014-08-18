@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/window/event.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>event.rs.html -- source</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -130,9 +133,11 @@
 <span id='91'>91</span>
 <span id='92'>92</span>
 <span id='93'>93</span>
+<span id='94'>94</span>
+<span id='95'>95</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Rc</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cell</span>::{<span class='ident'>RefCell</span>, <span class='ident'>RefMut</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cell</span>::<span class='ident'>RefCell</span>;
 <span class='kw'>use</span> <span class='ident'>glfw</span>;
 
 <span class='doccomment'>/// An event.</span>
@@ -143,7 +148,7 @@
     <span class='kw'>pub</span> <span class='ident'>value</span>:     <span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span>,
     <span class='doccomment'>/// Set this to `true` to prevent the window or the camera from handling the event.</span>
     <span class='kw'>pub</span> <span class='ident'>inhibited</span>: <span class='ident'>bool</span>,
-    <span class='ident'>inhibitor</span>:     <span class='ident'>RefMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span><span class='op'>&gt;&gt;</span>
+    <span class='ident'>inhibitor</span>:     <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span><span class='op'>&gt;&gt;</span>
 }
 
 <span class='attribute'>#[<span class='ident'>unsafe_destructor</span>]</span>
@@ -151,7 +156,7 @@
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>drop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>inhibited</span> {
-            <span class='self'>self</span>.<span class='ident'>inhibitor</span>.<span class='ident'>push</span>(<span class='self'>self</span>.<span class='ident'>value</span>.<span class='ident'>clone</span>())
+            <span class='self'>self</span>.<span class='ident'>inhibitor</span>.<span class='ident'>borrow_mut</span>().<span class='ident'>push</span>(<span class='self'>self</span>.<span class='ident'>value</span>.<span class='ident'>clone</span>())
         }
     }
 }
@@ -160,7 +165,7 @@
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>timestamp</span>: <span class='ident'>f64</span>,
            <span class='ident'>value</span>:     <span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span>,
-           <span class='ident'>inhibitor</span>: <span class='ident'>RefMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span><span class='op'>&gt;&gt;</span>)
+           <span class='ident'>inhibitor</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span><span class='op'>&gt;&gt;</span>)
            <span class='op'>-&gt;</span> <span class='ident'>Event</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
         <span class='ident'>Event</span> {
             <span class='ident'>timestamp</span>: <span class='ident'>timestamp</span>,
@@ -174,26 +179,28 @@
 <span class='doccomment'>/// An iterator through events.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Events</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='ident'>stream</span>:    <span class='ident'>glfw</span>::<span class='ident'>FlushedMessages</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, (<span class='ident'>f64</span>, <span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span>)<span class='op'>&gt;</span>,
-    <span class='ident'>inhibitor</span>: <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>
+    <span class='ident'>inhibitor</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span><span class='op'>&gt;&gt;</span>
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Events</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>stream</span>:    <span class='ident'>glfw</span>::<span class='ident'>FlushedMessages</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, (<span class='ident'>f64</span>, <span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span>)<span class='op'>&gt;</span>,
-           <span class='ident'>inhibitor</span>: <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>)
+           <span class='ident'>inhibitor</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>glfw</span>::<span class='ident'>WindowEvent</span><span class='op'>&gt;&gt;</span>)
            <span class='op'>-&gt;</span> <span class='ident'>Events</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
         <span class='ident'>Events</span> {
             <span class='ident'>stream</span>:    <span class='ident'>stream</span>,
             <span class='ident'>inhibitor</span>: <span class='ident'>inhibitor</span>
         }
     }
+}
 
-    <span class='doccomment'>/// Gets the next event.</span>
+
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>Event</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Events</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>next</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Event</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Event</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span> {
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>next</span>() {
             <span class='prelude-val'>None</span>         <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
-            <span class='prelude-val'>Some</span>((<span class='ident'>t</span>, <span class='ident'>e</span>)) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Event</span>::<span class='ident'>new</span>(<span class='ident'>t</span>, <span class='ident'>e</span>, <span class='self'>self</span>.<span class='ident'>inhibitor</span>.<span class='ident'>borrow_mut</span>()))
+            <span class='prelude-val'>Some</span>((<span class='ident'>t</span>, <span class='ident'>e</span>)) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Event</span>::<span class='ident'>new</span>(<span class='ident'>t</span>, <span class='ident'>e</span>, <span class='self'>self</span>.<span class='ident'>inhibitor</span>))
         }
     }
 }
@@ -218,10 +225,10 @@
         }
     }
 
-    <span class='doccomment'>/// Gets an iterator to the glfw events already detected.</span>
+    <span class='doccomment'>/// Gets an iterator to the glfw events already collected.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Events</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-        <span class='ident'>Events</span>::<span class='ident'>new</span>(<span class='ident'>glfw</span>::<span class='ident'>flush_messages</span>(<span class='self'>self</span>.<span class='ident'>events</span>.<span class='ident'>deref</span>()), <span class='self'>self</span>.<span class='ident'>inhibitor</span>.<span class='ident'>clone</span>())
+        <span class='ident'>Events</span>::<span class='ident'>new</span>(<span class='ident'>glfw</span>::<span class='ident'>flush_messages</span>(<span class='self'>self</span>.<span class='ident'>events</span>.<span class='ident'>deref</span>()), <span class='self'>self</span>.<span class='ident'>inhibitor</span>.<span class='ident'>deref</span>())
     }
 }
 </pre>
@@ -254,12 +261,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../../../";

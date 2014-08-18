@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ncollide3df32` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ncollide3df32">
+
+    <title>ncollide3df32 - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'></p>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><div class='in-band'>Crate <a class='mod' href=''>ncollide3df32</a>&#8203;</div><div class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-0' href='../src/ncollide3df32/up/up/src/ncollide3df32.rs.html#1-115'>[src]</a></div></h1>
+<div class='docblock'>
+<h1 id="ncollide" class='section-header'><a
+                           href="#ncollide">ncollide</a></h1>
+<p><strong>ncollide</strong> is a n-dimensional collision detection library written with the
+rust programming language.</p>
+
+<p>As its name suggests, it is generic wrt the dimension: it works with both
+2-dimensional and 3-dimensional geometries.  It might work with higher
+dimensions (never tried).</p>
+
+<h2 id="compilation" class='section-header'><a
+                           href="#compilation">Compilation</a></h2>
+<p>You will need the last nightly build of the <a href="http://www.rust-lang.org">rust compiler</a>
+and the official package manager: <a href="https://github.com/rust-lang/cargo">cargo</a>.</p>
+
+<p>Simply add the following to your <code>Cargo.toml</code> file:</p>
+<pre class='rust '>
+[<span class='ident'>dependencies</span>.<span class='ident'>ncollide3df32</span>]
+<span class='ident'>git</span> <span class='op'>=</span> <span class='string'>&quot;https://github.com/sebcrozet/ncollide&quot;</span>
+</pre>
+
+<h2 id="features" class='section-header'><a
+                           href="#features">Features</a></h2>
+<ul>
+<li>dynamic bounding volume tree based broad phase</li>
+<li>ball vs. ball collision detection,</li>
+<li>plane vs. any convex object collision detection.</li>
+<li>collision detection between arbitrary convex objects</li>
+<li>compound geometries</li>
+<li>ray-casting</li>
+<li>time of impact computation  for objects without rotational movement (compound vs. compound is not
+yet implemented)</li>
+</ul>
+
+<p>And various traits for collision detectors and broad phase collision detection.</p>
+
+<h2 id="what-is-missing" class='section-header'><a
+                           href="#what-is-missing">What is missing</a></h2>
+<p>Some common features are still missing:</p>
+
+<ul>
+<li>heightmaps</li>
+</ul>
+</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='bounding_volume/index.html'
+                               title='ncollide3df32::bounding_volume'>bounding_volume</a></td>
+                        <td class='docblock short'><p>Bounding volumes.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='broad/index.html'
+                               title='ncollide3df32::broad'>broad</a></td>
+                        <td class='docblock short'><p>Broad phases.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='data/index.html'
+                               title='ncollide3df32::data'>data</a></td>
+                        <td class='docblock short'><p>Data structure utilities.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='geom/index.html'
+                               title='ncollide3df32::geom'>geom</a></td>
+                        <td class='docblock short'><p>Geometric primitives.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='implicit/index.html'
+                               title='ncollide3df32::implicit'>implicit</a></td>
+                        <td class='docblock short'><p>Definition of support functions.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='math/index.html'
+                               title='ncollide3df32::math'>math</a></td>
+                        <td class='docblock short'><p>Compilation flags dependent aliases for mathematical types.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='narrow/index.html'
+                               title='ncollide3df32::narrow'>narrow</a></td>
+                        <td class='docblock short'><p>Narrow phases.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='parametric/index.html'
+                               title='ncollide3df32::parametric'>parametric</a></td>
+                        <td class='docblock short'><p>Definition of parametric surfaces.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='partitioning/index.html'
+                               title='ncollide3df32::partitioning'>partitioning</a></td>
+                        <td class='docblock short'><p>Spatial partitioning tools.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='procedural/index.html'
+                               title='ncollide3df32::procedural'>procedural</a></td>
+                        <td class='docblock short'><p>Procedural mesh generation.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='ray/index.html'
+                               title='ncollide3df32::ray'>ray</a></td>
+                        <td class='docblock short'><p>Ray casting utilities.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='utils/index.html'
+                               title='ncollide3df32::utils'>utils</a></td>
+                        <td class='docblock short'><p>Miscelaneous, unsorted generic geometric utilities.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='volumetric/index.html'
+                               title='ncollide3df32::volumetric'>volumetric</a></td>
+                        <td class='docblock short'><p>Volume and inertia tensor computation.</p>
+</td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>

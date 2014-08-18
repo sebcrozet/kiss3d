@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `escape_str` fn in crate `xml`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, escape_str">
+
+    <title>xml::common::escape_str - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>xml</a>&#8203;::<a href='index.html'>common</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.Attribute.html'>Attribute</a><a class='struct ' href='struct.Error.html'>Error</a><a class='struct ' href='struct.Name.html'>Name</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.HasPosition.html'>HasPosition</a><a class='trait ' href='trait.OptionOps.html'>OptionOps</a></div><div class='block fn'><h2>Functions</h2><a class='fn current' href='fn.escape_str.html'>escape_str</a><a class='fn ' href='fn.is_name_char.html'>is_name_char</a><a class='fn ' href='fn.is_name_start_char.html'>is_name_start_char</a><a class='fn ' href='fn.is_whitespace_char.html'>is_whitespace_char</a><a class='fn ' href='fn.parse_name.html'>parse_name</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content fn">
+<h1 class='fqn'><div class='in-band'>Function <a href='../index.html'>xml</a>&#8203;::<a href='index.html'>common</a>&#8203;::<a class='fn' href=''>escape_str</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-1808' href='../../src/xml/src/common.rs.html#277-290'>[src]</a></div></h1>
+<pre class='rust fn'>pub fn escape_str(s: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/collections/string/struct.String.html' title='collections::string::String'>String</a></pre><div class='docblock'><p>Performs escaping of common XML characters.</p>
+
+<p>This function replaces several important markup characters with their
+entity equivalents.</p>
+
+<ul>
+<li><code>&lt;</code> → <code>&amp;lt;</code></li>
+<li><code>&gt;</code> → <code>&amp;gt;</code></li>
+<li><code>&quot;</code> → <code>&amp;quot;</code></li>
+<li><code>&#39;</code> → <code>&amp;apos;</code></li>
+<li><code>&amp;</code> → <code>&amp;amp;</code></li>
+</ul>
+
+<p>The resulting string is safe to use inside XML attribute values or in
+PCDATA sections.</p>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "xml";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

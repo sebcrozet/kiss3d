@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/resource/material_manager.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>material_manager.rs.html -- source</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -136,9 +139,9 @@
 
 <span class='kw'>impl</span> <span class='ident'>MaterialManager</span> {
     <span class='doccomment'>/// Creates a new material manager.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>MaterialManager</span> {<span class='comment'>
-        // load the default ObjectMaterial and the LineMaterial
-        </span><span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>materials</span> <span class='op'>=</span> <span class='ident'>HashMap</span>::<span class='ident'>new</span>();
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>MaterialManager</span> {
+        <span class='comment'>// load the default ObjectMaterial and the LineMaterial</span>
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>materials</span> <span class='op'>=</span> <span class='ident'>HashMap</span>::<span class='ident'>new</span>();
 
         <span class='kw'>let</span> <span class='ident'>om</span> <span class='op'>=</span> <span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='ident'>RefCell</span>::<span class='ident'>new</span>(<span class='kw'>box</span> <span class='ident'>ObjectMaterial</span>::<span class='ident'>new</span>() <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Material</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>));
         <span class='ident'>materials</span>.<span class='ident'>insert</span>(<span class='string'>&quot;object&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>om</span>.<span class='ident'>clone</span>());
@@ -214,12 +217,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../../../";

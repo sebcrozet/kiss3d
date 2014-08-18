@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Font` struct in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Font">
 
     <title>kiss3d::text::Font - Rust</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -38,21 +41,24 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>text</a>::<a class='struct' href=''>Font</a><a class='source' id='src-43029' href='../../src/kiss3d/src/text/font.rs.html#23-31'>[src]</a></h1>
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>text</a>&#8203;::<a class='struct' href=''>Font</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-44832' href='../../src/kiss3d/src/text/font.rs.html#23-31'>[src]</a></div></h1>
 <pre class='rust struct'>pub struct Font {
     // some fields omitted
 }</pre><div class='docblock'><p>A ttf font.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(path: &amp;<a class='struct' href='http://doc.rust-lang.org/std/path/posix/struct.Path.html' title='std::path::posix::Path'>Path</a>, size: <a href='http://doc.rust-lang.org/std/primitive.i32.html'>i32</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a>&gt;</code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a></code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(path: &amp;<a class='struct' href='http://doc.rust-lang.org/master/std/path/posix/struct.Path.html' title='std::path::posix::Path'>Path</a>, size: <a href='http://doc.rust-lang.org/master/std/primitive.i32.html'>i32</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a>&gt;</code></h4>
 <div class='docblock'><p>Loads a new ttf font.</p>
-</div><h4 id='method.texture_atlas' class='method'><code>fn <a href='#method.texture_atlas' class='fnname'>texture_atlas</a>(&amp;self) -&gt; GLuint</code></h4>
+</div><h4 id='method.texture_atlas' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.texture_atlas' class='fnname'>texture_atlas</a>(&amp;self) -&gt; <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a></code></h4>
 <div class='docblock'><p>The opengl id to the texture atlas of this font.</p>
-</div><h4 id='method.atlas_dimensions' class='method'><code>fn <a href='#method.atlas_dimensions' class='fnname'>atlas_dimensions</a>(&amp;self) -&gt; <a class='struct' href='http://nalgebra.org/doc/nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>&gt;</code></h4>
+</div><h4 id='method.atlas_dimensions' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.atlas_dimensions' class='fnname'>atlas_dimensions</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>&gt;</code></h4>
 <div class='docblock'><p>The dimensions of the texture atlas of this font.</p>
-</div><h4 id='method.glyphs' class='method'><code>fn <a href='#method.glyphs' class='fnname'>glyphs</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a href='http://doc.rust-lang.org/std/primitive.slice.html'>[<a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Glyph.html' title='kiss3d::text::Glyph'>Glyph</a>&gt;]</a></code></h4>
+</div><h4 id='method.glyphs' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.glyphs' class='fnname'>glyphs</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a href='http://doc.rust-lang.org/master/std/primitive.slice.html'>[<a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Glyph.html' title='kiss3d::text::Glyph'>Glyph</a>&gt;]</a></code></h4>
 <div class='docblock'><p>The glyphs of the this font.</p>
-</div><h4 id='method.height' class='method'><code>fn <a href='#method.height' class='fnname'>height</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/std/primitive.i32.html'>i32</a></code></h4>
+</div><h4 id='method.height' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.height' class='fnname'>height</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.i32.html'>i32</a></code></h4>
 <div class='docblock'><p>The height of this font.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a></code></h3><div class='methods'><h4 id='method.drop' class='method'><code>fn <a href='#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/master/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a></code></h3><div class='impl-methods'><h4 id='method.drop' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -82,12 +88,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../";

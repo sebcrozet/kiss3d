@@ -3,17 +3,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `window` mod in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, window">
 
     <title>kiss3d::window - Rust</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -21,9 +22,11 @@
     </div>
     <![endif]-->
 
+    
+
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>kiss3d</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='../builtin/index.html'>builtin</a><a class='mod ' href='../camera/index.html'>camera</a><a class='mod ' href='../light/index.html'>light</a><a class='mod ' href='../line_renderer/index.html'>line_renderer</a><a class='mod ' href='../loader/index.html'>loader</a><a class='mod ' href='../point_renderer/index.html'>point_renderer</a><a class='mod ' href='../post_processing/index.html'>post_processing</a><a class='mod ' href='../resource/index.html'>resource</a><a class='mod ' href='../scene/index.html'>scene</a><a class='mod ' href='../text/index.html'>text</a><a class='mod ' href='../utils/index.html'>utils</a><a class='mod current' href='../window/index.html'>window</a></div>
+        <p class='location'><a href='../index.html'>kiss3d</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='../builtin/index.html'>builtin</a><a class='mod ' href='../camera/index.html'>camera</a><a class='mod ' href='../light/index.html'>light</a><a class='mod ' href='../line_renderer/index.html'>line_renderer</a><a class='mod ' href='../loader/index.html'>loader</a><a class='mod ' href='../point_renderer/index.html'>point_renderer</a><a class='mod ' href='../post_processing/index.html'>post_processing</a><a class='mod ' href='../resource/index.html'>resource</a><a class='mod ' href='../scene/index.html'>scene</a><a class='mod ' href='../text/index.html'>text</a><a class='mod current' href='../window/index.html'>window</a></div>
     </section>
 
     <nav class="sub">
@@ -38,47 +41,36 @@
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'>Module <a href='../index.html'>kiss3d</a>::<a class='mod' href=''>window</a><a class='source' id='src-19' href='../../src/kiss3d/src/window/mod.rs.html#1-9'>[src]</a></h1>
+<h1 class='fqn'><div class='in-band'>Module <a href='../index.html'>kiss3d</a>&#8203;::<a class='mod' href=''>window</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-14' href='../../src/kiss3d/src/window/mod.rs.html#1-8'>[src]</a></div></h1>
 <div class='docblock'><p>The window, and things to handle the rendering loop and events.</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                     <tr>
-                        <td><a class='struct' href='struct.Event.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.Event.html'
                                title='kiss3d::window::Event'>Event</a></td>
                         <td class='docblock short'><p>An event.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='struct' href='struct.EventManager.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.EventManager.html'
                                title='kiss3d::window::EventManager'>EventManager</a></td>
                         <td class='docblock short'><p>A stand-alone object that provides an iterator though glfw events.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='struct' href='struct.Events.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.Events.html'
                                title='kiss3d::window::Events'>Events</a></td>
                         <td class='docblock short'><p>An iterator through events.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='struct' href='struct.RenderFrame.html'
-                               title='kiss3d::window::RenderFrame'>RenderFrame</a></td>
-                        <td class='docblock short'><p>A frame that is going to be rendered.</p>
-</td>
-                    </tr>
-                
-                    <tr>
-                        <td><a class='struct' href='struct.RenderFrames.html'
-                               title='kiss3d::window::RenderFrames'>RenderFrames</a></td>
-                        <td class='docblock short'><p>An iterator through render frames.</p>
-</td>
-                    </tr>
-                
-                    <tr>
-                        <td><a class='struct' href='struct.Window.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.Window.html'
                                title='kiss3d::window::Window'>Window</a></td>
                         <td class='docblock short'><p>Structure representing a window and a 3D scene.</p>
 </td>
@@ -112,12 +104,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../";

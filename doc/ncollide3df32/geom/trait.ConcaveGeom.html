@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ConcaveGeom` trait in crate `ncollide3df32`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ConcaveGeom">
+
+    <title>ncollide3df32::geom::ConcaveGeom - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>geom</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.AnnotatedMinkowskiSum.html'>AnnotatedMinkowskiSum</a><a class='struct ' href='struct.Ball.html'>Ball</a><a class='struct ' href='struct.BezierCurve.html'>BezierCurve</a><a class='struct ' href='struct.BezierCurveEvaluationCache.html'>BezierCurveEvaluationCache</a><a class='struct ' href='struct.BezierSurface.html'>BezierSurface</a><a class='struct ' href='struct.BezierSurfaceEvaluationCache.html'>BezierSurfaceEvaluationCache</a><a class='struct ' href='struct.Capsule.html'>Capsule</a><a class='struct ' href='struct.Compound.html'>Compound</a><a class='struct ' href='struct.CompoundData.html'>CompoundData</a><a class='struct ' href='struct.Cone.html'>Cone</a><a class='struct ' href='struct.Convex.html'>Convex</a><a class='struct ' href='struct.Cuboid.html'>Cuboid</a><a class='struct ' href='struct.Cylinder.html'>Cylinder</a><a class='struct ' href='struct.GeomWithMargin.html'>GeomWithMargin</a><a class='struct ' href='struct.Mesh.html'>Mesh</a><a class='struct ' href='struct.MinkowskiSum.html'>MinkowskiSum</a><a class='struct ' href='struct.Plane.html'>Plane</a><a class='struct ' href='struct.Reflection.html'>Reflection</a><a class='struct ' href='struct.Segment.html'>Segment</a><a class='struct ' href='struct.Torus.html'>Torus</a><a class='struct ' href='struct.Triangle.html'>Triangle</a></div><div class='block trait'><h2>Traits</h2><a class='trait current' href='trait.ConcaveGeom.html'>ConcaveGeom</a><a class='trait ' href='trait.Geom.html'>Geom</a><a class='trait ' href='trait.MeshElement.html'>MeshElement</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><div class='in-band'>Trait <a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>geom</a>&#8203;::<a class='trait' href=''>ConcaveGeom</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-5000' href='../../src/ncollide3df32/up/up/src/geom/geom.rs.html#24-39'>[src]</a></div></h1>
+<pre class='rust trait'>pub trait ConcaveGeom: <a class='trait' href='../../ncollide3df32/geom/trait.Geom.html' title='ncollide3df32::geom::Geom'>Geom</a> {
+    fn <a href='#tymethod.map_part_at' class='fnname'>map_part_at</a>&lt;T&gt;(&amp;self, <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, |&amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, &amp;<a class='trait' href='../../ncollide3df32/geom/trait.Geom.html' title='ncollide3df32::geom::Geom'>Geom</a>| -&gt; T) -&gt; T;
+    fn <a href='#tymethod.map_transformed_part_at' class='fnname'>map_transformed_part_at</a>&lt;T&gt;(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, |&amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, &amp;<a class='trait' href='../../ncollide3df32/geom/trait.Geom.html' title='ncollide3df32::geom::Geom'>Geom</a>| -&gt; T) -&gt; T;
+    fn <a href='#tymethod.approx_interferences_with_aabb' class='fnname'>approx_interferences_with_aabb</a>(&amp;self, &amp;<a class='struct' href='../../ncollide3df32/bounding_volume/struct.AABB.html' title='ncollide3df32::bounding_volume::AABB'>AABB</a>, &amp;mut <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>&gt;);
+    fn <a href='#tymethod.approx_interferences_with_ray' class='fnname'>approx_interferences_with_ray</a>(&amp;self, &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, &amp;mut <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>&gt;);
+    fn <a href='#tymethod.aabb_at' class='fnname'>aabb_at</a>&lt;'a&gt;(&amp;'a self, i: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>) -&gt; &amp;'a <a class='struct' href='../../ncollide3df32/bounding_volume/struct.AABB.html' title='ncollide3df32::bounding_volume::AABB'>AABB</a>;
+}</pre><div class='docblock'><p>Trait implemented by concave, composite geometries.</p>
+
+<p>A composite geometry is composed of several <code>Geom</code>. Typically, it is a convex decomposition of
+a concave geometry.</p>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.map_part_at' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.map_part_at' class='fnname'>map_part_at</a>&lt;T&gt;(&amp;self, <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, |&amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, &amp;<a class='trait' href='../../ncollide3df32/geom/trait.Geom.html' title='ncollide3df32::geom::Geom'>Geom</a>| -&gt; T) -&gt; T</code></h3><div class='docblock'><p>Applies a function to each sub-geometry of this concave geometry.</p>
+</div><h3 id='tymethod.map_transformed_part_at' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.map_transformed_part_at' class='fnname'>map_transformed_part_at</a>&lt;T&gt;(&amp;self, m: &amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, |&amp;<a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>, &amp;<a class='trait' href='../../ncollide3df32/geom/trait.Geom.html' title='ncollide3df32::geom::Geom'>Geom</a>| -&gt; T) -&gt; T</code></h3><div class='docblock'><p>Applies a transformation matrix and a function to each sub-geometry of this concave
+geometry.</p>
+</div><h3 id='tymethod.approx_interferences_with_aabb' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.approx_interferences_with_aabb' class='fnname'>approx_interferences_with_aabb</a>(&amp;self, &amp;<a class='struct' href='../../ncollide3df32/bounding_volume/struct.AABB.html' title='ncollide3df32::bounding_volume::AABB'>AABB</a>, &amp;mut <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>&gt;)</code></h3><div class='docblock'><p>Computes the indices of every sub-geometry which might intersect a given AABB.</p>
+</div><h3 id='tymethod.approx_interferences_with_ray' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.approx_interferences_with_ray' class='fnname'>approx_interferences_with_ray</a>(&amp;self, &amp;<a class='struct' href='../../ncollide3df32/ray/struct.Ray.html' title='ncollide3df32::ray::Ray'>Ray</a>, &amp;mut <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>&gt;)</code></h3><div class='docblock'><p>Computes the indices of every sub-geometry which might intersect a given Ray.</p>
+</div><h3 id='tymethod.aabb_at' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.aabb_at' class='fnname'>aabb_at</a>&lt;'a&gt;(&amp;'a self, i: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>) -&gt; &amp;'a <a class='struct' href='../../ncollide3df32/bounding_volume/struct.AABB.html' title='ncollide3df32::bounding_volume::AABB'>AABB</a></code></h3><div class='docblock'><p>Gets the AABB of the geometry identified by the index <code>i</code>.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/geom/trait.ConcaveGeom.html' title='ncollide3df32::geom::ConcaveGeom'>ConcaveGeom</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Compound.html' title='ncollide3df32::geom::Compound'>Compound</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../ncollide3df32/geom/trait.ConcaveGeom.html' title='ncollide3df32::geom::ConcaveGeom'>ConcaveGeom</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Mesh.html' title='ncollide3df32::geom::Mesh'>Mesh</a></code></li>
+</ul><script type="text/javascript" async
+                              src="../../implementors/ncollide3df32/geom/trait.ConcaveGeom.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

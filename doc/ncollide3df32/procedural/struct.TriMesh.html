@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `TriMesh` struct in crate `ncollide3df32`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, TriMesh">
+
+    <title>ncollide3df32::procedural::TriMesh - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>procedural</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='path/index.html'>path</a><a class='mod ' href='utils/index.html'>utils</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.Polyline.html'>Polyline</a><a class='struct current' href='struct.TriMesh.html'>TriMesh</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.ToPolyline.html'>ToPolyline</a><a class='trait ' href='trait.ToTriMesh.html'>ToTriMesh</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.bezier_curve.html'>bezier_curve</a><a class='fn ' href='fn.bezier_surface.html'>bezier_surface</a><a class='fn ' href='fn.capsule.html'>capsule</a><a class='fn ' href='fn.circle.html'>circle</a><a class='fn ' href='fn.cone.html'>cone</a><a class='fn ' href='fn.convex_hull2d.html'>convex_hull2d</a><a class='fn ' href='fn.convex_hull2d_idx.html'>convex_hull2d_idx</a><a class='fn ' href='fn.convex_hull3d.html'>convex_hull3d</a><a class='fn ' href='fn.cuboid.html'>cuboid</a><a class='fn ' href='fn.cylinder.html'>cylinder</a><a class='fn ' href='fn.hacd.html'>hacd</a><a class='fn ' href='fn.parametric_surface_uniform.html'>parametric_surface_uniform</a><a class='fn ' href='fn.parametric_surface_uniform_with_distance_error.html'>parametric_surface_uniform_with_distance_error</a><a class='fn ' href='fn.quad.html'>quad</a><a class='fn ' href='fn.quad_with_vertices.html'>quad_with_vertices</a><a class='fn ' href='fn.rational_bezier_curve.html'>rational_bezier_curve</a><a class='fn ' href='fn.rational_bezier_surface.html'>rational_bezier_surface</a><a class='fn ' href='fn.rectangle.html'>rectangle</a><a class='fn ' href='fn.sphere.html'>sphere</a><a class='fn ' href='fn.unit_circle.html'>unit_circle</a><a class='fn ' href='fn.unit_cone.html'>unit_cone</a><a class='fn ' href='fn.unit_cuboid.html'>unit_cuboid</a><a class='fn ' href='fn.unit_cylinder.html'>unit_cylinder</a><a class='fn ' href='fn.unit_quad.html'>unit_quad</a><a class='fn ' href='fn.unit_rectangle.html'>unit_rectangle</a><a class='fn ' href='fn.unit_sphere.html'>unit_sphere</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>procedural</a>&#8203;::<a class='struct' href=''>TriMesh</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-53907' href='../../src/ncollide3df32/up/up/src/procedural/trimesh.rs.html#39-49'>[src]</a></div></h1>
+<pre class='rust struct'>pub struct TriMesh&lt;N, V&gt; {
+    pub coords: <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;V&gt;,
+    pub normals: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;V&gt;&gt;,
+    pub uvs: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;N&gt;&gt;&gt;,
+    pub indices: <a class='type' href='../../ncollide3df32/procedural/type.IndexBuffer.html' title='ncollide3df32::procedural::IndexBuffer'>IndexBuffer</a>,
+}</pre><div class='docblock'><p>Geometric description of a mesh.</p>
+</div><h2 class='fields'>Fields</h2>
+<table><tr><td id='structfield.coords'><a class='stability Unmarked' title='No stability level'></a><code>coords</code></td><td><div class='docblock'><p>Coordinates of the mesh vertices.</p>
+</div></td></tr><tr><td id='structfield.normals'><a class='stability Unmarked' title='No stability level'></a><code>normals</code></td><td><div class='docblock'><p>Coordinates of the mesh normals.</p>
+</div></td></tr><tr><td id='structfield.uvs'><a class='stability Unmarked' title='No stability level'></a><code>uvs</code></td><td><div class='docblock'><p>Textures coordinates of the mesh.</p>
+</div></td></tr><tr><td id='structfield.indices'><a class='stability Unmarked' title='No stability level'></a><code>indices</code></td><td><div class='docblock'><p>Index buffer of the mesh.</p>
+</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;N, V&gt; <a class='struct' href='../../ncollide3df32/procedural/struct.TriMesh.html' title='ncollide3df32::procedural::TriMesh'>TriMesh</a>&lt;N, V&gt;</code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(coords: <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;V&gt;, normals: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;V&gt;&gt;, uvs: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;N&gt;&gt;&gt;, indices: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../ncollide3df32/procedural/type.IndexBuffer.html' title='ncollide3df32::procedural::IndexBuffer'>IndexBuffer</a>&gt;) -&gt; <a class='struct' href='../../ncollide3df32/procedural/struct.TriMesh.html' title='ncollide3df32::procedural::TriMesh'>TriMesh</a>&lt;N, V&gt;</code></h4>
+<div class='docblock'><p>Creates a new <code>TriMesh</code>.</p>
+
+<p>If no <code>indices</code> is provided, trivial, sequential indices are generated.</p>
+</div><h4 id='method.has_normals' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.has_normals' class='fnname'>has_normals</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Whether or not this triangle mesh has normals.</p>
+</div><h4 id='method.has_uvs' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.has_uvs' class='fnname'>has_uvs</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Whether or not this triangle mesh has texture coordinates.</p>
+</div><h4 id='method.translate_by' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.translate_by' class='fnname'>translate_by</a>&lt;T: <a class='trait' href='../../nalgebra/traits/geometry/trait.Translate.html' title='nalgebra::traits::geometry::Translate'>Translate</a>&lt;V&gt;&gt;(&amp;mut self, t: &amp;T)</code></h4>
+<div class='docblock'><p>Translates each vertex of this mesh.</p>
+</div><h4 id='method.rotate_by' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.rotate_by' class='fnname'>rotate_by</a>&lt;R: <a class='trait' href='../../nalgebra/traits/geometry/trait.Rotate.html' title='nalgebra::traits::geometry::Rotate'>Rotate</a>&lt;V&gt;&gt;(&amp;mut self, r: &amp;R)</code></h4>
+<div class='docblock'><p>Rotates each vertex and normal of this mesh.</p>
+</div><h4 id='method.transform_by' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.transform_by' class='fnname'>transform_by</a>&lt;T: <a class='trait' href='../../nalgebra/traits/geometry/trait.Transform.html' title='nalgebra::traits::geometry::Transform'>Transform</a>&lt;V&gt; + <a class='trait' href='../../nalgebra/traits/geometry/trait.Rotate.html' title='nalgebra::traits::geometry::Rotate'>Rotate</a>&lt;V&gt;&gt;(&amp;mut self, t: &amp;T)</code></h4>
+<div class='docblock'><p>Transforms each vertex and rotates each normal of this mesh.</p>
+</div><h4 id='method.num_triangles' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.num_triangles' class='fnname'>num_triangles</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a></code></h4>
+<div class='docblock'><p>The number of triangles on this mesh.</p>
+</div></div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;N: <a class='trait' href='http://doc.rust-lang.org/master/core/ops/trait.Mul.html' title='core::ops::Mul'>Mul</a>&lt;N, N&gt;, V: <a class='trait' href='../../nalgebra/traits/structure/trait.Dim.html' title='nalgebra::traits::structure::Dim'>Dim</a> + <a class='trait' href='../../nalgebra/traits/structure/trait.Indexable.html' title='nalgebra::traits::structure::Indexable'>Indexable</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, N&gt;&gt; <a class='struct' href='../../ncollide3df32/procedural/struct.TriMesh.html' title='ncollide3df32::procedural::TriMesh'>TriMesh</a>&lt;N, V&gt;</code></h3><div class='impl-methods'><h4 id='method.scale_by' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.scale_by' class='fnname'>scale_by</a>(&amp;mut self, s: &amp;V)</code></h4>
+<div class='docblock'><p>Scales each vertex of this mesh.</p>
+</div></div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;N, V: <a class='trait' href='http://doc.rust-lang.org/master/core/ops/trait.Mul.html' title='core::ops::Mul'>Mul</a>&lt;N, V&gt;&gt; <a class='struct' href='../../ncollide3df32/procedural/struct.TriMesh.html' title='ncollide3df32::procedural::TriMesh'>TriMesh</a>&lt;N, V&gt;</code></h3><div class='impl-methods'><h4 id='method.scale_by_scalar' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.scale_by_scalar' class='fnname'>scale_by_scalar</a>(&amp;mut self, s: &amp;N)</code></h4>
+<div class='docblock'><p>Scales each vertex of this mesh.</p>
+</div></div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;N: <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, V: <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>&gt; <a class='struct' href='../../ncollide3df32/procedural/struct.TriMesh.html' title='ncollide3df32::procedural::TriMesh'>TriMesh</a>&lt;N, V&gt;</code></h3><div class='impl-methods'><h4 id='method.unify_index_buffer' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.unify_index_buffer' class='fnname'>unify_index_buffer</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Force the mesh to use the same index for vertices, normals and uvs.</p>
+
+<p>This might cause the duplication of some vertices, normals and uvs.
+Use this method to transform the mesh data to a OpenGL-compliant format.</p>
+</div></div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;N: <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, V: <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='http://doc.rust-lang.org/master/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> + <a class='trait' href='../../ncollide3df32/utils/trait.AsBytes.html' title='ncollide3df32::utils::AsBytes'>AsBytes</a>&gt; <a class='struct' href='../../ncollide3df32/procedural/struct.TriMesh.html' title='ncollide3df32::procedural::TriMesh'>TriMesh</a>&lt;N, V&gt;</code></h3><div class='impl-methods'><h4 id='method.split_index_buffer' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.split_index_buffer' class='fnname'>split_index_buffer</a>(&amp;mut self, recover_topology: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+<div class='docblock'><p>Forces the mesh to use a different index for the vertices, normals and uvs.</p>
+
+<p>If <code>recover_topology</code> is true, this will merge exactly identical vertices together.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;N: <a class='trait' href='http://doc.rust-lang.org/master/core/fmt/trait.Show.html' title='core::fmt::Show'>Show</a>, V: <a class='trait' href='http://doc.rust-lang.org/master/core/fmt/trait.Show.html' title='core::fmt::Show'>Show</a>&gt; <a class='trait' href='http://doc.rust-lang.org/master/core/fmt/trait.Show.html' title='core::fmt::Show'>Show</a> for <a class='struct' href='../../ncollide3df32/procedural/struct.TriMesh.html' title='ncollide3df32::procedural::TriMesh'>TriMesh</a>&lt;N, V&gt;</code></h3><div class='impl-methods'><h4 id='method.fmt' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/master/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;N: <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, V: <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>&gt; <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../ncollide3df32/procedural/struct.TriMesh.html' title='ncollide3df32::procedural::TriMesh'>TriMesh</a>&lt;N, V&gt;</code></h3><div class='impl-methods'><h4 id='method.clone' class='method'><a class='stability Unstable' title='Unstable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../ncollide3df32/procedural/struct.TriMesh.html' title='ncollide3df32::procedural::TriMesh'>TriMesh</a>&lt;N, V&gt;</code></h4>
+<h4 id='method.clone_from' class='method'><a class='stability Experimental' title='Experimental: this function is mostly unused'></a><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

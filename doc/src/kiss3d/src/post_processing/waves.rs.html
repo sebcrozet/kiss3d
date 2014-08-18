@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/post_processing/waves.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>waves.rs.html -- source</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -147,13 +150,13 @@
 <span id='108'>108</span>
 <span id='109'>109</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! An useless post-process effect: waves deformations.</span><span class='comment'>
+<span class='doccomment'>//! An useless post-process effect: waves deformations.</span>
 
-// This a simple post-process. I do this only to learn how works post-processing; so it might be
-// useless for anybody else.
-// This is inspired _a lot_ by: http://en.wikibooks.org/wiki/Opengl::Programming/Post-Processing
+<span class='comment'>// This a simple post-process. I do this only to learn how works post-processing; so it might be</span>
+<span class='comment'>// useless for anybody else.</span>
+<span class='comment'>// This is inspired _a lot_ by: http://en.wikibooks.org/wiki/Opengl::Programming/Post-Processing</span>
 
-</span><span class='kw'>use</span> <span class='ident'>gl</span>;
+<span class='kw'>use</span> <span class='ident'>gl</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>::<span class='ident'>types</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>nalgebra</span>::<span class='ident'>na</span>::<span class='ident'>Vec2</span>;
 <span class='kw'>use</span> <span class='ident'>resource</span>::{<span class='ident'>Shader</span>, <span class='ident'>ShaderUniform</span>, <span class='ident'>ShaderAttribute</span>, <span class='ident'>RenderTarget</span>, <span class='ident'>GPUVector</span>, <span class='ident'>ArrayBuffer</span>, <span class='ident'>StaticDraw</span>};
@@ -207,20 +210,20 @@
         <span class='self'>self</span>.<span class='ident'>time</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>time</span> <span class='op'>+</span> <span class='ident'>dt</span>;
     }
 
-    <span class='kw'>fn</span> <span class='ident'>draw</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>target</span>: <span class='kw-2'>&amp;</span><span class='ident'>RenderTarget</span>) {<span class='comment'>
-        /*
+    <span class='kw'>fn</span> <span class='ident'>draw</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>target</span>: <span class='kw-2'>&amp;</span><span class='ident'>RenderTarget</span>) {
+        <span class='comment'>/*
          * Configure the post-process effect.
-         */
-        </span><span class='self'>self</span>.<span class='ident'>shader</span>.<span class='ident'>use_program</span>();
+         */</span>
+        <span class='self'>self</span>.<span class='ident'>shader</span>.<span class='ident'>use_program</span>();
 
-        <span class='kw'>let</span> <span class='ident'>move</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>time</span> <span class='op'>*</span> <span class='number'>2.0</span> <span class='op'>*</span> <span class='number'>3.14159</span> <span class='op'>*</span> <span class='number'>0.75</span>;<span class='comment'>  // 3/4 of a wave cycle per second
+        <span class='kw'>let</span> <span class='ident'>move</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>time</span> <span class='op'>*</span> <span class='number'>2.0</span> <span class='op'>*</span> <span class='number'>3.14159</span> <span class='op'>*</span> <span class='number'>0.75</span>;  <span class='comment'>// 3/4 of a wave cycle per second</span>
 
-        </span><span class='self'>self</span>.<span class='ident'>offset</span>.<span class='ident'>upload</span>(<span class='kw-2'>&amp;</span><span class='ident'>move</span>);<span class='comment'>
+        <span class='self'>self</span>.<span class='ident'>offset</span>.<span class='ident'>upload</span>(<span class='kw-2'>&amp;</span><span class='ident'>move</span>);
 
-        /*
+        <span class='comment'>/*
          * Finalize draw
-         */
-        </span><span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>ClearColor</span>(<span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>1.0</span>));
+         */</span>
+        <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>ClearColor</span>(<span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>1.0</span>));
         <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>Clear</span>(<span class='ident'>gl</span>::<span class='ident'>COLOR_BUFFER_BIT</span> <span class='op'>|</span> <span class='ident'>gl</span>::<span class='ident'>DEPTH_BUFFER_BIT</span>));
         <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>BindTexture</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>target</span>.<span class='ident'>texture_id</span>()));
 
@@ -286,12 +289,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../../../";

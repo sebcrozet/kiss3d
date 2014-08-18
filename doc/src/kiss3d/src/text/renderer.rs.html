@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/text/renderer.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>renderer.rs.html -- source</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -244,11 +247,11 @@
 <span id='205'>205</span>
 <span id='206'>206</span>
 </pre><pre class='rust '>
-<span class='comment'>// This whole file is inspired by: https://github.com/jeaye/q3/blob/master/src/client/ui/ttf/renderer.rs
-// available under the BSD-3 licence.
-// It has been modified to work with gl-rs, nalgebra, and rust-freetype
+<span class='comment'>// This whole file is inspired by: https://github.com/jeaye/q3/blob/master/src/client/ui/ttf/renderer.rs</span>
+<span class='comment'>// available under the BSD-3 licence.</span>
+<span class='comment'>// It has been modified to work with gl-rs, nalgebra, and rust-freetype</span>
 
-</span><span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Rc</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Rc</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>::<span class='ident'>types</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>nalgebra</span>::<span class='ident'>na</span>::{<span class='ident'>Vec2</span>, <span class='ident'>Vec3</span>};
@@ -319,9 +322,9 @@
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>temp_pos</span> <span class='op'>=</span> <span class='ident'>pos</span>.<span class='ident'>clone</span>();
                 <span class='ident'>temp_pos</span>.<span class='ident'>y</span>       <span class='op'>=</span> <span class='ident'>temp_pos</span>.<span class='ident'>y</span> <span class='op'>+</span> (<span class='ident'>font</span>.<span class='ident'>height</span>() <span class='kw'>as</span> <span class='ident'>uint</span> <span class='op'>*</span> (<span class='ident'>line_count</span> <span class='op'>+</span> <span class='number'>1</span>)) <span class='kw'>as</span> <span class='ident'>f32</span>;
 
-                <span class='kw'>for</span> <span class='ident'>curr</span> <span class='kw'>in</span> <span class='ident'>line</span>.<span class='ident'>chars</span>() {<span class='comment'>
-                    // XXX: do _not_ use a hashmap!
-                    </span><span class='kw'>let</span> <span class='ident'>glyph</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>font</span>.<span class='ident'>glyphs</span>()[<span class='ident'>curr</span> <span class='kw'>as</span> <span class='ident'>uint</span>] {
+                <span class='kw'>for</span> <span class='ident'>curr</span> <span class='kw'>in</span> <span class='ident'>line</span>.<span class='ident'>chars</span>() {
+                    <span class='comment'>// XXX: do _not_ use a hashmap!</span>
+                    <span class='kw'>let</span> <span class='ident'>glyph</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>font</span>.<span class='ident'>glyphs</span>()[<span class='ident'>curr</span> <span class='kw'>as</span> <span class='ident'>uint</span>] {
                         <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>g</span>) <span class='op'>=&gt;</span> <span class='ident'>g</span>,
                         <span class='prelude-val'>None</span>        <span class='op'>=&gt;</span> <span class='kw'>continue</span>,
                     };
@@ -332,10 +335,10 @@
                     <span class='kw'>let</span> <span class='ident'>end_h</span> <span class='op'>=</span> <span class='ident'>glyph</span>.<span class='ident'>dimensions</span>.<span class='ident'>y</span>;
 
                     <span class='ident'>temp_pos</span>.<span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>temp_pos</span>.<span class='ident'>x</span> <span class='op'>+</span> <span class='ident'>glyph</span>.<span class='ident'>advance</span>.<span class='ident'>x</span>; 
-                    <span class='ident'>temp_pos</span>.<span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>temp_pos</span>.<span class='ident'>y</span> <span class='op'>+</span> <span class='ident'>glyph</span>.<span class='ident'>advance</span>.<span class='ident'>y</span>;<span class='comment'> 
+                    <span class='ident'>temp_pos</span>.<span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>temp_pos</span>.<span class='ident'>y</span> <span class='op'>+</span> <span class='ident'>glyph</span>.<span class='ident'>advance</span>.<span class='ident'>y</span>; 
 
-                    // Skip empty glyphs.
-                    </span><span class='kw'>if</span> <span class='ident'>end_w</span> <span class='op'>&lt;=</span> <span class='number'>0.1</span> <span class='op'>||</span> <span class='ident'>end_h</span> <span class='op'>&lt;=</span> <span class='number'>0.1</span> {
+                    <span class='comment'>// Skip empty glyphs.</span>
+                    <span class='kw'>if</span> <span class='ident'>end_w</span> <span class='op'>&lt;=</span> <span class='number'>0.1</span> <span class='op'>||</span> <span class='ident'>end_h</span> <span class='op'>&lt;=</span> <span class='number'>0.1</span> {
                         <span class='kw'>continue</span>;
                     }
 
@@ -480,12 +483,14 @@ void main() {
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../../../";

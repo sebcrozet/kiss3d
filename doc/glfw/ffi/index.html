@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ffi` mod in crate `glfw`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ffi">
+
+    <title>glfw::ffi - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>glfw</a></p><div class='block mod'><h2>Modules</h2><a class='mod current' href='../ffi/index.html'>ffi</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='../struct.Callback.html'>Callback</a><a class='struct ' href='../struct.FlushedMessages.html'>FlushedMessages</a><a class='struct ' href='../struct.GammaRamp.html'>GammaRamp</a><a class='struct ' href='../struct.Glfw.html'>Glfw</a><a class='struct ' href='../struct.Joystick.html'>Joystick</a><a class='struct ' href='../struct.Modifiers.html'>Modifiers</a><a class='struct ' href='../struct.Monitor.html'>Monitor</a><a class='struct ' href='../struct.RenderContext.html'>RenderContext</a><a class='struct ' href='../struct.ShowAliases.html'>ShowAliases</a><a class='struct ' href='../struct.VidMode.html'>VidMode</a><a class='struct ' href='../struct.Window.html'>Window</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='../trait.Context.html'>Context</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='../fn.fail_on_errors.html'>fail_on_errors</a><a class='fn ' href='../fn.flush_messages.html'>flush_messages</a><a class='fn ' href='../fn.get_version.html'>get_version</a><a class='fn ' href='../fn.get_version_string.html'>get_version_string</a><a class='fn ' href='../fn.init.html'>init</a><a class='fn ' href='../fn.log_errors.html'>log_errors</a><a class='fn ' href='../fn.make_context_current.html'>make_context_current</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><div class='in-band'>Module <a href='../index.html'>glfw</a>&#8203;::<a class='mod' href=''>ffi</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-29' href='../../src/glfw/src/glfw/ffi/mod.rs.html#16-386'>[src]</a></div></h1>
+<div class='docblock'><p>Low-level function bindings and constants pertaining to the underlying
+GLFW library.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.GLFWgammaramp.html'
+                               title='glfw::ffi::GLFWgammaramp'>GLFWgammaramp</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.GLFWvidmode.html'
+                               title='glfw::ffi::GLFWvidmode'>GLFWvidmode</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWmonitor.html'
+                               title='glfw::ffi::GLFWmonitor'>GLFWmonitor</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWwindow.html'
+                               title='glfw::ffi::GLFWwindow'>GLFWwindow</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                </table><h2 id='statics' class='section-header'><a href="#statics">Statics</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static ACCUM_ALPHA_BITS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x0002100A</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static ACCUM_BLUE_BITS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00021009</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static ACCUM_GREEN_BITS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00021008</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static ACCUM_RED_BITS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00021007</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static ALPHA_BITS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00021004</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static API_UNAVAILABLE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00010006</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static AUX_BUFFERS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x0002100B</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static BLUE_BITS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00021003</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static CLIENT_API: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00022001</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static CONNECTED: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00040001</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static CONTEXT_REVISION: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00022004</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static CONTEXT_ROBUSTNESS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00022005</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static CONTEXT_VERSION_MAJOR: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00022002</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static CONTEXT_VERSION_MINOR: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00022003</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static CURSOR: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00033001</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static CURSOR_DISABLED: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00034003</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static CURSOR_HIDDEN: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00034002</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static CURSOR_NORMAL: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00034001</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static DECORATED: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00020005</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static DEPTH_BITS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00021005</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static DISCONNECTED: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00040002</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static FALSE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static FOCUSED: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00020001</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static FORMAT_UNAVAILABLE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00010009</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static GREEN_BITS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00021002</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static ICONIFIED: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00020002</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static INVALID_ENUM: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00010003</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static INVALID_VALUE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00010004</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_1: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_10: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>9</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_11: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>10</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_12: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>11</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_13: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>12</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_14: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>13</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_15: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>14</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_16: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>15</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_2: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>1</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_3: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>2</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_4: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>3</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_5: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>4</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_6: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>5</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_7: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>6</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_8: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>7</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_9: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>8</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static JOYSTICK_LAST: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>JOYSTICK_16</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_0: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>48</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_1: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>49</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_2: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>50</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_3: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>51</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_4: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>52</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_5: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>53</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_6: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>54</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_7: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>55</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_8: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>56</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_9: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>57</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_A: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>65</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_APOSTROPHE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>39</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_B: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>66</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_BACKSLASH: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>92</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_BACKSPACE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>259</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_C: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>67</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_CAPS_LOCK: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>280</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_COMMA: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>44</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_D: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>68</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_DELETE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>261</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_DOWN: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>264</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_E: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>69</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_END: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>269</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_ENTER: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>257</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_EQUAL: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>61</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_ESCAPE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>256</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>70</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F1: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>290</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F10: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>299</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F11: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>300</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F12: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>301</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F13: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>302</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F14: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>303</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F15: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>304</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F16: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>305</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F17: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>306</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F18: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>307</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F19: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>308</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F2: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>291</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F20: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>309</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F21: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>310</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F22: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>311</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F23: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>312</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F24: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>313</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F25: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>314</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F3: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>292</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F4: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>293</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F5: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>294</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F6: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>295</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F7: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>296</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F8: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>297</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_F9: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>298</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_G: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>71</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_GRAVE_ACCENT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>96</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_H: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>72</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_HOME: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>268</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_I: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>73</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_INSERT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>260</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_J: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>74</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_K: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>75</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_0: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>320</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_1: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>321</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_2: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>322</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_3: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>323</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_4: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>324</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_5: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>325</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_6: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>326</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_7: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>327</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_8: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>328</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_9: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>329</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_ADD: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>334</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_DECIMAL: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>330</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_DIVIDE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>331</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_ENTER: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>335</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_EQUAL: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>336</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_MULTIPLY: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>332</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_KP_SUBTRACT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>333</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_L: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>76</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_LAST: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>KEY_MENU</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_LEFT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>263</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_LEFT_ALT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>342</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_LEFT_BRACKET: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>91</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_LEFT_CONTROL: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>341</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_LEFT_SHIFT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>340</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_LEFT_SUPER: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>343</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_M: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>77</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_MENU: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>348</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_MINUS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>45</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_N: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>78</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_NUM_LOCK: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>282</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_O: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>79</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_P: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>80</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_PAGE_DOWN: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>267</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_PAGE_UP: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>266</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_PAUSE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>284</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_PERIOD: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>46</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_PRINT_SCREEN: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>283</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_Q: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>81</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_R: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>82</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_RIGHT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>262</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_RIGHT_ALT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>346</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_RIGHT_BRACKET: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>93</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_RIGHT_CONTROL: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>345</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_RIGHT_SHIFT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>344</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_RIGHT_SUPER: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>347</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_S: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>83</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_SCROLL_LOCK: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>281</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_SEMICOLON: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>59</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_SLASH: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>47</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_SPACE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>32</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_T: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>84</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_TAB: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>258</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_U: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>85</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_UP: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>265</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_V: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>86</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_W: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>87</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_WORLD_1: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>161</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_WORLD_2: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>162</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_X: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>88</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_Y: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>89</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static KEY_Z: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>90</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static LOSE_CONTEXT_ON_RESET: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00031002</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOD_ALT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x0004</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOD_CONTROL: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x0002</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOD_SHIFT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x0001</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOD_SUPER: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x0008</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOUSE_BUTTON_1: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOUSE_BUTTON_2: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>1</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOUSE_BUTTON_3: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>2</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOUSE_BUTTON_4: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>3</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOUSE_BUTTON_5: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>4</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOUSE_BUTTON_6: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>5</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOUSE_BUTTON_7: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>6</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOUSE_BUTTON_8: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>7</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOUSE_BUTTON_LAST: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>MOUSE_BUTTON_8</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOUSE_BUTTON_LEFT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>MOUSE_BUTTON_1</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOUSE_BUTTON_MIDDLE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>MOUSE_BUTTON_3</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static MOUSE_BUTTON_RIGHT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>MOUSE_BUTTON_2</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static NOT_INITIALIZED: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00010001</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static NO_CURRENT_CONTEXT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00010002</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static NO_RESET_NOTIFICATION: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00031001</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static NO_ROBUSTNESS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00000000</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static OPENGL_ANY_PROFILE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00000000</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static OPENGL_API: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00030001</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static OPENGL_COMPAT_PROFILE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00032002</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static OPENGL_CORE_PROFILE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00032001</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static OPENGL_DEBUG_CONTEXT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00022007</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static OPENGL_ES_API: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00030002</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static OPENGL_FORWARD_COMPAT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00022006</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static OPENGL_PROFILE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00022008</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static OUT_OF_MEMORY: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00010005</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static PLATFORM_ERROR: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00010008</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static PRESS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>1</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static RED_BITS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00021001</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static REFRESH_RATE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x0002100F</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static RELEASE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static REPEAT: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>2</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static RESIZABLE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00020003</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static SAMPLES: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x0002100D</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static SRGB_CAPABLE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x0002100E</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static STENCIL_BITS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00021006</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static STEREO: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x0002100C</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static STICKY_KEYS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00033002</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static STICKY_MOUSE_BUTTONS: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00033003</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static TRUE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>1</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static VERSION_UNAVAILABLE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00010007</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><code>pub static VISIBLE: <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code><code> = </code><code>0x00020004</code></td>
+                        <td class='docblock'>&nbsp;</td>
+                    </tr>
+                </table><h2 id='ffi-fns' class='section-header'><a href="#ffi-fns">Foreign Functions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwCreateWindow.html'
+                               title='glfw::ffi::glfwCreateWindow'>glfwCreateWindow</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwDefaultWindowHints.html'
+                               title='glfw::ffi::glfwDefaultWindowHints'>glfwDefaultWindowHints</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwDestroyWindow.html'
+                               title='glfw::ffi::glfwDestroyWindow'>glfwDestroyWindow</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwExtensionSupported.html'
+                               title='glfw::ffi::glfwExtensionSupported'>glfwExtensionSupported</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetClipboardString.html'
+                               title='glfw::ffi::glfwGetClipboardString'>glfwGetClipboardString</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetCurrentContext.html'
+                               title='glfw::ffi::glfwGetCurrentContext'>glfwGetCurrentContext</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetCursorPos.html'
+                               title='glfw::ffi::glfwGetCursorPos'>glfwGetCursorPos</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetFramebufferSize.html'
+                               title='glfw::ffi::glfwGetFramebufferSize'>glfwGetFramebufferSize</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetGLXContext.html'
+                               title='glfw::ffi::glfwGetGLXContext'>glfwGetGLXContext</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetGammaRamp.html'
+                               title='glfw::ffi::glfwGetGammaRamp'>glfwGetGammaRamp</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetInputMode.html'
+                               title='glfw::ffi::glfwGetInputMode'>glfwGetInputMode</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetJoystickAxes.html'
+                               title='glfw::ffi::glfwGetJoystickAxes'>glfwGetJoystickAxes</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetJoystickButtons.html'
+                               title='glfw::ffi::glfwGetJoystickButtons'>glfwGetJoystickButtons</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetJoystickName.html'
+                               title='glfw::ffi::glfwGetJoystickName'>glfwGetJoystickName</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetKey.html'
+                               title='glfw::ffi::glfwGetKey'>glfwGetKey</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetMonitorName.html'
+                               title='glfw::ffi::glfwGetMonitorName'>glfwGetMonitorName</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetMonitorPhysicalSize.html'
+                               title='glfw::ffi::glfwGetMonitorPhysicalSize'>glfwGetMonitorPhysicalSize</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetMonitorPos.html'
+                               title='glfw::ffi::glfwGetMonitorPos'>glfwGetMonitorPos</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetMonitors.html'
+                               title='glfw::ffi::glfwGetMonitors'>glfwGetMonitors</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetMouseButton.html'
+                               title='glfw::ffi::glfwGetMouseButton'>glfwGetMouseButton</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetPrimaryMonitor.html'
+                               title='glfw::ffi::glfwGetPrimaryMonitor'>glfwGetPrimaryMonitor</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetProcAddress.html'
+                               title='glfw::ffi::glfwGetProcAddress'>glfwGetProcAddress</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetTime.html'
+                               title='glfw::ffi::glfwGetTime'>glfwGetTime</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetVersion.html'
+                               title='glfw::ffi::glfwGetVersion'>glfwGetVersion</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetVersionString.html'
+                               title='glfw::ffi::glfwGetVersionString'>glfwGetVersionString</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetVideoMode.html'
+                               title='glfw::ffi::glfwGetVideoMode'>glfwGetVideoMode</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetVideoModes.html'
+                               title='glfw::ffi::glfwGetVideoModes'>glfwGetVideoModes</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetWindowAttrib.html'
+                               title='glfw::ffi::glfwGetWindowAttrib'>glfwGetWindowAttrib</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetWindowMonitor.html'
+                               title='glfw::ffi::glfwGetWindowMonitor'>glfwGetWindowMonitor</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetWindowPos.html'
+                               title='glfw::ffi::glfwGetWindowPos'>glfwGetWindowPos</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetWindowSize.html'
+                               title='glfw::ffi::glfwGetWindowSize'>glfwGetWindowSize</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetWindowUserPointer.html'
+                               title='glfw::ffi::glfwGetWindowUserPointer'>glfwGetWindowUserPointer</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetX11Display.html'
+                               title='glfw::ffi::glfwGetX11Display'>glfwGetX11Display</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwGetX11Window.html'
+                               title='glfw::ffi::glfwGetX11Window'>glfwGetX11Window</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwHideWindow.html'
+                               title='glfw::ffi::glfwHideWindow'>glfwHideWindow</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwIconifyWindow.html'
+                               title='glfw::ffi::glfwIconifyWindow'>glfwIconifyWindow</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwInit.html'
+                               title='glfw::ffi::glfwInit'>glfwInit</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwJoystickPresent.html'
+                               title='glfw::ffi::glfwJoystickPresent'>glfwJoystickPresent</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwMakeContextCurrent.html'
+                               title='glfw::ffi::glfwMakeContextCurrent'>glfwMakeContextCurrent</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwPollEvents.html'
+                               title='glfw::ffi::glfwPollEvents'>glfwPollEvents</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwRestoreWindow.html'
+                               title='glfw::ffi::glfwRestoreWindow'>glfwRestoreWindow</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetCharCallback.html'
+                               title='glfw::ffi::glfwSetCharCallback'>glfwSetCharCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetClipboardString.html'
+                               title='glfw::ffi::glfwSetClipboardString'>glfwSetClipboardString</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetCursorEnterCallback.html'
+                               title='glfw::ffi::glfwSetCursorEnterCallback'>glfwSetCursorEnterCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetCursorPos.html'
+                               title='glfw::ffi::glfwSetCursorPos'>glfwSetCursorPos</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetCursorPosCallback.html'
+                               title='glfw::ffi::glfwSetCursorPosCallback'>glfwSetCursorPosCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetErrorCallback.html'
+                               title='glfw::ffi::glfwSetErrorCallback'>glfwSetErrorCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetFramebufferSizeCallback.html'
+                               title='glfw::ffi::glfwSetFramebufferSizeCallback'>glfwSetFramebufferSizeCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetGamma.html'
+                               title='glfw::ffi::glfwSetGamma'>glfwSetGamma</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetGammaRamp.html'
+                               title='glfw::ffi::glfwSetGammaRamp'>glfwSetGammaRamp</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetInputMode.html'
+                               title='glfw::ffi::glfwSetInputMode'>glfwSetInputMode</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetKeyCallback.html'
+                               title='glfw::ffi::glfwSetKeyCallback'>glfwSetKeyCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetMonitorCallback.html'
+                               title='glfw::ffi::glfwSetMonitorCallback'>glfwSetMonitorCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetMouseButtonCallback.html'
+                               title='glfw::ffi::glfwSetMouseButtonCallback'>glfwSetMouseButtonCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetScrollCallback.html'
+                               title='glfw::ffi::glfwSetScrollCallback'>glfwSetScrollCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetTime.html'
+                               title='glfw::ffi::glfwSetTime'>glfwSetTime</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetWindowCloseCallback.html'
+                               title='glfw::ffi::glfwSetWindowCloseCallback'>glfwSetWindowCloseCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetWindowFocusCallback.html'
+                               title='glfw::ffi::glfwSetWindowFocusCallback'>glfwSetWindowFocusCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetWindowIconifyCallback.html'
+                               title='glfw::ffi::glfwSetWindowIconifyCallback'>glfwSetWindowIconifyCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetWindowPos.html'
+                               title='glfw::ffi::glfwSetWindowPos'>glfwSetWindowPos</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetWindowPosCallback.html'
+                               title='glfw::ffi::glfwSetWindowPosCallback'>glfwSetWindowPosCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetWindowRefreshCallback.html'
+                               title='glfw::ffi::glfwSetWindowRefreshCallback'>glfwSetWindowRefreshCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetWindowShouldClose.html'
+                               title='glfw::ffi::glfwSetWindowShouldClose'>glfwSetWindowShouldClose</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetWindowSize.html'
+                               title='glfw::ffi::glfwSetWindowSize'>glfwSetWindowSize</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetWindowSizeCallback.html'
+                               title='glfw::ffi::glfwSetWindowSizeCallback'>glfwSetWindowSizeCallback</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetWindowTitle.html'
+                               title='glfw::ffi::glfwSetWindowTitle'>glfwSetWindowTitle</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSetWindowUserPointer.html'
+                               title='glfw::ffi::glfwSetWindowUserPointer'>glfwSetWindowUserPointer</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwShowWindow.html'
+                               title='glfw::ffi::glfwShowWindow'>glfwShowWindow</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSwapBuffers.html'
+                               title='glfw::ffi::glfwSwapBuffers'>glfwSwapBuffers</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwSwapInterval.html'
+                               title='glfw::ffi::glfwSwapInterval'>glfwSwapInterval</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwTerminate.html'
+                               title='glfw::ffi::glfwTerminate'>glfwTerminate</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwWaitEvents.html'
+                               title='glfw::ffi::glfwWaitEvents'>glfwWaitEvents</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwWindowHint.html'
+                               title='glfw::ffi::glfwWindowHint'>glfwWindowHint</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='ffi' href='ffi.glfwWindowShouldClose.html'
+                               title='glfw::ffi::glfwWindowShouldClose'>glfwWindowShouldClose</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWcharfun.html'
+                               title='glfw::ffi::GLFWcharfun'>GLFWcharfun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWcursorenterfun.html'
+                               title='glfw::ffi::GLFWcursorenterfun'>GLFWcursorenterfun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWcursorposfun.html'
+                               title='glfw::ffi::GLFWcursorposfun'>GLFWcursorposfun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWerrorfun.html'
+                               title='glfw::ffi::GLFWerrorfun'>GLFWerrorfun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWframebuffersizefun.html'
+                               title='glfw::ffi::GLFWframebuffersizefun'>GLFWframebuffersizefun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWglproc.html'
+                               title='glfw::ffi::GLFWglproc'>GLFWglproc</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWkeyfun.html'
+                               title='glfw::ffi::GLFWkeyfun'>GLFWkeyfun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWmonitorfun.html'
+                               title='glfw::ffi::GLFWmonitorfun'>GLFWmonitorfun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWmousebuttonfun.html'
+                               title='glfw::ffi::GLFWmousebuttonfun'>GLFWmousebuttonfun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWscrollfun.html'
+                               title='glfw::ffi::GLFWscrollfun'>GLFWscrollfun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWwindowclosefun.html'
+                               title='glfw::ffi::GLFWwindowclosefun'>GLFWwindowclosefun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWwindowfocusfun.html'
+                               title='glfw::ffi::GLFWwindowfocusfun'>GLFWwindowfocusfun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWwindowiconifyfun.html'
+                               title='glfw::ffi::GLFWwindowiconifyfun'>GLFWwindowiconifyfun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWwindowposfun.html'
+                               title='glfw::ffi::GLFWwindowposfun'>GLFWwindowposfun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWwindowrefreshfun.html'
+                               title='glfw::ffi::GLFWwindowrefreshfun'>GLFWwindowrefreshfun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.GLFWwindowsizefun.html'
+                               title='glfw::ffi::GLFWwindowsizefun'>GLFWwindowsizefun</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "glfw";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

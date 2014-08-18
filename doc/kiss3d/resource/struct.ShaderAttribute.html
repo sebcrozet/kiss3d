@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ShaderAttribute` struct in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ShaderAttribute">
 
     <title>kiss3d::resource::ShaderAttribute - Rust</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -38,17 +41,20 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>resource</a>::<a class='struct' href=''>ShaderAttribute</a><a class='source' id='src-41041' href='../../src/kiss3d/src/resource/shader.rs.html#111-113'>[src]</a></h1>
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>resource</a>&#8203;::<a class='struct' href=''>ShaderAttribute</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-42687' href='../../src/kiss3d/src/resource/shader.rs.html#111-113'>[src]</a></div></h1>
 <pre class='rust struct'>pub struct ShaderAttribute&lt;T&gt; {
     // some fields omitted
 }</pre><div class='docblock'><p>Structure encapsulating an attribute.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;T: <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt; <a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;T&gt;</code></h3><div class='methods'><h4 id='method.disable' class='method'><code>fn <a href='#method.disable' class='fnname'>disable</a>(&amp;mut self)</code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;T: <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt; <a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;T&gt;</code></h3><div class='impl-methods'><h4 id='method.disable' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.disable' class='fnname'>disable</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Disable this attribute.</p>
-</div><h4 id='method.enable' class='method'><code>fn <a href='#method.enable' class='fnname'>enable</a>(&amp;mut self)</code></h4>
+</div><h4 id='method.enable' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.enable' class='fnname'>enable</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Enable this attribute.</p>
-</div><h4 id='method.bind' class='method'><code>fn <a href='#method.bind' class='fnname'>bind</a>(&amp;mut self, vector: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;T&gt;)</code></h4>
+</div><h4 id='method.bind' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.bind' class='fnname'>bind</a>(&amp;mut self, vector: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;T&gt;)</code></h4>
 <div class='docblock'><p>Binds this attribute to a gpu vector.</p>
-</div><h4 id='method.bind_sub_buffer' class='method'><code>fn <a href='#method.bind_sub_buffer' class='fnname'>bind_sub_buffer</a>(&amp;mut self, vector: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;T&gt;, strides: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>, start_index: <a href='http://doc.rust-lang.org/std/primitive.uint.html'>uint</a>)</code></h4>
+</div><h4 id='method.bind_sub_buffer' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.bind_sub_buffer' class='fnname'>bind_sub_buffer</a>(&amp;mut self, vector: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;T&gt;, strides: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, start_index: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>)</code></h4>
 <div class='docblock'><p>Binds this attribute to non contiguous parts of a gpu vector.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -79,12 +85,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../";

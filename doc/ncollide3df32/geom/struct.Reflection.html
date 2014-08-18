@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Reflection` struct in crate `ncollide3df32`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Reflection">
+
+    <title>ncollide3df32::geom::Reflection - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>geom</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.AnnotatedMinkowskiSum.html'>AnnotatedMinkowskiSum</a><a class='struct ' href='struct.Ball.html'>Ball</a><a class='struct ' href='struct.BezierCurve.html'>BezierCurve</a><a class='struct ' href='struct.BezierCurveEvaluationCache.html'>BezierCurveEvaluationCache</a><a class='struct ' href='struct.BezierSurface.html'>BezierSurface</a><a class='struct ' href='struct.BezierSurfaceEvaluationCache.html'>BezierSurfaceEvaluationCache</a><a class='struct ' href='struct.Capsule.html'>Capsule</a><a class='struct ' href='struct.Compound.html'>Compound</a><a class='struct ' href='struct.CompoundData.html'>CompoundData</a><a class='struct ' href='struct.Cone.html'>Cone</a><a class='struct ' href='struct.Convex.html'>Convex</a><a class='struct ' href='struct.Cuboid.html'>Cuboid</a><a class='struct ' href='struct.Cylinder.html'>Cylinder</a><a class='struct ' href='struct.GeomWithMargin.html'>GeomWithMargin</a><a class='struct ' href='struct.Mesh.html'>Mesh</a><a class='struct ' href='struct.MinkowskiSum.html'>MinkowskiSum</a><a class='struct ' href='struct.Plane.html'>Plane</a><a class='struct current' href='struct.Reflection.html'>Reflection</a><a class='struct ' href='struct.Segment.html'>Segment</a><a class='struct ' href='struct.Torus.html'>Torus</a><a class='struct ' href='struct.Triangle.html'>Triangle</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.ConcaveGeom.html'>ConcaveGeom</a><a class='trait ' href='trait.Geom.html'>Geom</a><a class='trait ' href='trait.MeshElement.html'>MeshElement</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>geom</a>&#8203;::<a class='struct' href=''>Reflection</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-10276' href='../../src/ncollide3df32/up/up/src/geom/reflection.rs.html#5-7'>[src]</a></div></h1>
+<pre class='rust struct'>pub struct Reflection&lt;'a, G&gt; {
+    // some fields omitted
+}</pre><div class='docblock'><p>Implicit representation of the reflection of a geometry.</p>
+
+<p>A reflection is obtained with the central symmetry with regard to the origin.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a, G&gt; <a class='struct' href='../../ncollide3df32/geom/struct.Reflection.html' title='ncollide3df32::geom::Reflection'>Reflection</a>&lt;'a, G&gt;</code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(geom: &amp;'a G) -&gt; <a class='struct' href='../../ncollide3df32/geom/struct.Reflection.html' title='ncollide3df32::geom::Reflection'>Reflection</a>&lt;'a, G&gt;</code></h4>
+<div class='docblock'><p>Build the reflection of a geometry. Since the representation is implicit,
+the reflection computation is done in constant time.</p>
+</div><h4 id='method.geom' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.geom' class='fnname'>geom</a>(&amp;self) -&gt; &amp;'a G</code></h4>
+<div class='docblock'><p>The reflected geometry.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a, G: <a class='trait' href='../../ncollide3df32/implicit/trait.HasMargin.html' title='ncollide3df32::implicit::HasMargin'>HasMargin</a>&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.HasMargin.html' title='ncollide3df32::implicit::HasMargin'>HasMargin</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Reflection.html' title='ncollide3df32::geom::Reflection'>Reflection</a>&lt;'a, G&gt;</code></h3><div class='impl-methods'><h4 id='method.margin' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.margin' class='fnname'>margin</a>(&amp;self) -&gt; <a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a></code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a, _M, G: <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Reflection.html' title='ncollide3df32::geom::Reflection'>Reflection</a>&lt;'a, G&gt;</code></h3><div class='impl-methods'><h4 id='method.support_point' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.support_point' class='fnname'>support_point</a>(&amp;self, m: &amp;_M, dir: &amp;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>) -&gt; <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a></code></h4>
+<h4 id='method.support_point_without_margin' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.support_point_without_margin' class='fnname'>support_point_without_margin</a>(&amp;self, m: &amp;_M, dir: &amp;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>) -&gt; <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a></code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a, G: <a class='trait' href='../../ncollide3df32/procedural/trait.ToTriMesh.html' title='ncollide3df32::procedural::ToTriMesh'>ToTriMesh</a>&lt;P&gt;, P&gt; <a class='trait' href='../../ncollide3df32/procedural/trait.ToTriMesh.html' title='ncollide3df32::procedural::ToTriMesh'>ToTriMesh</a>&lt;P&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Reflection.html' title='ncollide3df32::geom::Reflection'>Reflection</a>&lt;'a, G&gt;</code></h3><div class='impl-methods'><h4 id='method.to_trimesh' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.to_trimesh' class='fnname'>to_trimesh</a>(&amp;self, parameter: P) -&gt; <a class='struct' href='../../ncollide3df32/procedural/struct.TriMesh.html' title='ncollide3df32::procedural::TriMesh'>TriMesh</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>, <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;</code></h4>
+</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a, G: <a class='trait' href='../../ncollide3df32/procedural/trait.ToPolyline.html' title='ncollide3df32::procedural::ToPolyline'>ToPolyline</a>&lt;P&gt;, P&gt; <a class='trait' href='../../ncollide3df32/procedural/trait.ToPolyline.html' title='ncollide3df32::procedural::ToPolyline'>ToPolyline</a>&lt;P&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Reflection.html' title='ncollide3df32::geom::Reflection'>Reflection</a>&lt;'a, G&gt;</code></h3><div class='impl-methods'><h4 id='method.to_polyline' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.to_polyline' class='fnname'>to_polyline</a>(&amp;self, parameter: P) -&gt; <a class='struct' href='../../ncollide3df32/procedural/struct.Polyline.html' title='ncollide3df32::procedural::Polyline'>Polyline</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>, <a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a, G: <a class='trait' href='http://doc.rust-lang.org/master/core/fmt/trait.Show.html' title='core::fmt::Show'>Show</a>&gt; <a class='trait' href='http://doc.rust-lang.org/master/core/fmt/trait.Show.html' title='core::fmt::Show'>Show</a> for <a class='struct' href='../../ncollide3df32/geom/struct.Reflection.html' title='ncollide3df32::geom::Reflection'>Reflection</a>&lt;'a, G&gt;</code></h3><div class='impl-methods'><h4 id='method.fmt' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/master/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

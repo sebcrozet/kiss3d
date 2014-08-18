@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `FlushedMessages` struct in crate `glfw`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, FlushedMessages">
+
+    <title>glfw::FlushedMessages - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='index.html'>glfw</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='ffi/index.html'>ffi</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.Callback.html'>Callback</a><a class='struct current' href='struct.FlushedMessages.html'>FlushedMessages</a><a class='struct ' href='struct.GammaRamp.html'>GammaRamp</a><a class='struct ' href='struct.Glfw.html'>Glfw</a><a class='struct ' href='struct.Joystick.html'>Joystick</a><a class='struct ' href='struct.Modifiers.html'>Modifiers</a><a class='struct ' href='struct.Monitor.html'>Monitor</a><a class='struct ' href='struct.RenderContext.html'>RenderContext</a><a class='struct ' href='struct.ShowAliases.html'>ShowAliases</a><a class='struct ' href='struct.VidMode.html'>VidMode</a><a class='struct ' href='struct.Window.html'>Window</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.Context.html'>Context</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.fail_on_errors.html'>fail_on_errors</a><a class='fn ' href='fn.flush_messages.html'>flush_messages</a><a class='fn ' href='fn.get_version.html'>get_version</a><a class='fn ' href='fn.get_version_string.html'>get_version_string</a><a class='fn ' href='fn.init.html'>init</a><a class='fn ' href='fn.log_errors.html'>log_errors</a><a class='fn ' href='fn.make_context_current.html'>make_context_current</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><div class='in-band'>Struct <a href='index.html'>glfw</a>&#8203;::<a class='struct' href=''>FlushedMessages</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-20955' href='../src/glfw/src/glfw/lib.rs.html#1079'>[src]</a></div></h1>
+<pre class='rust struct'>pub struct FlushedMessages&lt;'a, Message&gt;(_);</pre><div class='docblock'><p>An iterator that yeilds until no more messages are contained in the
+<code>Receiver</code>&#39;s queue.</p>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a, Message: <a class='trait' href='http://doc.rust-lang.org/master/core/kinds/trait.Send.html' title='core::kinds::Send'>Send</a>&gt; <a class='trait' href='http://doc.rust-lang.org/master/core/iter/trait.Iterator.html' title='core::iter::Iterator'>Iterator</a>&lt;Message&gt; for <a class='struct' href='../glfw/struct.FlushedMessages.html' title='glfw::FlushedMessages'>FlushedMessages</a>&lt;'a, Message&gt;</code></h3><div class='impl-methods'><h4 id='method.next' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.next' class='fnname'>next</a>(&amp;mut self) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;Message&gt;</code></h4>
+<h4 id='method.size_hint' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.size_hint' class='fnname'>size_hint</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>&gt;)</a></code></h4>
+<h4 id='method.chain' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.chain' class='fnname'>chain</a>&lt;U: <a class='trait' href='http://doc.rust-lang.org/master/core/iter/trait.Iterator.html' title='core::iter::Iterator'>Iterator</a>&lt;A&gt;&gt;(self, other: U) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.Chain.html' title='core::iter::Chain'>Chain</a>&lt;Self, U&gt;</code></h4>
+<h4 id='method.zip' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.zip' class='fnname'>zip</a>&lt;B, U: <a class='trait' href='http://doc.rust-lang.org/master/core/iter/trait.Iterator.html' title='core::iter::Iterator'>Iterator</a>&lt;B&gt;&gt;(self, other: U) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.Zip.html' title='core::iter::Zip'>Zip</a>&lt;Self, U&gt;</code></h4>
+<h4 id='method.map' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.map' class='fnname'>map</a>&lt;B&gt;(self, f: |A|: 'r -&gt; B) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.Map.html' title='core::iter::Map'>Map</a>&lt;'r, A, B, Self&gt;</code></h4>
+<h4 id='method.filter' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.filter' class='fnname'>filter</a>(self, predicate: |&amp;A|: 'r -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.Filter.html' title='core::iter::Filter'>Filter</a>&lt;'r, A, Self&gt;</code></h4>
+<h4 id='method.filter_map' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.filter_map' class='fnname'>filter_map</a>&lt;B&gt;(self, f: |A|: 'r -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;B&gt;) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.FilterMap.html' title='core::iter::FilterMap'>FilterMap</a>&lt;'r, A, B, Self&gt;</code></h4>
+<h4 id='method.enumerate' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.enumerate' class='fnname'>enumerate</a>(self) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.Enumerate.html' title='core::iter::Enumerate'>Enumerate</a>&lt;Self&gt;</code></h4>
+<h4 id='method.peekable' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.peekable' class='fnname'>peekable</a>(self) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.Peekable.html' title='core::iter::Peekable'>Peekable</a>&lt;A, Self&gt;</code></h4>
+<h4 id='method.skip_while' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.skip_while' class='fnname'>skip_while</a>(self, predicate: |&amp;A|: 'r -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.SkipWhile.html' title='core::iter::SkipWhile'>SkipWhile</a>&lt;'r, A, Self&gt;</code></h4>
+<h4 id='method.take_while' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.take_while' class='fnname'>take_while</a>(self, predicate: |&amp;A|: 'r -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.TakeWhile.html' title='core::iter::TakeWhile'>TakeWhile</a>&lt;'r, A, Self&gt;</code></h4>
+<h4 id='method.skip' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.skip' class='fnname'>skip</a>(self, n: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.Skip.html' title='core::iter::Skip'>Skip</a>&lt;Self&gt;</code></h4>
+<h4 id='method.take' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.take' class='fnname'>take</a>(self, n: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.Take.html' title='core::iter::Take'>Take</a>&lt;Self&gt;</code></h4>
+<h4 id='method.scan' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.scan' class='fnname'>scan</a>&lt;St, B&gt;(self, initial_state: St, f: |&amp;mut St, A|: 'r -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;B&gt;) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.Scan.html' title='core::iter::Scan'>Scan</a>&lt;'r, A, B, Self, St&gt;</code></h4>
+<h4 id='method.flat_map' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.flat_map' class='fnname'>flat_map</a>&lt;B, U: <a class='trait' href='http://doc.rust-lang.org/master/core/iter/trait.Iterator.html' title='core::iter::Iterator'>Iterator</a>&lt;B&gt;&gt;(self, f: |A|: 'r -&gt; U) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.FlatMap.html' title='core::iter::FlatMap'>FlatMap</a>&lt;'r, A, Self, U&gt;</code></h4>
+<h4 id='method.fuse' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.fuse' class='fnname'>fuse</a>(self) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.Fuse.html' title='core::iter::Fuse'>Fuse</a>&lt;Self&gt;</code></h4>
+<h4 id='method.inspect' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.inspect' class='fnname'>inspect</a>(self, f: |&amp;A|: 'r) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.Inspect.html' title='core::iter::Inspect'>Inspect</a>&lt;'r, A, Self&gt;</code></h4>
+<h4 id='method.by_ref' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.by_ref' class='fnname'>by_ref</a>(&amp;'r mut self) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/core/iter/struct.ByRef.html' title='core::iter::ByRef'>ByRef</a>&lt;'r, Self&gt;</code></h4>
+<h4 id='method.advance' class='method'><a class='stability Deprecated' title='Deprecated: use the `all` method instead'></a><code>fn <a href='#tymethod.advance' class='fnname'>advance</a>(&amp;mut self, f: |A| -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.collect' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.collect' class='fnname'>collect</a>&lt;B: <a class='trait' href='http://doc.rust-lang.org/master/core/iter/trait.FromIterator.html' title='core::iter::FromIterator'>FromIterator</a>&lt;A&gt;&gt;(&amp;mut self) -&gt; B</code></h4>
+<h4 id='method.nth' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.nth' class='fnname'>nth</a>(&amp;mut self, n: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;A&gt;</code></h4>
+<h4 id='method.last' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.last' class='fnname'>last</a>(&amp;mut self) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;A&gt;</code></h4>
+<h4 id='method.fold' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.fold' class='fnname'>fold</a>&lt;B&gt;(&amp;mut self, init: B, f: |B, A| -&gt; B) -&gt; B</code></h4>
+<h4 id='method.count' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.count' class='fnname'>count</a>(&amp;mut self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a></code></h4>
+<h4 id='method.all' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.all' class='fnname'>all</a>(&amp;mut self, f: |A| -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.any' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.any' class='fnname'>any</a>(&amp;mut self, f: |A| -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.find' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.find' class='fnname'>find</a>(&amp;mut self, predicate: |&amp;A| -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;A&gt;</code></h4>
+<h4 id='method.position' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.position' class='fnname'>position</a>(&amp;mut self, predicate: |A| -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>&gt;</code></h4>
+<h4 id='method.max_by' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.max_by' class='fnname'>max_by</a>&lt;B: <a class='trait' href='http://doc.rust-lang.org/master/core/cmp/trait.Ord.html' title='core::cmp::Ord'>Ord</a>&gt;(&amp;mut self, f: |&amp;A| -&gt; B) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;A&gt;</code></h4>
+<h4 id='method.min_by' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#tymethod.min_by' class='fnname'>min_by</a>&lt;B: <a class='trait' href='http://doc.rust-lang.org/master/core/cmp/trait.Ord.html' title='core::cmp::Ord'>Ord</a>&gt;(&amp;mut self, f: |&amp;A| -&gt; B) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;A&gt;</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "glfw";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>

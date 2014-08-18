@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Implicit` trait in crate `ncollide3df32`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Implicit">
+
+    <title>ncollide3df32::implicit::Implicit - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>implicit</a></p><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.HasMargin.html'>HasMargin</a><a class='trait current' href='trait.Implicit.html'>Implicit</a><a class='trait ' href='trait.PreferedSamplingDirections.html'>PreferedSamplingDirections</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.cso_support_point.html'>cso_support_point</a><a class='fn ' href='fn.cso_support_point_without_margin.html'>cso_support_point_without_margin</a><a class='fn ' href='fn.point_cloud_support_point.html'>point_cloud_support_point</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><div class='in-band'>Trait <a href='../index.html'>ncollide3df32</a>&#8203;::<a href='index.html'>implicit</a>&#8203;::<a class='trait' href=''>Implicit</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-42018' href='../../src/ncollide3df32/up/up/src/implicit/implicit.rs.html#27-58'>[src]</a></div></h1>
+<pre class='rust trait'>pub trait Implicit&lt;Vect: <a class='trait' href='../../nalgebra/traits/structure/trait.FloatVec.html' title='nalgebra::traits::structure::FloatVec'>FloatVec</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Scalar.html' title='ncollide3df32::math::Scalar'>Scalar</a>&gt;, Matrix&gt;: <a class='trait' href='../../ncollide3df32/implicit/trait.HasMargin.html' title='ncollide3df32::implicit::HasMargin'>HasMargin</a> {
+    fn <a href='#tymethod.support_point_without_margin' class='fnname'>support_point_without_margin</a>(&amp;self, transform: &amp;Matrix, dir: &amp;Vect) -&gt; Vect;
+
+    fn <a href='#method.support_point' class='fnname'>support_point</a>(&amp;self, transform: &amp;Matrix, dir: &amp;Vect) -&gt; Vect { ... }
+}</pre><div class='docblock'><p>Traits of convex geometries representable by a support mapping function.</p>
+
+<h1 id="parameters:" class='section-header'><a
+                           href="#parameters:">Parameters:</a></h1>
+<ul>
+<li>Vect - type of the support mapping direction argument and of the returned point.</li>
+</ul>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.support_point_without_margin' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.support_point_without_margin' class='fnname'>support_point_without_margin</a>(&amp;self, transform: &amp;Matrix, dir: &amp;Vect) -&gt; Vect</code></h3><div class='docblock'><p>Evaluates the support function of the object. A support function is a
+function associating a vector to the geometry point which maximizes their
+dot product. This does not include the <code>margin</code> of the object. Margins are
+geometry-dependent. Use <code>support_point</code> to sample the complete geometry.</p>
+
+<h1 id="arguments:" class='section-header'><a
+                           href="#arguments:">Arguments:</a></h1>
+<ul>
+<li><code>dir</code> - the input of the support function. It is not required for it to
+       be normalized.</li>
+</ul>
+</div></div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.support_point' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.support_point' class='fnname'>support_point</a>(&amp;self, transform: &amp;Matrix, dir: &amp;Vect) -&gt; Vect</code></h3><div class='docblock'><p>Evaluates the support function of the object. A support function is a
+function associating a vector to the geometry point which maximizes their
+dot product.</p>
+
+<h1 id="arguments:-1" class='section-header'><a
+                           href="#arguments:-1">Arguments:</a></h1>
+<ul>
+<li><code>dir</code> - the input of the support function. It is not required for it to
+       be normalized.</li>
+</ul>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a, _M, G: <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.GeomWithMargin.html' title='ncollide3df32::geom::GeomWithMargin'>GeomWithMargin</a>&lt;'a, G&gt;</code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;_M: <a class='trait' href='../../nalgebra/traits/geometry/trait.Rotate.html' title='nalgebra::traits::geometry::Rotate'>Rotate</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt; + <a class='trait' href='../../nalgebra/traits/geometry/trait.Transform.html' title='nalgebra::traits::geometry::Transform'>Transform</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Cuboid.html' title='ncollide3df32::geom::Cuboid'>Cuboid</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;_M: <a class='trait' href='../../nalgebra/traits/geometry/trait.Translation.html' title='nalgebra::traits::geometry::Translation'>Translation</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Ball.html' title='ncollide3df32::geom::Ball'>Ball</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;_M: <a class='trait' href='../../nalgebra/traits/geometry/trait.Transform.html' title='nalgebra::traits::geometry::Transform'>Transform</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt; + <a class='trait' href='../../nalgebra/traits/geometry/trait.Rotate.html' title='nalgebra::traits::geometry::Rotate'>Rotate</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Capsule.html' title='ncollide3df32::geom::Capsule'>Capsule</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;_M: <a class='trait' href='../../nalgebra/traits/geometry/trait.Transform.html' title='nalgebra::traits::geometry::Transform'>Transform</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt; + <a class='trait' href='../../nalgebra/traits/geometry/trait.Rotate.html' title='nalgebra::traits::geometry::Rotate'>Rotate</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Cone.html' title='ncollide3df32::geom::Cone'>Cone</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;_M: <a class='trait' href='../../nalgebra/traits/geometry/trait.Transform.html' title='nalgebra::traits::geometry::Transform'>Transform</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt; + <a class='trait' href='../../nalgebra/traits/geometry/trait.Rotate.html' title='nalgebra::traits::geometry::Rotate'>Rotate</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Cylinder.html' title='ncollide3df32::geom::Cylinder'>Cylinder</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;_M: <a class='trait' href='../../nalgebra/traits/geometry/trait.Transform.html' title='nalgebra::traits::geometry::Transform'>Transform</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt; + <a class='trait' href='../../nalgebra/traits/geometry/trait.Rotate.html' title='nalgebra::traits::geometry::Rotate'>Rotate</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Convex.html' title='ncollide3df32::geom::Convex'>Convex</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a, _M, G: <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Reflection.html' title='ncollide3df32::geom::Reflection'>Reflection</a>&lt;'a, G&gt;</code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;_M: <a class='trait' href='../../nalgebra/traits/geometry/trait.Transform.html' title='nalgebra::traits::geometry::Transform'>Transform</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt; + <a class='trait' href='../../nalgebra/traits/geometry/trait.Rotate.html' title='nalgebra::traits::geometry::Rotate'>Rotate</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Triangle.html' title='ncollide3df32::geom::Triangle'>Triangle</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;_M: <a class='trait' href='../../nalgebra/traits/geometry/trait.Transform.html' title='nalgebra::traits::geometry::Transform'>Transform</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt; + <a class='trait' href='../../nalgebra/traits/geometry/trait.Rotate.html' title='nalgebra::traits::geometry::Rotate'>Rotate</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, _M&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.Segment.html' title='ncollide3df32::geom::Segment'>Segment</a></code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a, G1: <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, <a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>&gt;, G2: <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, <a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, <a class='struct' href='../../nalgebra/structs/mat/struct.Identity.html' title='nalgebra::structs::mat::Identity'>Identity</a>&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.MinkowskiSum.html' title='ncollide3df32::geom::MinkowskiSum'>MinkowskiSum</a>&lt;'a, G1, G2&gt;</code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a, G1: <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, <a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>&gt;, G2: <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;<a class='type' href='../../ncollide3df32/math/type.Vect.html' title='ncollide3df32::math::Vect'>Vect</a>, <a class='type' href='../../ncollide3df32/math/type.Matrix.html' title='ncollide3df32::math::Matrix'>Matrix</a>&gt;&gt; <a class='trait' href='../../ncollide3df32/implicit/trait.Implicit.html' title='ncollide3df32::implicit::Implicit'>Implicit</a>&lt;AnnotatedPoint, <a class='struct' href='../../nalgebra/structs/mat/struct.Identity.html' title='nalgebra::structs::mat::Identity'>Identity</a>&gt; for <a class='struct' href='../../ncollide3df32/geom/struct.AnnotatedMinkowskiSum.html' title='ncollide3df32::geom::AnnotatedMinkowskiSum'>AnnotatedMinkowskiSum</a>&lt;'a, G1, G2&gt;</code></li>
+</ul><script type="text/javascript" async
+                              src="../../implementors/ncollide3df32/implicit/trait.Implicit.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

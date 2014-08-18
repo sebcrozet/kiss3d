@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/loader/obj.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>obj.rs.html -- source</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -436,7 +439,7 @@
 <span class='doccomment'>/// Parses an obj file.</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>parse_file</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>, <span class='ident'>mtl_base_dir</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>, <span class='ident'>basename</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>IoResult</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>String</span>, <span class='ident'>Mesh</span>, <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>MtlMaterial</span><span class='op'>&gt;</span>)<span class='op'>&gt;&gt;</span> {
     <span class='kw'>match</span> <span class='ident'>File</span>::<span class='ident'>open</span>(<span class='ident'>path</span>) {
-        <span class='prelude-val'>Ok</span>(<span class='kw-2'>mut</span> <span class='ident'>file</span>) <span class='op'>=&gt;</span> <span class='ident'>file</span>.<span class='ident'>read_to_str</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>obj</span><span class='op'>|</span> <span class='ident'>parse</span>(<span class='ident'>obj</span>.<span class='ident'>as_slice</span>(), <span class='ident'>mtl_base_dir</span>, <span class='ident'>basename</span>)),
+        <span class='prelude-val'>Ok</span>(<span class='kw-2'>mut</span> <span class='ident'>file</span>) <span class='op'>=&gt;</span> <span class='ident'>file</span>.<span class='ident'>read_to_string</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>obj</span><span class='op'>|</span> <span class='ident'>parse</span>(<span class='ident'>obj</span>.<span class='ident'>as_slice</span>(), <span class='ident'>mtl_base_dir</span>, <span class='ident'>basename</span>)),
         <span class='prelude-val'>Err</span>(<span class='ident'>e</span>)       <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='ident'>e</span>)
     }
 }
@@ -464,7 +467,7 @@
         <span class='kw'>match</span> <span class='ident'>tag</span> {
             <span class='prelude-val'>None</span>    <span class='op'>=&gt;</span> { },
             <span class='prelude-val'>Some</span>(<span class='ident'>w</span>) <span class='op'>=&gt;</span> {
-                <span class='kw'>if</span> <span class='ident'>w</span>.<span class='ident'>len</span>() <span class='op'>!=</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>w</span>[<span class='number'>0</span>] <span class='op'>!=</span> (<span class='string'>&#39;#&#39;</span> <span class='kw'>as</span> <span class='ident'>u8</span>) {
+                <span class='kw'>if</span> <span class='ident'>w</span>.<span class='ident'>len</span>() <span class='op'>!=</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>w</span>.<span class='ident'>as_bytes</span>()[<span class='number'>0</span>] <span class='op'>!=</span> (<span class='string'>&#39;#&#39;</span> <span class='kw'>as</span> <span class='ident'>u8</span>) {
                     <span class='kw'>match</span> <span class='ident'>w</span> {
                         <span class='string'>&quot;v&quot;</span>      <span class='op'>=&gt;</span> <span class='ident'>coords</span>.<span class='ident'>push</span>(<span class='ident'>parse_v_or_vn</span>(<span class='ident'>l</span>, <span class='ident'>words</span>)),
                         <span class='string'>&quot;vn&quot;</span>     <span class='op'>=&gt;</span> <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>ignore_normals</span> { <span class='ident'>normals</span>.<span class='ident'>push</span>(<span class='ident'>parse_v_or_vn</span>(<span class='ident'>l</span>, <span class='ident'>words</span>)) },
@@ -528,10 +531,10 @@
                     <span class='op'>*</span><span class='ident'>curr_mtl</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>m</span>.<span class='ident'>clone</span>());
                     <span class='ident'>curr_group</span>
                 }
-                <span class='kw'>else</span> {<span class='comment'>
-                    // multiple usemtls for one group
-                    // NOTE: this is a violation of the obj specification, but we support it anyway
-                    </span><span class='kw'>let</span> <span class='ident'>g</span> <span class='op'>=</span> <span class='ident'>curr_group</span>.<span class='ident'>to_str</span>().<span class='ident'>append</span>(<span class='ident'>mname</span>.<span class='ident'>as_slice</span>());
+                <span class='kw'>else</span> {
+                    <span class='comment'>// multiple usemtls for one group</span>
+                    <span class='comment'>// NOTE: this is a violation of the obj specification, but we support it anyway</span>
+                    <span class='kw'>let</span> <span class='ident'>g</span> <span class='op'>=</span> <span class='ident'>curr_group</span>.<span class='ident'>to_string</span>().<span class='ident'>append</span>(<span class='ident'>mname</span>.<span class='ident'>as_slice</span>());
                     <span class='kw'>let</span> <span class='ident'>new_group</span> <span class='op'>=</span> <span class='ident'>parse_g</span>(<span class='ident'>l</span>, <span class='ident'>g</span>.<span class='ident'>as_slice</span>().<span class='ident'>words</span>(), <span class='string'>&quot;auto_generated_group_&quot;</span>, <span class='ident'>groups</span>, <span class='ident'>groups_ids</span>);
 
                     <span class='ident'>group2mtl</span>.<span class='ident'>insert</span>(<span class='ident'>new_group</span>, <span class='ident'>m</span>.<span class='ident'>clone</span>());
@@ -594,9 +597,9 @@
                <span class='ident'>ignore_uvs</span>:     <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>bool</span>,
                <span class='ident'>ignore_normals</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>bool</span>,
                <span class='ident'>groups_ids</span>:     <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>,
-               <span class='ident'>curr_group</span>:     <span class='ident'>uint</span>) {<span class='comment'>
-    // Four formats possible: v   v/t   v//n   v/t/n
-    </span><span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
+               <span class='ident'>curr_group</span>:     <span class='ident'>uint</span>) {
+    <span class='comment'>// Four formats possible: v   v/t   v//n   v/t/n</span>
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
     <span class='kw'>for</span> <span class='ident'>word</span> <span class='kw'>in</span> <span class='ident'>ws</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>curr_ids</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Bounded</span>::<span class='ident'>max_value</span>();
 
@@ -610,11 +613,11 @@
             }
         }
 
-        <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;</span> <span class='number'>2</span> {<span class='comment'>
-            // on the fly triangulation as trangle fan
-            </span><span class='kw'>let</span> <span class='ident'>g</span> <span class='op'>=</span> <span class='ident'>groups_ids</span>.<span class='ident'>get_mut</span>(<span class='ident'>curr_group</span>);
-            <span class='kw'>let</span> <span class='ident'>p1</span> <span class='op'>=</span> <span class='op'>*</span><span class='ident'>g</span>.<span class='ident'>get</span>(<span class='ident'>g</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='ident'>i</span>);
-            <span class='kw'>let</span> <span class='ident'>p2</span> <span class='op'>=</span> <span class='op'>*</span><span class='ident'>g</span>.<span class='ident'>get</span>(<span class='ident'>g</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span>);
+        <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;</span> <span class='number'>2</span> {
+            <span class='comment'>// on the fly triangulation as trangle fan</span>
+            <span class='kw'>let</span> <span class='ident'>g</span> <span class='op'>=</span> <span class='ident'>groups_ids</span>.<span class='ident'>get_mut</span>(<span class='ident'>curr_group</span>);
+            <span class='kw'>let</span> <span class='ident'>p1</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>g</span>)[<span class='ident'>g</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='ident'>i</span>];
+            <span class='kw'>let</span> <span class='ident'>p2</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>g</span>)[<span class='ident'>g</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span>];
             <span class='ident'>g</span>.<span class='ident'>push</span>(<span class='ident'>p1</span>);
             <span class='ident'>g</span>.<span class='ident'>push</span>(<span class='ident'>p2</span>);
         }
@@ -625,10 +628,10 @@
 
         <span class='kw'>if</span> <span class='ident'>curr_ids</span>.<span class='ident'>z</span> <span class='op'>==</span> <span class='ident'>Bounded</span>::<span class='ident'>max_value</span>() {
             <span class='op'>*</span><span class='ident'>ignore_normals</span> <span class='op'>=</span> <span class='boolval'>true</span>;
-        }<span class='comment'>
+        }
 
-        // Handle relatives indice
-        </span><span class='kw'>let</span> <span class='ident'>x</span>;
+        <span class='comment'>// Handle relatives indice</span>
+        <span class='kw'>let</span> <span class='ident'>x</span>;
         <span class='kw'>let</span> <span class='ident'>y</span>;
         <span class='kw'>let</span> <span class='ident'>z</span>;
 
@@ -656,12 +659,12 @@
         <span class='ident'>groups_ids</span>.<span class='ident'>get_mut</span>(<span class='ident'>curr_group</span>).<span class='ident'>push</span>(<span class='ident'>Vec3</span>::<span class='ident'>new</span>(<span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>z</span>));
 
         <span class='ident'>i</span> <span class='op'>=</span> <span class='ident'>i</span> <span class='op'>+</span> <span class='number'>1</span>;
-    }<span class='comment'>
+    }
 
-    // there is not enough vertex to form a triangle. Complete it.
-    </span><span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&lt;</span> <span class='number'>2</span> {
+    <span class='comment'>// there is not enough vertex to form a triangle. Complete it.</span>
+    <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&lt;</span> <span class='number'>2</span> {
         <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0u</span>, <span class='number'>3</span> <span class='op'>-</span> <span class='ident'>i</span>) {
-            <span class='kw'>let</span> <span class='ident'>last</span> <span class='op'>=</span> <span class='ident'>groups_ids</span>.<span class='ident'>get</span>(<span class='ident'>curr_group</span>).<span class='ident'>last</span>().<span class='ident'>unwrap</span>().<span class='ident'>clone</span>();
+            <span class='kw'>let</span> <span class='ident'>last</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>groups_ids</span>)[<span class='ident'>curr_group</span>].<span class='ident'>last</span>().<span class='ident'>unwrap</span>().<span class='ident'>clone</span>();
             <span class='ident'>groups_ids</span>.<span class='ident'>get_mut</span>(<span class='ident'>curr_group</span>).<span class='ident'>push</span>(<span class='ident'>last</span>);
         }
     }
@@ -670,18 +673,18 @@
 <span class='kw'>fn</span> <span class='ident'>parse_vt</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='ident'>l</span>: <span class='ident'>uint</span>, <span class='kw-2'>mut</span> <span class='ident'>ws</span>: <span class='ident'>Words</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>UV</span> {
     <span class='kw'>let</span> <span class='ident'>_0</span> <span class='op'>=</span> <span class='string'>&quot;0.0&quot;</span>;
     <span class='kw'>let</span> <span class='ident'>sx</span>  <span class='op'>=</span> <span class='ident'>ws</span>.<span class='ident'>next</span>().<span class='ident'>unwrap_or_else</span>(<span class='op'>||</span> <span class='ident'>error</span>(<span class='ident'>l</span>, <span class='string'>&quot;at least 2 components were expected, found 0.&quot;</span>));
-    <span class='kw'>let</span> <span class='ident'>sy</span>  <span class='op'>=</span> <span class='ident'>ws</span>.<span class='ident'>next</span>().<span class='ident'>unwrap_or_else</span>(<span class='op'>||</span> <span class='ident'>error</span>(<span class='ident'>l</span>, <span class='string'>&quot;at least 2 components were expected, found 1.&quot;</span>));<span class='comment'>
-    // let sz  = ws.next().unwrap_or(_0);
+    <span class='kw'>let</span> <span class='ident'>sy</span>  <span class='op'>=</span> <span class='ident'>ws</span>.<span class='ident'>next</span>().<span class='ident'>unwrap_or_else</span>(<span class='op'>||</span> <span class='ident'>error</span>(<span class='ident'>l</span>, <span class='string'>&quot;at least 2 components were expected, found 1.&quot;</span>));
+    <span class='comment'>// let sz  = ws.next().unwrap_or(_0);</span>
 
-    </span><span class='kw'>let</span> <span class='ident'>x</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='ident'>sx</span>);
-    <span class='kw'>let</span> <span class='ident'>y</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='ident'>sy</span>);<span class='comment'>
-    // let z: Option&lt;f32&gt; = FromStr::from_str(sz);
+    <span class='kw'>let</span> <span class='ident'>x</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='ident'>sx</span>);
+    <span class='kw'>let</span> <span class='ident'>y</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='ident'>sy</span>);
+    <span class='comment'>// let z: Option&lt;f32&gt; = FromStr::from_str(sz);</span>
 
-    </span><span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>unwrap_or_else</span>(<span class='op'>||</span> <span class='ident'>error</span>(<span class='ident'>l</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;failed to parse `{}&#39; as a f32.&quot;</span>, <span class='ident'>sx</span>).<span class='ident'>as_slice</span>()));
-    <span class='kw'>let</span> <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>y</span>.<span class='ident'>unwrap_or_else</span>(<span class='op'>||</span> <span class='ident'>error</span>(<span class='ident'>l</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;failed to parse `{}&#39; as a f32.&quot;</span>, <span class='ident'>sy</span>).<span class='ident'>as_slice</span>()));<span class='comment'>
-    // let z = z.unwrap_or_else(|| error(l, &quot;failed to parse `&quot; + sz + &quot;&#39; as a f32.&quot;));
+    <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>unwrap_or_else</span>(<span class='op'>||</span> <span class='ident'>error</span>(<span class='ident'>l</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;failed to parse `{}&#39; as a f32.&quot;</span>, <span class='ident'>sx</span>).<span class='ident'>as_slice</span>()));
+    <span class='kw'>let</span> <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>y</span>.<span class='ident'>unwrap_or_else</span>(<span class='op'>||</span> <span class='ident'>error</span>(<span class='ident'>l</span>, <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;failed to parse `{}&#39; as a f32.&quot;</span>, <span class='ident'>sy</span>).<span class='ident'>as_slice</span>()));
+    <span class='comment'>// let z = z.unwrap_or_else(|| error(l, &quot;failed to parse `&quot; + sz + &quot;&#39; as a f32.&quot;));</span>
 
-    </span><span class='ident'>Vec2</span>::<span class='ident'>new</span>(<span class='ident'>x</span>, <span class='ident'>y</span>)
+    <span class='ident'>Vec2</span>::<span class='ident'>new</span>(<span class='ident'>x</span>, <span class='ident'>y</span>)
 }
 
 <span class='kw'>fn</span> <span class='ident'>parse_g</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(_:          <span class='ident'>uint</span>,
@@ -718,16 +721,16 @@
         <span class='ident'>names</span>.<span class='ident'>push</span>(<span class='ident'>name</span>);
         <span class='ident'>mtls</span>.<span class='ident'>push</span>(<span class='ident'>group2mtl</span>.<span class='ident'>find</span>(<span class='kw-2'>&amp;</span><span class='ident'>i</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>m</span><span class='op'>|</span> <span class='ident'>m</span>.<span class='ident'>clone</span>()));
 
-        <span class='kw'>for</span> <span class='ident'>point</span> <span class='kw'>in</span> <span class='ident'>groups_ids</span>.<span class='ident'>get</span>(<span class='ident'>i</span>).<span class='ident'>iter</span>() {
+        <span class='kw'>for</span> <span class='ident'>point</span> <span class='kw'>in</span> <span class='ident'>groups_ids</span>[<span class='ident'>i</span>].<span class='ident'>iter</span>() {
             <span class='kw'>let</span> <span class='ident'>idx</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>vt2id</span>.<span class='ident'>find</span>(<span class='ident'>point</span>) {
                 <span class='prelude-val'>Some</span>(<span class='ident'>i</span>) <span class='op'>=&gt;</span> { <span class='ident'>vertex_ids</span>.<span class='ident'>push</span>(<span class='op'>*</span><span class='ident'>i</span>); <span class='prelude-val'>None</span> },
                 <span class='prelude-val'>None</span>    <span class='op'>=&gt;</span> {
                     <span class='kw'>let</span> <span class='ident'>idx</span> <span class='op'>=</span> <span class='ident'>resc</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>u32</span>;
 
-                    <span class='ident'>resc</span>.<span class='ident'>push</span>(<span class='op'>*</span><span class='ident'>coords</span>.<span class='ident'>get</span>(<span class='ident'>point</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>uint</span>));
+                    <span class='ident'>resc</span>.<span class='ident'>push</span>(<span class='ident'>coords</span>[<span class='ident'>point</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>uint</span>]);
 
-                    <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>resu</span>.<span class='ident'>as_mut</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>l</span><span class='op'>|</span> <span class='ident'>l</span>.<span class='ident'>push</span>(<span class='op'>*</span><span class='ident'>uvs</span>.<span class='ident'>get_ref</span>().<span class='ident'>get</span>(<span class='ident'>point</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>uint</span>)));
-                    <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>resn</span>.<span class='ident'>as_mut</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>l</span><span class='op'>|</span> <span class='ident'>l</span>.<span class='ident'>push</span>(<span class='op'>*</span><span class='ident'>normals</span>.<span class='ident'>get_ref</span>().<span class='ident'>get</span>(<span class='ident'>point</span>.<span class='ident'>z</span> <span class='kw'>as</span> <span class='ident'>uint</span>)));
+                    <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>resu</span>.<span class='ident'>as_mut</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>l</span><span class='op'>|</span> <span class='ident'>l</span>.<span class='ident'>push</span>((<span class='op'>*</span><span class='ident'>uvs</span>.<span class='ident'>get_ref</span>())[<span class='ident'>point</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>uint</span>]));
+                    <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>resn</span>.<span class='ident'>as_mut</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>l</span><span class='op'>|</span> <span class='ident'>l</span>.<span class='ident'>push</span>((<span class='op'>*</span><span class='ident'>normals</span>.<span class='ident'>get_ref</span>())[<span class='ident'>point</span>.<span class='ident'>z</span> <span class='kw'>as</span> <span class='ident'>uint</span>]));
 
                     <span class='ident'>vertex_ids</span>.<span class='ident'>push</span>(<span class='ident'>idx</span>);
 
@@ -798,12 +801,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../../../";

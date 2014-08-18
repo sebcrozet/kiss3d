@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `StrokePattern` trait in crate `ncollide3df32`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, StrokePattern">
+
+    <title>ncollide3df32::procedural::path::StrokePattern - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>ncollide3df32</a>&#8203;::<a href='../index.html'>procedural</a>&#8203;::<a href='index.html'>path</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.ArrowheadCap.html'>ArrowheadCap</a><a class='struct ' href='struct.NoCap.html'>NoCap</a><a class='struct ' href='struct.PolylinePath.html'>PolylinePath</a><a class='struct ' href='struct.PolylinePattern.html'>PolylinePattern</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.CurveSampler.html'>CurveSampler</a><a class='trait ' href='trait.PolylineCompatibleCap.html'>PolylineCompatibleCap</a><a class='trait current' href='trait.StrokePattern.html'>StrokePattern</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><div class='in-band'>Trait <a href='../../index.html'>ncollide3df32</a>&#8203;::<a href='../index.html'>procedural</a>&#8203;::<a href='index.html'>path</a>&#8203;::<a class='trait' href=''>StrokePattern</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-52725' href='../../../src/ncollide3df32/up/up/src/procedural/path/path.rs.html#25-28'>[src]</a></div></h1>
+<pre class='rust trait'>pub trait StrokePattern&lt;N, V&gt; {
+    fn <a href='#tymethod.stroke' class='fnname'>stroke</a>&lt;C: <a class='trait' href='../../../ncollide3df32/procedural/path/trait.CurveSampler.html' title='ncollide3df32::procedural::path::CurveSampler'>CurveSampler</a>&lt;N, V&gt;&gt;(&amp;mut self, sampler: &amp;mut C) -&gt; <a class='struct' href='../../../ncollide3df32/procedural/struct.TriMesh.html' title='ncollide3df32::procedural::TriMesh'>TriMesh</a>&lt;N, V&gt;;
+}</pre><div class='docblock'><p>A pattern that is replicated along a path.</p>
+
+<p>It is responsible of the generation of the whole mesh.</p>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.stroke' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.stroke' class='fnname'>stroke</a>&lt;C: <a class='trait' href='../../../ncollide3df32/procedural/path/trait.CurveSampler.html' title='ncollide3df32::procedural::path::CurveSampler'>CurveSampler</a>&lt;N, V&gt;&gt;(&amp;mut self, sampler: &amp;mut C) -&gt; <a class='struct' href='../../../ncollide3df32/procedural/struct.TriMesh.html' title='ncollide3df32::procedural::TriMesh'>TriMesh</a>&lt;N, V&gt;</code></h3><div class='docblock'><p>Generates the mesh using this pattern and the curve sampled by <code>sampler</code>.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;N: <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='http://doc.rust-lang.org/master/std/num/trait.FloatMath.html' title='std::num::FloatMath'>FloatMath</a> + <a class='trait' href='../../../nalgebra/structs/vec/trait.Vec3MulRhs.html' title='nalgebra::structs::vec::Vec3MulRhs'>Vec3MulRhs</a>&lt;N, <a class='struct' href='../../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;N&gt;&gt; + <a class='trait' href='../../../nalgebra/structs/vec/trait.Vec3DivRhs.html' title='nalgebra::structs::vec::Vec3DivRhs'>Vec3DivRhs</a>&lt;N, <a class='struct' href='../../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;N&gt;&gt;, C1: <a class='trait' href='../../../ncollide3df32/procedural/path/trait.PolylineCompatibleCap.html' title='ncollide3df32::procedural::path::PolylineCompatibleCap'>PolylineCompatibleCap</a>&lt;N&gt;, C2: <a class='trait' href='../../../ncollide3df32/procedural/path/trait.PolylineCompatibleCap.html' title='ncollide3df32::procedural::path::PolylineCompatibleCap'>PolylineCompatibleCap</a>&lt;N&gt;&gt; <a class='trait' href='../../../ncollide3df32/procedural/path/trait.StrokePattern.html' title='ncollide3df32::procedural::path::StrokePattern'>StrokePattern</a>&lt;N, <a class='struct' href='../../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;N&gt;&gt; for <a class='struct' href='../../../ncollide3df32/procedural/path/struct.PolylinePattern.html' title='ncollide3df32::procedural::path::PolylinePattern'>PolylinePattern</a>&lt;N, C1, C2&gt;</code></li>
+</ul><script type="text/javascript" async
+                              src="../../../implementors/ncollide3df32/procedural/path/trait.StrokePattern.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "ncollide3df32";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script async src="../../../search-index.js"></script>
+</body>
+</html>

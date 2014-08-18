@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Shader` struct in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Shader">
 
     <title>kiss3d::resource::Shader - Rust</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -38,21 +41,24 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'>Struct <a href='../index.html'>kiss3d</a>::<a href='index.html'>resource</a>::<a class='struct' href=''>Shader</a><a class='source' id='src-40593' href='../../src/kiss3d/src/resource/shader.rs.html#16-21'>[src]</a></h1>
+<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>resource</a>&#8203;::<a class='struct' href=''>Shader</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-42214' href='../../src/kiss3d/src/resource/shader.rs.html#16-21'>[src]</a></div></h1>
 <pre class='rust struct'>pub struct Shader {
     // some fields omitted
 }</pre><div class='docblock'><p>Structure encapsulating a shader program.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a></code></h3><div class='methods'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(vshader_path: &amp;<a class='struct' href='http://doc.rust-lang.org/std/path/posix/struct.Path.html' title='std::path::posix::Path'>Path</a>, fshader_path: &amp;<a class='struct' href='http://doc.rust-lang.org/std/path/posix/struct.Path.html' title='std::path::posix::Path'>Path</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a>&gt;</code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a></code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(vshader_path: &amp;<a class='struct' href='http://doc.rust-lang.org/master/std/path/posix/struct.Path.html' title='std::path::posix::Path'>Path</a>, fshader_path: &amp;<a class='struct' href='http://doc.rust-lang.org/master/std/path/posix/struct.Path.html' title='std::path::posix::Path'>Path</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a>&gt;</code></h4>
 <div class='docblock'><p>Creates a new shader program from two files containing the vertex and fragment shader.</p>
-</div><h4 id='method.new_from_str' class='method'><code>fn <a href='#method.new_from_str' class='fnname'>new_from_str</a>(vshader: &amp;<a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a>, fshader: &amp;<a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a></code></h4>
+</div><h4 id='method.new_from_str' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_from_str' class='fnname'>new_from_str</a>(vshader: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>, fshader: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a></code></h4>
 <div class='docblock'><p>Creates a new shader program from strings of the vertex and fragment shader.</p>
-</div><h4 id='method.get_uniform' class='method'><code>fn <a href='#method.get_uniform' class='fnname'>get_uniform</a>&lt;T: <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt;(&amp;self, name: &amp;<a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.ShaderUniform.html' title='kiss3d::resource::ShaderUniform'>ShaderUniform</a>&lt;T&gt;&gt;</code></h4>
+</div><h4 id='method.get_uniform' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_uniform' class='fnname'>get_uniform</a>&lt;T: <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt;(&amp;self, name: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.ShaderUniform.html' title='kiss3d::resource::ShaderUniform'>ShaderUniform</a>&lt;T&gt;&gt;</code></h4>
 <div class='docblock'><p>Gets a uniform variable from the shader program.</p>
-</div><h4 id='method.get_attrib' class='method'><code>fn <a href='#method.get_attrib' class='fnname'>get_attrib</a>&lt;T: <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt;(&amp;self, name: &amp;<a href='http://doc.rust-lang.org/std/primitive.str.html'>str</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;T&gt;&gt;</code></h4>
+</div><h4 id='method.get_attrib' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_attrib' class='fnname'>get_attrib</a>&lt;T: <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt;(&amp;self, name: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;T&gt;&gt;</code></h4>
 <div class='docblock'><p>Gets an attribute from the shader program.</p>
-</div><h4 id='method.use_program' class='method'><code>fn <a href='#method.use_program' class='fnname'>use_program</a>(&amp;mut self)</code></h4>
+</div><h4 id='method.use_program' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.use_program' class='fnname'>use_program</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Make this program active.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a></code></h3><div class='methods'><h4 id='method.drop' class='method'><code>fn <a href='#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/master/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a></code></h3><div class='impl-methods'><h4 id='method.drop' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -82,12 +88,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../";

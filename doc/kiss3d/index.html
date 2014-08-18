@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `kiss3d` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, kiss3d">
 
     <title>kiss3d - Rust</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -38,7 +41,10 @@
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'>Crate <a class='mod' href=''>kiss3d</a><a class='source' id='src-0' href='../src/kiss3d/src/lib.rs.html#1-133'>[src]</a></h1>
+<h1 class='fqn'><div class='in-band'>Crate <a class='mod' href=''>kiss3d</a>&#8203;</div><div class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-0' href='../src/kiss3d/src/lib.rs.html#1-118'>[src]</a></div></h1>
 <div class='docblock'>
 <h1 id="kiss3d" class='section-header'><a
                            href="#kiss3d">Kiss3d</a></h1>
@@ -84,7 +90,7 @@ to do that).  An object cannot be scaled though.</li>
 <span class='kw'>use</span> <span class='ident'>kiss3d</span>::<span class='ident'>light</span>;
 
 <span class='attribute'>#[<span class='ident'>start</span>]</span>
-<span class='kw'>fn</span> <span class='ident'>start</span>(<span class='ident'>argc</span>: <span class='ident'>int</span>, <span class='ident'>argv</span>: <span class='op'>*</span><span class='op'>*</span><span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>int</span> {
+<span class='kw'>fn</span> <span class='ident'>start</span>(<span class='ident'>argc</span>: <span class='ident'>int</span>, <span class='ident'>argv</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>int</span> {
     <span class='ident'>native</span>::<span class='ident'>start</span>(<span class='ident'>argc</span>, <span class='ident'>argv</span>, <span class='ident'>main</span>)
 }
 
@@ -96,7 +102,7 @@ to do that).  An object cannot be scaled though.</li>
 
     <span class='ident'>window</span>.<span class='ident'>set_light</span>(<span class='ident'>light</span>::<span class='ident'>StickToCamera</span>);
 
-    <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='ident'>window</span>.<span class='ident'>iter</span>() {
+    <span class='kw'>while</span> <span class='ident'>window</span>.<span class='ident'>render</span>() {
         <span class='ident'>c</span>.<span class='ident'>prepend_to_local_rotation</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vec3</span>::<span class='ident'>new</span>(<span class='number'>0.0f32</span>, <span class='number'>0.014</span>, <span class='number'>0.0</span>));
     }
 }
@@ -113,21 +119,14 @@ to do that).  An object cannot be scaled though.</li>
 
 <h2 id="compilation" class='section-header'><a
                            href="#compilation">Compilation</a></h2>
-<p>You will need the last nightly build of the <a href="http://www.rust-lang.org">rust compiler</a>.
-If you encounter problems, make sure you have the last compiler version before creating an issue.</p>
+<p>You will need the last nightly build of the <a href="http://www.rust-lang.org">rust compiler</a>
+and the official package manager: <a href="https://github.com/rust-lang/cargo">cargo</a>.</p>
 
-<p>The simplest way to build <strong>Kiss3d</strong> and all its dependencies is to do a
-recursive clone:</p>
+<p>Simply add the following to your <code>Cargo.toml</code> file:</p>
 <pre class='rust '>
-<span class='ident'>git</span> <span class='ident'>clone</span> <span class='op'>-</span><span class='op'>-</span><span class='ident'>recursive</span> <span class='ident'>git</span>:<span class='comment'>//github.com/sebcrozet/kiss3d.git
-</span><span class='ident'>cd</span> <span class='ident'>kiss3d</span>
-<span class='ident'>make</span> <span class='ident'>deps</span>
-<span class='ident'>make</span>
-<span class='ident'>make</span> <span class='ident'>examples</span>
+[<span class='ident'>dependencies</span>.<span class='ident'>kiss3d</span>]
+<span class='ident'>git</span> <span class='op'>=</span> <span class='string'>&quot;https://github.com/sebcrozet/kiss3d&quot;</span>
 </pre>
-
-<p>The last command will compile examples on the <code>bin</code> folder.
-Use <code>make doc</code> to compile the documentation on the <code>doc</code> folder.</p>
 
 <h2 id="contributions" class='section-header'><a
                            href="#contributions">Contributions</a></h2>
@@ -136,84 +135,77 @@ Use <code>make doc</code> to compile the documentation on the <code>doc</code> f
 </div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                     <tr>
-                        <td><a class='mod' href='builtin/index.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='builtin/index.html'
                                title='kiss3d::builtin'>builtin</a></td>
                         <td class='docblock short'><p>Built-in geometries, shaders and effects.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='mod' href='camera/index.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='camera/index.html'
                                title='kiss3d::camera'>camera</a></td>
                         <td class='docblock short'><p>Camera trait with some common implementations.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='mod' href='light/index.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='light/index.html'
                                title='kiss3d::light'>light</a></td>
                         <td class='docblock short'><p>Lights.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='mod' href='line_renderer/index.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='line_renderer/index.html'
                                title='kiss3d::line_renderer'>line_renderer</a></td>
                         <td class='docblock short'><p>A batched line renderer.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='mod' href='loader/index.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='loader/index.html'
                                title='kiss3d::loader'>loader</a></td>
                         <td class='docblock short'><p>File loading.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='mod' href='point_renderer/index.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='point_renderer/index.html'
                                title='kiss3d::point_renderer'>point_renderer</a></td>
                         <td class='docblock short'><p>A batched point renderer.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='mod' href='post_processing/index.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='post_processing/index.html'
                                title='kiss3d::post_processing'>post_processing</a></td>
                         <td class='docblock short'><p>Post-processing effects.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='mod' href='resource/index.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='resource/index.html'
                                title='kiss3d::resource'>resource</a></td>
                         <td class='docblock short'><p>GPU resource managers</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='mod' href='scene/index.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='scene/index.html'
                                title='kiss3d::scene'>scene</a></td>
                         <td class='docblock short'><p>Everything related to the scene graph.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='mod' href='text/index.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='text/index.html'
                                title='kiss3d::text'>text</a></td>
                         <td class='docblock short'><p>Text rendering.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='mod' href='utils/index.html'
-                               title='kiss3d::utils'>utils</a></td>
-                        <td class='docblock short'><p>Various utilities not directly useful for rendering.</p>
-</td>
-                    </tr>
-                
-                    <tr>
-                        <td><a class='mod' href='window/index.html'
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='window/index.html'
                                title='kiss3d::window'>window</a></td>
                         <td class='docblock short'><p>The window, and things to handle the rendering loop and events.</p>
 </td>
@@ -247,12 +239,14 @@ Use <code>make doc</code> to compile the documentation on the <code>doc</code> f
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../";

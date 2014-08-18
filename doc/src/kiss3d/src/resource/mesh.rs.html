@@ -3,23 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The kiss3d library documentation.">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/resource/mesh.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mesh.rs.html -- source</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600'
-          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
 
     
+    
 </head>
-<body>
+<body class="rustdoc">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
         things.
     </div>
     <![endif]-->
+
+    
 
     <section class="sidebar">
         
@@ -245,6 +248,44 @@
 <span id='206'>206</span>
 <span id='207'>207</span>
 <span id='208'>208</span>
+<span id='209'>209</span>
+<span id='210'>210</span>
+<span id='211'>211</span>
+<span id='212'>212</span>
+<span id='213'>213</span>
+<span id='214'>214</span>
+<span id='215'>215</span>
+<span id='216'>216</span>
+<span id='217'>217</span>
+<span id='218'>218</span>
+<span id='219'>219</span>
+<span id='220'>220</span>
+<span id='221'>221</span>
+<span id='222'>222</span>
+<span id='223'>223</span>
+<span id='224'>224</span>
+<span id='225'>225</span>
+<span id='226'>226</span>
+<span id='227'>227</span>
+<span id='228'>228</span>
+<span id='229'>229</span>
+<span id='230'>230</span>
+<span id='231'>231</span>
+<span id='232'>232</span>
+<span id='233'>233</span>
+<span id='234'>234</span>
+<span id='235'>235</span>
+<span id='236'>236</span>
+<span id='237'>237</span>
+<span id='238'>238</span>
+<span id='239'>239</span>
+<span id='240'>240</span>
+<span id='241'>241</span>
+<span id='242'>242</span>
+<span id='243'>243</span>
+<span id='244'>244</span>
+<span id='245'>245</span>
+<span id='246'>246</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Data structure of a scene node geometry.</span>
 
@@ -253,9 +294,9 @@
 <span class='kw'>use</span> <span class='ident'>gl</span>::<span class='ident'>types</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>nalgebra</span>::<span class='ident'>na</span>::{<span class='ident'>Vec2</span>, <span class='ident'>Vec3</span>};
 <span class='kw'>use</span> <span class='ident'>nalgebra</span>::<span class='ident'>na</span>;
+<span class='kw'>use</span> <span class='ident'>ncollide</span>::<span class='ident'>procedural</span>::{<span class='ident'>TriMesh</span>, <span class='ident'>UnifiedIndexBuffer</span>};
 <span class='kw'>use</span> <span class='ident'>resource</span>::<span class='ident'>ShaderAttribute</span>;
 <span class='kw'>use</span> <span class='ident'>resource</span>::<span class='ident'>gpu_vector</span>::{<span class='ident'>GPUVector</span>, <span class='ident'>DynamicDraw</span>, <span class='ident'>StaticDraw</span>, <span class='ident'>ArrayBuffer</span>, <span class='ident'>ElementArrayBuffer</span>};
-<span class='kw'>use</span> <span class='ident'>ncollide</span>::<span class='ident'>procedural</span>::<span class='ident'>TriMesh</span>;
 
 <span class='attribute'>#[<span class='ident'>path</span> <span class='op'>=</span> <span class='string'>&quot;../error.rs&quot;</span>]</span>
 <span class='kw'>mod</span> <span class='ident'>error</span>;
@@ -310,6 +351,44 @@
         <span class='kw'>let</span> <span class='ident'>TriMesh</span> { <span class='ident'>coords</span>, <span class='ident'>normals</span>, <span class='ident'>uvs</span>, <span class='ident'>indices</span> } <span class='op'>=</span> <span class='ident'>mesh</span>;
         
         <span class='ident'>Mesh</span>::<span class='ident'>new</span>(<span class='ident'>coords</span>, <span class='ident'>indices</span>.<span class='ident'>unwrap_unified</span>(), <span class='ident'>normals</span>, <span class='ident'>uvs</span>, <span class='ident'>dynamic_draw</span>)
+    }
+
+    <span class='doccomment'>/// Creates a triangle mesh from this mesh.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>to_trimesh</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>TriMesh</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span>, <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span> {
+        <span class='kw'>let</span> <span class='ident'>unload_coords</span>  <span class='op'>=</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>coords</span>.<span class='ident'>read</span>().<span class='ident'>is_on_ram</span>();
+        <span class='kw'>let</span> <span class='ident'>unload_faces</span>   <span class='op'>=</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>faces</span>.<span class='ident'>read</span>().<span class='ident'>is_on_ram</span>();
+        <span class='kw'>let</span> <span class='ident'>unload_normals</span> <span class='op'>=</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>normals</span>.<span class='ident'>read</span>().<span class='ident'>is_on_ram</span>();
+        <span class='kw'>let</span> <span class='ident'>unload_uvs</span>     <span class='op'>=</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>uvs</span>.<span class='ident'>read</span>().<span class='ident'>is_on_ram</span>();
+
+        <span class='self'>self</span>.<span class='ident'>coords</span>.<span class='ident'>write</span>().<span class='ident'>load_to_ram</span>();
+        <span class='self'>self</span>.<span class='ident'>faces</span>.<span class='ident'>write</span>().<span class='ident'>load_to_ram</span>();
+        <span class='self'>self</span>.<span class='ident'>normals</span>.<span class='ident'>write</span>().<span class='ident'>load_to_ram</span>();
+        <span class='self'>self</span>.<span class='ident'>uvs</span>.<span class='ident'>write</span>().<span class='ident'>load_to_ram</span>();
+
+        <span class='kw'>let</span> <span class='ident'>coords</span>  <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>coords</span>.<span class='ident'>read</span>().<span class='ident'>to_owned</span>();
+        <span class='kw'>let</span> <span class='ident'>faces</span>   <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>faces</span>.<span class='ident'>read</span>().<span class='ident'>to_owned</span>();
+        <span class='kw'>let</span> <span class='ident'>normals</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>normals</span>.<span class='ident'>read</span>().<span class='ident'>to_owned</span>();
+        <span class='kw'>let</span> <span class='ident'>uvs</span>     <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>uvs</span>.<span class='ident'>read</span>().<span class='ident'>to_owned</span>();
+
+        <span class='kw'>if</span> <span class='ident'>unload_coords</span> {
+            <span class='self'>self</span>.<span class='ident'>coords</span>.<span class='ident'>write</span>().<span class='ident'>unload_from_ram</span>();
+        }
+        <span class='kw'>if</span> <span class='ident'>unload_faces</span> {
+            <span class='self'>self</span>.<span class='ident'>coords</span>.<span class='ident'>write</span>().<span class='ident'>unload_from_ram</span>();
+        }
+        <span class='kw'>if</span> <span class='ident'>unload_normals</span> {
+            <span class='self'>self</span>.<span class='ident'>coords</span>.<span class='ident'>write</span>().<span class='ident'>unload_from_ram</span>();
+        }
+        <span class='kw'>if</span> <span class='ident'>unload_uvs</span> {
+            <span class='self'>self</span>.<span class='ident'>coords</span>.<span class='ident'>write</span>().<span class='ident'>unload_from_ram</span>();
+        }
+
+        <span class='kw'>if</span> <span class='ident'>coords</span>.<span class='ident'>is_none</span>() <span class='op'>||</span> <span class='ident'>faces</span>.<span class='ident'>is_none</span>() {
+            <span class='prelude-val'>None</span>
+        }
+        <span class='kw'>else</span> {
+            <span class='prelude-val'>Some</span>(<span class='ident'>TriMesh</span>::<span class='ident'>new</span>(<span class='ident'>coords</span>.<span class='ident'>unwrap</span>(), <span class='ident'>normals</span>, <span class='ident'>uvs</span>, <span class='prelude-val'>Some</span>(<span class='ident'>UnifiedIndexBuffer</span>(<span class='ident'>faces</span>.<span class='ident'>unwrap</span>()))))
+        }
     }
 
     <span class='doccomment'>/// Creates a new mesh. Arguments set to `None` are automatically computed.</span>
@@ -379,22 +458,22 @@
 
     <span class='doccomment'>/// This mesh faces.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>faces</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>RWLock</span><span class='op'>&lt;</span><span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>.<span class='ident'>faces</span>
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>faces</span>
     }
 
     <span class='doccomment'>/// This mesh normals.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>normals</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>RWLock</span><span class='op'>&lt;</span><span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>.<span class='ident'>normals</span>
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>normals</span>
     }
 
     <span class='doccomment'>/// This mesh vertex coordinates.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>coords</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>RWLock</span><span class='op'>&lt;</span><span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>.<span class='ident'>coords</span>
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>coords</span>
     }
 
     <span class='doccomment'>/// This mesh texture coordinates.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>uvs</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>RWLock</span><span class='op'>&lt;</span><span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>.<span class='ident'>uvs</span>
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>uvs</span>
     }
 
     <span class='doccomment'>/// Computes normals from a set of faces.</span>
@@ -410,23 +489,23 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>compute_normals</span>(<span class='ident'>coordinates</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span>],
                            <span class='ident'>faces</span>:       <span class='kw-2'>&amp;</span>[<span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;</span>],
                            <span class='ident'>normals</span>:     <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>divisor</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>from_elem</span>(<span class='ident'>coordinates</span>.<span class='ident'>len</span>(), <span class='number'>0f32</span>);<span class='comment'>
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>divisor</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>from_elem</span>(<span class='ident'>coordinates</span>.<span class='ident'>len</span>(), <span class='number'>0f32</span>);
     
-        // Shrink the output buffer if it is too big.
-        </span><span class='kw'>if</span> <span class='ident'>normals</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='ident'>coordinates</span>.<span class='ident'>len</span>() {
+        <span class='comment'>// Shrink the output buffer if it is too big.</span>
+        <span class='kw'>if</span> <span class='ident'>normals</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='ident'>coordinates</span>.<span class='ident'>len</span>() {
             <span class='ident'>normals</span>.<span class='ident'>truncate</span>(<span class='ident'>coordinates</span>.<span class='ident'>len</span>())
-        }<span class='comment'>
+        }
     
-        // Reinit all normals to zero.
-        </span><span class='kw'>for</span> <span class='ident'>n</span> <span class='kw'>in</span> <span class='ident'>normals</span>.<span class='ident'>mut_iter</span>() {
+        <span class='comment'>// Reinit all normals to zero.</span>
+        <span class='kw'>for</span> <span class='ident'>n</span> <span class='kw'>in</span> <span class='ident'>normals</span>.<span class='ident'>mut_iter</span>() {
             <span class='op'>*</span><span class='ident'>n</span> <span class='op'>=</span> <span class='ident'>na</span>::<span class='ident'>zero</span>()
-        }<span class='comment'>
+        }
     
-        // Grow the output buffer if it is too small.
-        </span><span class='ident'>normals</span>.<span class='ident'>grow_set</span>(<span class='ident'>coordinates</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span>, <span class='kw-2'>&amp;</span><span class='ident'>na</span>::<span class='ident'>zero</span>(), <span class='ident'>na</span>::<span class='ident'>zero</span>());<span class='comment'>
+        <span class='comment'>// Grow the output buffer if it is too small.</span>
+        <span class='ident'>normals</span>.<span class='ident'>grow_set</span>(<span class='ident'>coordinates</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span>, <span class='kw-2'>&amp;</span><span class='ident'>na</span>::<span class='ident'>zero</span>(), <span class='ident'>na</span>::<span class='ident'>zero</span>());
     
-        // Accumulate normals ...
-        </span><span class='kw'>for</span> <span class='ident'>f</span> <span class='kw'>in</span> <span class='ident'>faces</span>.<span class='ident'>iter</span>() {
+        <span class='comment'>// Accumulate normals ...</span>
+        <span class='kw'>for</span> <span class='ident'>f</span> <span class='kw'>in</span> <span class='ident'>faces</span>.<span class='ident'>iter</span>() {
             <span class='kw'>let</span> <span class='ident'>edge1</span>  <span class='op'>=</span> <span class='ident'>coordinates</span>[<span class='ident'>f</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>uint</span>] <span class='op'>-</span> <span class='ident'>coordinates</span>[<span class='ident'>f</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>uint</span>];
             <span class='kw'>let</span> <span class='ident'>edge2</span>  <span class='op'>=</span> <span class='ident'>coordinates</span>[<span class='ident'>f</span>.<span class='ident'>z</span> <span class='kw'>as</span> <span class='ident'>uint</span>] <span class='op'>-</span> <span class='ident'>coordinates</span>[<span class='ident'>f</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>uint</span>];
             <span class='kw'>let</span> <span class='ident'>cross</span>  <span class='op'>=</span> <span class='ident'>na</span>::<span class='ident'>cross</span>(<span class='kw-2'>&amp;</span><span class='ident'>edge1</span>, <span class='kw-2'>&amp;</span><span class='ident'>edge2</span>);
@@ -439,17 +518,17 @@
                 <span class='ident'>normal</span> <span class='op'>=</span> <span class='ident'>cross</span>
             }
     
-            <span class='op'>*</span><span class='ident'>normals</span>.<span class='ident'>get_mut</span>(<span class='ident'>f</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>=</span> <span class='op'>*</span><span class='ident'>normals</span>.<span class='ident'>get</span>(<span class='ident'>f</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>+</span> <span class='ident'>normal</span>;
-            <span class='op'>*</span><span class='ident'>normals</span>.<span class='ident'>get_mut</span>(<span class='ident'>f</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>=</span> <span class='op'>*</span><span class='ident'>normals</span>.<span class='ident'>get</span>(<span class='ident'>f</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>+</span> <span class='ident'>normal</span>;
-            <span class='op'>*</span><span class='ident'>normals</span>.<span class='ident'>get_mut</span>(<span class='ident'>f</span>.<span class='ident'>z</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>=</span> <span class='op'>*</span><span class='ident'>normals</span>.<span class='ident'>get</span>(<span class='ident'>f</span>.<span class='ident'>z</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>+</span> <span class='ident'>normal</span>;
+            <span class='op'>*</span><span class='ident'>normals</span>.<span class='ident'>get_mut</span>(<span class='ident'>f</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>normals</span>)[<span class='ident'>f</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>uint</span>] <span class='op'>+</span> <span class='ident'>normal</span>;
+            <span class='op'>*</span><span class='ident'>normals</span>.<span class='ident'>get_mut</span>(<span class='ident'>f</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>normals</span>)[<span class='ident'>f</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>uint</span>] <span class='op'>+</span> <span class='ident'>normal</span>;
+            <span class='op'>*</span><span class='ident'>normals</span>.<span class='ident'>get_mut</span>(<span class='ident'>f</span>.<span class='ident'>z</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>normals</span>)[<span class='ident'>f</span>.<span class='ident'>z</span> <span class='kw'>as</span> <span class='ident'>uint</span>] <span class='op'>+</span> <span class='ident'>normal</span>;
     
-            <span class='op'>*</span><span class='ident'>divisor</span>.<span class='ident'>get_mut</span>(<span class='ident'>f</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>=</span> <span class='op'>*</span><span class='ident'>divisor</span>.<span class='ident'>get</span>(<span class='ident'>f</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>+</span> <span class='number'>1.0</span>;
-            <span class='op'>*</span><span class='ident'>divisor</span>.<span class='ident'>get_mut</span>(<span class='ident'>f</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>=</span> <span class='op'>*</span><span class='ident'>divisor</span>.<span class='ident'>get</span>(<span class='ident'>f</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>+</span> <span class='number'>1.0</span>;
-            <span class='op'>*</span><span class='ident'>divisor</span>.<span class='ident'>get_mut</span>(<span class='ident'>f</span>.<span class='ident'>z</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>=</span> <span class='op'>*</span><span class='ident'>divisor</span>.<span class='ident'>get</span>(<span class='ident'>f</span>.<span class='ident'>z</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>+</span> <span class='number'>1.0</span>;
-        }<span class='comment'>
+            <span class='op'>*</span><span class='ident'>divisor</span>.<span class='ident'>get_mut</span>(<span class='ident'>f</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>=</span> <span class='ident'>divisor</span>[<span class='ident'>f</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>uint</span>] <span class='op'>+</span> <span class='number'>1.0</span>;
+            <span class='op'>*</span><span class='ident'>divisor</span>.<span class='ident'>get_mut</span>(<span class='ident'>f</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>=</span> <span class='ident'>divisor</span>[<span class='ident'>f</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>uint</span>] <span class='op'>+</span> <span class='number'>1.0</span>;
+            <span class='op'>*</span><span class='ident'>divisor</span>.<span class='ident'>get_mut</span>(<span class='ident'>f</span>.<span class='ident'>z</span> <span class='kw'>as</span> <span class='ident'>uint</span>) <span class='op'>=</span> <span class='ident'>divisor</span>[<span class='ident'>f</span>.<span class='ident'>z</span> <span class='kw'>as</span> <span class='ident'>uint</span>] <span class='op'>+</span> <span class='number'>1.0</span>;
+        }
     
-        // ... and compute the mean
-        </span><span class='kw'>for</span> (<span class='ident'>n</span>, <span class='ident'>divisor</span>) <span class='kw'>in</span> <span class='ident'>normals</span>.<span class='ident'>mut_iter</span>().<span class='ident'>zip</span>(<span class='ident'>divisor</span>.<span class='ident'>iter</span>()) {
+        <span class='comment'>// ... and compute the mean</span>
+        <span class='kw'>for</span> (<span class='ident'>n</span>, <span class='ident'>divisor</span>) <span class='kw'>in</span> <span class='ident'>normals</span>.<span class='ident'>mut_iter</span>().<span class='ident'>zip</span>(<span class='ident'>divisor</span>.<span class='ident'>iter</span>()) {
             <span class='op'>*</span><span class='ident'>n</span> <span class='op'>=</span> <span class='op'>*</span><span class='ident'>n</span> <span class='op'>/</span> <span class='op'>*</span><span class='ident'>divisor</span>
         }
     }
@@ -484,12 +563,14 @@
             </p>
             <p>
                 Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
             </p>
         </div>
     </div>
+
+    
 
     <script>
         window.rootPath = "../../../../";
