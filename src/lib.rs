@@ -94,7 +94,6 @@ I’d love to see people improving this library for their own needs. However, ke
 #![feature(unsafe_destructor)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
 
-extern crate std;
 extern crate libc;
 extern crate sync;
 extern crate time;

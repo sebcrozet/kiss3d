@@ -34,8 +34,8 @@ impl Font {
     /// Loads a new ttf font.
     pub fn new(path: &Path, size: i32) -> Rc<Font> {
         let mut font = Font {
-            library:          ptr::null(),
-            face:             ptr::null(),
+            library:          ptr::mut_null(),
+            face:             ptr::mut_null(),
             texture_atlas:    0,
             atlas_dimensions: na::zero(),
             glyphs:           Vec::from_fn(128, |_| None),
@@ -44,10 +44,10 @@ impl Font {
         };
 
         unsafe {
-            let _ = freetype::FT_Init_FreeType(&font.library);
+            let _ = freetype::FT_Init_FreeType(&mut font.library);
 
-            let c_str = path.as_str().expect("Invalid path.").to_c_str();
-            if freetype::FT_New_Face(font.library, c_str.as_ptr(), 0, &mut font.face) != 0 {
+            let mut c_str = path.as_str().expect("Invalid path.").to_c_str();
+            if freetype::FT_New_Face(font.library, c_str.as_mut_ptr(), 0, &mut font.face) != 0 {
                 fail!("Failed to create TTF face.");
             }
 
@@ -74,7 +74,7 @@ impl Font {
                 let advance    = Vec2::new(((*ft_glyph).advance.x >> 6) as f32, ((*ft_glyph).advance.y >> 6) as f32);
                 let dimensions = Vec2::new((*ft_glyph).bitmap.width as f32, (*ft_glyph).bitmap.rows as f32);
                 let offset     = Vec2::new((*ft_glyph).bitmap_left as f32, (*ft_glyph).bitmap_top as f32);
-                let buffer     = raw::from_buf((*ft_glyph).bitmap.buffer, (dimensions.x * dimensions.y) as uint);
+                let buffer     = raw::from_buf(&*(*ft_glyph).bitmap.buffer, (dimensions.x * dimensions.y) as uint);
                 let glyph      = Glyph::new(na::zero(), advance, dimensions, offset, buffer);
                     
 
