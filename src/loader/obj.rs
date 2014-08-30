@@ -321,8 +321,8 @@ fn reformat(coords:     Vec<Coord>,
 
                     resc.push(coords[point.x as uint]);
 
-                    let _ = resu.as_mut().map(|l| l.push((*uvs.get_ref())[point.y as uint]));
-                    let _ = resn.as_mut().map(|l| l.push((*normals.get_ref())[point.z as uint]));
+                    let _ = resu.as_mut().map(|l| l.push((*uvs.as_ref().unwrap())[point.y as uint]));
+                    let _ = resn.as_mut().map(|l| l.push((*normals.as_ref().unwrap())[point.z as uint]));
 
                     vertex_ids.push(idx);
 

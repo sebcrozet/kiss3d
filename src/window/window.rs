@@ -536,7 +536,7 @@ impl Window {
             Some(ms) => {
                 let elapsed = (time::precise_time_ns() - self.curr_time) / 1000000;
                 if elapsed < ms {
-                    self.timer.sleep(Duration::milliseconds((ms - elapsed) as i32));
+                    self.timer.sleep(Duration::milliseconds((ms - elapsed) as i64));
                 }
             }
         }

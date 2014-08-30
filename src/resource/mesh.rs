@@ -162,9 +162,9 @@ impl Mesh {
 
     /// Recompute this mesh normals.
     pub fn recompute_normals(&mut self) {
-        Mesh::compute_normals(self.coords.read().data().get_ref().as_slice(),
-                              self.faces.read().data().get_ref().as_slice(),
-                              self.normals.write().data_mut().get_mut_ref());
+        Mesh::compute_normals(self.coords.read().data().as_ref().unwrap().as_slice(),
+                              self.faces.read().data().as_ref().unwrap().as_slice(),
+                              self.normals.write().data_mut().as_mut().unwrap());
     }
 
     /// This mesh faces.

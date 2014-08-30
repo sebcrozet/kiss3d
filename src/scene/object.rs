@@ -21,7 +21,7 @@ pub struct ObjectData {
     wpoints:      f32,
     draw_surface: bool,
     cull:         bool,
-    user_data:    Box<Any>
+    user_data:    Box<Any + 'static>
 }
 
 impl ObjectData {
@@ -145,7 +145,7 @@ impl Object {
 
     /// Attaches user-defined data to this object.
     #[inline]
-    pub fn set_user_data(&mut self, user_data: Box<Any>) {
+    pub fn set_user_data(&mut self, user_data: Box<Any + 'static>) {
         self.data.user_data = user_data;
     }
 

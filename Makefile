@@ -3,6 +3,8 @@ tmp=_git_distcheck
 all:
 	cargo build --release
 
+test: examples
+
 examples:
 	cd examples; cargo build --release
 

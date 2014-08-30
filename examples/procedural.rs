@@ -207,9 +207,9 @@ fn draw_polyline(window: &mut Window, polyline: &Polyline<f32, Vec2<f32>>, point
 
 struct ParametricBananas {
     // we use trait-objects because we really do not want to know the exact type…
-    x: Box<BivariateFn<f32, f32>>,
-    y: Box<BivariateFn<f32, f32>>,
-    z: Box<BivariateFn<f32, f32>>
+    x: Box<BivariateFn<f32, f32> + 'static>,
+    y: Box<BivariateFn<f32, f32> + 'static>,
+    z: Box<BivariateFn<f32, f32> + 'static>
 }
 
 impl ParametricBananas {
