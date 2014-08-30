@@ -31,8 +31,18 @@ pub struct Font {
 }
 
 impl Font {
-    /// Loads a new ttf font.
+    /// Loads a new ttf font from the memory.
+    pub fn from_memory(font: &[u8], size: i32) -> Rc<Font> {
+        Font::do_new(None, font, size)
+    }
+
+    /// Loads a new ttf font from a file.
     pub fn new(path: &Path, size: i32) -> Rc<Font> {
+        Font::do_new(Some(path), [], size)
+    }
+
+    /// Loads a new ttf font from a file.
+    pub fn do_new(path: Option<&Path>, memory: &[u8], size: i32) -> Rc<Font> {
         let mut font = Font {
             library:          ptr::mut_null(),
             face:             ptr::mut_null(),
@@ -46,9 +56,18 @@ impl Font {
         unsafe {
             let _ = freetype::FT_Init_FreeType(&mut font.library);
 
-            let mut c_str = path.as_str().expect("Invalid path.").to_c_str();
-            if freetype::FT_New_Face(font.library, c_str.as_mut_ptr(), 0, &mut font.face) != 0 {
-                fail!("Failed to create TTF face.");
+            match path {
+                Some(path) => {
+                    let mut c_str = path.as_str().expect("Invalid path.").to_c_str();
+                    if freetype::FT_New_Face(font.library, c_str.as_mut_ptr(), 0, &mut font.face) != 0 {
+                        fail!("Failed to create TTF face.");
+                    }
+                },
+                None => {
+                    if freetype::FT_New_Memory_Face(font.library, &memory[0], memory.len() as i64, 0, &mut font.face) != 0 {
+                        fail!("Failed to create TTF face.");
+                    }
+                }
             }
 
             let _ = freetype::FT_Set_Pixel_Sizes(font.face, 0, size as c_uint);
