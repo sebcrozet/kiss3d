@@ -11,7 +11,7 @@ use std::kinds::marker::NoCopy;
 use libc::{c_uint, c_void};
 use gl;
 use gl::types::*;
-use freetype::freetype;
+use freetype::ffi;
 use nalgebra::na::Vec2;
 use nalgebra::na;
 use text::Glyph;
@@ -21,8 +21,8 @@ mod error;
 
 /// A ttf font.
 pub struct Font {
-    library:          freetype::FT_Library,
-    face:             freetype::FT_Face,
+    library:          ffi::FT_Library,
+    face:             ffi::FT_Face,
     texture_atlas:    GLuint,
     atlas_dimensions: Vec2<uint>,
     glyphs:           Vec<Option<Glyph>>,
@@ -54,32 +54,32 @@ impl Font {
         };
 
         unsafe {
-            let _ = freetype::FT_Init_FreeType(&mut font.library);
+            let _ = ffi::FT_Init_FreeType(&mut font.library);
 
             match path {
                 Some(path) => {
-                    let mut c_str = path.as_str().expect("Invalid path.").to_c_str();
-                    if freetype::FT_New_Face(font.library, c_str.as_mut_ptr(), 0, &mut font.face) != 0 {
+                    let c_str = path.as_str().expect("Invalid path.").to_c_str();
+                    if ffi::FT_New_Face(font.library, c_str.as_ptr(), 0, &mut font.face) != 0 {
                         fail!("Failed to create TTF face.");
                     }
                 },
                 None => {
-                    if freetype::FT_New_Memory_Face(font.library, &memory[0], memory.len() as i64, 0, &mut font.face) != 0 {
+                    if ffi::FT_New_Memory_Face(font.library, &memory[0], memory.len() as i64, 0, &mut font.face) != 0 {
                         fail!("Failed to create TTF face.");
                     }
                 }
             }
 
-            let _ = freetype::FT_Set_Pixel_Sizes(font.face, 0, size as c_uint);
+            let _ = ffi::FT_Set_Pixel_Sizes(font.face, 0, size as c_uint);
             verify!(gl::ActiveTexture(gl::TEXTURE0));
 
-            let     ft_glyph   = (*font.face).glyph as freetype::FT_GlyphSlot;
+            let     ft_glyph   = (*font.face).glyph;
             let     max_width  = 1024;
             let mut row_width  = 0;
             let mut row_height = 0;
 
             for curr in range(0u, 128) {
-                if freetype::FT_Load_Char(font.face, curr as u64, freetype::FT_LOAD_RENDER as i32) != 0 {
+                if ffi::FT_Load_Char(font.face, curr as u64, ffi::FT_LOAD_RENDER) != 0 {
                     continue;
                 }
 
@@ -191,7 +191,7 @@ impl Font {
 impl Drop for Font {
     fn drop(&mut self) {
         unsafe {
-            let _ = freetype::FT_Done_FreeType(self.library);
+            let _ = ffi::FT_Done_FreeType(self.library);
             verify!(gl::DeleteTextures(1, &self.texture_atlas));
         }
     }

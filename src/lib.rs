@@ -90,7 +90,6 @@ I’d love to see people improving this library for their own needs. However, ke
 #![warn(visible_private_types)] // FIXME: should be denied.
 #![feature(globs)]
 #![feature(macro_rules)]
-#![feature(managed_boxes)]
 #![feature(unsafe_destructor)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
 
@@ -100,7 +99,7 @@ extern crate time;
 extern crate glfw;
 extern crate gl;
 extern crate nalgebra;
-extern crate ncollide = "ncollide3df32";
+extern crate "ncollide3df32" as ncollide;
 extern crate stb_image;
 extern crate freetype;
 

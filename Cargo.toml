@@ -4,8 +4,8 @@ version = "0.1.0"
 authors = [ "Sébastien Crozet <developer@crozet.re>" ]
 
 [lib]
-name       = "kiss3d"
-path       = "src/lib.rs"
+name = "kiss3d"
+path = "src/lib.rs"
 
 [dependencies.nalgebra]
 git = "https://github.com/sebcrozet/nalgebra"
@@ -14,13 +14,13 @@ git = "https://github.com/sebcrozet/nalgebra"
 git = "https://github.com/sebcrozet/ncollide"
 
 [dependencies.gl]
-git = "https://github.com/sebcrozet/gl-rs"
+git = "https://github.com/bjz/gl-rs"
  
 [dependencies.glfw]
-git = "https://github.com/sebcrozet/glfw-rs"
+git = "https://github.com/bjz/glfw-rs"
 
-[dependencies.rust-freetype]
-git = "https://github.com/sebcrozet/rust-freetype"
+[dependencies.freetype-rs]
+git = "https://github.com/PistonDevelopers/freetype-rs"
 
 [dependencies.stb_image]
-git = "https://github.com/sebcrozet/rust-stb-image"
+git = "https://github.com/servo/rust-stb-image"

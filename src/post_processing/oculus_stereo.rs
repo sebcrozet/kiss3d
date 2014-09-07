@@ -66,8 +66,8 @@ impl PostProcessingEffect for OculusStereo {
     }
 
     fn draw(&mut self, target: &RenderTarget) {
-        let scaleFactor = 0.9f32; // firebox: in Oculus SDK example it's "1.0f/Distortion.Scale"
-        let aspect      = (self.w / 2.0f32) / (self.h); // firebox: rift's "half screen aspect ratio"
+        let scale_factor = 0.9f32; // firebox: in Oculus SDK example it's "1.0f/Distortion.Scale"
+        let aspect       = (self.w / 2.0f32) / (self.h); // firebox: rift's "half screen aspect ratio"
 
         self.shader.use_program();
 
@@ -82,7 +82,7 @@ impl PostProcessingEffect for OculusStereo {
         self.kappa_2.upload(&kappa[2]);
         self.kappa_3.upload(&kappa[3]);
         self.scale.upload(&Vec2::new(0.5f32, aspect));
-        self.scale_in.upload(&Vec2::new(2.0f32 * scaleFactor, 1.0f32 / aspect * scaleFactor));
+        self.scale_in.upload(&Vec2::new(2.0f32 * scale_factor, 1.0f32 / aspect * scale_factor));
 
         /*
          * Finalize draw

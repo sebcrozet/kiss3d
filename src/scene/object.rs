@@ -66,9 +66,7 @@ impl ObjectData {
     /// Use dynamic typing capabilities of the `Any` type to recover the actual data.
     #[inline]
     pub fn user_data<'a>(&'a self) -> &'a Any {
-        let res: &'a Any = self.user_data;
-
-        res
+        &*self.user_data
     }
 }
 
