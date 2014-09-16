@@ -3,6 +3,7 @@ use std::ptr;
 use std::str;
 use std::kinds::marker::NoCopy;
 use std::io::fs::File;
+use std::io::fs::PathExtensions;
 use std::io::Reader;
 use gl;
 use gl::types::*;
