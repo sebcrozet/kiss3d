@@ -42,7 +42,7 @@ impl PointRenderer {
     /// Adds a line to be drawn during the next frame. Lines are not persistent between frames.
     /// This method must be called for each line to draw, and at each update loop iteration.
     pub fn draw_point(&mut self, pt: Vec3<GLfloat>, color: Vec3<GLfloat>) {
-        for points in self.points.data_mut().mut_iter() {
+        for points in self.points.data_mut().iter_mut() {
             points.push(pt);
             points.push(color);
         }
@@ -66,7 +66,7 @@ impl PointRenderer {
         self.pos.disable();
         self.color.disable();
 
-        for points in self.points.data_mut().mut_iter() {
+        for points in self.points.data_mut().iter_mut() {
             points.clear()
         }
     }

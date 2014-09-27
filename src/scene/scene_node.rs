@@ -102,7 +102,7 @@ impl SceneNodeData {
             None        => { }
         }
 
-        for c in self.children.mut_iter() {
+        for c in self.children.iter_mut() {
             let mut bc = c.data_mut();
             if bc.visible {
                 bc.do_render(&self.world_transform, &self.world_scale, pass, camera, light)
@@ -311,7 +311,7 @@ impl SceneNodeData {
             None            => { }
         }
 
-        for c in self.children.mut_iter() {
+        for c in self.children.iter_mut() {
             c.data_mut().apply_to_objects_mut(f)
         }
     }
@@ -499,7 +499,7 @@ impl SceneNodeData {
     fn invalidate(&mut self) {
         self.up_to_date = false;
 
-        for c in self.children.mut_iter() {
+        for c in self.children.iter_mut() {
             let mut dm = c.data_mut();
 
             if dm.up_to_date {
@@ -748,7 +748,7 @@ impl SceneNode {
                 child_scale = na::one();
             }
 
-            for (_, mesh, mtl) in objs.move_iter() {
+            for (_, mesh, mtl) in objs.into_iter() {
                 let mut object = Object::new(
                     mesh,
                     1.0, 1.0, 1.0,
@@ -794,7 +794,7 @@ impl SceneNode {
     pub fn apply_to_scene_nodes_mut(&mut self, f: &mut |&mut SceneNode| -> ()) {
         (*f)(self);
 
-        for c in self.data_mut().children.mut_iter() {
+        for c in self.data_mut().children.iter_mut() {
             c.apply_to_scene_nodes_mut(f)
         }
     }
@@ -1027,7 +1027,7 @@ impl SceneNode {
     /// Appends a rotation to this node local transformation.
     #[inline]
     pub fn append_rotation_wrt_center(&mut self, r: &Vec3<f32>) {
-        self.data_mut().append_rotation_wrt_center(r)
+        (*self.data_mut()).append_rotation_wrt_center(r)
     }
 
     /// Prepends a rotation to this node local transformation.

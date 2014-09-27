@@ -310,7 +310,7 @@ impl Window {
 
         window.make_current();
 
-        verify!(gl::load_with(|name| glfw.get_proc_address(name)));
+        verify!(gl::load_with(|name| window.get_proc_address(name)));
         init_gl();
 
         let mut usr_window = Window {
@@ -373,7 +373,8 @@ impl Window {
         let size = (width * height * 3) as uint;
 
         if out.len() < size {
-            out.grow_set(size - 1, &0, 0);
+            let diff = size - out.len();
+            out.grow(diff, 0);
         }
         else {
             out.truncate(size)

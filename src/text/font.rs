@@ -44,8 +44,8 @@ impl Font {
     /// Loads a new ttf font from a file.
     pub fn do_new(path: Option<&Path>, memory: &[u8], size: i32) -> Rc<Font> {
         let mut font = Font {
-            library:          ptr::mut_null(),
-            face:             ptr::mut_null(),
+            library:          ptr::null_mut(),
+            face:             ptr::null_mut(),
             texture_atlas:    0,
             atlas_dimensions: na::zero(),
             glyphs:           Vec::from_fn(128, |_| None),
@@ -143,7 +143,7 @@ impl Font {
                     verify!(gl::TexSubImage2D(
                                 gl::TEXTURE_2D, 0, offset.x, offset.y,
                                 glyph.dimensions.x as i32, glyph.dimensions.y as i32,
-                                gl::RED, gl::UNSIGNED_BYTE, glyph.buffer.get(0) as *const u8 as *const c_void));
+                                gl::RED, gl::UNSIGNED_BYTE, &glyph.buffer[0] as *const u8 as *const c_void));
                 }
 
                 /* Calculate the position in the texture. */

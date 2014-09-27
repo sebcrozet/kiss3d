@@ -79,7 +79,7 @@ impl MeshManager {
         obj::parse_file(path, mtl_dir, geometry_name).map(|ms| {
             let mut res = Vec::new();
 
-            for (n, m, mat) in ms.move_iter() {
+            for (n, m, mat) in ms.into_iter() {
                 let m = Rc::new(RefCell::new(m));
 
                 res.push((n, m, mat));

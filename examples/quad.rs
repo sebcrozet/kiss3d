@@ -25,9 +25,9 @@ fn main() {
 
     while window.render() {
         c.modify_vertices(&mut |coords| {
-            for v in coords.mut_iter() {
+            for v in coords.iter_mut() {
                 v.z = time.sin() * (((v.x + time) * 4.0).cos() +
-                                    time.sin() * ((v.y + time) * 4.0 + time).cos()) / 2.0
+                      time.sin() * ((v.y + time) * 4.0 + time).cos()) / 2.0
             }
         });
         c.recompute_normals();

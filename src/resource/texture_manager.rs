@@ -4,6 +4,7 @@ use std::cell::RefCell;
 use std::mem;
 use std::rc::Rc;
 use std::collections::HashMap;
+use std::collections::hashmap::{Occupied, Vacant};
 use gl;
 use gl::types::*;
 use stb_image::image::ImageU8;
@@ -97,13 +98,19 @@ impl TextureManager {
     ///
     /// If a texture with same name exists, nothing is created and the old texture is returned.
     pub fn add_empty(&mut self, name: &str) -> Rc<Texture> {
-        self.textures.find_or_insert_with(name.to_string(), |_| Texture::new()).clone()
+        match self.textures.entry(name.to_string()) {
+            Occupied(entry) => entry.into_mut().clone(),
+            Vacant(entry)   => entry.set(Texture::new()).clone()
+        }
     }
 
     /// Allocates a new texture read from a file. If a texture with same name exists, nothing is
     /// created and the old texture is returned.
     pub fn add(&mut self, path: &Path, name: &str) -> Rc<Texture> {
-        let tex = self.textures.find_or_insert_with(name.to_string(), |_| Texture::new());
+        let tex = match self.textures.entry(name.to_string()) {
+            Occupied(entry) => entry.into_mut(),
+            Vacant(entry)   => entry.set(Texture::new())
+        };
 
         // FIXME: dont re-load the texture if it already exists!
         unsafe {
@@ -129,7 +136,7 @@ impl TextureManager {
                                 image.width as GLsizei,
                                 image.height as GLsizei,
                                 0, gl::RGB, gl::UNSIGNED_BYTE,
-                                mem::transmute(image.data.get(0))));
+                                mem::transmute(&image.data[0])));
                     }
                     else {
                         verify!(gl::TexImage2D(
@@ -138,7 +145,7 @@ impl TextureManager {
                                 image.width as GLsizei,
                                 image.height as GLsizei,
                                 0, gl::RGBA, gl::UNSIGNED_BYTE,
-                                mem::transmute(image.data.get(0))));
+                                mem::transmute(&image.data[0])));
                     }
 
                     verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));

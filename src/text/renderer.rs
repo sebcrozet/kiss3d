@@ -66,7 +66,7 @@ impl TextRenderer {
     /// frames. This method must be called for each text to draw, and at each update loop
     /// iteration.
     pub fn draw_text(&mut self, text: &str, pos: &Vec2<f32>, font: &Rc<Font>, color: &Vec3<f32>) {
-        for coords in self.coords.data_mut().mut_iter() {
+        for coords in self.coords.data_mut().iter_mut() {
             let begin = coords.len();
 
             for (line_count, line) in text.lines_any().enumerate() {
@@ -158,7 +158,7 @@ impl TextRenderer {
         verify!(gl::Enable(gl::DEPTH_TEST));
         verify!(gl::Disable(gl::BLEND));
 
-        for coords in self.coords.data_mut().mut_iter() {
+        for coords in self.coords.data_mut().iter_mut() {
             coords.clear()
         }
 

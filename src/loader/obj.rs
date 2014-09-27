@@ -7,6 +7,7 @@ use std::str::Words;
 use std::from_str::FromStr;
 use std::io::IoResult;
 use std::collections::HashMap;
+use std::collections::hashmap::{Occupied, Vacant};
 use sync::{Arc, RWLock};
 use gl::types::GLfloat;
 use nalgebra::na::{Vec3, Vec2, Indexable};
@@ -126,7 +127,9 @@ fn parse_usemtl<'a>(l:          uint,
                 else {
                     // multiple usemtls for one group
                     // NOTE: this is a violation of the obj specification, but we support it anyway
-                    let g = curr_group.to_string().append(mname.as_slice());
+                    let mut g = curr_group.to_string();
+                    g.push_str(mname.as_slice());
+
                     let new_group = parse_g(l, g.as_slice().words(), "auto_generated_group_", groups, groups_ids);
 
                     group2mtl.insert(new_group, m.clone());
@@ -158,7 +161,7 @@ fn parse_mtllib<'a>(l:            uint,
 
     match ms {
         Ok(ms) =>
-            for m in ms.move_iter() {
+            for m in ms.into_iter() {
                 mtllib.insert(m.name.to_string(), m);
             },
         Err(err) => warn(l, format!("{}", err).as_slice())
@@ -289,7 +292,15 @@ fn parse_g<'a>(_:          uint,
     let suffix = suffix.connect(" ");
     let name   = if suffix.len() == 0 { prefix.to_string() } else { format!("{}/{}", prefix, suffix) };
 
-    *groups.find_or_insert_with(name, |_| { groups_ids.push(Vec::new()); groups_ids.len() - 1 })
+    match groups.entry(name) {
+        Occupied(entry) => *entry.into_mut(),
+        Vacant(entry)   => {
+            groups_ids.push(Vec::new());
+
+            let val = groups_ids.len() - 1;
+            *entry.set(val)
+        }
+    }
 }
 
 fn reformat(coords:     Vec<Coord>,
@@ -309,7 +320,7 @@ fn reformat(coords:     Vec<Coord>,
     let mut names: Vec<String>              = Vec::new();
     let mut mtls:  Vec<Option<MtlMaterial>> = Vec::new();
 
-    for (name, i) in groups.move_iter() {
+    for (name, i) in groups.into_iter() {
         names.push(name);
         mtls.push(group2mtl.find(&i).map(|m| m.clone()));
 
@@ -353,7 +364,7 @@ fn reformat(coords:     Vec<Coord>,
     let resc = Arc::new(RWLock::new(GPUVector::new(resc, ArrayBuffer, StaticDraw)));
 
     let mut meshes = Vec::new();
-    for ((fs, name), mtl) in resfs.move_iter().zip(names.move_iter()).zip(mtls.move_iter()) {
+    for ((fs, name), mtl) in resfs.into_iter().zip(names.into_iter()).zip(mtls.into_iter()) {
         if fs.len() != 0 {
             let fs   = Arc::new(RWLock::new(GPUVector::new(fs, ElementArrayBuffer, StaticDraw)));
             let mesh = Mesh::new_with_gpu_vectors(resc.clone(), fs, resn.clone(), resu.clone());

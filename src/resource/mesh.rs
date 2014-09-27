@@ -202,18 +202,8 @@ impl Mesh {
                            normals:     &mut Vec<Vec3<GLfloat>>) {
         let mut divisor = Vec::from_elem(coordinates.len(), 0f32);
     
-        // Shrink the output buffer if it is too big.
-        if normals.len() > coordinates.len() {
-            normals.truncate(coordinates.len())
-        }
-    
-        // Reinit all normals to zero.
-        for n in normals.mut_iter() {
-            *n = na::zero()
-        }
-    
-        // Grow the output buffer if it is too small.
-        normals.grow_set(coordinates.len() - 1, &na::zero(), na::zero());
+        normals.clear();
+        normals.grow(coordinates.len(), na::zero());
     
         // Accumulate normals ...
         for f in faces.iter() {
@@ -239,7 +229,7 @@ impl Mesh {
         }
     
         // ... and compute the mean
-        for (n, divisor) in normals.mut_iter().zip(divisor.iter()) {
+        for (n, divisor) in normals.iter_mut().zip(divisor.iter()) {
             *n = *n / *divisor
         }
     }

@@ -82,7 +82,7 @@ fn main() {
 
                 println!("num comps: {}", decomp.len());
 
-                for (comp, partitioning) in decomp.move_iter().zip(partitioning.move_iter()) {
+                for (comp, partitioning) in decomp.into_iter().zip(partitioning.into_iter()) {
                     let r = rand::random();
                     let g = rand::random();
                     let b = rand::random();
@@ -96,7 +96,7 @@ fn main() {
 
                     let mut part_faces = Vec::new();
 
-                    for i in partitioning.move_iter() {
+                    for i in partitioning.into_iter() {
                         part_faces.push(faces.read().data().as_ref().unwrap()[i]);
                     }
 

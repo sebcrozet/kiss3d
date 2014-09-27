@@ -42,7 +42,7 @@ impl LineRenderer {
     /// Adds a line to be drawn during the next frame. Lines are not persistent between frames.
     /// This method must be called for each line to draw, and at each update loop iteration.
     pub fn draw_line(&mut self, a: Vec3<GLfloat>, b: Vec3<GLfloat>, color: Vec3<GLfloat>) {
-        for lines in self.lines.data_mut().mut_iter() {
+        for lines in self.lines.data_mut().iter_mut() {
             lines.push(a);
             lines.push(color);
             lines.push(b);
@@ -68,7 +68,7 @@ impl LineRenderer {
         self.pos.disable();
         self.color.disable();
 
-        for lines in self.lines.data_mut().mut_iter() {
+        for lines in self.lines.data_mut().iter_mut() {
             lines.clear()
         }
     }
