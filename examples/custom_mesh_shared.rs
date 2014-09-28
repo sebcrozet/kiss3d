@@ -1,11 +1,10 @@
 extern crate native;
 extern crate kiss3d;
-extern crate nalgebra;
+extern crate "nalgebra" as na;
 
 use std::rc::Rc;
 use std::cell::RefCell;
-use nalgebra::na;
-use nalgebra::na::Vec3;
+use na::Vec3;
 use kiss3d::window::Window;
 use kiss3d::resource::{Mesh, MeshManager};
 use kiss3d::light;

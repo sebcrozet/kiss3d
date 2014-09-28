@@ -1,7 +1,7 @@
 use std::num::Zero;
 use glfw;
-use nalgebra::na::{Translation, Vec2, Vec3, Mat4, Iso3};
-use nalgebra::na;
+use na::{Translation, Vec2, Vec3, Mat4, Iso3};
+use na;
 use camera::Camera;
 
 /// First-person camera mode.

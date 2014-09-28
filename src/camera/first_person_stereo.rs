@@ -1,8 +1,8 @@
 use std::num::{Zero, One};
 use glfw;
 use gl;
-use nalgebra::na::{Vec2, Vec3, Mat4, Iso3, Rotate};
-use nalgebra::na;
+use na::{Vec2, Vec3, Mat4, Iso3, Rotate};
+use na;
 use resource::ShaderUniform;
 use camera::Camera;
 

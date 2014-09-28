@@ -3,7 +3,7 @@ extern crate sync;
 extern crate gl;
 extern crate glfw;
 extern crate kiss3d;
-extern crate nalgebra;
+extern crate "nalgebra" as na;
 
 use std::ptr;
 use std::num::Zero;
@@ -12,8 +12,7 @@ use std::cell::RefCell;
 use std::io::Reader;
 use sync::{Arc, RWLock};
 use gl::types::{GLint, GLfloat};
-use nalgebra::na::{Vec2, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
-use nalgebra::na;
+use na::{Vec2, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
 use kiss3d::window::Window;
 use kiss3d::text::Font;
 use kiss3d::scene::ObjectData;

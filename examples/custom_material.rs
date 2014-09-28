@@ -1,14 +1,13 @@
 extern crate native;
 extern crate gl;
 extern crate kiss3d;
-extern crate nalgebra;
+extern crate "nalgebra" as na;
 
 use std::ptr;
 use std::rc::Rc;
 use std::cell::RefCell;
 use gl::types::GLint;
-use nalgebra::na::{Vec3, Mat3, Mat4, Iso3};
-use nalgebra::na;
+use na::{Vec3, Mat3, Mat4, Iso3};
 use kiss3d::window::Window;
 use kiss3d::scene::ObjectData;
 use kiss3d::camera::Camera;

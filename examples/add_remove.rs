@@ -1,6 +1,6 @@
 extern crate native;
 extern crate kiss3d;
-extern crate nalgebra;
+extern crate "nalgebra" as na;
 
 use kiss3d::window::Window;
 use kiss3d::light;

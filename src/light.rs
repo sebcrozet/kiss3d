@@ -1,6 +1,6 @@
 //! Lights.
 
-use nalgebra::na::Vec3;
+use na::Vec3;
 use gl::types::GLfloat;
 
 /// The light configuration.

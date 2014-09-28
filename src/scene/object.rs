@@ -4,7 +4,7 @@ use std::any::Any;
 use std::cell::RefCell;
 use std::rc::Rc;
 use gl::types::*;
-use nalgebra::na::{Vec2, Vec3, Iso3};
+use na::{Vec2, Vec3, Iso3};
 use resource::{Texture, TextureManager, Material, Mesh};
 use camera::Camera;
 use light::Light;

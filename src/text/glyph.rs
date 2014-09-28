@@ -2,7 +2,7 @@
 // available under the BSD-3 licence.
 // It has been modified to work with gl-rs, nalgebra, and rust-freetype
 
-use nalgebra::na::Vec2;
+use na::Vec2;
 
 #[packed]
 /// A ttf glyph.

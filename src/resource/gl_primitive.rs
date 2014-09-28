@@ -3,7 +3,7 @@
 use std::mem;
 use gl;
 use gl::types::*;
-use nalgebra::na::{Vec2, Vec3, Mat2, Mat3, Mat4, Rot2, Rot3};
+use na::{Vec2, Vec3, Mat2, Mat3, Mat4, Rot2, Rot3};
 
 #[path = "../error.rs"]
 mod error;

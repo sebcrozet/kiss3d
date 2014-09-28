@@ -1,8 +1,8 @@
 extern crate native;
 extern crate kiss3d;
-extern crate nalgebra;
+extern crate "nalgebra" as na;
 
-use nalgebra::na::{Vec3, Rotation};
+use na::{Vec3, Rotation};
 use kiss3d::window::Window;
 use kiss3d::light;
 

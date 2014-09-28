@@ -1,6 +1,6 @@
 //! Trait implemented by materials.
 
-use nalgebra::na::{Vec3, Iso3};
+use na::{Vec3, Iso3};
 use camera::Camera;
 use light::Light;
 use scene::ObjectData;

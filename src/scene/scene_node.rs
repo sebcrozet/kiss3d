@@ -1,8 +1,8 @@
 use std::rc::{Rc, Weak};
 use std::cell::{Ref, RefMut, RefCell};
 use std::mem;
-use nalgebra::na;
-use nalgebra::na::{Iso3, Vec2, Vec3, Transformation, Rotation, Translation, RotationWithTranslation};
+use na;
+use na::{Iso3, Vec2, Vec3, Transformation, Rotation, Translation, RotationWithTranslation};
 use resource::{Mesh, MeshManager, Texture, TextureManager, Material, MaterialManager};
 use ncollide::procedural::TriMesh;
 use ncollide::procedural;

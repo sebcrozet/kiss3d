@@ -1,7 +1,7 @@
 extern crate native;
 extern crate rand;
 extern crate kiss3d;
-extern crate nalgebra;
+extern crate "nalgebra" as na;
 
 use std::rand::random;
 use kiss3d::window::Window;

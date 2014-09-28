@@ -5,7 +5,7 @@
 use std::rc::Rc;
 use gl;
 use gl::types::*;
-use nalgebra::na::{Vec2, Vec3};
+use na::{Vec2, Vec3};
 use text::Font;
 use camera::Camera;
 use resource::{Shader, ShaderUniform, ShaderAttribute, GPUVector, ArrayBuffer, StreamDraw};

@@ -2,7 +2,7 @@ extern crate native;
 extern crate time;
 extern crate "ncollide3df32" as ncollide;
 extern crate kiss3d;
-extern crate nalgebra;
+extern crate "nalgebra" as na;
 
 use std::from_str::FromStr;
 use std::os;
@@ -10,7 +10,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::sync::{Arc, RWLock};
 use std::rand;
-use nalgebra::na::{Vec3, Translation};
+use na::{Vec3, Translation};
 use ncollide::procedural;
 use kiss3d::window::Window;
 use kiss3d::light;

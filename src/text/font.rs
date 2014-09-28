@@ -12,8 +12,8 @@ use libc::{c_uint, c_void};
 use gl;
 use gl::types::*;
 use freetype::ffi;
-use nalgebra::na::Vec2;
-use nalgebra::na;
+use na::Vec2;
+use na;
 use text::Glyph;
 
 #[path = "../error.rs"]

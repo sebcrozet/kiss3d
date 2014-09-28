@@ -1,9 +1,8 @@
 extern crate native;
-extern crate nalgebra;
+extern crate "nalgebra" as na;
 extern crate kiss3d;
 
-use nalgebra::na::{Vec2, Vec3};
-use nalgebra::na;
+use na::{Vec2, Vec3};
 use kiss3d::window::Window;
 use kiss3d::text::Font;
 

@@ -3,8 +3,8 @@
 use std::num::Zero;
 use sync::{Arc, RWLock};
 use gl::types::*;
-use nalgebra::na::{Vec2, Vec3};
-use nalgebra::na;
+use na::{Vec2, Vec3};
+use na;
 use ncollide::procedural::{TriMesh, UnifiedIndexBuffer};
 use resource::ShaderAttribute;
 use resource::gpu_vector::{GPUVector, DynamicDraw, StaticDraw, ArrayBuffer, ElementArrayBuffer};

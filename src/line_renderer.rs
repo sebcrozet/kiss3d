@@ -2,7 +2,7 @@
 
 use gl;
 use gl::types::*;
-use nalgebra::na::{Vec3, Mat4};
+use na::{Vec3, Mat4};
 use resource::{GPUVector, ArrayBuffer, StreamDraw, Shader, ShaderAttribute, ShaderUniform};
 use camera::Camera;
 

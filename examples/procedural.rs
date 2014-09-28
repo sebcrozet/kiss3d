@@ -2,11 +2,10 @@ extern crate native;
 extern crate time;
 extern crate "ncollide3df32" as ncollide;
 extern crate kiss3d;
-extern crate nalgebra;
+extern crate "nalgebra" as na;
 
 use std::rand;
-use nalgebra::na;
-use nalgebra::na::{Vec2, Vec3, Translation};
+use na::{Vec2, Vec3, Translation};
 use ncollide::parametric::ParametricSurface;
 use ncollide::procedural::{Polyline, TriMesh};
 use ncollide::procedural::path::{PolylinePath, PolylinePattern, StrokePattern, ArrowheadCap};

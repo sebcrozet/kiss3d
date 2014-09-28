@@ -32,9 +32,9 @@ As an example, having a red, rotating cube with the light attached to the camera
 ```rust
 extern crate native;
 extern crate kiss3d;
-extern crate nalgebra;
+extern crate "nalgebra" as na;
 
-use nalgebra::na::Vec3;
+use na::Vec3;
 use kiss3d::window::Window;
 use kiss3d::light;
 
@@ -97,7 +97,7 @@ extern crate sync;
 extern crate time;
 extern crate glfw;
 extern crate gl;
-extern crate nalgebra;
+extern crate "nalgebra" as na;
 extern crate "ncollide3df32" as ncollide;
 extern crate stb_image;
 extern crate freetype;

@@ -1,7 +1,7 @@
 extern crate native;
 extern crate glfw;
 extern crate kiss3d;
-extern crate nalgebra;
+extern crate "nalgebra" as na;
 extern crate debug;
 
 use kiss3d::window::Window;

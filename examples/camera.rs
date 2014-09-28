@@ -1,11 +1,10 @@
 extern crate native;
 extern crate glfw;
 extern crate kiss3d;
-extern crate nalgebra;
+extern crate "nalgebra" as na;
 
 
-use nalgebra::na::Vec3;
-use nalgebra::na;
+use na::Vec3;
 use kiss3d::window::Window;
 use kiss3d::camera::{ArcBall, FirstPerson};
 use kiss3d::light;

@@ -1,6 +1,6 @@
 use glfw;
-use nalgebra::na::{Vec2, Vec3, Vec4, Mat4, Iso3};
-use nalgebra::na;
+use na::{Vec2, Vec3, Vec4, Mat4, Iso3};
+use na;
 use resource::ShaderUniform;
 
 /// Trait every camera must implement.

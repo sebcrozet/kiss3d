@@ -5,7 +5,7 @@ use std::io::fs::File;
 use std::io::{IoResult, Reader};
 use std::str::Words;
 use std::from_str::FromStr;
-use nalgebra::na::Vec3;
+use na::Vec3;
 
 fn error(line: uint, err: &str) -> ! {
     fail!("At line {}: {}", line, err)

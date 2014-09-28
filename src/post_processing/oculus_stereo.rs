@@ -2,7 +2,7 @@
 
 use gl;
 use gl::types::*;
-use nalgebra::na::Vec2;
+use na::Vec2;
 use resource::{Shader, ShaderUniform, ShaderAttribute, RenderTarget, GPUVector, ArrayBuffer, StaticDraw};
 use post_processing::post_processing_effect::PostProcessingEffect;
 

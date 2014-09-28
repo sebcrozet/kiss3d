@@ -1,8 +1,8 @@
 use std::ptr;
 use gl;
 use gl::types::*;
-use nalgebra::na::{Vec2, Vec3, Mat3, Mat4, Iso3};
-use nalgebra::na;
+use na::{Vec2, Vec3, Mat3, Mat4, Iso3};
+use na;
 use resource::Material;
 use scene::ObjectData;
 use light::Light;
