@@ -98,7 +98,7 @@ extern crate time;
 extern crate glfw;
 extern crate gl;
 extern crate "nalgebra" as na;
-extern crate "ncollide3df32" as ncollide;
+extern crate ncollide;
 extern crate stb_image;
 extern crate freetype;
 

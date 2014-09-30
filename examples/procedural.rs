@@ -1,6 +1,6 @@
 extern crate native;
 extern crate time;
-extern crate "ncollide3df32" as ncollide;
+extern crate ncollide;
 extern crate kiss3d;
 extern crate "nalgebra" as na;
 
