@@ -64,9 +64,9 @@ impl PostProcessingEffect for Waves {
          */
         self.shader.use_program();
 
-        let move = self.time * 2.0 * 3.14159 * 0.75;  // 3/4 of a wave cycle per second
+        let move_amount = self.time * 2.0 * 3.14159 * 0.75;  // 3/4 of a wave cycle per second
 
-        self.offset.upload(&move);
+        self.offset.upload(&move_amount);
 
         /*
          * Finalize draw

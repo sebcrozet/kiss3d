@@ -273,8 +273,8 @@ impl Camera for FirstPerson {
         let left  = window.get_key(glfw::KeyLeft)  == glfw::Press;
         let dir   = self.move_dir(up, down, right, left);
 
-        let move  = dir * self.move_step;
-        self.append_translation(&move);
+        let move_amount  = dir * self.move_step;
+        self.append_translation(&move_amount);
     }
 }
 
