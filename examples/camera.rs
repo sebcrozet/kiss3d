@@ -4,7 +4,7 @@ extern crate kiss3d;
 extern crate "nalgebra" as na;
 
 
-use na::Vec3;
+use na::Pnt3;
 use kiss3d::window::Window;
 use kiss3d::camera::{ArcBall, FirstPerson};
 use kiss3d::light;
@@ -15,8 +15,8 @@ fn start(argc: int, argv: *const *const u8) -> int {
 }
 
 fn main() {
-    let eye              = Vec3::new(10.0f32, 10.0, 10.0);
-    let at               = na::zero();
+    let eye              = Pnt3::new(10.0f32, 10.0, 10.0);
+    let at               = na::orig();
     let mut first_person = FirstPerson::new(eye, at);
     let mut arc_ball     = ArcBall::new(eye, at);
     let mut use_arc_ball = true;
@@ -44,9 +44,9 @@ fn main() {
             }
         }
 
-        window.draw_line(&na::zero(), &Vec3::x(), &Vec3::x());
-        window.draw_line(&na::zero(), &Vec3::y(), &Vec3::y());
-        window.draw_line(&na::zero(), &Vec3::z(), &Vec3::z());
+        window.draw_line(&na::orig(), &Pnt3::new(1.0, 0.0, 0.0), &Pnt3::new(1.0, 0.0, 0.0));
+        window.draw_line(&na::orig(), &Pnt3::new(0.0, 1.0, 0.0), &Pnt3::new(0.0, 1.0, 0.0));
+        window.draw_line(&na::orig(), &Pnt3::new(0.0, 0.0, 1.0), &Pnt3::new(0.0, 0.0, 1.0));
 
         if use_arc_ball {
             window.render_with_camera(&mut arc_ball);

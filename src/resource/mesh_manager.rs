@@ -4,7 +4,7 @@ use std::io::IoResult;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
-use na::Vec3;
+use na::{Pnt3, Vec3};
 use ncollide::procedural::TriMesh;
 use ncollide::procedural;
 use resource::Mesh;
@@ -58,7 +58,7 @@ impl MeshManager {
     }
 
     /// Adds a mesh with the specified mesh descriptor and name.
-    pub fn add_trimesh(&mut self, descr: TriMesh<f32, Vec3<f32>>, dynamic_draw: bool, name: &str) -> Rc<RefCell<Mesh>> {
+    pub fn add_trimesh(&mut self, descr: TriMesh<f32, Pnt3<f32>, Vec3<f32>>, dynamic_draw: bool, name: &str) -> Rc<RefCell<Mesh>> {
         let mesh = Mesh::from_trimesh(descr, dynamic_draw);
         let mesh = Rc::new(RefCell::new(mesh));
 

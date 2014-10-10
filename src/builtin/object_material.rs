@@ -1,7 +1,7 @@
 use std::ptr;
 use gl;
 use gl::types::*;
-use na::{Vec2, Vec3, Mat3, Mat4, Iso3};
+use na::{Pnt2, Pnt3, Vec3, Mat3, Mat4, Iso3};
 use na;
 use resource::Material;
 use scene::ObjectData;
@@ -15,11 +15,11 @@ mod error;
 /// The default material used to draw objects.
 pub struct ObjectMaterial {
     shader:     Shader,
-    pos:        ShaderAttribute<Vec3<f32>>,
+    pos:        ShaderAttribute<Pnt3<f32>>,
     normal:     ShaderAttribute<Vec3<f32>>,
-    tex_coord:  ShaderAttribute<Vec2<f32>>,
-    light:      ShaderUniform<Vec3<f32>>,
-    color:      ShaderUniform<Vec3<f32>>,
+    tex_coord:  ShaderAttribute<Pnt2<f32>>,
+    light:      ShaderUniform<Pnt3<f32>>,
+    color:      ShaderUniform<Pnt3<f32>>,
     transform:  ShaderUniform<Mat4<f32>>,
     scale:      ShaderUniform<Mat3<f32>>,
     ntransform: ShaderUniform<Mat3<f32>>,
@@ -160,7 +160,7 @@ pub static OBJECT_VERTEX_SRC:   &'static str = A_VERY_LONG_STRING;
 /// Fragment shader of the default object material.
 pub static OBJECT_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-static A_VERY_LONG_STRING: &'static str =
+const A_VERY_LONG_STRING: &'static str =
    "#version 120
     attribute vec3 position;
     attribute vec3 normal;
@@ -184,7 +184,7 @@ static A_VERY_LONG_STRING: &'static str =
 
 // phong-like lighting (heavily) inspired
 // by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
-static ANOTHER_VERY_LONG_STRING: &'static str =
+const ANOTHER_VERY_LONG_STRING: &'static str =
    "#version 120
     uniform vec3      color;
     uniform vec3      light_position;

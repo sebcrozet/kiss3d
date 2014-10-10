@@ -5,7 +5,7 @@ extern crate kiss3d;
 extern crate "nalgebra" as na;
 
 use std::rand;
-use na::{Vec2, Vec3, Translation};
+use na::{Pnt2, Pnt3, Vec2, Vec3, Translation};
 use ncollide::parametric::ParametricSurface;
 use ncollide::procedural::{Polyline, TriMesh};
 use ncollide::procedural::path::{PolylinePath, PolylinePattern, StrokePattern, ArrowheadCap};
@@ -50,10 +50,10 @@ fn main() {
      * Triangulation.
      */
     let to_triangulate = utils::triangulate([
-        Vec3::new(5.0f32, 0.0, 0.0), Vec3::new(6.1, 0.0, 0.5), Vec3::new(7.4, 0.0, 0.5), Vec3::new(8.2, 0.0, 0.0),
-        Vec3::new(5.1f32, 1.0, 0.0), Vec3::new(6.2, 1.5, 0.5), Vec3::new(7.2, 1.0, 0.5), Vec3::new(8.0, 1.3, 0.0),
-        Vec3::new(5.3f32, 2.0, 0.0), Vec3::new(6.1, 2.2, 0.5), Vec3::new(7.3, 2.0, 0.5), Vec3::new(8.2, 2.4, 0.0),
-        Vec3::new(5.2f32, 3.0, 0.0), Vec3::new(6.1, 2.9, 0.5), Vec3::new(7.4, 3.0, 0.5), Vec3::new(8.0, 3.1, 0.0)
+        Pnt3::new(5.0f32, 0.0, 0.0), Pnt3::new(6.1, 0.0, 0.5), Pnt3::new(7.4, 0.0, 0.5), Pnt3::new(8.2, 0.0, 0.0),
+        Pnt3::new(5.1f32, 1.0, 0.0), Pnt3::new(6.2, 1.5, 0.5), Pnt3::new(7.2, 1.0, 0.5), Pnt3::new(8.0, 1.3, 0.0),
+        Pnt3::new(5.3f32, 2.0, 0.0), Pnt3::new(6.1, 2.2, 0.5), Pnt3::new(7.3, 2.0, 0.5), Pnt3::new(8.2, 2.4, 0.0),
+        Pnt3::new(5.2f32, 3.0, 0.0), Pnt3::new(6.1, 2.9, 0.5), Pnt3::new(7.4, 3.0, 0.5), Pnt3::new(8.0, 3.1, 0.0)
     ]);
     let mut t = window.add_trimesh(to_triangulate, na::one());
     t.set_surface_rendering_activation(false);
@@ -64,10 +64,10 @@ fn main() {
      * A (non-rational) bicubic Bézier surface.
      */
     let control_points = [
-        Vec3::new(0.0f32, 0.0, 0.0), Vec3::new(1.0, 0.0, 2.0), Vec3::new(2.0, 0.0, 2.0), Vec3::new(3.0, 0.0, 0.0),
-        Vec3::new(0.0f32, 1.0, 2.0), Vec3::new(1.0, 1.0, 3.0), Vec3::new(2.0, 1.0, 3.0), Vec3::new(3.0, 1.0, 2.0),
-        Vec3::new(0.0f32, 2.0, 2.0), Vec3::new(1.0, 2.0, 3.0), Vec3::new(2.0, 2.0, 3.0), Vec3::new(3.0, 2.0, 2.0),
-        Vec3::new(0.0f32, 3.0, 0.0), Vec3::new(1.0, 3.0, 2.0), Vec3::new(2.0, 3.0, 2.0), Vec3::new(3.0, 3.0, 0.0)
+        Pnt3::new(0.0f32, 0.0, 0.0), Pnt3::new(1.0, 0.0, 2.0), Pnt3::new(2.0, 0.0, 2.0), Pnt3::new(3.0, 0.0, 0.0),
+        Pnt3::new(0.0f32, 1.0, 2.0), Pnt3::new(1.0, 1.0, 3.0), Pnt3::new(2.0, 1.0, 3.0), Pnt3::new(3.0, 1.0, 2.0),
+        Pnt3::new(0.0f32, 2.0, 2.0), Pnt3::new(1.0, 2.0, 3.0), Pnt3::new(2.0, 2.0, 3.0), Pnt3::new(3.0, 2.0, 2.0),
+        Pnt3::new(0.0f32, 3.0, 0.0), Pnt3::new(1.0, 3.0, 2.0), Pnt3::new(2.0, 3.0, 2.0), Pnt3::new(3.0, 3.0, 0.0)
     ];
     let bezier = procedural::bezier_surface(control_points, 4, 4, 100, 100);
     let mut b  = window.add_trimesh(bezier, na::one());
@@ -91,18 +91,18 @@ fn main() {
      * Path stroke.
      */
     let control_points = [
-        Vec3::new(0.0f32, 1.0, 0.0),
-        Vec3::new(2.0f32, 4.0, 2.0),
-        Vec3::new(2.0f32, 1.0, 4.0),
-        Vec3::new(4.0f32, 4.0, 6.0),
-        Vec3::new(2.0f32, 1.0, 8.0),
-        Vec3::new(2.0f32, 4.0, 10.0),
-        Vec3::new(0.0f32, 1.0, 12.0),
-        Vec3::new(-2.0f32, 4.0, 10.0),
-        Vec3::new(-2.0f32, 1.0, 8.0),
-        Vec3::new(-4.0f32, 4.0, 6.0),
-        Vec3::new(-2.0f32, 1.0, 4.0),
-        Vec3::new(-2.0f32, 4.0, 2.0),
+        Pnt3::new(0.0f32, 1.0, 0.0),
+        Pnt3::new(2.0f32, 4.0, 2.0),
+        Pnt3::new(2.0f32, 1.0, 4.0),
+        Pnt3::new(4.0f32, 4.0, 6.0),
+        Pnt3::new(2.0f32, 1.0, 8.0),
+        Pnt3::new(2.0f32, 4.0, 10.0),
+        Pnt3::new(0.0f32, 1.0, 12.0),
+        Pnt3::new(-2.0f32, 4.0, 10.0),
+        Pnt3::new(-2.0f32, 1.0, 8.0),
+        Pnt3::new(-4.0f32, 4.0, 6.0),
+        Pnt3::new(-2.0f32, 1.0, 4.0),
+        Pnt3::new(-2.0f32, 4.0, 2.0),
     ];
     let bezier      = procedural::bezier_curve(control_points, 100);
     let mut path    = PolylinePath::new(&bezier);
@@ -120,7 +120,7 @@ fn main() {
      */
     let mut points = Vec::new();
     for _ in range(0u, 100000) {
-        points.push(rand::random::<Vec3<f32>>() * 2.0f32);
+        points.push(rand::random::<Pnt3<f32>>() * 2.0f32);
     }
 
     let chull  = procedural::convex_hull3d(points.as_slice());
@@ -140,7 +140,7 @@ fn main() {
      * Convex hull of 100,000 random 2d points.
      */
     let mut points = Vec::new();
-    let origin     = Vec2::new(3.0f32, 2.0);
+    let origin     = Pnt2::new(3.0f32, 2.0);
     for _ in range(0u, 100000) {
         points.push(origin + rand::random::<Vec2<f32>>() * 2.0f32);
     }
@@ -182,22 +182,22 @@ fn main() {
     }
 }
 
-fn draw_polyline(window: &mut Window, polyline: &Polyline<f32, Vec2<f32>>, points: &[Vec2<f32>]) {
+fn draw_polyline(window: &mut Window, polyline: &Polyline<f32, Pnt2<f32>, Vec2<f32>>, points: &[Pnt2<f32>]) {
     for pt in polyline.coords.as_slice().windows(2) {
-        window.draw_line(&Vec3::new(pt[0].x, pt[0].y, 0.0), &Vec3::new(pt[1].x, pt[1].y, 0.0), &Vec3::y());
+        window.draw_line(&Pnt3::new(pt[0].x, pt[0].y, 0.0), &Pnt3::new(pt[1].x, pt[1].y, 0.0), &Pnt3::new(0.0, 1.0, 0.0));
     }
 
     let last = polyline.coords.len() - 1;
-    window.draw_line(&Vec3::new(polyline.coords[0].x, polyline.coords[0].y, 0.0),
-                    &Vec3::new(polyline.coords[last].x, polyline.coords[last].y, 0.0),
-                    &Vec3::y());
+    window.draw_line(&Pnt3::new(polyline.coords[0].x, polyline.coords[0].y, 0.0),
+                     &Pnt3::new(polyline.coords[last].x, polyline.coords[last].y, 0.0),
+                     &Pnt3::new(0.0, 1.0, 0.0));
 
     for pt in points.iter() {
-        window.draw_point(&Vec3::new(pt.x, pt.y, 0.0), &Vec3::z());
+            window.draw_point(&Pnt3::new(pt.x, pt.y, 0.0), &Pnt3::new(0.0, 0.0, 1.0));
     }
 
     for pt in polyline.coords.as_slice().iter() {
-        window.draw_point(&Vec3::new(pt.x, pt.y, 0.0), &Vec3::x());
+        window.draw_point(&Pnt3::new(pt.x, pt.y, 0.0), &Pnt3::new(1.0, 0.0, 0.0));
     }
 
 }
@@ -230,8 +230,8 @@ impl ParametricBananas {
 }
 
 impl ParametricSurface for ParametricBananas {
-    fn at(&self, u: f32, v: f32) -> Vec3<f32> {
-        Vec3::new(self.x.d0(u, v), self.y.d0(u, v), self.z.d0(u, v))
+    fn at(&self, u: f32, v: f32) -> Pnt3<f32> {
+        Pnt3::new(self.x.d0(u, v), self.y.d0(u, v), self.z.d0(u, v))
     }
 
     fn at_u(&self, u: f32, v: f32) -> Vec3<f32> {

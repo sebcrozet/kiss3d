@@ -1,7 +1,7 @@
-use std::num::{Zero, One};
+use std::num::One;
 use glfw;
 use gl;
-use na::{Vec2, Vec3, Mat4, Iso3, Rotate};
+use na::{Pnt3, Pnt2, Vec2, Vec3, Mat4, Iso3, Rotate};
 use na;
 use resource::ShaderUniform;
 use camera::Camera;
@@ -18,9 +18,9 @@ mod error;
 #[deriving(Show)]
 pub struct FirstPersonStereo {
     /// The camera position
-    eye:        Vec3<f32>,
-    eye_left:   Vec3<f32>,
-    eye_right:  Vec3<f32>,
+    eye:        Pnt3<f32>,
+    eye_left:   Pnt3<f32>,
+    eye_right:  Pnt3<f32>,
 
     /// Inter Pupilary Distance
     ipd:        f32,
@@ -46,12 +46,12 @@ pub struct FirstPersonStereo {
     proj_view_left:  Mat4<f32>,
     proj_view_right: Mat4<f32>,
     inv_proj_view:   Mat4<f32>,
-    last_cursor_pos: Vec2<f32>
+    last_cursor_pos: Pnt2<f32>
 }
 
 impl FirstPersonStereo {
     /// Creates a first person camera with default sensitivity values.
-    pub fn new(eye: Vec3<f32>, at: Vec3<f32>, ipd: f32) -> FirstPersonStereo {
+    pub fn new(eye: Pnt3<f32>, at: Pnt3<f32>, ipd: f32) -> FirstPersonStereo {
         FirstPersonStereo::new_with_frustrum(45.0f32.to_radians(), 0.1, 1024.0, eye, at, ipd)
     }
 
@@ -59,14 +59,14 @@ impl FirstPersonStereo {
     pub fn new_with_frustrum(fov:    f32,
                              znear:  f32,
                              zfar:   f32,
-                             eye:    Vec3<f32>,
-                             at:     Vec3<f32>,
+                             eye:    Pnt3<f32>,
+                             at:     Pnt3<f32>,
                              ipd:    f32) -> FirstPersonStereo {
         let mut res = FirstPersonStereo {
-            eye:           Vec3::new(0.0, 0.0, 0.0),
+            eye:           Pnt3::new(0.0, 0.0, 0.0),
             // left & right are initially wrong, don't take ipd into accound
-            eye_left:      Vec3::new(0.0, 0.0, 0.0),
-            eye_right:     Vec3::new(0.0, 0.0, 0.0),
+            eye_left:      Pnt3::new(0.0, 0.0, 0.0),
+            eye_right:     Pnt3::new(0.0, 0.0, 0.0),
             ipd:           ipd,
             yaw:           0.0,
             pitch:         0.0,
@@ -77,11 +77,11 @@ impl FirstPersonStereo {
             znear:      znear,
             zfar:       zfar,
             projection: na::perspective3d(800.0, 600.0, fov, znear, zfar),
-            proj_view:  Zero::zero(),
-            inv_proj_view:   Zero::zero(),
-            last_cursor_pos: Zero::zero(),
-            proj_view_left: Zero::zero(),
-            proj_view_right: Zero::zero(),
+            proj_view:  na::zero(),
+            inv_proj_view:   na::zero(),
+            last_cursor_pos: na::orig(),
+            proj_view_left:  na::zero(),
+            proj_view_right: na::zero(),
         };
 
         res.look_at_z(eye, at);
@@ -91,7 +91,7 @@ impl FirstPersonStereo {
 
 
     /// Changes the orientation and position of the camera to look at the specified point.
-    pub fn look_at_z(&mut self, eye: Vec3<f32>, at: Vec3<f32>) {
+    pub fn look_at_z(&mut self, eye: Pnt3<f32>, at: Pnt3<f32>) {
         let dist  = na::norm(&(eye - at));
 
         let pitch = ((at.y - eye.y) / dist).acos();
@@ -104,12 +104,12 @@ impl FirstPersonStereo {
     }
 
     /// The point the camera is looking at.
-    pub fn at(&self) -> Vec3<f32> {
+    pub fn at(&self) -> Pnt3<f32> {
         let ax = self.eye.x + self.yaw.cos() * self.pitch.sin();
         let ay = self.eye.y + self.pitch.cos();
         let az = self.eye.z + self.yaw.sin() * self.pitch.sin();
 
-        Vec3::new(ax, ay, az)
+        Pnt3::new(ax, ay, az)
     }
 
     fn update_restrictions(&mut self) {
@@ -232,7 +232,7 @@ impl Camera for FirstPersonStereo {
     fn handle_event(&mut self, window: &glfw::Window, event: &glfw::WindowEvent) {
         match *event {
             glfw::CursorPosEvent(x, y) => {
-                let curr_pos = Vec2::new(x as f32, y as f32);
+                let curr_pos = Pnt2::new(x as f32, y as f32);
 
                 if window.get_mouse_button(glfw::MouseButtonLeft) == glfw::Press {
                     let dpos = curr_pos - self.last_cursor_pos;
@@ -255,7 +255,7 @@ impl Camera for FirstPersonStereo {
         }
     }
 
-    fn eye(&self) -> Vec3<f32> {
+    fn eye(&self) -> Pnt3<f32> {
         self.eye
     }
 

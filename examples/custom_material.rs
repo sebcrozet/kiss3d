@@ -7,7 +7,7 @@ use std::ptr;
 use std::rc::Rc;
 use std::cell::RefCell;
 use gl::types::GLint;
-use na::{Vec3, Mat3, Mat4, Iso3};
+use na::{Pnt3, Vec3, Mat3, Mat4, Iso3};
 use kiss3d::window::Window;
 use kiss3d::scene::ObjectData;
 use kiss3d::camera::Camera;
@@ -34,7 +34,7 @@ fn main() {
 // A material that draws normals
 pub struct NormalMaterial {
     shader:    Shader,
-    position:  ShaderAttribute<Vec3<f32>>,
+    position:  ShaderAttribute<Pnt3<f32>>,
     normal:    ShaderAttribute<Vec3<f32>>,
     view:      ShaderUniform<Mat4<f32>>,
     transform: ShaderUniform<Mat4<f32>>,

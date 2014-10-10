@@ -3,7 +3,7 @@
 use std::mem;
 use gl;
 use gl::types::*;
-use na::{Vec2, Vec3, Mat2, Mat3, Mat4, Rot2, Rot3};
+use na::{Pnt2, Pnt3, Vec2, Vec3, Mat2, Mat3, Mat4, Rot2, Rot3};
 
 #[path = "../error.rs"]
 mod error;
@@ -237,6 +237,79 @@ impl GLPrimitive for Vec3<GLuint> {
 
     #[inline]
     fn size(_: Option<Vec3<GLuint>>) -> GLuint {
+        3
+    }
+
+    #[inline]
+    fn upload(&self, location: GLuint) {
+        verify!(gl::Uniform3ui(location as GLint, self.x, self.y, self.z));
+    }
+}
+
+/*
+ *
+ * Impl for points
+ *
+ */
+impl GLPrimitive for Pnt3<GLfloat> {
+    #[inline]
+    fn gl_type(_: Option<Pnt3<GLfloat>>) -> GLuint {
+        gl::FLOAT
+    }
+
+    #[inline]
+    fn size(_: Option<Pnt3<GLfloat>>) -> GLuint {
+        3
+    }
+
+    #[inline]
+    fn upload(&self, location: GLuint) {
+        verify!(gl::Uniform3f(location as GLint, self.x, self.y, self.z));
+    }
+}
+
+impl GLPrimitive for Pnt2<GLfloat> {
+    #[inline]
+    fn gl_type(_: Option<Pnt2<GLfloat>>) -> GLuint {
+        gl::FLOAT
+    }
+
+    #[inline]
+    fn size(_: Option<Pnt2<GLfloat>>) -> GLuint {
+        2
+    }
+
+    #[inline]
+    fn upload(&self, location: GLuint) {
+        verify!(gl::Uniform2f(location as GLint, self.x, self.y));
+    }
+}
+
+impl GLPrimitive for Pnt2<GLuint> {
+    #[inline]
+    fn gl_type(_: Option<Pnt2<GLuint>>) -> GLuint {
+        gl::UNSIGNED_INT
+    }
+
+    #[inline]
+    fn size(_: Option<Pnt2<GLuint>>) -> GLuint {
+        2
+    }
+
+    #[inline]
+    fn upload(&self, location: GLuint) {
+        verify!(gl::Uniform2ui(location as GLint, self.x, self.y));
+    }
+}
+
+impl GLPrimitive for Pnt3<GLuint> {
+    #[inline]
+    fn gl_type(_: Option<Pnt3<GLuint>>) -> GLuint {
+        gl::UNSIGNED_INT
+    }
+
+    #[inline]
+    fn size(_: Option<Pnt3<GLuint>>) -> GLuint {
         3
     }
 

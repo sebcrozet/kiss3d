@@ -1,5 +1,5 @@
 use glfw;
-use na::{Vec2, Vec3, Mat4, Iso3};
+use na::{Pnt3, Vec2, Vec3, Mat4, Iso3};
 use na;
 use camera::Camera;
 
@@ -16,7 +16,7 @@ use camera::Camera;
 #[deriving(Clone, Show)]
 pub struct ArcBall {
     /// The focus point.
-    at:    Vec3<f32>,
+    at:    Pnt3<f32>,
     /// Yaw of the camera (rotation along the y axis).
     yaw:   f32,
     /// Pitch of the camera (rotation along the x axis).
@@ -42,7 +42,7 @@ pub struct ArcBall {
 
 impl ArcBall {
     /// Create a new arc-ball camera.
-    pub fn new(eye: Vec3<f32>, at: Vec3<f32>) -> ArcBall {
+    pub fn new(eye: Pnt3<f32>, at: Pnt3<f32>) -> ArcBall {
         ArcBall::new_with_frustrum(45.0f32.to_radians(), 0.1, 1024.0, eye, at)
     }
 
@@ -50,10 +50,10 @@ impl ArcBall {
     pub fn new_with_frustrum(fov:    f32,
                              znear:  f32,
                              zfar:   f32,
-                             eye:    Vec3<f32>,
-                             at:     Vec3<f32>) -> ArcBall {
+                             eye:    Pnt3<f32>,
+                             at:     Pnt3<f32>) -> ArcBall {
         let mut res = ArcBall {
-            at:              Vec3::new(0.0, 0.0, 0.0),
+            at:              Pnt3::new(0.0, 0.0, 0.0),
             yaw:             0.0,
             pitch:           0.0,
             dist:            0.0,
@@ -75,7 +75,7 @@ impl ArcBall {
     }
 
     /// The point the arc-ball is looking at.
-    pub fn at(&self) -> Vec3<f32> {
+    pub fn at(&self) -> Pnt3<f32> {
         self.at
     }
 
@@ -119,7 +119,7 @@ impl ArcBall {
     }
 
     /// Move and orient the camera such that it looks at a specific point.
-    pub fn look_at_z(&mut self, eye: Vec3<f32>, at: Vec3<f32>) {
+    pub fn look_at_z(&mut self, eye: Pnt3<f32>, at: Pnt3<f32>) {
         let dist  = na::norm(&(eye - at));
         let pitch = ((eye.y - at.y) / dist).acos();
         let yaw   = (eye.z - at.z).atan2(eye.x - at.x);
@@ -190,12 +190,12 @@ impl Camera for ArcBall {
         id
     }
 
-    fn eye(&self) -> Vec3<f32> {
+    fn eye(&self) -> Pnt3<f32> {
         let px = self.at.x + self.dist * self.yaw.cos() * self.pitch.sin();
         let py = self.at.y + self.dist * self.pitch.cos();
         let pz = self.at.z + self.dist * self.yaw.sin() * self.pitch.sin();
 
-        Vec3::new(px, py, pz)
+        Pnt3::new(px, py, pz)
     }
 
     fn handle_event(&mut self, window: &glfw::Window, event: &glfw::WindowEvent) {
@@ -216,7 +216,7 @@ impl Camera for ArcBall {
                 self.last_cursor_pos = curr_pos;
             },
             glfw::KeyEvent(glfw::KeyEnter, _, glfw::Press, _) => {
-                self.at = na::zero();
+                self.at = na::orig();
                 self.update_projviews();
             },
             glfw::ScrollEvent(_, off) => self.handle_scroll(off as f32),

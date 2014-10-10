@@ -1,7 +1,7 @@
 use std::ptr;
 use gl;
 use gl::types::*;
-use na::{Vec2, Vec3, Mat3, Mat4, Iso3};
+use na::{Pnt3, Pnt2, Vec3, Mat3, Mat4, Iso3};
 use na;
 use resource::Material;
 use scene::ObjectData;
@@ -16,8 +16,8 @@ mod error;
 /// A material that draws normals of an object.
 pub struct UvsMaterial {
     shader:    Shader,
-    position:  ShaderAttribute<Vec3<f32>>,
-    uvs:       ShaderAttribute<Vec2<f32>>,
+    position:  ShaderAttribute<Pnt3<f32>>,
+    uvs:       ShaderAttribute<Pnt2<f32>>,
     view:      ShaderUniform<Mat4<f32>>,
     transform: ShaderUniform<Mat4<f32>>,
     scale:     ShaderUniform<Mat3<f32>>
@@ -107,7 +107,7 @@ pub static UVS_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
 
 pub static UVS_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-static A_VERY_LONG_STRING: &'static str =
+const A_VERY_LONG_STRING: &'static str =
 "#version 120
 attribute vec3 position;
 attribute vec3 uvs;
@@ -122,7 +122,7 @@ void main() {
 }
 ";
 
-static ANOTHER_VERY_LONG_STRING: &'static str =
+const ANOTHER_VERY_LONG_STRING: &'static str =
 "#version 120
 varying vec3 uv_as_a_color;
 

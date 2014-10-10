@@ -2,7 +2,7 @@ use std::rc::{Rc, Weak};
 use std::cell::{Ref, RefMut, RefCell};
 use std::mem;
 use na;
-use na::{Iso3, Vec2, Vec3, Transformation, Rotation, Translation, RotationWithTranslation};
+use na::{Iso3, Pnt2, Vec3, Pnt3, Transformation, Rotation, Translation, RotationWithTranslation};
 use resource::{Mesh, MeshManager, Texture, TextureManager, Material, MaterialManager};
 use ncollide::procedural::TriMesh;
 use ncollide::procedural;
@@ -198,7 +198,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_vertices(&mut self, f: &mut |&mut Vec<Vec3<f32>>| -> ()) {
+    pub fn modify_vertices(&mut self, f: &mut |&mut Vec<Pnt3<f32>>| -> ()) {
         self.apply_to_objects_mut(&mut |o| o.modify_vertices(f))
     }
 
@@ -206,7 +206,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_vertices(&self, f: &mut |&[Vec3<f32>]| -> ()) {
+    pub fn read_vertices(&self, f: &mut |&[Pnt3<f32>]| -> ()) {
         self.apply_to_objects(&mut |o| o.read_vertices(f))
     }
 
@@ -254,7 +254,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_uvs(&mut self, f: &mut |&mut Vec<Vec2<f32>>| -> ()) {
+    pub fn modify_uvs(&mut self, f: &mut |&mut Vec<Pnt2<f32>>| -> ()) {
         self.apply_to_objects_mut(&mut |o| o.modify_uvs(f))
     }
 
@@ -262,7 +262,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_uvs(&self, f: &mut |&[Vec2<f32>]| -> ()) {
+    pub fn read_uvs(&self, f: &mut |&[Pnt2<f32>]| -> ()) {
         self.apply_to_objects(&mut |o| o.read_uvs(f))
     }
 
@@ -347,7 +347,7 @@ impl SceneNodeData {
     /// Move and orient the object such that it is placed at the point `eye` and have its `x` axis
     /// oriented toward `at`.
     #[inline]
-    pub fn look_at(&mut self, eye: &Vec3<f32>, at: &Vec3<f32>, up: &Vec3<f32>) {
+    pub fn look_at(&mut self, eye: &Pnt3<f32>, at: &Pnt3<f32>, up: &Vec3<f32>) {
         self.invalidate();
         // FIXME: multiply by the parent's world transform?
         self.local_transform.look_at(eye, at, up)
@@ -356,7 +356,7 @@ impl SceneNodeData {
     /// Move and orient the object such that it is placed at the point `eye` and have its `z` axis
     /// oriented toward `at`.
     #[inline]
-    pub fn look_at_z(&mut self, eye: &Vec3<f32>, at: &Vec3<f32>, up: &Vec3<f32>) {
+    pub fn look_at_z(&mut self, eye: &Pnt3<f32>, at: &Pnt3<f32>, up: &Vec3<f32>) {
         self.invalidate();
         // FIXME: multiply by the parent's world transform?
         self.local_transform.look_at_z(eye, at, up)
@@ -695,7 +695,7 @@ impl SceneNode {
     }
 
     /// Adds a double-sided quad with the specified vertices.
-    pub fn add_quad_with_vertices(&mut self, vertices: &[Vec3<f32>], nhpoints: uint, nvpoints: uint) -> SceneNode {
+    pub fn add_quad_with_vertices(&mut self, vertices: &[Pnt3<f32>], nhpoints: uint, nvpoints: uint) -> SceneNode {
         let geom = procedural::quad_with_vertices(vertices, nhpoints, nvpoints);
 
         let mut node = self.add_trimesh(geom, na::one());
@@ -719,7 +719,7 @@ impl SceneNode {
     }
 
     /// Creates and adds a new object using a mesh descriptor.
-    pub fn add_trimesh(&mut self, descr: TriMesh<f32, Vec3<f32>>, scale: Vec3<f32>) -> SceneNode {
+    pub fn add_trimesh(&mut self, descr: TriMesh<f32, Pnt3<f32>, Vec3<f32>>, scale: Vec3<f32>) -> SceneNode {
         self.add_mesh(Rc::new(RefCell::new(Mesh::from_trimesh(descr, false))), scale)
     }
 
@@ -862,7 +862,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_vertices(&mut self, f: &mut |&mut Vec<Vec3<f32>>| -> ()) {
+    pub fn modify_vertices(&mut self, f: &mut |&mut Vec<Pnt3<f32>>| -> ()) {
         self.data_mut().modify_vertices(f)
     }
 
@@ -870,7 +870,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_vertices(&self, f: &mut |&[Vec3<f32>]| -> ()) {
+    pub fn read_vertices(&self, f: &mut |&[Pnt3<f32>]| -> ()) {
         self.data().read_vertices(f)
     }
 
@@ -918,7 +918,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_uvs(&mut self, f: &mut |&mut Vec<Vec2<f32>>| -> ()) {
+    pub fn modify_uvs(&mut self, f: &mut |&mut Vec<Pnt2<f32>>| -> ()) {
         self.data_mut().modify_uvs(f)
     }
 
@@ -926,7 +926,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_uvs(&self, f: &mut |&[Vec2<f32>]| -> ()) {
+    pub fn read_uvs(&self, f: &mut |&[Pnt2<f32>]| -> ()) {
         self.data().read_uvs(f)
     }
 
@@ -971,14 +971,14 @@ impl SceneNode {
     /// Move and orient the object such that it is placed at the point `eye` and have its `x` axis
     /// oriented toward `at`.
     #[inline]
-    pub fn look_at(&mut self, eye: &Vec3<f32>, at: &Vec3<f32>, up: &Vec3<f32>) {
+    pub fn look_at(&mut self, eye: &Pnt3<f32>, at: &Pnt3<f32>, up: &Vec3<f32>) {
         self.data_mut().look_at(eye, at, up)
     }
 
     /// Move and orient the object such that it is placed at the point `eye` and have its `z` axis
     /// oriented toward `at`.
     #[inline]
-    pub fn look_at_z(&mut self, eye: &Vec3<f32>, at: &Vec3<f32>, up: &Vec3<f32>) {
+    pub fn look_at_z(&mut self, eye: &Pnt3<f32>, at: &Pnt3<f32>, up: &Vec3<f32>) {
         self.data_mut().look_at_z(eye, at, up)
     }
 

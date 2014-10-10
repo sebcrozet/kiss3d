@@ -2,7 +2,7 @@
 
 use gl;
 use gl::types::*;
-use na::{Vec3, Mat4};
+use na::{Pnt3, Mat4};
 use resource::{GPUVector, ArrayBuffer, StreamDraw, Shader, ShaderAttribute, ShaderUniform};
 use camera::Camera;
 
@@ -12,10 +12,10 @@ mod error;
 /// Structure which manages the display of short-living lines.
 pub struct LineRenderer {
     shader:    Shader,
-    pos:       ShaderAttribute<Vec3<f32>>,
-    color:     ShaderAttribute<Vec3<f32>>,
+    pos:       ShaderAttribute<Pnt3<f32>>,
+    color:     ShaderAttribute<Pnt3<f32>>,
     view:      ShaderUniform<Mat4<f32>>,
-    lines:     GPUVector<Vec3<GLfloat>>
+    lines:     GPUVector<Pnt3<GLfloat>>
 }
 
 impl LineRenderer {
@@ -27,8 +27,8 @@ impl LineRenderer {
 
         LineRenderer {
             lines:     GPUVector::new(Vec::new(), ArrayBuffer, StreamDraw),
-            pos:       shader.get_attrib::<Vec3<f32>>("position").unwrap(),
-            color:     shader.get_attrib::<Vec3<f32>>("color").unwrap(),
+            pos:       shader.get_attrib::<Pnt3<f32>>("position").unwrap(),
+            color:     shader.get_attrib::<Pnt3<f32>>("color").unwrap(),
             view:      shader.get_uniform::<Mat4<f32>>("view").unwrap(),
             shader:    shader
         }
@@ -41,7 +41,7 @@ impl LineRenderer {
 
     /// Adds a line to be drawn during the next frame. Lines are not persistent between frames.
     /// This method must be called for each line to draw, and at each update loop iteration.
-    pub fn draw_line(&mut self, a: Vec3<GLfloat>, b: Vec3<GLfloat>, color: Vec3<GLfloat>) {
+    pub fn draw_line(&mut self, a: Pnt3<GLfloat>, b: Pnt3<GLfloat>, color: Pnt3<GLfloat>) {
         for lines in self.lines.data_mut().iter_mut() {
             lines.push(a);
             lines.push(color);
@@ -79,7 +79,7 @@ pub static LINES_VERTEX_SRC:   &'static str = A_VERY_LONG_STRING;
 /// Fragment shader used by the material to display line.
 pub static LINES_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-static A_VERY_LONG_STRING: &'static str =
+const A_VERY_LONG_STRING: &'static str =
    "#version 120
     attribute vec3 position;
     attribute vec3 color;
@@ -90,7 +90,7 @@ static A_VERY_LONG_STRING: &'static str =
         Color = color;
     }";
 
-static ANOTHER_VERY_LONG_STRING: &'static str =
+const ANOTHER_VERY_LONG_STRING: &'static str =
    "#version 120
     varying vec3 Color;
     void main() {

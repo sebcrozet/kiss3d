@@ -1,6 +1,6 @@
 use std::num::Zero;
 use glfw;
-use na::{Translation, Vec2, Vec3, Mat4, Iso3};
+use na::{Translation, Pnt3, Vec2, Vec3, Mat4, Iso3};
 use na;
 use camera::Camera;
 
@@ -12,7 +12,7 @@ use camera::Camera;
 ///   * Scroll in/out - zoom in/out
 #[deriving(Show, Clone)]
 pub struct FirstPerson {
-    eye:             Vec3<f32>,
+    eye:             Pnt3<f32>,
     yaw:             f32,
     pitch:           f32,
 
@@ -31,7 +31,7 @@ pub struct FirstPerson {
 
 impl FirstPerson {
     /// Creates a first person camera with default sensitivity values.
-    pub fn new(eye: Vec3<f32>, at: Vec3<f32>) -> FirstPerson {
+    pub fn new(eye: Pnt3<f32>, at: Pnt3<f32>) -> FirstPerson {
         FirstPerson::new_with_frustrum(45.0f32.to_radians(), 0.1, 1024.0, eye, at)
     }
 
@@ -39,10 +39,10 @@ impl FirstPerson {
     pub fn new_with_frustrum(fov:    f32,
                              znear:  f32,
                              zfar:   f32,
-                             eye:    Vec3<f32>,
-                             at:     Vec3<f32>) -> FirstPerson {
+                             eye:    Pnt3<f32>,
+                             at:     Pnt3<f32>) -> FirstPerson {
         let mut res = FirstPerson {
-            eye:             Vec3::new(0.0, 0.0, 0.0),
+            eye:             Pnt3::new(0.0, 0.0, 0.0),
             yaw:             0.0,
             pitch:           0.0,
             yaw_step:        0.005,
@@ -106,7 +106,7 @@ impl FirstPerson {
     }
 
     /// Changes the orientation and position of the camera to look at the specified point.
-    pub fn look_at_z(&mut self, eye: Vec3<f32>, at: Vec3<f32>) {
+    pub fn look_at_z(&mut self, eye: Pnt3<f32>, at: Pnt3<f32>) {
         let dist  = na::norm(&(eye - at));
 
         let pitch = ((at.y - eye.y) / dist).acos();
@@ -119,12 +119,12 @@ impl FirstPerson {
     }
 
     /// The point the camera is looking at.
-    pub fn at(&self) -> Vec3<f32> {
+    pub fn at(&self) -> Pnt3<f32> {
         let ax = self.eye.x + self.yaw.cos() * self.pitch.sin();
         let ay = self.eye.y + self.pitch.cos();
         let az = self.eye.z + self.yaw.sin() * self.pitch.sin();
 
-        Vec3::new(ax, ay, az)
+        Pnt3::new(ax, ay, az)
     }
 
     fn update_restrictions(&mut self) {
@@ -254,7 +254,7 @@ impl Camera for FirstPerson {
         }
     }
 
-    fn eye(&self) -> Vec3<f32> {
+    fn eye(&self) -> Pnt3<f32> {
         self.eye
     }
 
@@ -281,19 +281,19 @@ impl Camera for FirstPerson {
 impl Translation<Vec3<f32>> for FirstPerson {
     #[inline]
     fn translation(&self) -> Vec3<f32> {
-        self.eye
+        self.eye.as_vec().clone()
     }
 
     #[inline]
     fn inv_translation(&self) -> Vec3<f32> {
-        -self.eye
+        -self.eye.as_vec().clone()
     }
 
     #[inline]
     fn append_translation(&mut self, t: &Vec3<f32>) {
         let new_t = self.eye + *t;
 
-        self.set_translation(new_t);
+        self.set_translation(new_t.to_vec());
     }
 
     #[inline]
@@ -309,7 +309,7 @@ impl Translation<Vec3<f32>> for FirstPerson {
     fn prepend_translation(&mut self, t: &Vec3<f32>) {
         let new_t = self.eye - *t;
 
-        self.set_translation(new_t); // FIXME: is this correct?
+        self.set_translation(new_t.to_vec()); // FIXME: is this correct?
     }
 
     #[inline]
@@ -323,7 +323,7 @@ impl Translation<Vec3<f32>> for FirstPerson {
 
     #[inline]
     fn set_translation(&mut self, t: Vec3<f32>) {
-        self.eye = t;
+        self.eye = t.to_pnt();
         self.update_restrictions();
         self.update_projviews();
     }

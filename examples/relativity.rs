@@ -12,7 +12,7 @@ use std::cell::RefCell;
 use std::io::Reader;
 use sync::{Arc, RWLock};
 use gl::types::{GLint, GLfloat};
-use na::{Vec2, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
+use na::{Pnt2, Pnt3, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
 use kiss3d::window::Window;
 use kiss3d::text::Font;
 use kiss3d::scene::ObjectData;
@@ -28,8 +28,8 @@ fn start(argc: int, argv: *const *const u8) -> int {
 fn main() {
     let mut window = Window::new("Kiss3d: relativity");
 
-    let eye      = Vec3::new(0.0f32, -399.0, 400.0);
-    let at       = Vec3::new(0.0f32, -399.0, 0.0);
+    let eye      = Pnt3::new(0.0f32, -399.0, 400.0);
+    let at       = Pnt3::new(0.0f32, -399.0, 0.0);
     let fov      = 45.0f32.to_radians();
     let font     = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
     let context  = Arc::new(RWLock::new(Context::new(1000.0, na::zero(), eye)));
@@ -87,9 +87,9 @@ fn main() {
 
         window.draw_text(
             format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop).as_slice(),
-            &na::zero(),
+            &na::orig(),
             &font,
-            &Vec3::new(1.0, 1.0, 1.0));
+            &Pnt3::new(1.0, 1.0, 1.0));
 
         observer.max_vel  = c.speed_of_light * 0.85;
         c.speed_of_player = obs_vel;
@@ -106,7 +106,7 @@ struct InertialCamera {
 }
 
 impl InertialCamera {
-    fn new(fov: f32, znear: f32, zfar: f32, eye: Vec3<f32>, at: Vec3<f32>) -> InertialCamera {
+    fn new(fov: f32, znear: f32, zfar: f32, eye: Pnt3<f32>, at: Pnt3<f32>) -> InertialCamera {
         let mut fp = FirstPerson::new_with_frustrum(fov, znear, zfar, eye, at);
 
         fp.set_move_step(0.0);
@@ -134,7 +134,7 @@ impl Camera for InertialCamera {
         self.cam.handle_event(window, event)
     }
 
-    fn eye(&self) -> Vec3<f32> {
+    fn eye(&self) -> Pnt3<f32> {
         self.cam.eye()
     }
 
@@ -179,11 +179,11 @@ impl Camera for InertialCamera {
 struct Context {
     speed_of_light:  f32,
     speed_of_player: Vec3<f32>,
-    position:        Vec3<f32>
+    position:        Pnt3<f32>
 }
 
 impl Context {
-    fn new(speed_of_light: f32, speed_of_player: Vec3<f32>, position: Vec3<f32>) -> Context {
+    fn new(speed_of_light: f32, speed_of_player: Vec3<f32>, position: Pnt3<f32>) -> Context {
         Context {
             speed_of_light:  speed_of_light,
             speed_of_player: speed_of_player,
@@ -196,11 +196,11 @@ impl Context {
 struct RelativisticMaterial {
     context:         Arc<RWLock<Context>>,
     shader:          Shader,
-    pos:             ShaderAttribute<Vec3<f32>>,
+    pos:             ShaderAttribute<Pnt3<f32>>,
     normal:          ShaderAttribute<Vec3<f32>>,
-    tex_coord:       ShaderAttribute<Vec2<f32>>,
-    light:           ShaderUniform<Vec3<f32>>,
-    color:           ShaderUniform<Vec3<f32>>,
+    tex_coord:       ShaderAttribute<Pnt2<f32>>,
+    light:           ShaderUniform<Pnt3<f32>>,
+    color:           ShaderUniform<Pnt3<f32>>,
     transform:       ShaderUniform<Mat4<f32>>,
     scale:           ShaderUniform<Mat3<f32>>,
     ntransform:      ShaderUniform<Mat3<f32>>,
@@ -208,7 +208,7 @@ struct RelativisticMaterial {
     light_vel:       ShaderUniform<GLfloat>,
     rel_vel:         ShaderUniform<Vec3<f32>>,
     rot:             ShaderUniform<Rot3<f32>>,
-    player_position: ShaderUniform<Vec3<f32>>
+    player_position: ShaderUniform<Pnt3<f32>>
 }
 
 impl RelativisticMaterial {

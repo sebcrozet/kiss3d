@@ -5,7 +5,7 @@
 use std::rc::Rc;
 use gl;
 use gl::types::*;
-use na::{Vec2, Vec3};
+use na::{Vec2, Pnt2, Pnt3};
 use text::Font;
 use camera::Camera;
 use resource::{Shader, ShaderUniform, ShaderAttribute, GPUVector, ArrayBuffer, StreamDraw};
@@ -14,14 +14,14 @@ use resource::{Shader, ShaderUniform, ShaderAttribute, GPUVector, ArrayBuffer, S
 mod error;
 
 struct TextRenderContext {
-    color: Vec3<f32>,
+    color: Pnt3<f32>,
     font:  Rc<Font>,
     begin: uint,
     size:  uint
 }
 
 impl TextRenderContext {
-    pub fn new(color: Vec3<f32>, font: Rc<Font>, begin: uint, size: uint) -> TextRenderContext {
+    pub fn new(color: Pnt3<f32>, font: Rc<Font>, begin: uint, size: uint) -> TextRenderContext {
         TextRenderContext {
             color:   color,
             font:    font,
@@ -36,11 +36,11 @@ pub struct TextRenderer {
     shader:   Shader,
     invsz:    ShaderUniform<Vec2<f32>>,
     tex:      ShaderUniform<GLint>,
-    color:    ShaderUniform<Vec3<f32>>,
-    pos:      ShaderAttribute<Vec2<f32>>,
-    uvs:      ShaderAttribute<Vec2<f32>>,
+    color:    ShaderUniform<Pnt3<f32>>,
+    pos:      ShaderAttribute<Pnt2<f32>>,
+    uvs:      ShaderAttribute<Pnt2<f32>>,
     contexts: Vec<TextRenderContext>,
-    coords:   GPUVector<Vec2<f32>>,
+    coords:   GPUVector<Pnt2<f32>>,
 }
 
 impl TextRenderer {
@@ -65,7 +65,7 @@ impl TextRenderer {
     /// Adds a piece of text to be drawn during the next frame. The text is not persistent between
     /// frames. This method must be called for each text to draw, and at each update loop
     /// iteration.
-    pub fn draw_text(&mut self, text: &str, pos: &Vec2<f32>, font: &Rc<Font>, color: &Vec3<f32>) {
+    pub fn draw_text(&mut self, text: &str, pos: &Pnt2<f32>, font: &Rc<Font>, color: &Pnt3<f32>) {
         for coords in self.coords.data_mut().iter_mut() {
             let begin = coords.len();
 
@@ -96,23 +96,23 @@ impl TextRenderer {
                     let adimx = font.atlas_dimensions().x as f32;
                     let adimy = font.atlas_dimensions().y as f32;
 
-                    coords.push(Vec2::new(end_x, -end_y - end_h));
-                    coords.push(Vec2::new(glyph.tex.x, glyph.tex.y));
+                    coords.push(Pnt2::new(end_x, -end_y - end_h));
+                    coords.push(Pnt2::new(glyph.tex.x, glyph.tex.y));
 
-                    coords.push(Vec2::new(end_x, -end_y));
-                    coords.push(Vec2::new(glyph.tex.x, glyph.tex.y + (end_h / adimy)));
+                    coords.push(Pnt2::new(end_x, -end_y));
+                    coords.push(Pnt2::new(glyph.tex.x, glyph.tex.y + (end_h / adimy)));
 
-                    coords.push(Vec2::new(end_x + end_w, -end_y));
-                    coords.push(Vec2::new(glyph.tex.x + (end_w / adimx), glyph.tex.y + (end_h / adimy)));
+                    coords.push(Pnt2::new(end_x + end_w, -end_y));
+                    coords.push(Pnt2::new(glyph.tex.x + (end_w / adimx), glyph.tex.y + (end_h / adimy)));
 
-                    coords.push(Vec2::new(end_x, -end_y - end_h));
-                    coords.push(Vec2::new(glyph.tex.x, glyph.tex.y));
+                    coords.push(Pnt2::new(end_x, -end_y - end_h));
+                    coords.push(Pnt2::new(glyph.tex.x, glyph.tex.y));
 
-                    coords.push(Vec2::new(end_x + end_w, -end_y));
-                    coords.push(Vec2::new(glyph.tex.x + (end_w / adimx), glyph.tex.y + (end_h / adimy)));
+                    coords.push(Pnt2::new(end_x + end_w, -end_y));
+                    coords.push(Pnt2::new(glyph.tex.x + (end_w / adimx), glyph.tex.y + (end_h / adimy)));
 
-                    coords.push(Vec2::new(end_x + end_w, -end_y - end_h));
-                    coords.push(Vec2::new(glyph.tex.x + (end_w / adimx), glyph.tex.y));
+                    coords.push(Pnt2::new(end_x + end_w, -end_y - end_h));
+                    coords.push(Pnt2::new(glyph.tex.x + (end_w / adimx), glyph.tex.y));
                 }
             }
 
@@ -171,7 +171,7 @@ pub static TEXT_VERTEX_SRC:   &'static str = A_VERY_LONG_STRING;
 /// Fragment shader used by the material to display line.
 pub static TEXT_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-static A_VERY_LONG_STRING: &'static str =
+const A_VERY_LONG_STRING: &'static str =
 "
 #version 120
 
@@ -191,7 +191,7 @@ void main() {
 }
 ";
 
-static ANOTHER_VERY_LONG_STRING: &'static str =
+const ANOTHER_VERY_LONG_STRING: &'static str =
 "
 #version 120
 

@@ -4,7 +4,7 @@ extern crate "nalgebra" as na;
 
 use std::rc::Rc;
 use std::cell::RefCell;
-use na::Vec3;
+use na::{Pnt3, Vec3};
 use kiss3d::window::Window;
 use kiss3d::resource::{Mesh, MeshManager};
 use kiss3d::light;
@@ -17,9 +17,9 @@ fn start(argc: int, argv: *const *const u8) -> int {
 fn main() {
     let mut window = Window::new("Kiss3d: custom_mesh_shared");
 
-    let a = Vec3::new(-1.0, -1.0, 0.0);
-    let b = Vec3::new(1.0, -1.0, 0.0);
-    let c = Vec3::new(0.0, 1.0, 0.0);
+    let a = Pnt3::new(-1.0, -1.0, 0.0);
+    let b = Pnt3::new(1.0, -1.0, 0.0);
+    let c = Pnt3::new(0.0, 1.0, 0.0);
 
     let vertices = vec!(a, b, c);
     let indices  = vec!(Vec3::new(0u32, 1, 2));

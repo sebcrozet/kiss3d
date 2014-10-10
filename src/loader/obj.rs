@@ -10,16 +10,16 @@ use std::collections::HashMap;
 use std::collections::hashmap::{Occupied, Vacant};
 use sync::{Arc, RWLock};
 use gl::types::GLfloat;
-use na::{Vec3, Vec2, Indexable};
+use na::{Vec3, Pnt2, Pnt3, Indexable};
 use na;
 use resource::Mesh;
 use loader::mtl::MtlMaterial;
 use loader::mtl;
 use resource::{GPUVector, StaticDraw, ArrayBuffer, ElementArrayBuffer};
 
-pub type Coord  = Vec3<GLfloat>;
+pub type Coord  = Pnt3<GLfloat>;
 pub type Normal = Vec3<GLfloat>;
-pub type UV     = Vec2<GLfloat>;
+pub type UV     = Pnt2<GLfloat>;
 
 fn error(line: uint, err: &str) -> ! {
     fail!("At line {}: {:s}", line, err)
@@ -62,7 +62,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
             Some(w) => {
                 if w.len() != 0 && w.as_bytes()[0] != ('#' as u8) {
                     match w {
-                        "v"      => coords.push(parse_v_or_vn(l, words)),
+                        "v"      => coords.push(parse_v_or_vn(l, words).to_pnt()),
                         "vn"     => if !ignore_normals { normals.push(parse_v_or_vn(l, words)) },
                         "f"      => parse_f(l, words, coords.as_slice(), uvs.as_slice(), normals.as_slice(), &mut ignore_uvs, &mut ignore_normals, &mut groups_ids, curr_group),
                         "vt"     => if !ignore_uvs { uvs.push(parse_vt(l, words)) },
@@ -186,8 +186,8 @@ fn parse_v_or_vn<'a>(l: uint, mut ws: Words<'a>) -> Vec3<f32> {
 
 fn parse_f<'a>(l:              uint,
                mut ws:         Words<'a>,
-               coords:         &[Vec3<f32>],
-               uvs:            &[Vec2<f32>],
+               coords:         &[Pnt3<f32>],
+               uvs:            &[Pnt2<f32>],
                normals:        &[Vec3<f32>],
                ignore_uvs:     &mut bool,
                ignore_normals: &mut bool,
@@ -279,7 +279,7 @@ fn parse_vt<'a>(l: uint, mut ws: Words<'a>) -> UV {
     let y = y.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sy).as_slice()));
     // let z = z.unwrap_or_else(|| error(l, "failed to parse `" + sz + "' as a f32."));
 
-    Vec2::new(x, y)
+    Pnt2::new(x, y)
 }
 
 fn parse_g<'a>(_:          uint,
@@ -359,7 +359,7 @@ fn reformat(coords:     Vec<Coord>,
 
     let resn = resn.unwrap_or_else(|| Mesh::compute_normals_array(resc.as_slice(), allfs.as_slice()));
     let resn = Arc::new(RWLock::new(GPUVector::new(resn, ArrayBuffer, StaticDraw)));
-    let resu = resu.unwrap_or_else(|| Vec::from_elem(resc.len(), na::zero()));
+    let resu = resu.unwrap_or_else(|| Vec::from_elem(resc.len(), na::orig()));
     let resu = Arc::new(RWLock::new(GPUVector::new(resu, ArrayBuffer, StaticDraw)));
     let resc = Arc::new(RWLock::new(GPUVector::new(resc, ArrayBuffer, StaticDraw)));
 
