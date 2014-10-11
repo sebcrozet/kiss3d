@@ -68,7 +68,7 @@ pub trait Camera {
     /// Converts a point in 2d screen coordinates to a ray (a 3d position and a direction).
     ///
     /// The screen is assumed to have a size given by `size`.
-    fn unproject(&self, window_coord: &Vec2<f32>, size: &Vec2<f32>) -> (Pnt3<f32>, Vec3<f32>) {
+    fn unproject(&self, window_coord: &Pnt2<f32>, size: &Vec2<f32>) -> (Pnt3<f32>, Vec3<f32>) {
         let normalized_coord = Pnt2::new(
             2.0 * window_coord.x  / size.x - 1.0,
             2.0 * -window_coord.y / size.y + 1.0);
