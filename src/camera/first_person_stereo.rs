@@ -1,7 +1,7 @@
 use std::num::One;
 use glfw;
 use gl;
-use na::{Pnt3, Pnt2, Vec2, Vec3, Mat4, Iso3, Rotate};
+use na::{Pnt3, Pnt2, Vec2, Vec3, Mat4, Iso3, PerspMat3, Rotate};
 use na;
 use resource::ShaderUniform;
 use camera::Camera;
@@ -38,10 +38,7 @@ pub struct FirstPersonStereo {
     move_step:  f32,
 
     /// Low level datas
-    fov:        f32,
-    znear:      f32,
-    zfar:       f32,
-    projection:      Mat4<f32>,
+    projection:      PerspMat3<f32>,
     proj_view:       Mat4<f32>,
     proj_view_left:  Mat4<f32>,
     proj_view_right: Mat4<f32>,
@@ -73,10 +70,7 @@ impl FirstPersonStereo {
             yaw_step:      0.005,
             pitch_step:    0.005,
             move_step:     0.5,
-            fov:        fov,
-            znear:      znear,
-            zfar:       zfar,
-            projection: na::perspective3d(800.0, 600.0, fov, znear, zfar),
+            projection: PerspMat3::new(800.0 / 600.0, fov, znear, zfar),
             proj_view:  na::zero(),
             inv_proj_view:   na::zero(),
             last_cursor_pos: na::orig(),
@@ -170,10 +164,10 @@ impl FirstPersonStereo {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view = self.projection * na::to_homogeneous(&na::inv(&self.view_transform()).unwrap());
+        self.proj_view = *self.projection.as_mat() * na::to_homogeneous(&na::inv(&self.view_transform()).unwrap());
         self.inv_proj_view = na::inv(&self.proj_view).unwrap();
-        self.proj_view_left = self.projection * na::to_homogeneous(&na::inv(&self.view_transform_left()).unwrap());
-        self.proj_view_right = self.projection * na::to_homogeneous(&na::inv(&self.view_transform_right()).unwrap());
+        self.proj_view_left = *self.projection.as_mat() * na::to_homogeneous(&na::inv(&self.view_transform_left()).unwrap());
+        self.proj_view_right = *self.projection.as_mat() * na::to_homogeneous(&na::inv(&self.view_transform_right()).unwrap());
     }
 
     fn transformation_eye(&self, eye: uint) -> Mat4<f32> {
@@ -218,7 +212,7 @@ impl FirstPersonStereo {
 
 impl Camera for FirstPersonStereo {
     fn clip_planes(&self) -> (f32, f32) {
-        (self.znear, self.zfar)
+        (self.projection.znear(), self.projection.zfar())
     }
 
     /// The imaginary middle eye camera view transformation (i-e transformation without projection).
@@ -248,7 +242,7 @@ impl Camera for FirstPersonStereo {
             },
             glfw::ScrollEvent(_, off) => self.handle_scroll(off as f32),
             glfw::FramebufferSizeEvent(w, h) => {
-                self.projection = na::perspective3d(w as f32, h as f32, self.fov, self.znear, self.zfar);
+                self.projection.set_aspect(w as f32 / h as f32);
                 self.update_projviews();
             }
             _ => { }

@@ -1,6 +1,6 @@
 use std::num::Zero;
 use glfw;
-use na::{Translation, Pnt3, Vec2, Vec3, Mat4, Iso3};
+use na::{Translation, Pnt3, Vec2, Vec3, Mat4, Iso3, PerspMat3};
 use na;
 use camera::Camera;
 
@@ -20,10 +20,7 @@ pub struct FirstPerson {
     pitch_step:      f32,
     move_step:       f32,
 
-    fov:             f32,
-    znear:           f32,
-    zfar:            f32,
-    projection:      Mat4<f32>,
+    projection:      PerspMat3<f32>,
     proj_view:       Mat4<f32>,
     inv_proj_view:   Mat4<f32>,
     last_cursor_pos: Vec2<f32>
@@ -48,10 +45,7 @@ impl FirstPerson {
             yaw_step:        0.005,
             pitch_step:      0.005,
             move_step:       0.5,
-            fov:             fov,
-            znear:           znear,
-            zfar:            zfar,
-            projection:      na::perspective3d(800.0, 600.0, fov, znear, zfar),
+            projection:      PerspMat3::new(800.0 / 600.0, fov, znear, zfar),
             proj_view:       na::zero(),
             inv_proj_view:   na::zero(),
             last_cursor_pos: na::zero(),
@@ -171,7 +165,7 @@ impl FirstPerson {
 
     fn update_projviews(&mut self) {
         let _ = na::inv(&self.view_transform()).map(|inv_view|
-            self.proj_view = self.projection * na::to_homogeneous(&inv_view)
+            self.proj_view = *self.projection.as_mat() * na::to_homogeneous(&inv_view)
         );
 
         let _ = na::inv(&self.proj_view).map(|inv_proj| self.inv_proj_view = inv_proj);
@@ -217,7 +211,7 @@ impl FirstPerson {
 
 impl Camera for FirstPerson {
     fn clip_planes(&self) -> (f32, f32) {
-        (self.znear, self.zfar)
+        (self.projection.znear(), self.projection.zfar())
     }
 
     /// The camera view transformation (i-e transformation without projection).
@@ -247,7 +241,7 @@ impl Camera for FirstPerson {
             },
             glfw::ScrollEvent(_, off) => self.handle_scroll(off as f32),
             glfw::FramebufferSizeEvent(w, h) => {
-                self.projection = na::perspective3d(w as f32, h as f32, self.fov, self.znear, self.zfar);
+                self.projection.set_aspect(w as f32 / h as f32);
                 self.update_projviews();
             }
             _ => { }

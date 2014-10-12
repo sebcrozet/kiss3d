@@ -1,5 +1,5 @@
 use glfw;
-use na::{Pnt3, Vec2, Vec3, Mat4, Iso3};
+use na::{Pnt3, Vec2, Vec3, Mat4, Iso3, PerspMat3};
 use na;
 use camera::Camera;
 
@@ -31,10 +31,7 @@ pub struct ArcBall {
     /// Increment of the distance per unit scrolling. The default value is 40.0.
     dist_step:  f32,
 
-    fov:        f32,
-    znear:      f32,
-    zfar:       f32,
-    projection:      Mat4<f32>,
+    projection:      PerspMat3<f32>,
     proj_view:       Mat4<f32>,
     inv_proj_view:   Mat4<f32>,
     last_cursor_pos: Vec2<f32>
@@ -60,10 +57,7 @@ impl ArcBall {
             yaw_step:        0.005,
             pitch_step:      0.005,
             dist_step:       40.0,
-            fov:             fov,
-            znear:           znear,
-            zfar:            zfar,
-            projection:      na::perspective3d(800.0, 600.0, fov, znear, zfar),
+            projection:      PerspMat3::new(800.0 / 600.0, fov, znear, zfar),
             proj_view:       na::zero(),
             inv_proj_view:   na::zero(),
             last_cursor_pos: na::zero()
@@ -173,14 +167,14 @@ impl ArcBall {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view     = self.projection * na::to_homogeneous(&na::inv(&self.view_transform()).unwrap());
+        self.proj_view     = *self.projection.as_mat() * na::to_homogeneous(&na::inv(&self.view_transform()).unwrap());
         self.inv_proj_view = na::inv(&self.proj_view).unwrap();
     }
 }
 
 impl Camera for ArcBall {
     fn clip_planes(&self) -> (f32, f32) {
-        (self.znear, self.zfar)
+        (self.projection.znear(), self.projection.zfar())
     }
 
     fn view_transform(&self) -> Iso3<f32> {
@@ -221,7 +215,7 @@ impl Camera for ArcBall {
             },
             glfw::ScrollEvent(_, off) => self.handle_scroll(off as f32),
             glfw::FramebufferSizeEvent(w, h) => {
-                self.projection = na::perspective3d(w as f32, h as f32, self.fov, self.znear, self.zfar);
+                self.projection.set_aspect(w as f32 / h as f32);
                 self.update_projviews();
             },
             _ => { }
