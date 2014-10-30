@@ -87,7 +87,7 @@ fn main() {
                     let g = rand::random();
                     let b = rand::random();
 
-                    let mut m  = window.add_trimesh(comp.clone().unwrap(), scale);
+                    let mut m  = window.add_trimesh(comp, scale);
                     m.set_color(r, g, b);
                     m.append_translation(&Vec3::new(-0.1, 0.1, 0.0));
                     // m.set_surface_rendering_activation(false);

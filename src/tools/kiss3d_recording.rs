@@ -207,7 +207,7 @@ impl Recorder {
         }
 
         if ret < 0 {
-            fail!("Error encoding frame.");
+            panic!("Error encoding frame.");
         }
 
         if got_output != 0 {
@@ -245,13 +245,13 @@ impl Recorder {
             self.format_context = fmt;
 
             if self.format_context.is_null() {
-                fail!("Unable to create the output context.");
+                panic!("Unable to create the output context.");
             }
 
             let fmt = (*self.format_context).oformat;
 
             if (*fmt).video_codec == avcodec::AV_CODEC_ID_NONE {
-                fail!("The selected output container does not support video encoding.")
+                panic!("The selected output container does not support video encoding.")
             }
 
             let mut codec: *mut AVCodec;
@@ -261,13 +261,13 @@ impl Recorder {
             codec = avcodec::avcodec_find_encoder((*fmt).video_codec);
 
             if codec.is_null() {
-                fail!("Codec not found.");
+                panic!("Codec not found.");
             }
 
             self.video_st = avformat::avformat_new_stream(self.format_context, codec as *AVCodec);
 
             if self.video_st.is_null() {
-                fail!("Failed to allocate the video stream.");
+                panic!("Failed to allocate the video stream.");
             }
 
             (*self.video_st).id = ((*self.format_context).nb_streams - 1) as i32;
@@ -277,7 +277,7 @@ impl Recorder {
             let _ = avcodec::avcodec_get_context_defaults3(self.context, codec as *AVCodec);
 
             if self.context.is_null() {
-                fail!("Could not allocate video codec context.");
+                panic!("Could not allocate video codec context.");
             }
 
             // sws scaling context
@@ -315,7 +315,7 @@ impl Recorder {
 
             // Open the codec.
             if avcodec::avcodec_open2(self.context, codec as *AVCodec, ptr::mut_null()) < 0 {
-                fail!("Could not open the codec.");
+                panic!("Could not open the codec.");
             }
 
             /*
@@ -324,7 +324,7 @@ impl Recorder {
             self.frame = avcodec::avcodec_alloc_frame();
 
             if self.frame.is_null() {
-                fail!("Could not allocate the video frame.");
+                panic!("Could not allocate the video frame.");
             }
 
             (*self.frame).format = (*self.context).pix_fmt;
@@ -350,7 +350,7 @@ impl Recorder {
             self.tmp_frame = avcodec::avcodec_alloc_frame();
 
             if self.tmp_frame.is_null() {
-                fail!("Could not allocate the video frame.");
+                panic!("Could not allocate the video frame.");
             }
 
             (*self.frame).format = (*self.context).pix_fmt;
@@ -360,16 +360,16 @@ impl Recorder {
             self.path.with_c_str(|path| {
                 static AVIO_FLAG_WRITE: i32 = 2; // XXX: this should be defined by the bindings.
                 if avformat::avio_open(&mut (*self.format_context).pb, path, AVIO_FLAG_WRITE) < 0 {
-                    fail!("Failed to open the output file.");
+                    panic!("Failed to open the output file.");
                 }
             });
 
             if avformat::avformat_write_header(self.format_context, ptr::mut_null()) < 0 {
-                fail!("Failed to open the output file.");
+                panic!("Failed to open the output file.");
             }
 
             if ret < 0 {
-                fail!("Could not allocate raw picture buffer");
+                panic!("Could not allocate raw picture buffer");
             }
         }
 
@@ -398,7 +398,7 @@ impl Drop for Recorder {
                 }
 
                 if ret < 0 {
-                    fail!("Error encoding frame.");
+                    panic!("Error encoding frame.");
                 }
 
                 if got_output != 0 {

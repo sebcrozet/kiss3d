@@ -60,12 +60,12 @@ impl Font {
                 Some(path) => {
                     let c_str = path.as_str().expect("Invalid path.").to_c_str();
                     if ffi::FT_New_Face(font.library, c_str.as_ptr(), 0, &mut font.face) != 0 {
-                        fail!("Failed to create TTF face.");
+                        panic!("Failed to create TTF face.");
                     }
                 },
                 None => {
                     if ffi::FT_New_Memory_Face(font.library, &memory[0], memory.len() as i64, 0, &mut font.face) != 0 {
-                        fail!("Failed to create TTF face.");
+                        panic!("Failed to create TTF face.");
                     }
                 }
             }

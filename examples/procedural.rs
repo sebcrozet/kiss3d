@@ -34,7 +34,7 @@ fn main() {
     /*
      * A sphere.
      */
-    let sphere = procedural::sphere(&0.4f32, 20, 20, true);
+    let sphere = procedural::sphere(0.4f32, 20, 20, true);
     let mut s  = window.add_trimesh(sphere, na::one());
     s.set_texture_with_name("kitten");
 
@@ -123,7 +123,7 @@ fn main() {
         points.push(rand::random::<Pnt3<f32>>() * 2.0f32);
     }
 
-    let chull  = procedural::convex_hull3d(points.as_slice());
+    let chull  = procedural::convex_hull3(points.as_slice());
     let mut mhull = window.add_trimesh(chull, na::one());
     let mut mpts  = window.add_trimesh(TriMesh::new(points, None, None, None), na::one());
     mhull.append_translation(&Vec3::new(0.0, 2.0, -1.0));
@@ -146,7 +146,7 @@ fn main() {
     }
 
     let points   = points.as_slice();
-    let polyline = procedural::convex_hull2d(points);
+    let polyline = procedural::convex_hull2(points);
 
     /*
      * Uniform parametric surface mesher.
@@ -229,7 +229,7 @@ impl ParametricBananas {
     }
 }
 
-impl ParametricSurface for ParametricBananas {
+impl ParametricSurface<f32, Pnt3<f32>, Vec3<f32>> for ParametricBananas {
     fn at(&self, u: f32, v: f32) -> Pnt3<f32> {
         Pnt3::new(self.x.d0(u, v), self.y.d0(u, v), self.z.d0(u, v))
     }

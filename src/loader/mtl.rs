@@ -8,7 +8,7 @@ use std::from_str::FromStr;
 use na::Vec3;
 
 fn error(line: uint, err: &str) -> ! {
-    fail!("At line {}: {}", line, err)
+    panic!("At line {}: {}", line, err)
 }
 
 /// Parses a mtl file.

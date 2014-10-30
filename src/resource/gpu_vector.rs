@@ -67,7 +67,7 @@ impl<T: GLPrimitive> GPUVector<T> {
         if self.trash {
             match self.data {
                 Some(ref d) => d.len(),
-                None        => fail!("This should never happend.")
+                None        => panic!("This should never happend.")
 
             }
         }

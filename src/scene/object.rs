@@ -285,7 +285,7 @@ impl Object {
     #[inline]
     pub fn set_texture_with_name(&mut self, name: &str) {
         let texture = TextureManager::get_global_manager(|tm| tm.get(name).unwrap_or_else(
-            || fail!("Invalid attempt to use the unregistered texture: {}", name)));
+            || panic!("Invalid attempt to use the unregistered texture: {}", name)));
 
         self.set_texture(texture)
     }

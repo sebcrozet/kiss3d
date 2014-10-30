@@ -22,7 +22,7 @@ pub type Normal = Vec3<GLfloat>;
 pub type UV     = Pnt2<GLfloat>;
 
 fn error(line: uint, err: &str) -> ! {
-    fail!("At line {}: {:s}", line, err)
+    panic!("At line {}: {:s}", line, err)
 }
 
 fn warn(line: uint, err: &str) {
@@ -62,7 +62,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
             Some(w) => {
                 if w.len() != 0 && w.as_bytes()[0] != ('#' as u8) {
                     match w {
-                        "v"      => coords.push(parse_v_or_vn(l, words).to_pnt()),
+                        "v"      => coords.push(na::orig::<Pnt3<f32>>() + parse_v_or_vn(l, words)),
                         "vn"     => if !ignore_normals { normals.push(parse_v_or_vn(l, words)) },
                         "f"      => parse_f(l, words, coords.as_slice(), uvs.as_slice(), normals.as_slice(), &mut ignore_uvs, &mut ignore_normals, &mut groups_ids, curr_group),
                         "vt"     => if !ignore_uvs { uvs.push(parse_vt(l, words)) },
@@ -202,7 +202,7 @@ fn parse_f<'a>(l:              uint,
             if i == 0 || w.len() != 0 {
                 let idx: Option<i32> = FromStr::from_str(w);
                 match idx {
-                    Some(id) => curr_ids.set(i, id - 1),
+                    Some(id) => curr_ids[i] = id - 1,
                     None     => error(l, format!("failed to parse `{}' as a i32.", w).as_slice())
                 }
             }

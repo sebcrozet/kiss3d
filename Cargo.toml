@@ -12,7 +12,6 @@ git = "https://github.com/sebcrozet/nalgebra"
 
 [dependencies.ncollide]
 git = "https://github.com/sebcrozet/ncollide"
-features = [ "3df32" ]
 
 [dependencies.gl]
 git = "https://github.com/bjz/gl-rs"

@@ -174,7 +174,7 @@ impl FirstPersonStereo {
         match eye {
             0u => self.proj_view_left,
             1u => self.proj_view_right,
-            _ => fail!("bad eye index")
+            _ => panic!("bad eye index")
         }
     }
 
@@ -298,7 +298,7 @@ impl Camera for FirstPersonStereo {
         let (x, y, w, h) = match pass {
             0u => (0, 0, win_w / 2 , win_h),
             1u => (win_w / 2, 0, win_w / 2, win_h),
-            _ => fail!("stereo first person takes only two passes")
+            _ => panic!("stereo first person takes only two passes")
         };
         verify!(gl::Viewport(x, y, w, h));
         verify!(gl::Scissor(x, y, w, h));

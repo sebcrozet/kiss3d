@@ -154,7 +154,7 @@ impl TextureManager {
                     verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
                 }
                 _ => {
-                    fail!("Failed to load texture {}", path.as_str().unwrap());
+                    panic!("Failed to load texture {}", path.as_str().unwrap());
                 }
             }
         }

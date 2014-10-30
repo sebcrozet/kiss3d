@@ -163,7 +163,7 @@ impl SceneNodeData {
     #[inline]
     pub fn set_material_with_name(&mut self, name: &str) {
         let material = MaterialManager::get_global_manager(|tm| tm.get(name).unwrap_or_else(
-            || fail!("Invalid attempt to use the unregistered material: {}", name)));
+            || panic!("Invalid attempt to use the unregistered material: {}", name)));
 
         self.set_material(material)
     }
@@ -293,7 +293,7 @@ impl SceneNodeData {
     #[inline]
     pub fn set_texture_with_name(&mut self, name: &str) {
         let texture = TextureManager::get_global_manager(|tm| tm.get(name).unwrap_or_else(
-            || fail!("Invalid attempt to use the unregistered texture: {}", name)));
+            || panic!("Invalid attempt to use the unregistered texture: {}", name)));
 
         self.set_texture(texture)
     }

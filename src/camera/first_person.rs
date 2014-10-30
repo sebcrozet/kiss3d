@@ -317,7 +317,7 @@ impl Translation<Vec3<f32>> for FirstPerson {
 
     #[inline]
     fn set_translation(&mut self, t: Vec3<f32>) {
-        self.eye = t.to_pnt();
+        self.eye = na::orig::<Pnt3<f32>>() + t;
         self.update_restrictions();
         self.update_projviews();
     }
