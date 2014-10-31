@@ -210,7 +210,7 @@ fn parse_f<'a>(l:              uint,
 
         if i > 2 {
             // on the fly triangulation as trangle fan
-            let g = groups_ids.get_mut(curr_group);
+            let g = &mut groups_ids[curr_group];
             let p1 = (*g)[g.len() - i];
             let p2 = (*g)[g.len() - 1];
             g.push(p1);
@@ -251,7 +251,7 @@ fn parse_f<'a>(l:              uint,
             z = curr_ids.z as u32;
         }
 
-        groups_ids.get_mut(curr_group).push(Vec3::new(x, y, z));
+        groups_ids[curr_group].push(Vec3::new(x, y, z));
 
         i = i + 1;
     }
@@ -260,7 +260,7 @@ fn parse_f<'a>(l:              uint,
     if i < 2 {
         for _ in range(0u, 3 - i) {
             let last = (*groups_ids)[curr_group].last().unwrap().clone();
-            groups_ids.get_mut(curr_group).push(last);
+            groups_ids[curr_group].push(last);
         }
     }
 }

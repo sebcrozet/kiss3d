@@ -101,7 +101,7 @@ impl Font {
                 row_height  = cmp::max(row_height, (*ft_glyph).bitmap.rows as uint);
                 font.height = cmp::max(font.height, row_height as i32);
 
-                *font.glyphs.get_mut(curr) = Some(glyph);
+                font.glyphs[curr] = Some(glyph);
             }
 
             font.atlas_dimensions.x = num::next_power_of_two(cmp::max(font.atlas_dimensions.x, row_width as uint));
@@ -128,7 +128,7 @@ impl Font {
             let mut offset: Vec2<i32> = na::zero();
             row_height = 0;
             for curr in range(0u, 128) {
-                let glyph = match *font.glyphs.get_mut(curr) {
+                let glyph = match *&mut font.glyphs[curr] {
                     Some(ref mut g) => g,
                     None            => continue
                 };

@@ -387,7 +387,7 @@ impl Window {
                            width, height,
                            gl::RGB,
                            gl::UNSIGNED_BYTE,
-                           out.get_mut(0) as *mut u8 as *mut libc::c_void);
+                           (&mut out[0]) as *mut u8 as *mut libc::c_void);
         }
     }
 

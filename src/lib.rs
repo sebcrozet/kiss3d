@@ -81,12 +81,12 @@ I’d love to see people improving this library for their own needs. However, ke
 */
 
 #![deny(non_camel_case_types)]
-#![deny(unnecessary_parens)]
-#![deny(non_uppercase_statics)]
-#![deny(unnecessary_qualification)]
-#![warn(missing_doc)] // FIXME: should be denied.
-#![deny(unused_result)]
-#![deny(unnecessary_typecast)]
+#![deny(unused_parens)]
+#![deny(non_upper_case_globals)]
+#![deny(unused_qualifications)]
+#![warn(missing_docs)] // FIXME: should be denied.
+#![deny(unused_results)]
+#![deny(unused_typecasts)]
 #![feature(globs)]
 #![feature(macro_rules)]
 #![feature(unsafe_destructor)]
