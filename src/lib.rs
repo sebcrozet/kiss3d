@@ -87,6 +87,7 @@ I’d love to see people improving this library for their own needs. However, ke
 #![warn(missing_docs)] // FIXME: should be denied.
 #![deny(unused_results)]
 #![deny(unused_typecasts)]
+#![allow(unused_unsafe)] // FIXME: should be denied
 #![feature(globs)]
 #![feature(macro_rules)]
 #![feature(unsafe_destructor)]

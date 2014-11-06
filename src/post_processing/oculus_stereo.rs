@@ -87,16 +87,16 @@ impl PostProcessingEffect for OculusStereo {
         /*
          * Finalize draw
          */
-        gl::ClearColor(0.0, 0.0, 0.0, 1.0);
-        gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+        verify!(gl::ClearColor(0.0, 0.0, 0.0, 1.0));
+        verify!(gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT));
 
-        gl::BindTexture(gl::TEXTURE_2D, target.texture_id());
+        verify!(gl::BindTexture(gl::TEXTURE_2D, target.texture_id()));
 
         self.fbo_texture.upload(&0);
 
         self.v_coord.bind(&mut self.fbo_vertices);
 
-        gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4);
+        verify!(gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4));
 
         self.v_coord.disable();
     }

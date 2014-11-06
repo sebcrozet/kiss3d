@@ -62,7 +62,7 @@ impl Shader {
     pub fn get_uniform<T: GLPrimitive>(&self, name: &str) -> Option<ShaderUniform<T>> {
         let location = unsafe { gl::GetUniformLocation(self.program, name.to_c_str().unwrap()) };
 
-        if gl::GetError() == 0 && location != -1 {
+        if unsafe { gl::GetError() } == 0 && location != -1 {
             Some(ShaderUniform { id: location as GLuint })
         }
         else {
@@ -74,7 +74,7 @@ impl Shader {
     pub fn get_attrib<T: GLPrimitive>(&self, name: &str) -> Option<ShaderAttribute<T>> {
         let location = unsafe { gl::GetAttribLocation(self.program, name.to_c_str().unwrap()) };
 
-        if gl::GetError() == 0 && location != -1 {
+        if unsafe { gl::GetError() } == 0 && location != -1 {
             Some(ShaderAttribute { id: location as GLuint })
         }
         else {
@@ -90,9 +90,9 @@ impl Shader {
 
 impl Drop for Shader {
     fn drop(&mut self) {
-        gl::DeleteProgram(self.program);
-        gl::DeleteShader(self.fshader);
-        gl::DeleteShader(self.vshader);
+        verify!(gl::DeleteProgram(self.program));
+        verify!(gl::DeleteShader(self.fshader));
+        verify!(gl::DeleteShader(self.vshader));
     }
 }
 
@@ -160,7 +160,7 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
 /// Fails after displaying opengl compilation errors if the shaders are invalid.
 fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (GLuint, GLuint, GLuint) {
     // Create and compile the vertex shader
-    let vshader = gl::CreateShader(gl::VERTEX_SHADER);
+    let vshader = verify!(gl::CreateShader(gl::VERTEX_SHADER));
     unsafe {
         verify!(gl::ShaderSource(vshader, 1, &vertex_shader.to_c_str().unwrap(), ptr::null()));
         verify!(gl::CompileShader(vshader));
@@ -168,7 +168,7 @@ fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (GLuint, G
     check_shader_error(vshader);
 
     // Create and compile the fragment shader
-    let fshader = gl::CreateShader(gl::FRAGMENT_SHADER);
+    let fshader = verify!(gl::CreateShader(gl::FRAGMENT_SHADER));
     unsafe {
         verify!(gl::ShaderSource(fshader, 1, &fragment_shader.to_c_str().unwrap(), ptr::null()));
         verify!(gl::CompileShader(fshader));
@@ -177,7 +177,7 @@ fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (GLuint, G
     check_shader_error(fshader);
 
     // Link the vertex and fragment shader into a shader program
-    let program = gl::CreateProgram();
+    let program = verify!(gl::CreateProgram());
     verify!(gl::AttachShader(program, vshader));
     verify!(gl::AttachShader(program, fshader));
     verify!(gl::LinkProgram(program));

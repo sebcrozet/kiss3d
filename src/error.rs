@@ -1,10 +1,11 @@
 #![macro_escape]
 
 macro_rules! verify(
-    ($e: expr) => (
-        {
-            $e;
+    ($e: expr) => {
+        unsafe {
+            let res = $e;
             assert_eq!(gl::GetError(), 0);
+            res
         }
-    )
+    }
 )

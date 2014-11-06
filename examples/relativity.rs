@@ -313,14 +313,14 @@ impl Material for RelativisticMaterial {
 
         mesh.bind(&mut self.pos, &mut self.normal, &mut self.tex_coord);
 
-        if data.backface_culling_enabled() {
-            gl::Enable(gl::CULL_FACE);
-        }
-        else {
-            gl::Disable(gl::CULL_FACE);
-        }
-
         unsafe {
+            if data.backface_culling_enabled() {
+                gl::Enable(gl::CULL_FACE);
+            }
+            else {
+                gl::Disable(gl::CULL_FACE);
+            }
+
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, data.texture().id());
 

@@ -7,7 +7,7 @@ use std::str::Words;
 use std::from_str::FromStr;
 use std::io::IoResult;
 use std::collections::HashMap;
-use std::collections::hashmap::{Occupied, Vacant};
+use std::collections::hash_map::Entry;
 use sync::{Arc, RWLock};
 use gl::types::GLfloat;
 use na::{Vec3, Pnt2, Pnt3, Indexable};
@@ -293,8 +293,8 @@ fn parse_g<'a>(_:          uint,
     let name   = if suffix.len() == 0 { prefix.to_string() } else { format!("{}/{}", prefix, suffix) };
 
     match groups.entry(name) {
-        Occupied(entry) => *entry.into_mut(),
-        Vacant(entry)   => {
+        Entry::Occupied(entry) => *entry.into_mut(),
+        Entry::Vacant(entry)   => {
             groups_ids.push(Vec::new());
 
             let val = groups_ids.len() - 1;

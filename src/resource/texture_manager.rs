@@ -4,7 +4,7 @@ use std::cell::RefCell;
 use std::mem;
 use std::rc::Rc;
 use std::collections::HashMap;
-use std::collections::hashmap::{Occupied, Vacant};
+use std::collections::hash_map::Entry;
 use gl;
 use gl::types::*;
 use stb_image::image::ImageU8;
@@ -99,8 +99,8 @@ impl TextureManager {
     /// If a texture with same name exists, nothing is created and the old texture is returned.
     pub fn add_empty(&mut self, name: &str) -> Rc<Texture> {
         match self.textures.entry(name.to_string()) {
-            Occupied(entry) => entry.into_mut().clone(),
-            Vacant(entry)   => entry.set(Texture::new()).clone()
+            Entry::Occupied(entry) => entry.into_mut().clone(),
+            Entry::Vacant(entry)   => entry.set(Texture::new()).clone()
         }
     }
 
@@ -108,8 +108,8 @@ impl TextureManager {
     /// created and the old texture is returned.
     pub fn add(&mut self, path: &Path, name: &str) -> Rc<Texture> {
         let tex = match self.textures.entry(name.to_string()) {
-            Occupied(entry) => entry.into_mut(),
-            Vacant(entry)   => entry.set(Texture::new())
+            Entry::Occupied(entry) => entry.into_mut(),
+            Entry::Vacant(entry)   => entry.set(Texture::new())
         };
 
         // FIXME: dont re-load the texture if it already exists!
