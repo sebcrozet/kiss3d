@@ -52,7 +52,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
     let mut curr_mtl                          = None::<MtlMaterial>;
 
     groups_ids.push(Vec::new());
-    groups.insert(basename.to_string(), 0);
+    let _ = groups.insert(basename.to_string(), 0);
 
     for (l, line) in string.lines_any().enumerate() {
         let mut words = line.words();
@@ -111,7 +111,7 @@ fn parse_usemtl<'a>(l:          uint,
     let mname = mname.connect(" ");
     let none  = "None";
     if mname.as_slice() != none.as_slice() {
-        match mtllib.find(&mname) {
+        match mtllib.get(&mname) {
             None    => {
                 *curr_mtl = None;
                 warn(l, format!("could not find the material {}", mname).as_slice());
@@ -120,7 +120,7 @@ fn parse_usemtl<'a>(l:          uint,
             },
             Some(m) => {
                 if !group2mtl.contains_key(&curr_group) {
-                    group2mtl.insert(curr_group, m.clone());
+                    let _ = group2mtl.insert(curr_group, m.clone());
                     *curr_mtl = Some(m.clone());
                     curr_group
                 }
@@ -132,7 +132,7 @@ fn parse_usemtl<'a>(l:          uint,
 
                     let new_group = parse_g(l, g.as_slice().words(), "auto_generated_group_", groups, groups_ids);
 
-                    group2mtl.insert(new_group, m.clone());
+                    let _ = group2mtl.insert(new_group, m.clone());
                     *curr_mtl = Some(m.clone());
 
                     new_group
@@ -162,7 +162,7 @@ fn parse_mtllib<'a>(l:            uint,
     match ms {
         Ok(ms) =>
             for m in ms.into_iter() {
-                mtllib.insert(m.name.to_string(), m);
+                let _ = mtllib.insert(m.name.to_string(), m);
             },
         Err(err) => warn(l, format!("{}", err).as_slice())
     }
@@ -322,10 +322,10 @@ fn reformat(coords:     Vec<Coord>,
 
     for (name, i) in groups.into_iter() {
         names.push(name);
-        mtls.push(group2mtl.find(&i).map(|m| m.clone()));
+        mtls.push(group2mtl.get(&i).map(|m| m.clone()));
 
         for point in groups_ids[i].iter() {
-            let idx = match vt2id.find(point) {
+            let idx = match vt2id.get(point) {
                 Some(i) => { vertex_ids.push(*i); None },
                 None    => {
                     let idx = resc.len() as u32;

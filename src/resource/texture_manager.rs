@@ -91,7 +91,7 @@ impl TextureManager {
 
     /// Get a texture with the specified name. Returns `None` if the texture is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<Texture>> {
-        self.textures.find(&name.to_string()).map(|t| t.clone())
+        self.textures.get(&name.to_string()).map(|t| t.clone())
     }
 
     /// Allocates a new texture that is not yet configured.

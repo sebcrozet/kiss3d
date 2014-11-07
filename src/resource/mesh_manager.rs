@@ -49,7 +49,7 @@ impl MeshManager {
 
     /// Get a mesh with the specified name. Returns `None` if the mesh is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Mesh>>> {
-        self.meshes.find(&name.to_string()).map(|t| t.clone())
+        self.meshes.get(&name.to_string()).map(|t| t.clone())
     }
 
     /// Adds a mesh with the specified name to this cache.
@@ -69,7 +69,7 @@ impl MeshManager {
 
     /// Removes a mesh from this cache.
     pub fn remove(&mut self, name: &str) {
-        self.meshes.remove(&name.to_string());
+        let _ = self.meshes.remove(&name.to_string());
     }
 
     // FIXME: is this the right place to put this?

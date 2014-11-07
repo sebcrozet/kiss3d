@@ -28,13 +28,13 @@ impl MaterialManager {
         let mut materials = HashMap::new();
 
         let om = Rc::new(RefCell::new(box ObjectMaterial::new() as Box<Material + 'static>));
-        materials.insert("object".to_string(), om.clone());
+        let _ = materials.insert("object".to_string(), om.clone());
 
         let nm = Rc::new(RefCell::new(box NormalsMaterial::new() as Box<Material + 'static>));
-        materials.insert("normals".to_string(), nm.clone());
+        let _ = materials.insert("normals".to_string(), nm.clone());
 
         let um = Rc::new(RefCell::new(box UvsMaterial::new() as Box<Material + 'static>));
-        materials.insert("uvs".to_string(), um.clone());
+        let _ = materials.insert("uvs".to_string(), um.clone());
 
         MaterialManager {
             default_material: om,
@@ -58,7 +58,7 @@ impl MaterialManager {
 
     /// Get a material with the specified name. Returns `None` if the material is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Box<Material + 'static>>>> {
-        self.materials.find(&name.to_string()).map(|t| t.clone())
+        self.materials.get(&name.to_string()).map(|t| t.clone())
     }
 
     /// Adds a material with the specified name to this cache.
@@ -68,6 +68,6 @@ impl MaterialManager {
 
     /// Removes a mesh from this cache.
     pub fn remove(&mut self, name: &str) {
-        self.materials.remove(&name.to_string());
+        let _ = self.materials.remove(&name.to_string());
     }
 }
