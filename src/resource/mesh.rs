@@ -5,7 +5,7 @@ use sync::{Arc, RWLock};
 use gl::types::*;
 use na::{Pnt2, Vec3, Pnt3};
 use na;
-use ncollide::procedural::{TriMesh, UnifiedIndexBuffer};
+use ncollide::procedural::{TriMesh, TriMesh3, IndexBuffer};
 use resource::ShaderAttribute;
 use resource::gpu_vector::{GPUVector, DynamicDraw, StaticDraw, ArrayBuffer, ElementArrayBuffer};
 
@@ -54,7 +54,7 @@ impl Mesh {
     /// Creates a new mesh from a mesh descr.
     ///
     /// In the normals and uvs are not given, they are automatically computed.
-    pub fn from_trimesh(mesh: TriMesh<GLfloat, Pnt3<GLfloat>, Vec3<GLfloat>>, dynamic_draw: bool) -> Mesh {
+    pub fn from_trimesh(mesh: TriMesh3<GLfloat>, dynamic_draw: bool) -> Mesh {
         let mut mesh = mesh;
 
         mesh.unify_index_buffer();
@@ -65,7 +65,7 @@ impl Mesh {
     }
 
     /// Creates a triangle mesh from this mesh.
-    pub fn to_trimesh(&self) -> Option<TriMesh<GLfloat, Pnt3<GLfloat>, Vec3<GLfloat>>> {
+    pub fn to_trimesh(&self) -> Option<TriMesh3<GLfloat>> {
         let unload_coords  = !self.coords.read().is_on_ram();
         let unload_faces   = !self.faces.read().is_on_ram();
         let unload_normals = !self.normals.read().is_on_ram();
@@ -98,7 +98,7 @@ impl Mesh {
             None
         }
         else {
-            Some(TriMesh::new(coords.unwrap(), normals, uvs, Some(UnifiedIndexBuffer(faces.unwrap()))))
+            Some(TriMesh::new(coords.unwrap(), normals, uvs, Some(IndexBuffer::Unified(faces.unwrap()))))
         }
     }
 

@@ -4,7 +4,7 @@ use std::mem;
 use na;
 use na::{Iso3, Pnt2, Vec3, Pnt3, Transformation, Rotation, Translation, RotationWithTranslation};
 use resource::{Mesh, MeshManager, Texture, TextureManager, Material, MaterialManager};
-use ncollide::procedural::TriMesh;
+use ncollide::procedural::TriMesh3;
 use ncollide::procedural;
 use scene::Object;
 use camera::Camera;
@@ -719,7 +719,7 @@ impl SceneNode {
     }
 
     /// Creates and adds a new object using a mesh descriptor.
-    pub fn add_trimesh(&mut self, descr: TriMesh<f32, Pnt3<f32>, Vec3<f32>>, scale: Vec3<f32>) -> SceneNode {
+    pub fn add_trimesh(&mut self, descr: TriMesh3<f32>, scale: Vec3<f32>) -> SceneNode {
         self.add_mesh(Rc::new(RefCell::new(Mesh::from_trimesh(descr, false))), scale)
     }
 
