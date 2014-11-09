@@ -20,3 +20,5 @@ distcheck:
 
 clean:
 	cargo clean
+
+.PHONY: examples
