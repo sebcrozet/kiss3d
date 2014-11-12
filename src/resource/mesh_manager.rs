@@ -4,7 +4,6 @@ use std::io::IoResult;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
-use na::{Pnt3, Vec3};
 use ncollide::procedural::TriMesh3;
 use ncollide::procedural;
 use resource::Mesh;
