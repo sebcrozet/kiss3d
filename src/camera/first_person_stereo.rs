@@ -1,4 +1,4 @@
-use std::num::One;
+use std::num::{One, Float, FloatMath};
 use glfw;
 use gl;
 use na::{Pnt3, Pnt2, Vec2, Vec3, Mat4, Iso3, PerspMat3, Rotate};

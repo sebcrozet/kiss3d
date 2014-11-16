@@ -5,6 +5,7 @@ extern crate kiss3d;
 extern crate "nalgebra" as na;
 
 use std::rand;
+use std::num::Float;
 use na::{Pnt2, Pnt3, Vec2, Vec3, Translation};
 use ncollide::parametric::ParametricSurface;
 use ncollide::procedural::{Polyline, TriMesh};

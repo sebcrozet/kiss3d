@@ -4,6 +4,7 @@ extern crate kiss3d;
 extern crate "nalgebra" as na;
 
 use std::rand::random;
+use std::num::FloatMath;
 use kiss3d::window::Window;
 use kiss3d::light;
 
