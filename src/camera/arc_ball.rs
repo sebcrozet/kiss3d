@@ -1,3 +1,4 @@
+use std::num::{Float, FloatMath};
 use glfw;
 use na::{Pnt3, Vec2, Vec3, Mat4, Iso3, PerspMat3};
 use na;

@@ -6,7 +6,7 @@ extern crate kiss3d;
 extern crate "nalgebra" as na;
 
 use std::ptr;
-use std::num::Zero;
+use std::num::{Zero, FloatMath, Float};
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::io::Reader;
