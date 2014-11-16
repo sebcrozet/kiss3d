@@ -1,4 +1,4 @@
-use std::num::{One, Float, FloatMath};
+use std::num::{Float, FloatMath};
 use glfw;
 use gl;
 use na::{Pnt3, Pnt2, Vec2, Vec3, Mat4, Iso3, PerspMat3, Rotate};
@@ -180,7 +180,7 @@ impl FirstPersonStereo {
 
     /// The left eye camera view transformation
     fn view_transform_left(&self) -> Iso3<f32> {
-        let mut id: Iso3<f32> = One::one();
+        let mut id: Iso3<f32> = na::one();
         id.look_at_z(&self.eye_left, &self.at(), &Vec3::y());
 
         id
@@ -188,7 +188,7 @@ impl FirstPersonStereo {
 
     /// The right eye camera view transformation
     fn view_transform_right(&self) -> Iso3<f32> {
-        let mut id: Iso3<f32> = One::one();
+        let mut id: Iso3<f32> = na::one();
         id.look_at_z(&self.eye_right, &self.at(), &Vec3::y());
 
         id
@@ -217,7 +217,7 @@ impl Camera for FirstPersonStereo {
 
     /// The imaginary middle eye camera view transformation (i-e transformation without projection).
     fn view_transform(&self) -> Iso3<f32> {
-        let mut id: Iso3<f32> = One::one();
+        let mut id: Iso3<f32> = na::one();
         id.look_at_z(&self.eye, &self.at(), &Vec3::y());
 
         id

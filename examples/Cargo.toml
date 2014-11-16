@@ -3,6 +3,9 @@ name    = "kiss3d-examples"
 version = "0.1.0"
 authors = [ "Sébastien Crozet <developer@crozet.re>" ]
 
+[dependencies.time]
+git = "https://github.com/rust-lang/time"
+
 [dependencies.kiss3d]
 path = ".."
 

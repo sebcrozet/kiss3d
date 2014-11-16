@@ -1,4 +1,4 @@
-use std::num::{Zero, Float, FloatMath};
+use std::num::{Float, FloatMath};
 use glfw;
 use na::{Translation, Pnt3, Vec2, Vec3, Mat4, Iso3, PerspMat3};
 use na;
@@ -200,7 +200,7 @@ impl FirstPerson {
             movement =  movement + rightv
         }
 
-        if movement.is_zero() {
+        if na::is_zero(&movement) {
             movement
         }
         else {

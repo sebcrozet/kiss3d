@@ -1,6 +1,5 @@
 //! Simplistic obj loader.
 
-use std::num::Bounded;
 use std::io::fs::File;
 use std::io::Reader;
 use std::str::Words;
@@ -10,7 +9,7 @@ use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use sync::{Arc, RWLock};
 use gl::types::GLfloat;
-use na::{Vec3, Pnt2, Pnt3, Indexable};
+use na::{Vec3, Pnt2, Pnt3, Indexable, Bounded};
 use na;
 use resource::Mesh;
 use loader::mtl::MtlMaterial;

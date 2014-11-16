@@ -3,7 +3,7 @@
 // It has been modified to work with gl-rs, nalgebra, and rust-freetype
 
 use std::rc::Rc;
-use std::num;
+use std::num::UnsignedInt;
 use std::cmp;
 use std::ptr;
 use std::vec::raw;
@@ -104,8 +104,8 @@ impl Font {
                 font.glyphs[curr] = Some(glyph);
             }
 
-            font.atlas_dimensions.x = num::next_power_of_two(cmp::max(font.atlas_dimensions.x, row_width as uint));
-            font.atlas_dimensions.y = num::next_power_of_two(font.atlas_dimensions.y + row_height);
+            font.atlas_dimensions.x = UnsignedInt::next_power_of_two(cmp::max(font.atlas_dimensions.x, row_width as uint));
+            font.atlas_dimensions.y = UnsignedInt::next_power_of_two(font.atlas_dimensions.y + row_height);
 
             /* We're using 1 byte alignment buffering. */
             verify!(gl::PixelStorei(gl::UNPACK_ALIGNMENT, 1));

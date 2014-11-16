@@ -6,7 +6,7 @@ extern crate kiss3d;
 extern crate "nalgebra" as na;
 
 use std::ptr;
-use std::num::{Zero, FloatMath, Float};
+use std::num::{FloatMath, Float};
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::io::Reader;
@@ -154,7 +154,7 @@ impl Camera for InertialCamera {
 
         let dir = self.cam.move_dir(up, down, right, left);
 
-        if !dir.is_zero() {
+        if !na::is_zero(&dir) {
             self.velocity = self.velocity + dir * self.acceleration * 0.016f32;
         }
         else {

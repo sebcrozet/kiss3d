@@ -1,6 +1,5 @@
 //! Data structure of a scene node geometry.
 
-use std::num::Zero;
 use sync::{Arc, RWLock};
 use gl::types::*;
 use na::{Pnt2, Vec3, Pnt3};
@@ -212,7 +211,7 @@ impl Mesh {
             let cross  = na::cross(&edge1, &edge2);
             let normal;
     
-            if !cross.is_zero() {
+            if !na::is_zero(&cross) {
                 normal = na::normalize(&cross)
             }
             else {
