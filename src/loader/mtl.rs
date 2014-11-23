@@ -4,7 +4,7 @@ use std::mem;
 use std::io::fs::File;
 use std::io::{IoResult, Reader};
 use std::str::Words;
-use std::from_str::FromStr;
+use std::str::FromStr;
 use na::Vec3;
 
 fn error(line: uint, err: &str) -> ! {
@@ -67,7 +67,7 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
                             // specular texture map
                             "map_d" | "map_opacity" => curr_material.opacity_map = Some(parse_name(l, words)),
                             _     => {
-                                println!("Warning: unknown line {} ignored: `{:s}'", l, line);
+                                println!("Warning: unknown line {} ignored: `{}'", l, line);
                             }
                     }
                 }

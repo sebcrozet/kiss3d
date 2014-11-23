@@ -1,5 +1,7 @@
+use std::f32;
 use std::num::{Float, FloatMath};
 use glfw;
+use glfw::{Key, Action};
 use na::{Translation, Pnt3, Vec2, Vec3, Mat4, Iso3, PerspMat3};
 use na;
 use camera::Camera;
@@ -126,7 +128,7 @@ impl FirstPerson {
             self.pitch = 0.01
         }
 
-        let _pi: f32 = Float::pi();
+        let _pi: f32 = f32::consts::PI;
         if self.pitch > _pi - 0.01 {
             self.pitch = _pi - 0.01
         }
@@ -261,10 +263,10 @@ impl Camera for FirstPerson {
     }
 
     fn update(&mut self, window: &glfw::Window) {
-        let up    = window.get_key(glfw::KeyUp)    == glfw::Press;
-        let down  = window.get_key(glfw::KeyDown)  == glfw::Press;
-        let right = window.get_key(glfw::KeyRight) == glfw::Press;
-        let left  = window.get_key(glfw::KeyLeft)  == glfw::Press;
+        let up    = window.get_key(Key::Up)    == Action::Press;
+        let down  = window.get_key(Key::Down)  == Action::Press;
+        let right = window.get_key(Key::Right) == Action::Press;
+        let left  = window.get_key(Key::Left)  == Action::Press;
         let dir   = self.move_dir(up, down, right, left);
 
         let move_amount  = dir * self.move_step;

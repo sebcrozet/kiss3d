@@ -1,18 +1,13 @@
-extern crate native;
 extern crate glfw;
 extern crate "nalgebra" as na;
 extern crate kiss3d;
 
+use glfw::{Key, Action};
 use na::Pnt3;
 use kiss3d::window::Window;
 use kiss3d::light;
 use kiss3d::camera::FirstPersonStereo;
 use kiss3d::post_processing::OculusStereo;
-
-#[start]
-fn start(argc: int, argv: *const *const u8) -> int {
-    native::start(argc, argv, main)
-}
 
 fn main() {
     let mut window = Window::new_with_size("Kiss3d: stereo", 1280, 800);
@@ -36,11 +31,11 @@ fn main() {
     while window.render_with_camera_and_effect(&mut camera, &mut oculus_stereo) {
         for event in window.events().iter() {
             match event.value {
-                glfw::KeyEvent(glfw::Key1, _, glfw::Release, _) => {
+                glfw::KeyEvent(Key::Num1, _, Action::Release, _) => {
                     let ipd = camera.ipd();
                     camera.set_ipd(ipd + 0.1f32);
                 },
-                glfw::KeyEvent(glfw::Key2, _, glfw::Release, _) => {
+                glfw::KeyEvent(Key::Num2, _, Action::Release, _) => {
                     let ipd = camera.ipd();
                     camera.set_ipd(ipd - 0.1f32);
                 },

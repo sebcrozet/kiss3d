@@ -1,5 +1,3 @@
-extern crate native;
-extern crate sync;
 extern crate gl;
 extern crate glfw;
 extern crate kiss3d;
@@ -10,8 +8,9 @@ use std::num::{FloatMath, Float};
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::io::Reader;
-use sync::{Arc, RWLock};
+use std::sync::{Arc, RWLock};
 use gl::types::{GLint, GLfloat};
+use glfw::{Key, Action};
 use na::{Pnt2, Pnt3, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
 use kiss3d::window::Window;
 use kiss3d::text::Font;
@@ -19,11 +18,6 @@ use kiss3d::scene::ObjectData;
 use kiss3d::camera::{Camera, FirstPerson};
 use kiss3d::light::{Light, Absolute, StickToCamera};
 use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
-
-#[start]
-fn start(argc: int, argv: *const *const u8) -> int {
-    native::start(argc, argv, main)
-}
 
 fn main() {
     let mut window = Window::new("Kiss3d: relativity");
@@ -70,11 +64,11 @@ fn main() {
 
         for event in window.events().iter() {
             match event.value {
-                glfw::KeyEvent(code, _, glfw::Release, _) => {
-                    if code == glfw::Key1 {
+                glfw::KeyEvent(code, _, Action::Release, _) => {
+                    if code == Key::Num1 {
                         c.speed_of_light = c.speed_of_light + 100.0;
                     }
-                    else if code == glfw::Key2 {
+                    else if code == Key::Num2 {
                         c.speed_of_light = (c.speed_of_light - 100.0).max(0.1);
                     }
                 },
@@ -147,10 +141,10 @@ impl Camera for InertialCamera {
     }
 
     fn update(&mut self, window: &glfw::Window) {
-        let up    = window.get_key(glfw::KeyUp)    == glfw::Press;
-        let down  = window.get_key(glfw::KeyDown)  == glfw::Press;
-        let right = window.get_key(glfw::KeyRight) == glfw::Press;
-        let left  = window.get_key(glfw::KeyLeft)  == glfw::Press;
+        let up    = window.get_key(Key::Up)    == Action::Press;
+        let down  = window.get_key(Key::Down)  == Action::Press;
+        let right = window.get_key(Key::Right) == Action::Press;
+        let left  = window.get_key(Key::Left)  == Action::Press;
 
         let dir = self.cam.move_dir(up, down, right, left);
 

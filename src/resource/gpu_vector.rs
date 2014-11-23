@@ -217,17 +217,17 @@ impl<T: Clone + GLPrimitive> GPUVector<T> {
 /// Type of gpu buffer.
 pub enum BufferType {
     /// An array buffer bindable to a gl::ARRAY_BUFFER.
-    ArrayBuffer,
+    Array,
     /// An array buffer bindable to a gl::ELEMENT_ARRAY_BUFFER.
-    ElementArrayBuffer
+    ElementArray
 }
 
 impl BufferType {
     #[inline]
     fn to_gl(&self) -> GLuint {
         match *self {
-            ArrayBuffer        => gl::ARRAY_BUFFER,
-            ElementArrayBuffer => gl::ELEMENT_ARRAY_BUFFER
+            BufferType::Array        => gl::ARRAY_BUFFER,
+            BufferType::ElementArray => gl::ELEMENT_ARRAY_BUFFER
         }
     }
 }
@@ -246,9 +246,9 @@ impl AllocationType {
     #[inline]
     fn to_gl(&self) -> GLuint {
         match *self {
-            StaticDraw  => gl::STATIC_DRAW,
-            DynamicDraw => gl::DYNAMIC_DRAW,
-            StreamDraw  => gl::STREAM_DRAW
+            AllocationType::StaticDraw  => gl::STATIC_DRAW,
+            AllocationType::DynamicDraw => gl::DYNAMIC_DRAW,
+            AllocationType::StreamDraw  => gl::STREAM_DRAW
         }
     }
 }

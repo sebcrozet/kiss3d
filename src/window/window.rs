@@ -4,7 +4,7 @@
  */
 
 use glfw;
-use glfw::Context;
+use glfw::{Context, Key, Action};
 use std::io::timer::Timer;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -22,7 +22,7 @@ use line_renderer::LineRenderer;
 use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, RenderTarget, Texture, TextureManager, Mesh, Material};
-use light::{Light, Absolute, StickToCamera};
+use light::Light;
 use text::{TextRenderer, Font};
 use window::EventManager;
 use camera::ArcBall;
@@ -320,7 +320,7 @@ impl Window {
             events:                Rc::new(events),
             unhandled_events:      Rc::new(RefCell::new(Vec::new())),
             scene:                 SceneNode::new_empty(),
-            light_mode:            Absolute(Pnt3::new(0.0, 10.0, 0.0)),
+            light_mode:            Light::Absolute(Pnt3::new(0.0, 10.0, 0.0)),
             background:            Vec3::new(0.0, 0.0, 0.0),
             line_renderer:         LineRenderer::new(),
             point_renderer:        PointRenderer::new(),
@@ -419,7 +419,7 @@ impl Window {
 
     fn handle_event(&mut self, camera: &mut Option<&mut Camera>, event: &glfw::WindowEvent) {
         match *event {
-            glfw::KeyEvent(glfw::KeyEscape, _, glfw::Release, _) => {
+            glfw::KeyEvent(Key::Escape, _, Action::Release, _) => {
                 self.close();
             },
             glfw::FramebufferSizeEvent(w, h) => {
@@ -487,8 +487,8 @@ impl Window {
         camera.update(&self.window);
 
         match self.light_mode {
-            StickToCamera => self.set_light(StickToCamera),
-            _             => { }
+            Light::StickToCamera => self.set_light(Light::StickToCamera),
+            _ => { }
         }
 
         let mut post_processing = post_processing;

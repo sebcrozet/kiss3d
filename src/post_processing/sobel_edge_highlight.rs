@@ -3,7 +3,8 @@
 use gl;
 use gl::types::*;
 use na::Vec2;
-use resource::{Shader, ShaderUniform, ShaderAttribute, RenderTarget, GPUVector, ArrayBuffer, StaticDraw};
+use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, RenderTarget,
+               GPUVector};
 use post_processing::post_processing_effect::PostProcessingEffect;
 
 #[path = "../error.rs"]
@@ -37,7 +38,7 @@ impl SobelEdgeHighlight {
             Vec2::new(-1.0,  1.0),
             Vec2::new(1.0,  1.0));
 
-        let mut fbo_vertices = GPUVector::new(fbo_vertices, ArrayBuffer, StaticDraw);
+        let mut fbo_vertices = GPUVector::new(fbo_vertices, BufferType::Array, AllocationType::StaticDraw);
         fbo_vertices.load_to_gpu();
         fbo_vertices.unload_from_ram();
 

@@ -1,10 +1,9 @@
-extern crate native;
 extern crate time;
 extern crate ncollide;
 extern crate kiss3d;
 extern crate "nalgebra" as na;
 
-use std::from_str::FromStr;
+use std::str::FromStr;
 use std::os;
 use std::rc::Rc;
 use std::cell::RefCell;
@@ -15,15 +14,10 @@ use ncollide::procedural;
 use kiss3d::window::Window;
 use kiss3d::light;
 use kiss3d::loader::obj;
-use kiss3d::resource::{ElementArrayBuffer, StaticDraw, GPUVector, Mesh};
-
-#[start]
-fn start(argc: int, argv: *const *const u8) -> int {
-    native::start(argc, argv, main)
-}
+use kiss3d::resource::{BufferType, AllocationType, GPUVector, Mesh};
 
 fn usage(exe_name: &str) {
-    println!("Usage: {:s} obj_file scale clusters concavity", exe_name);
+    println!("Usage: {} obj_file scale clusters concavity", exe_name);
     println!("");
     println!("Options:");
     println!("    obj_file  - the obj file to decompose.");
@@ -100,7 +94,8 @@ fn main() {
                         part_faces.push(faces.read().data().as_ref().unwrap()[i]);
                     }
 
-                    let faces = Arc::new(RWLock::new(GPUVector::new(part_faces, ElementArrayBuffer, StaticDraw)));
+                    let faces = GPUVector::new(part_faces, BufferType::ElementArray, AllocationType::StaticDraw);
+                    let faces = Arc::new(RWLock::new(faces));
 
                     let mesh = Mesh::new_with_gpu_vectors(coords.clone(), faces, normals.clone(), uvs.clone());
                     let mesh = Rc::new(RefCell::new(mesh));

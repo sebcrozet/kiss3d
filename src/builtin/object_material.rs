@@ -5,7 +5,7 @@ use na::{Pnt2, Pnt3, Vec3, Mat3, Mat4, Iso3};
 use na;
 use resource::Material;
 use scene::ObjectData;
-use light::{Light, Absolute, StickToCamera};
+use light::Light;
 use camera::Camera;
 use resource::{Mesh, Shader, ShaderAttribute, ShaderUniform};
 
@@ -83,8 +83,8 @@ impl Material for ObjectMaterial {
         camera.upload(pass, &mut self.view);
 
         let pos = match *light {
-            Absolute(ref p) => p.clone(),
-            StickToCamera   => camera.eye()
+            Light::Absolute(ref p) => p.clone(),
+            Light::StickToCamera   => camera.eye()
         };
 
         self.light.upload(&pos);

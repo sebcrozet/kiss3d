@@ -3,7 +3,7 @@
 use std::io::fs::File;
 use std::io::Reader;
 use std::str::Words;
-use std::from_str::FromStr;
+use std::str::FromStr;
 use std::io::IoResult;
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
@@ -11,21 +11,21 @@ use sync::{Arc, RWLock};
 use gl::types::GLfloat;
 use na::{Vec3, Pnt2, Pnt3, Indexable, Bounded};
 use na;
-use resource::Mesh;
+use resource::{BufferType, AllocationType, Mesh};
 use loader::mtl::MtlMaterial;
 use loader::mtl;
-use resource::{GPUVector, StaticDraw, ArrayBuffer, ElementArrayBuffer};
+use resource::GPUVector;
 
 pub type Coord  = Pnt3<GLfloat>;
 pub type Normal = Vec3<GLfloat>;
 pub type UV     = Pnt2<GLfloat>;
 
 fn error(line: uint, err: &str) -> ! {
-    panic!("At line {}: {:s}", line, err)
+    panic!("At line {}: {}", line, err)
 }
 
 fn warn(line: uint, err: &str) {
-    println!("At line {}: {:s}", line, err)
+    println!("At line {}: {}", line, err)
 }
 
 /// Parses an obj file.
@@ -72,7 +72,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
                         "mtllib" => parse_mtllib(l, words, mtl_base_dir, &mut mtllib),
                         "usemtl" => curr_group = parse_usemtl(l, words, curr_group, &mtllib, &mut group2mtl, &mut groups, &mut groups_ids, &mut curr_mtl),
                         _         => {
-                            println!("Warning: unknown line {} ignored: `{:s}'", l, line);
+                            println!("Warning: unknown line {} ignored: `{}'", l, line);
                         }
                     }
                 }
@@ -357,15 +357,15 @@ fn reformat(coords:     Vec<Coord>,
     }
 
     let resn = resn.unwrap_or_else(|| Mesh::compute_normals_array(resc.as_slice(), allfs.as_slice()));
-    let resn = Arc::new(RWLock::new(GPUVector::new(resn, ArrayBuffer, StaticDraw)));
+    let resn = Arc::new(RWLock::new(GPUVector::new(resn, BufferType::Array, AllocationType::StaticDraw)));
     let resu = resu.unwrap_or_else(|| Vec::from_elem(resc.len(), na::orig()));
-    let resu = Arc::new(RWLock::new(GPUVector::new(resu, ArrayBuffer, StaticDraw)));
-    let resc = Arc::new(RWLock::new(GPUVector::new(resc, ArrayBuffer, StaticDraw)));
+    let resu = Arc::new(RWLock::new(GPUVector::new(resu, BufferType::Array, AllocationType::StaticDraw)));
+    let resc = Arc::new(RWLock::new(GPUVector::new(resc, BufferType::Array, AllocationType::StaticDraw)));
 
     let mut meshes = Vec::new();
     for ((fs, name), mtl) in resfs.into_iter().zip(names.into_iter()).zip(mtls.into_iter()) {
         if fs.len() != 0 {
-            let fs   = Arc::new(RWLock::new(GPUVector::new(fs, ElementArrayBuffer, StaticDraw)));
+            let fs   = Arc::new(RWLock::new(GPUVector::new(fs, BufferType::ElementArray, AllocationType::StaticDraw)));
             let mesh = Mesh::new_with_gpu_vectors(resc.clone(), fs, resn.clone(), resu.clone());
             meshes.push((name, mesh, mtl))
         }

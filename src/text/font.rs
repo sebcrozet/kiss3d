@@ -38,7 +38,7 @@ impl Font {
 
     /// Loads a new ttf font from a file.
     pub fn new(path: &Path, size: i32) -> Rc<Font> {
-        Font::do_new(Some(path), [], size)
+        Font::do_new(Some(path), &[], size)
     }
 
     /// Loads a new ttf font from a file.

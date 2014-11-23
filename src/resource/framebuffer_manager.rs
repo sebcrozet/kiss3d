@@ -27,26 +27,26 @@ impl RenderTarget {
     /// Returns an opengl handle to the off-screen texture buffer.
     pub fn texture_id(&self) -> GLuint {
         match *self {
-            Screen           => 0,
-            Offscreen(ref o) => o.texture
+            RenderTarget::Screen           => 0,
+            RenderTarget::Offscreen(ref o) => o.texture
         }
     }
 
     /// Returns an opengl handle to the off-screen depth buffer.
     pub fn depth_id(&self) -> GLuint {
         match *self {
-            Screen           => 0,
-            Offscreen(ref o) => o.depth
+            RenderTarget::Screen           => 0,
+            RenderTarget::Offscreen(ref o) => o.depth
         }
     }
 
     /// Resizes this render target.
     pub fn resize(&mut self, w: f32, h: f32) {
         match *self {
-            Screen => {
+            RenderTarget::Screen => {
                 verify!(gl::Viewport(0, 0, w as i32, h as i32));
             },
-            Offscreen(ref o) => {
+            RenderTarget::Offscreen(ref o) => {
                 // Update the fbo
                 verify!(gl::BindTexture(gl::TEXTURE_2D, o.texture));
                 unsafe {
@@ -128,23 +128,23 @@ impl FramebufferManager {
         }
         verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
-        Offscreen(OffscreenBuffers { texture: fbo_texture, depth: fbo_depth, ncpy: NoCopy })
+        RenderTarget::Offscreen(OffscreenBuffers { texture: fbo_texture, depth: fbo_depth, ncpy: NoCopy })
     }
 
     /// Returns the render target associated with the screen.
     pub fn screen() -> RenderTarget {
-        Screen
+        RenderTarget::Screen
     }
 
     /// Selects a specific render target
     pub fn select(&mut self, target: &RenderTarget) {
         match *target {
-            Screen => {
+            RenderTarget::Screen => {
                 self.do_select(0);
                 self.curr_color = 0;
                 self.curr_depth = 0;
             },
-            Offscreen(ref o) => {
+            RenderTarget::Offscreen(ref o) => {
                 let fbo = self.fbo;
                 self.do_select(fbo);
 

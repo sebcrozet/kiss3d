@@ -1,11 +1,10 @@
-extern crate native;
 extern crate time;
 extern crate ncollide;
 extern crate kiss3d;
 extern crate "nalgebra" as na;
 
+use std::f32;
 use std::rand;
-use std::num::Float;
 use na::{Pnt2, Pnt3, Vec2, Vec3, Translation};
 use ncollide::parametric::ParametricSurface;
 use ncollide::procedural::{Polyline, TriMesh};
@@ -15,11 +14,6 @@ use ncollide::utils;
 use ncollide::utils::symbolic::{BivariateFn, sin, cos, u, v};
 use kiss3d::window::Window;
 use kiss3d::light;
-
-#[start]
-fn start(argc: int, argv: *const *const u8) -> int {
-    native::start(argc, argv, main)
-}
 
 fn main() {
     let mut window = Window::new("Kiss3d: procedural");
@@ -50,7 +44,7 @@ fn main() {
     /*
      * Triangulation.
      */
-    let to_triangulate = utils::triangulate([
+    let to_triangulate = utils::triangulate(&[
         Pnt3::new(5.0f32, 0.0, 0.0), Pnt3::new(6.1, 0.0, 0.5), Pnt3::new(7.4, 0.0, 0.5), Pnt3::new(8.2, 0.0, 0.0),
         Pnt3::new(5.1f32, 1.0, 0.0), Pnt3::new(6.2, 1.5, 0.5), Pnt3::new(7.2, 1.0, 0.5), Pnt3::new(8.0, 1.3, 0.0),
         Pnt3::new(5.3f32, 2.0, 0.0), Pnt3::new(6.1, 2.2, 0.5), Pnt3::new(7.3, 2.0, 0.5), Pnt3::new(8.2, 2.4, 0.0),
@@ -70,13 +64,13 @@ fn main() {
         Pnt3::new(0.0f32, 2.0, 2.0), Pnt3::new(1.0, 2.0, 3.0), Pnt3::new(2.0, 2.0, 3.0), Pnt3::new(3.0, 2.0, 2.0),
         Pnt3::new(0.0f32, 3.0, 0.0), Pnt3::new(1.0, 3.0, 2.0), Pnt3::new(2.0, 3.0, 2.0), Pnt3::new(3.0, 3.0, 0.0)
     ];
-    let bezier = procedural::bezier_surface(control_points, 4, 4, 100, 100);
+    let bezier = procedural::bezier_surface(&control_points, 4, 4, 100, 100);
     let mut b  = window.add_trimesh(bezier, na::one());
     b.append_translation(&Vec3::new(-1.5, -1.5, 0.0));
     b.enable_backface_culling(false);
 
     // XXX: replace by an `add_mesh`.
-    let mut control_polyhedra_gfx = window.add_quad_with_vertices(control_points, 4, 4);
+    let mut control_polyhedra_gfx = window.add_quad_with_vertices(&control_points, 4, 4);
     control_polyhedra_gfx.append_translation(&Vec3::new(-1.5, -1.5, 0.0));
     control_polyhedra_gfx.set_color(0.0, 0.0, 1.0);
     control_polyhedra_gfx.set_surface_rendering_activation(false);
@@ -105,7 +99,7 @@ fn main() {
         Pnt3::new(-2.0f32, 1.0, 4.0),
         Pnt3::new(-2.0f32, 4.0, 2.0),
     ];
-    let bezier      = procedural::bezier_curve(control_points, 100);
+    let bezier      = procedural::bezier_curve(&control_points, 100);
     let mut path    = PolylinePath::new(&bezier);
     let pattern     = procedural::unit_circle(100);
     let start_cap   = ArrowheadCap::new(1.5f32, 2.0, 0.0);
@@ -214,7 +208,7 @@ struct ParametricBananas {
 
 impl ParametricBananas {
     fn new() -> ParametricBananas {
-        let pi: f32 = Float::pi();
+        let pi: f32 = f32::consts::PI;
         let u = u();
         let v = v();
         let x = (sin(u * 2.0f32 * pi) * sin(v * 2.0f32 * pi) + 2.0f32) * sin(v * 3.0f32 * pi);

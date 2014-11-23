@@ -1,14 +1,8 @@
-extern crate native;
 extern crate glfw;
 extern crate kiss3d;
 extern crate "nalgebra" as na;
 
 use kiss3d::window::Window;
-
-#[start]
-fn start(argc: int, argv: *const *const u8) -> int {
-    native::start(argc, argv, main)
-}
 
 fn main() {
     let mut window = Window::new("Kiss3d: events");

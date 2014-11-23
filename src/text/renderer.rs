@@ -8,7 +8,7 @@ use gl::types::*;
 use na::{Vec2, Pnt2, Pnt3};
 use text::Font;
 use camera::Camera;
-use resource::{Shader, ShaderUniform, ShaderAttribute, GPUVector, ArrayBuffer, StreamDraw};
+use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, GPUVector};
 
 #[path = "../error.rs"]
 mod error;
@@ -58,7 +58,7 @@ impl TextRenderer {
             uvs:      shader.get_attrib("uvs").expect("Could not find uvs"),
             shader:   shader,
             contexts: Vec::new(),
-            coords:   GPUVector::new(Vec::new(), ArrayBuffer, StreamDraw)
+            coords:   GPUVector::new(Vec::new(), BufferType::Array, AllocationType::StreamDraw)
         }
     }
 

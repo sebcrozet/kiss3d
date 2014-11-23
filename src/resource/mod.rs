@@ -6,7 +6,7 @@ pub use resource::material::Material;
 pub use resource::material_manager::MaterialManager;
 pub use resource::mesh_manager::MeshManager;
 pub use resource::shader::{Shader, ShaderAttribute, ShaderUniform};
-pub use resource::gpu_vector::{GPUVector, StaticDraw, DynamicDraw, StreamDraw, ArrayBuffer, ElementArrayBuffer, BufferType, AllocationType};
+pub use resource::gpu_vector::{GPUVector, BufferType, AllocationType};
 pub use resource::gl_primitive::GLPrimitive;
 pub use resource::mesh::Mesh;
 

@@ -1,5 +1,7 @@
+use std::f32;
 use std::num::{Float, FloatMath};
 use glfw;
+use glfw::{Key, Action};
 use gl;
 use na::{Pnt3, Pnt2, Vec2, Vec3, Mat4, Iso3, PerspMat3, Rotate};
 use na;
@@ -111,7 +113,7 @@ impl FirstPersonStereo {
             self.pitch = 0.0001
         }
 
-        let _pi: f32 = Float::pi();
+        let _pi: f32 = f32::consts::PI;
         if self.pitch > _pi - 0.0001 {
             self.pitch = _pi - 0.0001
         }
@@ -266,19 +268,19 @@ impl Camera for FirstPersonStereo {
         let front: Vec3<f32> = t.rotate(&Vec3::z());
         let right: Vec3<f32> = t.rotate(&Vec3::x());
 
-        if window.get_key(glfw::KeyUp) == glfw::Press {
+        if window.get_key(Key::Up) == Action::Press {
             self.eye = self.eye + front * self.move_step
         }
 
-        if window.get_key(glfw::KeyDown) == glfw::Press {
+        if window.get_key(Key::Down) == Action::Press {
             self.eye = self.eye + front * (-self.move_step)
         }
 
-        if window.get_key(glfw::KeyRight) == glfw::Press {
+        if window.get_key(Key::Right) == Action::Press {
             self.eye = self.eye + right * (-self.move_step)
         }
 
-        if window.get_key(glfw::KeyLeft) == glfw::Press {
+        if window.get_key(Key::Left) == Action::Press {
             self.eye = self.eye + right * self.move_step
         }
 

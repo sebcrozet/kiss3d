@@ -1,18 +1,13 @@
-extern crate native;
 extern crate glfw;
 extern crate kiss3d;
 extern crate "nalgebra" as na;
 
 
+use glfw::{Key, Action};
 use na::Pnt3;
 use kiss3d::window::Window;
 use kiss3d::camera::{ArcBall, FirstPerson};
 use kiss3d::light;
-
-#[start]
-fn start(argc: int, argv: *const *const u8) -> int {
-    native::start(argc, argv, main)
-}
 
 fn main() {
     let eye              = Pnt3::new(10.0f32, 10.0, 10.0);
@@ -32,11 +27,11 @@ fn main() {
         // update the current camera.
         for event in window.events().iter() {
             match event.value {
-                glfw::KeyEvent(key, _, glfw::Release, _) => {
-                    if key == glfw::Key1 {
+                glfw::KeyEvent(key, _, Action::Release, _) => {
+                    if key == Key::Num1 {
                         use_arc_ball = true
                     }
-                    else if key == glfw::Key2 {
+                    else if key == Key::Num2 {
                         use_arc_ball = false
                     }
                 }

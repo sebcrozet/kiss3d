@@ -3,7 +3,7 @@
 use gl;
 use gl::types::*;
 use na::{Pnt3, Mat4};
-use resource::{GPUVector, ArrayBuffer, StreamDraw, Shader, ShaderAttribute, ShaderUniform};
+use resource::{BufferType, AllocationType, GPUVector, Shader, ShaderAttribute, ShaderUniform};
 use camera::Camera;
 
 #[path = "error.rs"]
@@ -26,7 +26,7 @@ impl PointRenderer {
         shader.use_program();
 
         PointRenderer {
-            points:      GPUVector::new(Vec::new(), ArrayBuffer, StreamDraw),
+            points:      GPUVector::new(Vec::new(), BufferType::Array, AllocationType::StreamDraw),
             pos:        shader.get_attrib::<Pnt3<f32>>("position").unwrap(),
             color:      shader.get_attrib::<Pnt3<f32>>("color").unwrap(),
             view:       shader.get_uniform::<Mat4<f32>>("view").unwrap(),

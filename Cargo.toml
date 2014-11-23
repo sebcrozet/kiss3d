@@ -3,6 +3,12 @@ name    = "kiss3d"
 version = "0.1.0"
 authors = [ "Sébastien Crozet <developer@crozet.re>" ]
 
+description = "3D graphics engine for Rust."
+repository = "https://github.com/sebcrozet/kiss3d"
+readme = "README.md"
+keywords = [ "3D", "graphics", "OpenGL", "KISS" ]
+license = "BSD-3-Clause"
+
 [lib]
 name = "kiss3d"
 path = "src/lib.rs"

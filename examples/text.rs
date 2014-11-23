@@ -1,15 +1,9 @@
-extern crate native;
 extern crate "nalgebra" as na;
 extern crate kiss3d;
 
 use na::{Pnt2, Pnt3};
 use kiss3d::window::Window;
 use kiss3d::text::Font;
-
-#[start]
-fn start(argc: int, argv: *const *const u8) -> int {
-    native::start(argc, argv, main)
-}
 
 fn main() {
     let mut window = Window::new("Kiss3d: text");

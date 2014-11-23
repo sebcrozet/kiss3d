@@ -6,7 +6,7 @@ use na::{Pnt2, Vec3, Pnt3};
 use na;
 use ncollide::procedural::{TriMesh, TriMesh3, IndexBuffer};
 use resource::ShaderAttribute;
-use resource::gpu_vector::{GPUVector, DynamicDraw, StaticDraw, ArrayBuffer, ElementArrayBuffer};
+use resource::gpu_vector::{GPUVector, AllocationType, BufferType};
 
 #[path = "../error.rs"]
 mod error;
@@ -41,11 +41,11 @@ impl Mesh {
             None     => Vec::from_elem(coords.len(), na::orig())
         };
 
-        let location = if dynamic_draw { DynamicDraw } else { StaticDraw };
-        let cs = Arc::new(RWLock::new(GPUVector::new(coords, ArrayBuffer, location)));
-        let fs = Arc::new(RWLock::new(GPUVector::new(faces, ElementArrayBuffer, location)));
-        let ns = Arc::new(RWLock::new(GPUVector::new(normals, ArrayBuffer, location)));
-        let us = Arc::new(RWLock::new(GPUVector::new(uvs, ArrayBuffer, location)));
+        let location = if dynamic_draw { AllocationType::DynamicDraw } else { AllocationType::StaticDraw };
+        let cs = Arc::new(RWLock::new(GPUVector::new(coords, BufferType::Array, location)));
+        let fs = Arc::new(RWLock::new(GPUVector::new(faces, BufferType::ElementArray, location)));
+        let ns = Arc::new(RWLock::new(GPUVector::new(normals, BufferType::Array, location)));
+        let us = Arc::new(RWLock::new(GPUVector::new(uvs, BufferType::Array, location)));
 
         Mesh::new_with_gpu_vectors(cs, fs, ns, us)
     }

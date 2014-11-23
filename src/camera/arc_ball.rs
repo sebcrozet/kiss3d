@@ -1,4 +1,6 @@
+use std::f32;
 use std::num::{Float, FloatMath};
+use glfw::{Key, Action};
 use glfw;
 use na::{Pnt3, Vec2, Vec3, Mat4, Iso3, PerspMat3};
 use na;
@@ -136,7 +138,7 @@ impl ArcBall {
             self.pitch = 0.0001
         }
 
-        let _pi: f32 = Float::pi();
+        let _pi: f32 = f32::consts::PI;
         if self.pitch > _pi - 0.0001 {
             self.pitch = _pi - 0.0001
         }
@@ -210,7 +212,7 @@ impl Camera for ArcBall {
 
                 self.last_cursor_pos = curr_pos;
             },
-            glfw::KeyEvent(glfw::KeyEnter, _, glfw::Press, _) => {
+            glfw::KeyEvent(Key::Enter, _, Action::Press, _) => {
                 self.at = na::orig();
                 self.update_projviews();
             },
