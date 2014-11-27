@@ -1,6 +1,6 @@
 //! Data structure of a scene node geometry.
 
-use sync::{Arc, RWLock};
+use std::sync::{Arc, RWLock};
 use gl::types::*;
 use na::{Pnt2, Vec3, Pnt3};
 use na;

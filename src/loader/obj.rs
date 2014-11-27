@@ -7,7 +7,7 @@ use std::str::FromStr;
 use std::io::IoResult;
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
-use sync::{Arc, RWLock};
+use std::sync::{Arc, RWLock};
 use gl::types::GLfloat;
 use na::{Vec3, Pnt2, Pnt3, Indexable, Bounded};
 use na;

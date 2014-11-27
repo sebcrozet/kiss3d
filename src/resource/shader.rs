@@ -60,7 +60,7 @@ impl Shader {
 
     /// Gets a uniform variable from the shader program.
     pub fn get_uniform<T: GLPrimitive>(&self, name: &str) -> Option<ShaderUniform<T>> {
-        let location = unsafe { gl::GetUniformLocation(self.program, name.to_c_str().unwrap()) };
+        let location = unsafe { gl::GetUniformLocation(self.program, name.to_c_str().into_inner()) };
 
         if unsafe { gl::GetError() } == 0 && location != -1 {
             Some(ShaderUniform { id: location as GLuint })
@@ -72,7 +72,7 @@ impl Shader {
 
     /// Gets an attribute from the shader program.
     pub fn get_attrib<T: GLPrimitive>(&self, name: &str) -> Option<ShaderAttribute<T>> {
-        let location = unsafe { gl::GetAttribLocation(self.program, name.to_c_str().unwrap()) };
+        let location = unsafe { gl::GetAttribLocation(self.program, name.to_c_str().into_inner()) };
 
         if unsafe { gl::GetError() } == 0 && location != -1 {
             Some(ShaderAttribute { id: location as GLuint })
@@ -162,7 +162,7 @@ fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (GLuint, G
     // Create and compile the vertex shader
     let vshader = verify!(gl::CreateShader(gl::VERTEX_SHADER));
     unsafe {
-        verify!(gl::ShaderSource(vshader, 1, &vertex_shader.to_c_str().unwrap(), ptr::null()));
+        verify!(gl::ShaderSource(vshader, 1, &vertex_shader.to_c_str().into_inner(), ptr::null()));
         verify!(gl::CompileShader(vshader));
     }
     check_shader_error(vshader);
@@ -170,7 +170,7 @@ fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (GLuint, G
     // Create and compile the fragment shader
     let fshader = verify!(gl::CreateShader(gl::FRAGMENT_SHADER));
     unsafe {
-        verify!(gl::ShaderSource(fshader, 1, &fragment_shader.to_c_str().unwrap(), ptr::null()));
+        verify!(gl::ShaderSource(fshader, 1, &fragment_shader.to_c_str().into_inner(), ptr::null()));
         verify!(gl::CompileShader(fshader));
     }
 

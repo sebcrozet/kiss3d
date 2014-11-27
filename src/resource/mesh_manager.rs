@@ -10,7 +10,7 @@ use resource::Mesh;
 use loader::obj;
 use loader::mtl::MtlMaterial;
 
-local_data_key!(KEY_MESH_MANAGER: RefCell<MeshManager>)
+thread_local!(static KEY_MESH_MANAGER: RefCell<MeshManager> = RefCell::new(MeshManager::new()))
 
 /// The mesh manager.
 ///
@@ -39,11 +39,7 @@ impl MeshManager {
 
     /// Mutably applies a function to the mesh manager.
     pub fn get_global_manager<T>(f: |&mut MeshManager| -> T) -> T {
-        if KEY_MESH_MANAGER.get().is_none() {
-            let _ = KEY_MESH_MANAGER.replace(Some(RefCell::new(MeshManager::new())));
-        }
-
-        f(KEY_MESH_MANAGER.get().unwrap().borrow_mut().deref_mut())
+        KEY_MESH_MANAGER.with(|manager| f(manager.borrow_mut().deref_mut()))
     }
 
     /// Get a mesh with the specified name. Returns `None` if the mesh is not registered.

@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use resource::Material;
 use builtin::{ObjectMaterial, NormalsMaterial, UvsMaterial};
 
-local_data_key!(KEY_MATERIAL_MANAGER: RefCell<MaterialManager>)
+thread_local!(static KEY_MATERIAL_MANAGER: RefCell<MaterialManager> = RefCell::new(MaterialManager::new()))
 
 /// The material manager.
 ///
@@ -44,11 +44,7 @@ impl MaterialManager {
 
     /// Mutably applies a function to the material manager.
     pub fn get_global_manager<T>(f: |&mut MaterialManager| -> T) -> T {
-        if KEY_MATERIAL_MANAGER.get().is_none() {
-            let _ = KEY_MATERIAL_MANAGER.replace(Some(RefCell::new(MaterialManager::new())));
-        }
-
-        f(KEY_MATERIAL_MANAGER.get().unwrap().borrow_mut().deref_mut())
+        KEY_MATERIAL_MANAGER.with(|manager| f(manager.borrow_mut().deref_mut()))
     }
 
     /// Gets the default material to draw objects.

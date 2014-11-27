@@ -40,7 +40,7 @@ impl Drop for Texture {
     }
 }
 
-local_data_key!(KEY_TEXTURE_MANAGER: RefCell<TextureManager>)
+thread_local!(static KEY_TEXTURE_MANAGER: RefCell<TextureManager> = RefCell::new(TextureManager::new()))
 
 /// The texture manager.
 ///
@@ -77,11 +77,7 @@ impl TextureManager {
 
     /// Mutably applies a function to the texture manager.
     pub fn get_global_manager<T>(f: |&mut TextureManager| -> T) -> T {
-        if KEY_TEXTURE_MANAGER.get().is_none() {
-            let _ = KEY_TEXTURE_MANAGER.replace(Some(RefCell::new(TextureManager::new())));
-        }
-    
-        f(KEY_TEXTURE_MANAGER.get().unwrap().borrow_mut().deref_mut())
+        KEY_TEXTURE_MANAGER.with(|manager| f(manager.borrow_mut().deref_mut()))
     }
 
     /// Gets the default, completely white, texture.
