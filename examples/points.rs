@@ -3,12 +3,12 @@ extern crate "nalgebra" as na;
 
 use na::Pnt3;
 use kiss3d::window::Window;
-use kiss3d::light;
+use kiss3d::light::Light;
 
 fn main() {
     let mut window = Window::new("Kiss3d: points");
 
-    window.set_light(light::StickToCamera);
+    window.set_light(Light::StickToCamera);
 
     while window.render() {
         let a = Pnt3::new(-0.1, -0.1, 0.0);

@@ -3,11 +3,11 @@ extern crate kiss3d;
 extern crate "nalgebra" as na;
 
 
-use glfw::{Key, Action};
+use glfw::{Key, Action, WindowEvent};
 use na::Pnt3;
 use kiss3d::window::Window;
 use kiss3d::camera::{ArcBall, FirstPerson};
-use kiss3d::light;
+use kiss3d::light::Light;
 
 fn main() {
     let eye              = Pnt3::new(10.0f32, 10.0, 10.0);
@@ -17,7 +17,7 @@ fn main() {
     let mut use_arc_ball = true;
 
     let mut window = Window::new("Kiss3d: camera");
-    window.set_light(light::StickToCamera);
+    window.set_light(Light::StickToCamera);
 
     while !window.should_close() {
         // rotate the arc-ball camera.
@@ -27,7 +27,7 @@ fn main() {
         // update the current camera.
         for event in window.events().iter() {
             match event.value {
-                glfw::KeyEvent(key, _, Action::Release, _) => {
+                WindowEvent::Key(key, _, Action::Release, _) => {
                     if key == Key::Num1 {
                         use_arc_ball = true
                     }

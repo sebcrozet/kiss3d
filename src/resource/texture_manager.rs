@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use gl;
 use gl::types::*;
-use stb_image::image::ImageU8;
+use stb_image::image::LoadResult;
 use stb_image::image;
 
 #[path = "../error.rs"]
@@ -111,7 +111,7 @@ impl TextureManager {
         // FIXME: dont re-load the texture if it already exists!
         unsafe {
             match image::load(path) {
-                ImageU8(mut image) => {
+                LoadResult::ImageU8(mut image) => {
                     verify!(gl::ActiveTexture(gl::TEXTURE0));
                     verify!(gl::BindTexture(gl::TEXTURE_2D, tex.id()));
 

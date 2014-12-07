@@ -4,7 +4,7 @@
  */
 
 use glfw;
-use glfw::{Context, Key, Action};
+use glfw::{Context, Key, Action, WindowMode, WindowEvent};
 use std::io::timer::Timer;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -35,8 +35,8 @@ static DEFAULT_HEIGHT: u32 = 600u32;
 ///
 /// This is the main interface with the 3d engine.
 pub struct Window {
-    events:                     Rc<Receiver<(f64, glfw::WindowEvent)>>,
-    unhandled_events:           Rc<RefCell<Vec<glfw::WindowEvent>>>,
+    events:                     Rc<Receiver<(f64, WindowEvent)>>,
+    unhandled_events:           Rc<RefCell<Vec<WindowEvent>>>,
     glfw:                       glfw::Glfw,
     window:                     glfw::Window,
     max_ms_per_frame:           Option<u64>,
@@ -306,7 +306,7 @@ impl Window {
 
         let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
 
-        let (window, events) = glfw.create_window(width, height, title, glfw::Windowed).expect("Unable to open a glfw window.");
+        let (window, events) = glfw.create_window(width, height, title, WindowMode::Windowed).expect("Unable to open a glfw window.");
 
         window.make_current();
 
@@ -417,12 +417,12 @@ impl Window {
         self.glfw.poll_events();
     }
 
-    fn handle_event(&mut self, camera: &mut Option<&mut Camera>, event: &glfw::WindowEvent) {
+    fn handle_event(&mut self, camera: &mut Option<&mut Camera>, event: &WindowEvent) {
         match *event {
-            glfw::KeyEvent(Key::Escape, _, Action::Release, _) => {
+            WindowEvent::Key(Key::Escape, _, Action::Release, _) => {
                 self.close();
             },
-            glfw::FramebufferSizeEvent(w, h) => {
+            WindowEvent::FramebufferSize(w, h) => {
                 self.update_viewport(w as f32, h as f32);
             },
             _ => { }
@@ -482,7 +482,7 @@ impl Window {
         // XXX: too bad we have to do this at each frame…
         let w = self.width();
         let h = self.height();
-        camera.handle_event(&self.window, &glfw::FramebufferSizeEvent(w as i32, h as i32));
+        camera.handle_event(&self.window, &WindowEvent::FramebufferSize(w as i32, h as i32));
 
         camera.update(&self.window);
 

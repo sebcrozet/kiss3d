@@ -5,7 +5,7 @@ extern crate "nalgebra" as na;
 use std::rand::random;
 use na::{Vec3, Translation};
 use kiss3d::window::Window;
-use kiss3d::light;
+use kiss3d::light::Light;
 use kiss3d::post_processing::{Waves, Grayscales, SobelEdgeHighlight};
 
 fn main() {
@@ -34,7 +34,7 @@ fn main() {
     let mut grays = Grayscales::new();
 
     window.set_background_color(1.0, 1.0, 1.0);
-    window.set_light(light::StickToCamera);
+    window.set_light(Light::StickToCamera);
     window.set_framerate_limit(Some(60));
 
     let mut time    = 0u;

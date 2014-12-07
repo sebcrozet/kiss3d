@@ -82,7 +82,7 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
     res
 }
 
-fn parse_name<'a>(_: uint, mut ws: Words<'a>) -> String {
+fn parse_name<'a>(_: uint, ws: Words<'a>) -> String {
     let res: Vec<&'a str> = ws.collect();
     res.connect(" ")
 }

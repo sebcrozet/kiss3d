@@ -12,7 +12,7 @@ use std::rand;
 use na::{Vec3, Translation};
 use ncollide::procedural;
 use kiss3d::window::Window;
-use kiss3d::light;
+use kiss3d::light::Light;
 use kiss3d::loader::obj;
 use kiss3d::resource::{BufferType, AllocationType, GPUVector, Mesh};
 
@@ -118,7 +118,7 @@ fn main() {
      * Rendering.
      *
      */
-    window.set_light(light::StickToCamera);
+    window.set_light(Light::StickToCamera);
 
     while window.render() {
     }

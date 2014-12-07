@@ -5,7 +5,7 @@ extern crate "nalgebra" as na;
 use std::rand::random;
 use std::num::FloatMath;
 use kiss3d::window::Window;
-use kiss3d::light;
+use kiss3d::light::Light;
 
 fn main() {
     let mut window = Window::new("Kiss3d: quad");
@@ -16,7 +16,7 @@ fn main() {
 
     let mut time = 0.016f32;
 
-    window.set_light(light::StickToCamera);
+    window.set_light(Light::StickToCamera);
 
     while window.render() {
         c.modify_vertices(&mut |coords| {

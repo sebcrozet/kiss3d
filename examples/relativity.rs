@@ -10,13 +10,13 @@ use std::cell::RefCell;
 use std::io::Reader;
 use std::sync::{Arc, RWLock};
 use gl::types::{GLint, GLfloat};
-use glfw::{Key, Action};
+use glfw::{Key, Action, WindowEvent};
 use na::{Pnt2, Pnt3, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
 use kiss3d::window::Window;
 use kiss3d::text::Font;
 use kiss3d::scene::ObjectData;
 use kiss3d::camera::{Camera, FirstPerson};
-use kiss3d::light::{Light, Absolute, StickToCamera};
+use kiss3d::light::Light;
 use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
 
 fn main() {
@@ -54,7 +54,7 @@ fn main() {
     c.set_material(material.clone());
     c.set_texture_with_name("kitten");
 
-    window.set_light(StickToCamera);
+    window.set_light(Light::StickToCamera);
 
     /*
      * Render
@@ -64,7 +64,7 @@ fn main() {
 
         for event in window.events().iter() {
             match event.value {
-                glfw::KeyEvent(code, _, Action::Release, _) => {
+                WindowEvent::Key(code, _, Action::Release, _) => {
                     if code == Key::Num1 {
                         c.speed_of_light = c.speed_of_light + 100.0;
                     }
@@ -266,8 +266,8 @@ impl Material for RelativisticMaterial {
         camera.upload(pass, &mut self.view);
 
         let pos = match *light {
-            Absolute(ref p) => p.clone(),
-            StickToCamera   => camera.eye()
+            Light::Absolute(ref p) => p.clone(),
+            Light::StickToCamera   => camera.eye()
         };
 
         self.light.upload(&pos);

@@ -5,7 +5,7 @@ extern crate "nalgebra" as na;
 use std::rand::random;
 use na::{Vec3, Translation, RotationWithTranslation};
 use kiss3d::window::Window;
-use kiss3d::light;
+use kiss3d::light::Light;
 
 fn main() {
     let mut window = Window::new("Kiss3d: primitives");
@@ -28,7 +28,7 @@ fn main() {
     y.append_translation(&Vec3::new(-4.0, 0.0, 0.0));
     a.append_translation(&Vec3::new(0.0, 0.0, 0.0));
 
-    window.set_light(light::StickToCamera);
+    window.set_light(Light::StickToCamera);
 
     while window.render() {
         c.append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));

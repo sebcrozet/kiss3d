@@ -1,7 +1,7 @@
 use std::f32;
 use std::num::{Float, FloatMath};
 use glfw;
-use glfw::{Key, Action};
+use glfw::{Key, Action, WindowEvent};
 use gl;
 use na::{Pnt3, Pnt2, Vec2, Vec3, Mat4, Iso3, PerspMat3, Rotate};
 use na;
@@ -225,25 +225,25 @@ impl Camera for FirstPersonStereo {
         id
     }
 
-    fn handle_event(&mut self, window: &glfw::Window, event: &glfw::WindowEvent) {
+    fn handle_event(&mut self, window: &glfw::Window, event: &WindowEvent) {
         match *event {
-            glfw::CursorPosEvent(x, y) => {
+            WindowEvent::CursorPos(x, y) => {
                 let curr_pos = Pnt2::new(x as f32, y as f32);
 
-                if window.get_mouse_button(glfw::MouseButtonLeft) == glfw::Press {
+                if window.get_mouse_button(glfw::MouseButtonLeft) == Action::Press {
                     let dpos = curr_pos - self.last_cursor_pos;
                     self.handle_left_button_displacement(&dpos)
                 }
 
-                if window.get_mouse_button(glfw::MouseButtonRight) == glfw::Press {
+                if window.get_mouse_button(glfw::MouseButtonRight) == Action::Press {
                     let dpos = curr_pos - self.last_cursor_pos;
                     self.handle_right_button_displacement(&dpos)
                 }
 
                 self.last_cursor_pos = curr_pos;
             },
-            glfw::ScrollEvent(_, off) => self.handle_scroll(off as f32),
-            glfw::FramebufferSizeEvent(w, h) => {
+            WindowEvent::Scroll(_, off) => self.handle_scroll(off as f32),
+            WindowEvent::FramebufferSize(w, h) => {
                 self.projection.set_aspect(w as f32 / h as f32);
                 self.update_projviews();
             }

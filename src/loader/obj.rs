@@ -16,8 +16,11 @@ use loader::mtl::MtlMaterial;
 use loader::mtl;
 use resource::GPUVector;
 
+/// The type of vertex coordinates.
 pub type Coord  = Pnt3<GLfloat>;
+/// The type of normals.
 pub type Normal = Vec3<GLfloat>;
+/// The type of texture coordinates.
 pub type UV     = Pnt2<GLfloat>;
 
 fn error(line: uint, err: &str) -> ! {
@@ -98,7 +101,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
 }
 
 fn parse_usemtl<'a>(l:          uint,
-                    mut ws:     Words<'a>,
+                    ws:         Words<'a>,
                     curr_group: uint,
                     mtllib:     &HashMap<String, MtlMaterial>,
                     group2mtl:  &mut HashMap<uint, MtlMaterial>,
@@ -146,7 +149,7 @@ fn parse_usemtl<'a>(l:          uint,
 }
 
 fn parse_mtllib<'a>(l:            uint,
-                    mut ws:       Words<'a>,
+                    ws:           Words<'a>,
                     mtl_base_dir: &Path,
                     mtllib:       &mut HashMap<String, MtlMaterial>) {
     let filename: Vec<&'a str> = ws.collect();
@@ -282,7 +285,7 @@ fn parse_vt<'a>(l: uint, mut ws: Words<'a>) -> UV {
 }
 
 fn parse_g<'a>(_:          uint,
-               mut ws:     Words<'a>,
+               ws:         Words<'a>,
                prefix:     &str,
                groups:     &mut HashMap<String, uint>,
                groups_ids: &mut Vec<Vec<Vec3<u32>>>)

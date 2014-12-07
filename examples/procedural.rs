@@ -13,7 +13,7 @@ use ncollide::procedural;
 use ncollide::utils;
 use ncollide::utils::symbolic::{BivariateFn, sin, cos, u, v};
 use kiss3d::window::Window;
-use kiss3d::light;
+use kiss3d::light::Light;
 
 fn main() {
     let mut window = Window::new("Kiss3d: procedural");
@@ -170,7 +170,7 @@ fn main() {
      * Rendering.
      *
      */
-    window.set_light(light::StickToCamera);
+    window.set_light(Light::StickToCamera);
 
     while window.render() {
         draw_polyline(&mut window, &polyline, points);
