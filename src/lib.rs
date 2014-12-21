@@ -88,6 +88,7 @@ I’d love to see people improving this library for their own needs. However, ke
 #![deny(unused_results)]
 #![deny(unused_typecasts)]
 #![allow(unused_unsafe)] // FIXME: should be denied
+#![allow(missing_copy_implementations)]
 #![feature(globs)]
 #![feature(macro_rules)]
 #![feature(unsafe_destructor)]

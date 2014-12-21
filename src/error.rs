@@ -8,4 +8,4 @@ macro_rules! verify(
             res
         }
     }
-)
+);

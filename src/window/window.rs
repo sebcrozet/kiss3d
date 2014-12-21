@@ -410,7 +410,7 @@ impl Window {
         }
 
         for event in glfw::flush_messages(events.deref()) {
-            self.handle_event(camera, event.ref1())
+            self.handle_event(camera, &event.1)
         }
 
         unhandled_events.borrow_mut().clear();

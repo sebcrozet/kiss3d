@@ -40,7 +40,7 @@ impl Drop for Texture {
     }
 }
 
-thread_local!(static KEY_TEXTURE_MANAGER: RefCell<TextureManager> = RefCell::new(TextureManager::new()))
+thread_local!(static KEY_TEXTURE_MANAGER: RefCell<TextureManager> = RefCell::new(TextureManager::new()));
 
 /// The texture manager.
 ///

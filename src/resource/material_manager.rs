@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use resource::Material;
 use builtin::{ObjectMaterial, NormalsMaterial, UvsMaterial};
 
-thread_local!(static KEY_MATERIAL_MANAGER: RefCell<MaterialManager> = RefCell::new(MaterialManager::new()))
+thread_local!(static KEY_MATERIAL_MANAGER: RefCell<MaterialManager> = RefCell::new(MaterialManager::new()));
 
 /// The material manager.
 ///

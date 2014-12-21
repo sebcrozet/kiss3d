@@ -215,6 +215,7 @@ impl<T: Clone + GLPrimitive> GPUVector<T> {
 }
 
 /// Type of gpu buffer.
+#[deriving(Copy)]
 pub enum BufferType {
     /// An array buffer bindable to a gl::ARRAY_BUFFER.
     Array,
@@ -233,6 +234,7 @@ impl BufferType {
 }
 
 /// Allocation type of gpu buffers.
+#[deriving(Copy)]
 pub enum AllocationType {
     /// STATIC_DRAW allocation type.
     StaticDraw,

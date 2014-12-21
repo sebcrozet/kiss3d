@@ -10,7 +10,7 @@ use resource::Mesh;
 use loader::obj;
 use loader::mtl::MtlMaterial;
 
-thread_local!(static KEY_MESH_MANAGER: RefCell<MeshManager> = RefCell::new(MeshManager::new()))
+thread_local!(static KEY_MESH_MANAGER: RefCell<MeshManager> = RefCell::new(MeshManager::new()));
 
 /// The mesh manager.
 ///
