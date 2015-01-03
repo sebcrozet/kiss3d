@@ -91,7 +91,7 @@ fn main() {
                     let mut part_faces = Vec::new();
 
                     for i in partitioning.into_iter() {
-                        part_faces.push(faces.read().data().as_ref().unwrap()[i]);
+                        part_faces.push(faces.read().unwrap().data().as_ref().unwrap()[i]);
                     }
 
                     let faces = GPUVector::new(part_faces, BufferType::ElementArray, AllocationType::StaticDraw);

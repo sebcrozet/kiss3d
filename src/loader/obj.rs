@@ -5,6 +5,7 @@ use std::io::Reader;
 use std::str::Words;
 use std::str::FromStr;
 use std::io::IoResult;
+use std::iter::repeat;
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use std::sync::{Arc, RWLock};
@@ -361,7 +362,7 @@ fn reformat(coords:     Vec<Coord>,
 
     let resn = resn.unwrap_or_else(|| Mesh::compute_normals_array(resc.as_slice(), allfs.as_slice()));
     let resn = Arc::new(RWLock::new(GPUVector::new(resn, BufferType::Array, AllocationType::StaticDraw)));
-    let resu = resu.unwrap_or_else(|| Vec::from_elem(resc.len(), na::orig()));
+    let resu = resu.unwrap_or_else(|| repeat(na::orig()).take(resc.len()).collect());
     let resu = Arc::new(RWLock::new(GPUVector::new(resu, BufferType::Array, AllocationType::StaticDraw)));
     let resc = Arc::new(RWLock::new(GPUVector::new(resc, BufferType::Array, AllocationType::StaticDraw)));
 

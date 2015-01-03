@@ -47,7 +47,7 @@ impl Font {
             face:             ptr::null_mut(),
             texture_atlas:    0,
             atlas_dimensions: na::zero(),
-            glyphs:           Vec::from_fn(128, |_| None),
+            glyphs:           range(0, 128).map(|_:int| None).collect(),
             height:           0,
             nocpy:            NoCopy
         };

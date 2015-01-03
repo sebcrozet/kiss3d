@@ -204,13 +204,13 @@ impl Object {
     /// Mutably access the object's vertices.
     #[inline(always)]
     pub fn modify_vertices(&mut self, f: &mut |&mut Vec<Pnt3<GLfloat>>| -> ()) {
-        let _ = self.mesh.borrow_mut().coords().write().data_mut().as_mut().map(|coords| (*f)(coords));
+        let _ = self.mesh.borrow_mut().coords().write().unwrap().data_mut().as_mut().map(|coords| (*f)(coords));
     }
 
     /// Access the object's vertices.
     #[inline(always)]
     pub fn read_vertices(&self, f: &mut |&[Pnt3<GLfloat>]| -> ()) {
-        let _ = self.mesh.borrow().coords().read().data().as_ref().map(|coords| (*f)(coords.as_slice()));
+        let _ = self.mesh.borrow().coords().read().unwrap().data().as_ref().map(|coords| (*f)(coords.as_slice()));
     }
 
     /// Recomputes the normals of this object's mesh.
@@ -222,37 +222,37 @@ impl Object {
     /// Mutably access the object's normals.
     #[inline(always)]
     pub fn modify_normals(&mut self, f: &mut |&mut Vec<Vec3<GLfloat>>| -> ()) {
-        let _ = self.mesh.borrow_mut().normals().write().data_mut().as_mut().map(|normals| (*f)(normals));
+        let _ = self.mesh.borrow_mut().normals().write().unwrap().data_mut().as_mut().map(|normals| (*f)(normals));
     }
 
     /// Access the object's normals.
     #[inline(always)]
     pub fn read_normals(&self, f: &mut |&[Vec3<GLfloat>]| -> ()) {
-        let _ = self.mesh.borrow().normals().read().data().as_ref().map(|normals| (*f)(normals.as_slice()));
+        let _ = self.mesh.borrow().normals().read().unwrap().data().as_ref().map(|normals| (*f)(normals.as_slice()));
     }
 
     /// Mutably access the object's faces.
     #[inline(always)]
     pub fn modify_faces(&mut self, f: &mut |&mut Vec<Vec3<GLuint>>| -> ()) {
-        let _ = self.mesh.borrow_mut().faces().write().data_mut().as_mut().map(|faces| (*f)(faces));
+        let _ = self.mesh.borrow_mut().faces().write().unwrap().data_mut().as_mut().map(|faces| (*f)(faces));
     }
 
     /// Access the object's faces.
     #[inline(always)]
     pub fn read_faces(&self, f: &mut |&[Vec3<GLuint>]| -> ()) {
-        let _ = self.mesh.borrow().faces().read().data().as_ref().map(|faces| (*f)(faces.as_slice()));
+        let _ = self.mesh.borrow().faces().read().unwrap().data().as_ref().map(|faces| (*f)(faces.as_slice()));
     }
 
     /// Mutably access the object's texture coordinates.
     #[inline(always)]
     pub fn modify_uvs(&mut self, f: &mut |&mut Vec<Pnt2<GLfloat>>| -> ()) {
-        let _ = self.mesh.borrow_mut().uvs().write().data_mut().as_mut().map(|uvs| (*f)(uvs));
+        let _ = self.mesh.borrow_mut().uvs().write().unwrap().data_mut().as_mut().map(|uvs| (*f)(uvs));
     }
 
     /// Access the object's texture coordinates.
     #[inline(always)]
     pub fn read_uvs(&self, f: &mut |&[Pnt2<GLfloat>]| -> ()) {
-        let _ = self.mesh.borrow().uvs().read().data().as_ref().map(|uvs| (*f)(uvs.as_slice()));
+        let _ = self.mesh.borrow().uvs().read().unwrap().data().as_ref().map(|uvs| (*f)(uvs.as_slice()));
     }
 
 

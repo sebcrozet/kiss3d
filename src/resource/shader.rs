@@ -1,6 +1,7 @@
 use std::mem;
 use std::ptr;
 use std::str;
+use std::iter::repeat;
 use std::kinds::marker::NoCopy;
 use std::io::fs::File;
 use std::io::fs::PathExtensions;
@@ -203,7 +204,7 @@ fn check_shader_error(shader: GLuint) {
             if info_log_len > 0 {
                 // error check for fail to allocate memory omitted
                 let mut chars_written = 0;
-                let info_log = " ".repeat(info_log_len as uint);
+                let info_log: String = repeat(' ').take(info_log_len as uint).collect();
 
                 let mut c_str = info_log.to_c_str();
 

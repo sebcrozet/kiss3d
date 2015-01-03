@@ -7,6 +7,7 @@ use na;
 use ncollide::procedural::{TriMesh, TriMesh3, IndexBuffer};
 use resource::ShaderAttribute;
 use resource::gpu_vector::{GPUVector, AllocationType, BufferType};
+use std::iter;
 
 #[path = "../error.rs"]
 mod error;
@@ -38,7 +39,7 @@ impl Mesh {
 
         let uvs = match uvs {
             Some(us) => us,
-            None     => Vec::from_elem(coords.len(), na::orig())
+            None     => iter::repeat(na::orig()).take(coords.len()).collect()
         };
 
         let location = if dynamic_draw { AllocationType::DynamicDraw } else { AllocationType::StaticDraw };
@@ -65,32 +66,32 @@ impl Mesh {
 
     /// Creates a triangle mesh from this mesh.
     pub fn to_trimesh(&self) -> Option<TriMesh3<GLfloat>> {
-        let unload_coords  = !self.coords.read().is_on_ram();
-        let unload_faces   = !self.faces.read().is_on_ram();
-        let unload_normals = !self.normals.read().is_on_ram();
-        let unload_uvs     = !self.uvs.read().is_on_ram();
+        let unload_coords  = !self.coords.read().unwrap().is_on_ram();
+        let unload_faces   = !self.faces.read().unwrap().is_on_ram();
+        let unload_normals = !self.normals.read().unwrap().is_on_ram();
+        let unload_uvs     = !self.uvs.read().unwrap().is_on_ram();
 
-        self.coords.write().load_to_ram();
-        self.faces.write().load_to_ram();
-        self.normals.write().load_to_ram();
-        self.uvs.write().load_to_ram();
+        self.coords.write().unwrap().load_to_ram();
+        self.faces.write().unwrap().load_to_ram();
+        self.normals.write().unwrap().load_to_ram();
+        self.uvs.write().unwrap().load_to_ram();
 
-        let coords  = self.coords.read().to_owned();
-        let faces   = self.faces.read().to_owned();
-        let normals = self.normals.read().to_owned();
-        let uvs     = self.uvs.read().to_owned();
+        let coords  = self.coords.read().unwrap().to_owned();
+        let faces   = self.faces.read().unwrap().to_owned();
+        let normals = self.normals.read().unwrap().to_owned();
+        let uvs     = self.uvs.read().unwrap().to_owned();
 
         if unload_coords {
-            self.coords.write().unload_from_ram();
+            self.coords.write().unwrap().unload_from_ram();
         }
         if unload_faces {
-            self.coords.write().unload_from_ram();
+            self.coords.write().unwrap().unload_from_ram();
         }
         if unload_normals {
-            self.coords.write().unload_from_ram();
+            self.coords.write().unwrap().unload_from_ram();
         }
         if unload_uvs {
-            self.coords.write().unload_from_ram();
+            self.coords.write().unwrap().unload_from_ram();
         }
 
         if coords.is_none() || faces.is_none() {
@@ -117,22 +118,22 @@ impl Mesh {
 
     /// Binds this mesh vertex coordinates buffer to a vertex attribute.
     pub fn bind_coords(&mut self, coords: &mut ShaderAttribute<Pnt3<GLfloat>>) {
-        coords.bind(self.coords.write().deref_mut());
+        coords.bind(self.coords.write().unwrap().deref_mut());
     }
 
     /// Binds this mesh vertex normals buffer to a vertex attribute.
     pub fn bind_normals(&mut self, normals: &mut ShaderAttribute<Vec3<GLfloat>>) {
-        normals.bind(self.normals.write().deref_mut());
+        normals.bind(self.normals.write().unwrap().deref_mut());
     }
 
     /// Binds this mesh vertex uvs buffer to a vertex attribute.
     pub fn bind_uvs(&mut self, uvs: &mut ShaderAttribute<Pnt2<GLfloat>>) {
-        uvs.bind(self.uvs.write().deref_mut());
+        uvs.bind(self.uvs.write().unwrap().deref_mut());
     }
 
     /// Binds this mesh vertex uvs buffer to a vertex attribute.
     pub fn bind_faces(&mut self) {
-        self.faces.write().bind();
+        self.faces.write().unwrap().bind();
     }
 
     /// Binds this mesh buffers to vertex attributes.
@@ -148,22 +149,22 @@ impl Mesh {
 
     /// Unbind this mesh buffers to vertex attributes.
     pub fn unbind(&self) {
-        self.coords.write().unbind();
-        self.normals.write().unbind();
-        self.uvs.write().unbind();
-        self.faces.write().unbind();
+        self.coords.write().unwrap().unbind();
+        self.normals.write().unwrap().unbind();
+        self.uvs.write().unwrap().unbind();
+        self.faces.write().unwrap().unbind();
     }
 
     /// Number of points needed to draw this mesh.
     pub fn num_pts(&self) -> uint {
-        self.faces.read().len() * 3
+        self.faces.read().unwrap().len() * 3
     }
 
     /// Recompute this mesh normals.
     pub fn recompute_normals(&mut self) {
-        Mesh::compute_normals(self.coords.read().data().as_ref().unwrap().as_slice(),
-                              self.faces.read().data().as_ref().unwrap().as_slice(),
-                              self.normals.write().data_mut().as_mut().unwrap());
+        Mesh::compute_normals(self.coords.read().unwrap().data().as_ref().unwrap().as_slice(),
+                              self.faces.read().unwrap().data().as_ref().unwrap().as_slice(),
+                              self.normals.write().unwrap().data_mut().as_mut().unwrap());
     }
 
     /// This mesh faces.
@@ -199,10 +200,10 @@ impl Mesh {
     pub fn compute_normals(coordinates: &[Pnt3<GLfloat>],
                            faces:       &[Vec3<GLuint>],
                            normals:     &mut Vec<Vec3<GLfloat>>) {
-        let mut divisor = Vec::from_elem(coordinates.len(), 0f32);
+        let mut divisor:Vec<f32> = iter::repeat(0f32).take(coordinates.len()).collect();
     
         normals.clear();
-        normals.grow(coordinates.len(), na::zero());
+	normals.extend(iter::repeat(na::zero()).take(coordinates.len()));
     
         // Accumulate normals ...
         for f in faces.iter() {
