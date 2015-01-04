@@ -60,7 +60,7 @@ fn main() {
      * Render
      */
     while window.render_with_camera(&mut observer) {
-        let mut c = context.write();
+        let mut c = context.write().unwrap();
 
         for event in window.events().iter() {
             match event.value {
@@ -275,7 +275,7 @@ impl Material for RelativisticMaterial {
         let ctxt = self.context.clone();
 
         {
-            let c = ctxt.read();
+            let c = ctxt.read().unwrap();
             // XXX: this relative velocity est very wrong!
             self.rel_vel.upload(&c.speed_of_player);
             self.light_vel.upload(&c.speed_of_light);

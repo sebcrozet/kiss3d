@@ -9,6 +9,7 @@ use std::io::timer::Timer;
 use std::cell::RefCell;
 use std::rc::Rc;
 use libc;
+use std::iter::repeat;
 use std::time::Duration;
 use time;
 use gl;
@@ -374,7 +375,7 @@ impl Window {
 
         if out.len() < size {
             let diff = size - out.len();
-            out.grow(diff, 0);
+	    out.extend(repeat(0).take(diff));
         }
         else {
             out.truncate(size)
