@@ -39,7 +39,7 @@ use kiss3d::window::Window;
 use kiss3d::light;
 
 #[start]
-fn start(argc: int, argv: *const *const u8) -> int {
+fn start(argc: isize, argv: *const *const u8) -> isize {
     native::start(argc, argv, main)
 }
 
@@ -89,9 +89,8 @@ I’d love to see people improving this library for their own needs. However, ke
 #![deny(unused_typecasts)]
 #![allow(unused_unsafe)] // FIXME: should be denied
 #![allow(missing_copy_implementations)]
-#![feature(globs)]
-#![feature(macro_rules)]
 #![feature(unsafe_destructor)]
+#![feature(int_uint)] // FIXME: remove this
 #![doc(html_root_url = "http://kiss3d.org/doc")]
 
 extern crate libc;
@@ -99,7 +98,7 @@ extern crate time;
 extern crate glfw;
 extern crate gl;
 extern crate "nalgebra" as na;
-extern crate ncollide;
+extern crate ncollide_procedural;
 extern crate stb_image;
 extern crate freetype;
 

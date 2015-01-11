@@ -1,10 +1,10 @@
 //! Data structure of a scene node geometry.
 
-use std::sync::{Arc, RWLock};
+use std::sync::{Arc, RwLock};
 use gl::types::*;
 use na::{Pnt2, Vec3, Pnt3};
 use na;
-use ncollide::procedural::{TriMesh, TriMesh3, IndexBuffer};
+use ncollide_procedural::{TriMesh, TriMesh3, IndexBuffer};
 use resource::ShaderAttribute;
 use resource::gpu_vector::{GPUVector, AllocationType, BufferType};
 use std::iter;
@@ -16,10 +16,10 @@ mod error;
 ///
 /// It also contains the GPU location of those buffers.
 pub struct Mesh {
-    coords:  Arc<RWLock<GPUVector<Pnt3<GLfloat>>>>,
-    faces:   Arc<RWLock<GPUVector<Vec3<GLuint>>>>,
-    normals: Arc<RWLock<GPUVector<Vec3<GLfloat>>>>,
-    uvs:     Arc<RWLock<GPUVector<Pnt2<GLfloat>>>>
+    coords:  Arc<RwLock<GPUVector<Pnt3<GLfloat>>>>,
+    faces:   Arc<RwLock<GPUVector<Pnt3<GLuint>>>>,
+    normals: Arc<RwLock<GPUVector<Vec3<GLfloat>>>>,
+    uvs:     Arc<RwLock<GPUVector<Pnt2<GLfloat>>>>
 }
 
 impl Mesh {
@@ -27,7 +27,7 @@ impl Mesh {
     ///
     /// If the normals and uvs are not given, they are automatically computed.
     pub fn new(coords:       Vec<Pnt3<GLfloat>>,
-               faces:        Vec<Vec3<GLuint>>,
+               faces:        Vec<Pnt3<GLuint>>,
                normals:      Option<Vec<Vec3<GLfloat>>>,
                uvs:          Option<Vec<Pnt2<GLfloat>>>,
                dynamic_draw: bool)
@@ -43,10 +43,10 @@ impl Mesh {
         };
 
         let location = if dynamic_draw { AllocationType::DynamicDraw } else { AllocationType::StaticDraw };
-        let cs = Arc::new(RWLock::new(GPUVector::new(coords, BufferType::Array, location)));
-        let fs = Arc::new(RWLock::new(GPUVector::new(faces, BufferType::ElementArray, location)));
-        let ns = Arc::new(RWLock::new(GPUVector::new(normals, BufferType::Array, location)));
-        let us = Arc::new(RWLock::new(GPUVector::new(uvs, BufferType::Array, location)));
+        let cs = Arc::new(RwLock::new(GPUVector::new(coords, BufferType::Array, location)));
+        let fs = Arc::new(RwLock::new(GPUVector::new(faces, BufferType::ElementArray, location)));
+        let ns = Arc::new(RwLock::new(GPUVector::new(normals, BufferType::Array, location)));
+        let us = Arc::new(RwLock::new(GPUVector::new(uvs, BufferType::Array, location)));
 
         Mesh::new_with_gpu_vectors(cs, fs, ns, us)
     }
@@ -103,10 +103,10 @@ impl Mesh {
     }
 
     /// Creates a new mesh. Arguments set to `None` are automatically computed.
-    pub fn new_with_gpu_vectors(coords:  Arc<RWLock<GPUVector<Pnt3<GLfloat>>>>,
-                                faces:   Arc<RWLock<GPUVector<Vec3<GLuint>>>>,
-                                normals: Arc<RWLock<GPUVector<Vec3<GLfloat>>>>,
-                                uvs:     Arc<RWLock<GPUVector<Pnt2<GLfloat>>>>)
+    pub fn new_with_gpu_vectors(coords:  Arc<RwLock<GPUVector<Pnt3<GLfloat>>>>,
+                                faces:   Arc<RwLock<GPUVector<Pnt3<GLuint>>>>,
+                                normals: Arc<RwLock<GPUVector<Vec3<GLfloat>>>>,
+                                uvs:     Arc<RwLock<GPUVector<Pnt2<GLfloat>>>>)
                                 -> Mesh {
         Mesh {
             coords:  coords,
@@ -118,17 +118,17 @@ impl Mesh {
 
     /// Binds this mesh vertex coordinates buffer to a vertex attribute.
     pub fn bind_coords(&mut self, coords: &mut ShaderAttribute<Pnt3<GLfloat>>) {
-        coords.bind(self.coords.write().unwrap().deref_mut());
+        coords.bind(&mut *self.coords.write().unwrap());
     }
 
     /// Binds this mesh vertex normals buffer to a vertex attribute.
     pub fn bind_normals(&mut self, normals: &mut ShaderAttribute<Vec3<GLfloat>>) {
-        normals.bind(self.normals.write().unwrap().deref_mut());
+        normals.bind(&mut *self.normals.write().unwrap());
     }
 
     /// Binds this mesh vertex uvs buffer to a vertex attribute.
     pub fn bind_uvs(&mut self, uvs: &mut ShaderAttribute<Pnt2<GLfloat>>) {
-        uvs.bind(self.uvs.write().unwrap().deref_mut());
+        uvs.bind(&mut *self.uvs.write().unwrap());
     }
 
     /// Binds this mesh vertex uvs buffer to a vertex attribute.
@@ -156,7 +156,7 @@ impl Mesh {
     }
 
     /// Number of points needed to draw this mesh.
-    pub fn num_pts(&self) -> uint {
+    pub fn num_pts(&self) -> usize {
         self.faces.read().unwrap().len() * 3
     }
 
@@ -168,27 +168,27 @@ impl Mesh {
     }
 
     /// This mesh faces.
-    pub fn faces<'a>(&'a self) -> &'a Arc<RWLock<GPUVector<Vec3<GLuint>>>> {
+    pub fn faces<'a>(&'a self) -> &'a Arc<RwLock<GPUVector<Pnt3<GLuint>>>> {
         &self.faces
     }
 
     /// This mesh normals.
-    pub fn normals<'a>(&'a self) -> &'a Arc<RWLock<GPUVector<Vec3<GLfloat>>>> {
+    pub fn normals<'a>(&'a self) -> &'a Arc<RwLock<GPUVector<Vec3<GLfloat>>>> {
         &self.normals
     }
 
     /// This mesh vertex coordinates.
-    pub fn coords<'a>(&'a self) -> &'a Arc<RWLock<GPUVector<Pnt3<GLfloat>>>> {
+    pub fn coords<'a>(&'a self) -> &'a Arc<RwLock<GPUVector<Pnt3<GLfloat>>>> {
         &self.coords
     }
 
     /// This mesh texture coordinates.
-    pub fn uvs<'a>(&'a self) -> &'a Arc<RWLock<GPUVector<Pnt2<GLfloat>>>> {
+    pub fn uvs<'a>(&'a self) -> &'a Arc<RwLock<GPUVector<Pnt2<GLfloat>>>> {
         &self.uvs
     }
 
     /// Computes normals from a set of faces.
-    pub fn compute_normals_array(coordinates: &[Pnt3<GLfloat>], faces: &[Vec3<GLuint>]) -> Vec<Vec3<GLfloat>> {
+    pub fn compute_normals_array(coordinates: &[Pnt3<GLfloat>], faces: &[Pnt3<GLuint>]) -> Vec<Vec3<GLfloat>> {
         let mut res = Vec::new();
     
         Mesh::compute_normals(coordinates, faces, &mut res);
@@ -198,7 +198,7 @@ impl Mesh {
     
     /// Computes normals from a set of faces.
     pub fn compute_normals(coordinates: &[Pnt3<GLfloat>],
-                           faces:       &[Vec3<GLuint>],
+                           faces:       &[Pnt3<GLuint>],
                            normals:     &mut Vec<Vec3<GLfloat>>) {
         let mut divisor:Vec<f32> = iter::repeat(0f32).take(coordinates.len()).collect();
     
@@ -207,8 +207,8 @@ impl Mesh {
     
         // Accumulate normals ...
         for f in faces.iter() {
-            let edge1  = coordinates[f.y as uint] - coordinates[f.x as uint];
-            let edge2  = coordinates[f.z as uint] - coordinates[f.x as uint];
+            let edge1  = coordinates[f.y as usize] - coordinates[f.x as usize];
+            let edge2  = coordinates[f.z as usize] - coordinates[f.x as usize];
             let cross  = na::cross(&edge1, &edge2);
             let normal;
     
@@ -219,13 +219,13 @@ impl Mesh {
                 normal = cross
             }
     
-            normals[f.x as uint] = normals[f.x as uint] + normal;
-            normals[f.y as uint] = normals[f.y as uint] + normal;
-            normals[f.z as uint] = normals[f.z as uint] + normal;
+            normals[f.x as usize] = normals[f.x as usize] + normal;
+            normals[f.y as usize] = normals[f.y as usize] + normal;
+            normals[f.z as usize] = normals[f.z as usize] + normal;
     
-            divisor[f.x as uint] = divisor[f.x as uint] + 1.0;
-            divisor[f.y as uint] = divisor[f.y as uint] + 1.0;
-            divisor[f.z as uint] = divisor[f.z as uint] + 1.0;
+            divisor[f.x as usize] = divisor[f.x as usize] + 1.0;
+            divisor[f.y as usize] = divisor[f.y as usize] + 1.0;
+            divisor[f.z as usize] = divisor[f.z as usize] + 1.0;
         }
     
         // ... and compute the mean

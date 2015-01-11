@@ -8,7 +8,7 @@ use std::io::IoResult;
 use std::iter::repeat;
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
-use std::sync::{Arc, RWLock};
+use std::sync::{Arc, RwLock};
 use gl::types::GLfloat;
 use na::{Vec3, Pnt2, Pnt3, Indexable, Bounded};
 use na;
@@ -24,11 +24,11 @@ pub type Normal = Vec3<GLfloat>;
 /// The type of texture coordinates.
 pub type UV     = Pnt2<GLfloat>;
 
-fn error(line: uint, err: &str) -> ! {
+fn error(line: usize, err: &str) -> ! {
     panic!("At line {}: {}", line, err)
 }
 
-fn warn(line: uint, err: &str) {
+fn warn(line: usize, err: &str) {
     println!("At line {}: {}", line, err)
 }
 
@@ -42,17 +42,17 @@ pub fn parse_file(path: &Path, mtl_base_dir: &Path, basename: &str) -> IoResult<
 
 /// Parses a string representing an obj file.
 pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, Mesh, Option<MtlMaterial>)> {
-    let mut coords:     Vec<Coord>            = Vec::new();
-    let mut normals:    Vec<Normal>           = Vec::new();
-    let mut uvs:        Vec<UV>               = Vec::new();
-    let mut groups:     HashMap<String, uint> = HashMap::new();
-    let mut groups_ids: Vec<Vec<Vec3<u32>>>   = Vec::new();
-    let mut curr_group: uint                  = 0;
-    let mut ignore_normals                    = false;
-    let mut ignore_uvs                        = false;
-    let mut mtllib                            = HashMap::new();
-    let mut group2mtl                         = HashMap::new();
-    let mut curr_mtl                          = None::<MtlMaterial>;
+    let mut coords:     Vec<Coord>             = Vec::new();
+    let mut normals:    Vec<Normal>            = Vec::new();
+    let mut uvs:        Vec<UV>                = Vec::new();
+    let mut groups:     HashMap<String, usize> = HashMap::new();
+    let mut groups_ids: Vec<Vec<Pnt3<u32>>>    = Vec::new();
+    let mut curr_group: usize                  = 0;
+    let mut ignore_normals                     = false;
+    let mut ignore_uvs                         = false;
+    let mut mtllib                             = HashMap::new();
+    let mut group2mtl                          = HashMap::new();
+    let mut curr_mtl                           = None::<MtlMaterial>;
 
     groups_ids.push(Vec::new());
     let _ = groups.insert(basename.to_string(), 0);
@@ -101,15 +101,15 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
         group2mtl)
 }
 
-fn parse_usemtl<'a>(l:          uint,
+fn parse_usemtl<'a>(l:          usize,
                     ws:         Words<'a>,
-                    curr_group: uint,
+                    curr_group: usize,
                     mtllib:     &HashMap<String, MtlMaterial>,
-                    group2mtl:  &mut HashMap<uint, MtlMaterial>,
-                    groups:     &mut HashMap<String, uint>,
-                    groups_ids: &mut Vec<Vec<Vec3<u32>>>,
+                    group2mtl:  &mut HashMap<usize, MtlMaterial>,
+                    groups:     &mut HashMap<String, usize>,
+                    groups_ids: &mut Vec<Vec<Pnt3<u32>>>,
                     curr_mtl:   &mut Option<MtlMaterial>)
-                    -> uint {
+                    -> usize {
     let mname: Vec<&'a str> = ws.collect();
     let mname = mname.connect(" ");
     let none  = "None";
@@ -149,7 +149,7 @@ fn parse_usemtl<'a>(l:          uint,
     }
 }
 
-fn parse_mtllib<'a>(l:            uint,
+fn parse_mtllib<'a>(l:            usize,
                     ws:           Words<'a>,
                     mtl_base_dir: &Path,
                     mtllib:       &mut HashMap<String, MtlMaterial>) {
@@ -171,7 +171,7 @@ fn parse_mtllib<'a>(l:            uint,
     }
 }
 
-fn parse_v_or_vn<'a>(l: uint, mut ws: Words<'a>) -> Vec3<f32> {
+fn parse_v_or_vn<'a>(l: usize, mut ws: Words<'a>) -> Vec3<f32> {
     let sx = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 0."));
     let sy = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 1."));
     let sz = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 2."));
@@ -187,15 +187,15 @@ fn parse_v_or_vn<'a>(l: uint, mut ws: Words<'a>) -> Vec3<f32> {
     Vec3::new(x, y, z)
 }
 
-fn parse_f<'a>(l:              uint,
+fn parse_f<'a>(l:              usize,
                mut ws:         Words<'a>,
                coords:         &[Pnt3<f32>],
                uvs:            &[Pnt2<f32>],
                normals:        &[Vec3<f32>],
                ignore_uvs:     &mut bool,
                ignore_normals: &mut bool,
-               groups_ids:     &mut Vec<Vec<Vec3<u32>>>,
-               curr_group:     uint) {
+               groups_ids:     &mut Vec<Vec<Pnt3<u32>>>,
+               curr_group:     usize) {
     // Four formats possible: v   v/t   v//n   v/t/n
     let mut i = 0;
     for word in ws {
@@ -254,7 +254,7 @@ fn parse_f<'a>(l:              uint,
             z = curr_ids.z as u32;
         }
 
-        groups_ids[curr_group].push(Vec3::new(x, y, z));
+        groups_ids[curr_group].push(Pnt3::new(x, y, z));
 
         i = i + 1;
     }
@@ -268,7 +268,7 @@ fn parse_f<'a>(l:              uint,
     }
 }
 
-fn parse_vt<'a>(l: uint, mut ws: Words<'a>) -> UV {
+fn parse_vt<'a>(l: usize, mut ws: Words<'a>) -> UV {
     let _0 = "0.0";
     let sx  = ws.next().unwrap_or_else(|| error(l, "at least 2 components were expected, found 0."));
     let sy  = ws.next().unwrap_or_else(|| error(l, "at least 2 components were expected, found 1."));
@@ -285,12 +285,12 @@ fn parse_vt<'a>(l: uint, mut ws: Words<'a>) -> UV {
     Pnt2::new(x, y)
 }
 
-fn parse_g<'a>(_:          uint,
+fn parse_g<'a>(_:          usize,
                ws:         Words<'a>,
                prefix:     &str,
-               groups:     &mut HashMap<String, uint>,
-               groups_ids: &mut Vec<Vec<Vec3<u32>>>)
-               -> uint {
+               groups:     &mut HashMap<String, usize>,
+               groups_ids: &mut Vec<Vec<Pnt3<u32>>>)
+               -> usize {
     let suffix: Vec<&'a str> = ws.collect();
     let suffix = suffix.connect(" ");
     let name   = if suffix.len() == 0 { prefix.to_string() } else { format!("{}/{}", prefix, suffix) };
@@ -301,7 +301,7 @@ fn parse_g<'a>(_:          uint,
             groups_ids.push(Vec::new());
 
             let val = groups_ids.len() - 1;
-            *entry.set(val)
+            *entry.insert(val)
         }
     }
 }
@@ -309,17 +309,17 @@ fn parse_g<'a>(_:          uint,
 fn reformat(coords:     Vec<Coord>,
             normals:    Option<Vec<Normal>>,
             uvs:        Option<Vec<UV>>,
-            groups_ids: Vec<Vec<Vec3<u32>>>,
-            groups:     HashMap<String, uint>,
-            group2mtl:  HashMap<uint, MtlMaterial>)
+            groups_ids: Vec<Vec<Pnt3<u32>>>,
+            groups:     HashMap<String, usize>,
+            group2mtl:  HashMap<usize, MtlMaterial>)
             -> Vec<(String, Mesh, Option<MtlMaterial>)> {
-    let mut vt2id:  HashMap<Vec3<u32>, u32> = HashMap::new();
+    let mut vt2id:  HashMap<Pnt3<u32>, u32> = HashMap::new();
     let mut vertex_ids: Vec<u32>            = Vec::new();
     let mut resc: Vec<Coord>                = Vec::new();
     let mut resn: Option<Vec<Normal>>       = normals.as_ref().map(|_| Vec::new());
     let mut resu: Option<Vec<UV>>           = uvs.as_ref().map(|_| Vec::new());
-    let mut resfs: Vec<Vec<Vec3<u32>>>      = Vec::new();
-    let mut allfs: Vec<Vec3<u32>>           = Vec::new();
+    let mut resfs: Vec<Vec<Pnt3<u32>>>      = Vec::new();
+    let mut allfs: Vec<Pnt3<u32>>           = Vec::new();
     let mut names: Vec<String>              = Vec::new();
     let mut mtls:  Vec<Option<MtlMaterial>> = Vec::new();
 
@@ -333,10 +333,10 @@ fn reformat(coords:     Vec<Coord>,
                 None    => {
                     let idx = resc.len() as u32;
 
-                    resc.push(coords[point.x as uint]);
+                    resc.push(coords[point.x as usize]);
 
-                    let _ = resu.as_mut().map(|l| l.push((*uvs.as_ref().unwrap())[point.y as uint]));
-                    let _ = resn.as_mut().map(|l| l.push((*normals.as_ref().unwrap())[point.z as uint]));
+                    let _ = resu.as_mut().map(|l| l.push((*uvs.as_ref().unwrap())[point.y as usize]));
+                    let _ = resn.as_mut().map(|l| l.push((*normals.as_ref().unwrap())[point.z as usize]));
 
                     vertex_ids.push(idx);
 
@@ -352,8 +352,8 @@ fn reformat(coords:     Vec<Coord>,
         assert!(vertex_ids.len() % 3 == 0);
 
         for f in vertex_ids.as_slice().chunks(3) {
-            resf.push(Vec3::new(f[0], f[1], f[2]));
-            allfs.push(Vec3::new(f[0], f[1], f[2]));
+            resf.push(Pnt3::new(f[0], f[1], f[2]));
+            allfs.push(Pnt3::new(f[0], f[1], f[2]));
         }
 
         resfs.push(resf);
@@ -361,15 +361,15 @@ fn reformat(coords:     Vec<Coord>,
     }
 
     let resn = resn.unwrap_or_else(|| Mesh::compute_normals_array(resc.as_slice(), allfs.as_slice()));
-    let resn = Arc::new(RWLock::new(GPUVector::new(resn, BufferType::Array, AllocationType::StaticDraw)));
+    let resn = Arc::new(RwLock::new(GPUVector::new(resn, BufferType::Array, AllocationType::StaticDraw)));
     let resu = resu.unwrap_or_else(|| repeat(na::orig()).take(resc.len()).collect());
-    let resu = Arc::new(RWLock::new(GPUVector::new(resu, BufferType::Array, AllocationType::StaticDraw)));
-    let resc = Arc::new(RWLock::new(GPUVector::new(resc, BufferType::Array, AllocationType::StaticDraw)));
+    let resu = Arc::new(RwLock::new(GPUVector::new(resu, BufferType::Array, AllocationType::StaticDraw)));
+    let resc = Arc::new(RwLock::new(GPUVector::new(resc, BufferType::Array, AllocationType::StaticDraw)));
 
     let mut meshes = Vec::new();
     for ((fs, name), mtl) in resfs.into_iter().zip(names.into_iter()).zip(mtls.into_iter()) {
         if fs.len() != 0 {
-            let fs   = Arc::new(RWLock::new(GPUVector::new(fs, BufferType::ElementArray, AllocationType::StaticDraw)));
+            let fs   = Arc::new(RwLock::new(GPUVector::new(fs, BufferType::ElementArray, AllocationType::StaticDraw)));
             let mesh = Mesh::new_with_gpu_vectors(resc.clone(), fs, resn.clone(), resu.clone());
             meshes.push((name, mesh, mtl))
         }

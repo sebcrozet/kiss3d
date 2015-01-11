@@ -54,7 +54,7 @@ impl TextureManager {
     /// Creates a new texture manager.
     pub fn new() -> TextureManager {
         let default_tex = Texture::new();
-        let default_tex_pixels: [ GLfloat, ..3 ] = [ 1.0, 1.0, 1.0 ];
+        let default_tex_pixels: [ GLfloat; 3 ] = [ 1.0, 1.0, 1.0 ];
         verify!(gl::ActiveTexture(gl::TEXTURE0));
         verify!(gl::BindTexture(gl::TEXTURE_2D, default_tex.id()));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_BASE_LEVEL, 0));
@@ -76,8 +76,8 @@ impl TextureManager {
     }
 
     /// Mutably applies a function to the texture manager.
-    pub fn get_global_manager<T>(f: |&mut TextureManager| -> T) -> T {
-        KEY_TEXTURE_MANAGER.with(|manager| f(manager.borrow_mut().deref_mut()))
+    pub fn get_global_manager<T, F: FnMut(&mut TextureManager) -> T>(mut f: F) -> T {
+        KEY_TEXTURE_MANAGER.with(|manager| f(&mut *manager.borrow_mut()))
     }
 
     /// Gets the default, completely white, texture.
@@ -96,7 +96,7 @@ impl TextureManager {
     pub fn add_empty(&mut self, name: &str) -> Rc<Texture> {
         match self.textures.entry(name.to_string()) {
             Entry::Occupied(entry) => entry.into_mut().clone(),
-            Entry::Vacant(entry)   => entry.set(Texture::new()).clone()
+            Entry::Vacant(entry)   => entry.insert(Texture::new()).clone()
         }
     }
 
@@ -105,7 +105,7 @@ impl TextureManager {
     pub fn add(&mut self, path: &Path, name: &str) -> Rc<Texture> {
         let tex = match self.textures.entry(name.to_string()) {
             Entry::Occupied(entry) => entry.into_mut(),
-            Entry::Vacant(entry)   => entry.set(Texture::new())
+            Entry::Vacant(entry)   => entry.insert(Texture::new())
         };
 
         // FIXME: dont re-load the texture if it already exists!

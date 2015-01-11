@@ -16,7 +16,7 @@ use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
 fn main() {
     let mut window = Window::new("Kiss3d: custom_material");
     let mut c      = window.add_sphere(1.0);
-    let material   = Rc::new(RefCell::new(box NormalMaterial::new() as Box<Material + 'static>));
+    let material   = Rc::new(RefCell::new(Box::new(NormalMaterial::new()) as Box<Material + 'static>));
 
     c.set_material(material);
 
@@ -54,7 +54,7 @@ impl NormalMaterial {
 
 impl Material for NormalMaterial {
     fn render(&mut self,
-              pass:      uint,
+              pass:      usize,
               transform: &Iso3<f32>,
               scale:     &Vec3<f32>,
               camera:    &mut Camera,

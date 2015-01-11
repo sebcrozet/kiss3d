@@ -4,8 +4,8 @@ use std::io::IoResult;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
-use ncollide::procedural::TriMesh3;
-use ncollide::procedural;
+use ncollide_procedural::TriMesh3;
+use ncollide_procedural as procedural;
 use resource::Mesh;
 use loader::obj;
 use loader::mtl::MtlMaterial;
@@ -38,8 +38,8 @@ impl MeshManager {
     }
 
     /// Mutably applies a function to the mesh manager.
-    pub fn get_global_manager<T>(f: |&mut MeshManager| -> T) -> T {
-        KEY_MESH_MANAGER.with(|manager| f(manager.borrow_mut().deref_mut()))
+    pub fn get_global_manager<T, F: FnMut(&mut MeshManager) -> T>(mut f: F) -> T {
+        KEY_MESH_MANAGER.with(|manager| f(&mut *manager.borrow_mut()))
     }
 
     /// Get a mesh with the specified name. Returns `None` if the mesh is not registered.

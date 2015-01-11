@@ -2,11 +2,11 @@
 // available under the BSD-3 licence.
 // It has been modified to work with gl-rs, nalgebra, and rust-freetype
 
+use std::ffi::CString;
 use std::rc::Rc;
 use std::num::UnsignedInt;
 use std::cmp;
 use std::ptr;
-use std::kinds::marker::NoCopy;
 use libc::{c_uint, c_void};
 use gl;
 use gl::types::*;
@@ -23,10 +23,9 @@ pub struct Font {
     library:          ffi::FT_Library,
     face:             ffi::FT_Face,
     texture_atlas:    GLuint,
-    atlas_dimensions: Vec2<uint>,
+    atlas_dimensions: Vec2<usize>,
     glyphs:           Vec<Option<Glyph>>,
     height:           i32,
-    nocpy:            NoCopy
 }
 
 impl Font {
@@ -47,9 +46,8 @@ impl Font {
             face:             ptr::null_mut(),
             texture_atlas:    0,
             atlas_dimensions: na::zero(),
-            glyphs:           range(0, 128).map(|_:int| None).collect(),
-            height:           0,
-            nocpy:            NoCopy
+            glyphs:           range(0, 128).map(|_:isize| None).collect(),
+            height:           0
         };
 
         unsafe {
@@ -57,7 +55,8 @@ impl Font {
 
             match path {
                 Some(path) => {
-                    let c_str = path.as_str().expect("Invalid path.").to_c_str();
+                    let path = path.as_str().expect("Invalid path.");
+                    let c_str = CString::from_slice(path.as_bytes());
                     if ffi::FT_New_Face(font.library, c_str.as_ptr(), 0, &mut font.face) != 0 {
                         panic!("Failed to create TTF face.");
                     }
@@ -84,7 +83,7 @@ impl Font {
 
                 /* If we've exhausted the width for this row, add another. */
                 if row_width + (*ft_glyph).bitmap.width + 1 >= max_width {
-                    font.atlas_dimensions.x = cmp::max(font.atlas_dimensions.x, row_width as uint);
+                    font.atlas_dimensions.x = cmp::max(font.atlas_dimensions.x, row_width as usize);
                     font.atlas_dimensions.y = font.atlas_dimensions.y + row_height;
                     row_width = 0; row_height = 0;
                 }
@@ -92,18 +91,18 @@ impl Font {
                 let advance    = Vec2::new(((*ft_glyph).advance.x >> 6) as f32, ((*ft_glyph).advance.y >> 6) as f32);
                 let dimensions = Vec2::new((*ft_glyph).bitmap.width as f32, (*ft_glyph).bitmap.rows as f32);
                 let offset     = Vec2::new((*ft_glyph).bitmap_left as f32, (*ft_glyph).bitmap_top as f32);
-                let buffer     = Vec::from_raw_buf(&*(*ft_glyph).bitmap.buffer, (dimensions.x * dimensions.y) as uint);
+                let buffer     = Vec::from_raw_buf(&*(*ft_glyph).bitmap.buffer, (dimensions.x * dimensions.y) as usize);
                 let glyph      = Glyph::new(na::zero(), advance, dimensions, offset, buffer);
                     
 
                 row_width   = row_width + (dimensions.x + 1.0) as i32;
-                row_height  = cmp::max(row_height, (*ft_glyph).bitmap.rows as uint);
+                row_height  = cmp::max(row_height, (*ft_glyph).bitmap.rows as usize);
                 font.height = cmp::max(font.height, row_height as i32);
 
                 font.glyphs[curr] = Some(glyph);
             }
 
-            font.atlas_dimensions.x = UnsignedInt::next_power_of_two(cmp::max(font.atlas_dimensions.x, row_width as uint));
+            font.atlas_dimensions.x = UnsignedInt::next_power_of_two(cmp::max(font.atlas_dimensions.x, row_width as usize));
             font.atlas_dimensions.y = UnsignedInt::next_power_of_two(font.atlas_dimensions.y + row_height);
 
             /* We're using 1 byte alignment buffering. */
@@ -150,7 +149,7 @@ impl Font {
                 glyph.tex.y = offset.y as f32 / (font.atlas_dimensions.y as f32);
 
                 offset.x   = offset.x + glyph.dimensions.x as i32;
-                row_height = cmp::max(row_height, glyph.dimensions.y as uint);
+                row_height = cmp::max(row_height, glyph.dimensions.y as usize);
             }
         }
 
@@ -170,7 +169,7 @@ impl Font {
 
     /// The dimensions of the texture atlas of this font.
     #[inline]
-    pub fn atlas_dimensions(&self) -> Vec2<uint> {
+    pub fn atlas_dimensions(&self) -> Vec2<usize> {
         self.atlas_dimensions
     }
 

@@ -49,7 +49,7 @@ impl PointRenderer {
     }
 
     /// Actually draws the points.
-    pub fn render(&mut self, pass: uint, camera: &mut Camera) {
+    pub fn render(&mut self, pass: usize, camera: &mut Camera) {
         if self.points.len() == 0 { return }
 
         self.shader.use_program();

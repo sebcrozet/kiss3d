@@ -16,7 +16,7 @@ path = "src/lib.rs"
 [dependencies.nalgebra]
 git = "https://github.com/sebcrozet/nalgebra"
 
-[dependencies.ncollide]
+[dependencies.ncollide_procedural]
 git = "https://github.com/sebcrozet/ncollide"
 
 [dependencies.gl]

@@ -27,13 +27,13 @@ impl MaterialManager {
         // load the default ObjectMaterial and the LineMaterial
         let mut materials = HashMap::new();
 
-        let om = Rc::new(RefCell::new(box ObjectMaterial::new() as Box<Material + 'static>));
+        let om = Rc::new(RefCell::new(Box::new(ObjectMaterial::new()) as Box<Material + 'static>));
         let _ = materials.insert("object".to_string(), om.clone());
 
-        let nm = Rc::new(RefCell::new(box NormalsMaterial::new() as Box<Material + 'static>));
+        let nm = Rc::new(RefCell::new(Box::new(NormalsMaterial::new()) as Box<Material + 'static>));
         let _ = materials.insert("normals".to_string(), nm.clone());
 
-        let um = Rc::new(RefCell::new(box UvsMaterial::new() as Box<Material + 'static>));
+        let um = Rc::new(RefCell::new(Box::new(UvsMaterial::new()) as Box<Material + 'static>));
         let _ = materials.insert("uvs".to_string(), um.clone());
 
         MaterialManager {
@@ -43,8 +43,8 @@ impl MaterialManager {
     }
 
     /// Mutably applies a function to the material manager.
-    pub fn get_global_manager<T>(f: |&mut MaterialManager| -> T) -> T {
-        KEY_MATERIAL_MANAGER.with(|manager| f(manager.borrow_mut().deref_mut()))
+    pub fn get_global_manager<T, F: FnMut(&mut MaterialManager) -> T>(mut f: F) -> T {
+        KEY_MATERIAL_MANAGER.with(|manager| f(&mut *manager.borrow_mut()))
     }
 
     /// Gets the default material to draw objects.

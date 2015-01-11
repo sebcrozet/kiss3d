@@ -1,5 +1,5 @@
 use std::f32;
-use std::num::{Float, FloatMath};
+use std::num::Float;
 use glfw;
 use glfw::{Key, Action, WindowEvent};
 use na::{Translation, Pnt3, Vec2, Vec3, Mat4, Iso3, PerspMat3};
@@ -12,7 +12,7 @@ use camera::Camera;
 ///   * Right button press + drag - translates the camera position on the plane orthogonal to the
 ///   view direction
 ///   * Scroll in/out - zoom in/out
-#[deriving(Show, Clone)]
+#[derive(Show, Clone)]
 pub struct FirstPerson {
     eye:             Pnt3<f32>,
     yaw:             f32,

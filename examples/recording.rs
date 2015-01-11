@@ -17,8 +17,8 @@ fn main() {
     window.set_light(Light::StickToCamera);
 
     let mut recorder = Recorder::new(Path::new("test.mpg"),
-    window.width()  as uint,
-    window.height() as uint);
+    window.width()  as usize,
+    window.height() as usize);
 
     while window.render() {
         c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0));

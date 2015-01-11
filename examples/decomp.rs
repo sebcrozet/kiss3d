@@ -1,5 +1,5 @@
 extern crate time;
-extern crate ncollide;
+extern crate ncollide_transformation;
 extern crate kiss3d;
 extern crate "nalgebra" as na;
 
@@ -7,10 +7,9 @@ use std::str::FromStr;
 use std::os;
 use std::rc::Rc;
 use std::cell::RefCell;
-use std::sync::{Arc, RWLock};
+use std::sync::{Arc, RwLock};
 use std::rand;
 use na::{Vec3, Translation};
-use ncollide::procedural;
 use kiss3d::window::Window;
 use kiss3d::light::Light;
 use kiss3d::loader::obj;
@@ -38,14 +37,14 @@ fn main() {
 
     let path = args[1].as_slice();
     let scale: f32 = FromStr::from_str(args[2].as_slice()).expect("The second argument must be a float.");
-    let clusters: uint = FromStr::from_str(args[3].as_slice()).expect("The third argument must be an uint.");
+    let clusters: usize = FromStr::from_str(args[3].as_slice()).expect("The third argument must be an usize.");
     let concavity: f32 = FromStr::from_str(args[4].as_slice()).expect("The fourth argument must be a float.");
     let scale = Vec3::new(scale, scale, scale);
 
     /*
      * Create the window.
      */
-    let mut window = Window::new("Kiss3d: procedural");
+    let mut window = Window::new("Kiss3d: convex decomposition");
 
     /*
      * Convex decomposition.
@@ -71,7 +70,7 @@ fn main() {
             Some(mut trimesh) => {
                 trimesh.split_index_buffer(true);
                 let begin = time::precise_time_ns();
-                let (decomp, partitioning) = procedural::hacd(trimesh, concavity, clusters);
+                let (decomp, partitioning) = ncollide_transformation::hacd(trimesh, concavity, clusters);
                 total_time = total_time + ((time::precise_time_ns() - begin) as f64) / 1000000000.0;
 
                 println!("num comps: {}", decomp.len());
@@ -95,7 +94,7 @@ fn main() {
                     }
 
                     let faces = GPUVector::new(part_faces, BufferType::ElementArray, AllocationType::StaticDraw);
-                    let faces = Arc::new(RWLock::new(faces));
+                    let faces = Arc::new(RwLock::new(faces));
 
                     let mesh = Mesh::new_with_gpu_vectors(coords.clone(), faces, normals.clone(), uvs.clone());
                     let mesh = Rc::new(RefCell::new(mesh));

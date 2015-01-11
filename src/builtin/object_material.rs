@@ -65,7 +65,7 @@ impl ObjectMaterial {
 
 impl Material for ObjectMaterial {
     fn render(&mut self,
-              pass:      uint,
+              pass:      usize,
               transform: &Iso3<f32>,
               scale:     &Vec3<f32>,
               camera:    &mut Camera,

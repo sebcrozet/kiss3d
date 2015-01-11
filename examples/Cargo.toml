@@ -6,6 +6,21 @@ authors = [ "Sébastien Crozet <developer@crozet.re>" ]
 [dependencies.time]
 git = "https://github.com/rust-lang/time"
 
+[dependencies.gl]
+git = "https://github.com/bjz/gl-rs"
+
+[dependencies.glfw]
+git = "https://github.com/bjz/glfw-rs"
+
+[dependencies.nalgebra]
+git = "https://github.com/sebcrozet/nalgebra"
+
+[dependencies.ncollide_procedural]
+git = "https://github.com/sebcrozet/ncollide"
+
+[dependencies.ncollide_transformation]
+git = "https://github.com/sebcrozet/ncollide"
+
 [dependencies.kiss3d]
 path = ".."
 

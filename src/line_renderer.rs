@@ -51,7 +51,7 @@ impl LineRenderer {
     }
 
     /// Actually draws the lines.
-    pub fn render(&mut self, pass: uint, camera: &mut Camera) {
+    pub fn render(&mut self, pass: usize, camera: &mut Camera) {
         if self.lines.len() == 0 { return }
 
         self.shader.use_program();

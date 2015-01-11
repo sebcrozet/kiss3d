@@ -3,22 +3,19 @@
 use std::mem;
 use gl;
 use gl::types::*;
-use std::kinds::marker::NoCopy;
 use resource::gl_primitive::GLPrimitive;
 
 #[path = "../error.rs"]
 mod error;
 
 struct GLHandle {
-    handle: GLuint,
-    nocpy:  NoCopy
+    handle: GLuint
 }
 
 impl GLHandle {
     pub fn new(handle: GLuint) -> GLHandle {
         GLHandle {
-            handle: handle,
-            nocpy:  NoCopy
+            handle: handle
         }
     }
 
@@ -39,10 +36,10 @@ impl Drop for GLHandle {
 /// A vector of elements that can be loaded to the GPU, on the RAM, or both.
 pub struct GPUVector<T> {
     trash:      bool,
-    len:        uint,
+    len:        usize,
     buf_type:   BufferType,
     alloc_type: AllocationType,
-    handle:     Option<(uint, GLHandle)>,
+    handle:     Option<(usize, GLHandle)>,
     data:       Option<Vec<T>>,
 }
 
@@ -63,7 +60,7 @@ impl<T: GLPrimitive> GPUVector<T> {
 
     /// The length of this vector.
     #[inline]
-    pub fn len(&self) -> uint {
+    pub fn len(&self) -> usize {
         if self.trash {
             match self.data {
                 Some(ref d) => d.len(),
@@ -215,7 +212,7 @@ impl<T: Clone + GLPrimitive> GPUVector<T> {
 }
 
 /// Type of gpu buffer.
-#[deriving(Copy)]
+#[derive(Copy)]
 pub enum BufferType {
     /// An array buffer bindable to a gl::ARRAY_BUFFER.
     Array,
@@ -234,7 +231,7 @@ impl BufferType {
 }
 
 /// Allocation type of gpu buffers.
-#[deriving(Copy)]
+#[derive(Copy)]
 pub enum AllocationType {
     /// STATIC_DRAW allocation type.
     StaticDraw,
@@ -292,11 +289,11 @@ pub fn download_buffer<T: GLPrimitive>(buf_id: GLuint, buf_type: BufferType, out
 /// Returns the number of element the bufer on the gpu can hold.
 #[inline]
 pub fn update_buffer<T: GLPrimitive>(buf:                 &[T],
-                                     gpu_buf_len:         uint,
+                                     gpu_buf_len:         usize,
                                      gpu_buf_id:          GLuint,
                                      gpu_buf_type:        BufferType,
                                      gpu_allocation_type: AllocationType)
-                                     -> uint {
+                                     -> usize {
     unsafe {
         verify!(gl::BindBuffer(gpu_buf_type.to_gl(), gpu_buf_id));
 

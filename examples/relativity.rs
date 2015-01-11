@@ -4,11 +4,11 @@ extern crate kiss3d;
 extern crate "nalgebra" as na;
 
 use std::ptr;
-use std::num::{FloatMath, Float};
+use std::num::Float;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::io::Reader;
-use std::sync::{Arc, RWLock};
+use std::sync::{Arc, RwLock};
 use gl::types::{GLint, GLfloat};
 use glfw::{Key, Action, WindowEvent};
 use na::{Pnt2, Pnt3, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
@@ -26,8 +26,8 @@ fn main() {
     let at       = Pnt3::new(0.0f32, -399.0, 0.0);
     let fov      = 45.0f32.to_radians();
     let font     = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
-    let context  = Arc::new(RWLock::new(Context::new(1000.0, na::zero(), eye)));
-    let material = Rc::new(RefCell::new(box RelativisticMaterial::new(context.clone()) as Box<Material + 'static>));
+    let context  = Arc::new(RwLock::new(Context::new(1000.0, na::zero(), eye)));
+    let material = Rc::new(RefCell::new(Box::new(RelativisticMaterial::new(context.clone())) as Box<Material + 'static>));
     let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
 
     window.set_framerate_limit(Some(60));
@@ -188,7 +188,7 @@ impl Context {
 
 /// The default material used to draw objects.
 struct RelativisticMaterial {
-    context:         Arc<RWLock<Context>>,
+    context:         Arc<RwLock<Context>>,
     shader:          Shader,
     pos:             ShaderAttribute<Pnt3<f32>>,
     normal:          ShaderAttribute<Vec3<f32>>,
@@ -207,7 +207,7 @@ struct RelativisticMaterial {
 
 impl RelativisticMaterial {
     /// Creates a new `RelativisticMaterial`.
-    fn new(context: Arc<RWLock<Context>>) -> RelativisticMaterial {
+    fn new(context: Arc<RwLock<Context>>) -> RelativisticMaterial {
         // load the shader
         let mut shader = Shader::new_from_str(RELATIVISTIC_VERTEX_SRC, RELATIVISTIC_FRAGMENT_SRC);
 
@@ -249,7 +249,7 @@ impl RelativisticMaterial {
 
 impl Material for RelativisticMaterial {
     fn render(&mut self,
-              pass:      uint,
+              pass:      usize,
               transform: &Iso3<f32>, 
               scale:     &Vec3<f32>,
               camera:    &mut Camera,

@@ -16,7 +16,7 @@ fn main() {
     let c = Pnt3::new(0.0, 1.0, 0.0);
 
     let vertices = vec!(a, b, c);
-    let indices  = vec!(Vec3::new(0u32, 1, 2));
+    let indices  = vec!(Pnt3::new(0u32, 1, 2));
 
     let mesh  = Rc::new(RefCell::new(Mesh::new(vertices, indices, None, None, false)));
     let mut c = window.add_mesh(mesh, na::one());

@@ -7,7 +7,7 @@ use std::str::Words;
 use std::str::FromStr;
 use na::Vec3;
 
-fn error(line: uint, err: &str) -> ! {
+fn error(line: usize, err: &str) -> ! {
     panic!("At line {}: {}", line, err)
 }
 
@@ -82,12 +82,12 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
     res
 }
 
-fn parse_name<'a>(_: uint, ws: Words<'a>) -> String {
+fn parse_name<'a>(_: usize, ws: Words<'a>) -> String {
     let res: Vec<&'a str> = ws.collect();
     res.connect(" ")
 }
 
-fn parse_color<'a>(l: uint, mut ws: Words<'a>) -> Vec3<f32> {
+fn parse_color<'a>(l: usize, mut ws: Words<'a>) -> Vec3<f32> {
     let sx = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 0."));
     let sy = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 1."));
     let sz = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 2."));
@@ -103,7 +103,7 @@ fn parse_color<'a>(l: uint, mut ws: Words<'a>) -> Vec3<f32> {
     Vec3::new(x, y, z)
 }
 
-fn parse_scalar<'a>(l: uint, mut ws: Words<'a>) -> f32 {
+fn parse_scalar<'a>(l: usize, mut ws: Words<'a>) -> f32 {
     let sx = ws.next().unwrap_or_else(|| error(l, "1 component was expected, found 0."));
 
     let x: Option<f32> = FromStr::from_str(sx);
@@ -114,7 +114,7 @@ fn parse_scalar<'a>(l: uint, mut ws: Words<'a>) -> f32 {
 }
 
 /// Material informations read from a `.mtl` file.
-#[deriving(Clone)]
+#[derive(Clone)]
 pub struct MtlMaterial {
     /// Name of the material.
     pub name:             String,

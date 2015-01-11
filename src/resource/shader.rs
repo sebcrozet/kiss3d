@@ -1,8 +1,8 @@
+use std::ffi::CString;
 use std::mem;
 use std::ptr;
 use std::str;
 use std::iter::repeat;
-use std::kinds::marker::NoCopy;
 use std::io::fs::File;
 use std::io::fs::PathExtensions;
 use std::io::Reader;
@@ -18,8 +18,7 @@ mod error;
 pub struct Shader {
     program: GLuint,
     vshader: GLuint,
-    fshader: GLuint,
-    nocpy:   NoCopy
+    fshader: GLuint
 }
 
 impl Shader {
@@ -54,14 +53,14 @@ impl Shader {
         Shader {
             program: program,
             vshader: vshader,
-            fshader: fshader,
-            nocpy:   NoCopy
+            fshader: fshader
         }
     }
 
     /// Gets a uniform variable from the shader program.
     pub fn get_uniform<T: GLPrimitive>(&self, name: &str) -> Option<ShaderUniform<T>> {
-        let location = unsafe { gl::GetUniformLocation(self.program, name.to_c_str().into_inner()) };
+        let c_str = CString::from_slice(name.as_bytes());
+        let location = unsafe { gl::GetUniformLocation(self.program, c_str.as_ptr()) };
 
         if unsafe { gl::GetError() } == 0 && location != -1 {
             Some(ShaderUniform { id: location as GLuint })
@@ -73,7 +72,8 @@ impl Shader {
 
     /// Gets an attribute from the shader program.
     pub fn get_attrib<T: GLPrimitive>(&self, name: &str) -> Option<ShaderAttribute<T>> {
-        let location = unsafe { gl::GetAttribLocation(self.program, name.to_c_str().into_inner()) };
+        let c_str = CString::from_slice(name.as_bytes());
+        let location = unsafe { gl::GetAttribLocation(self.program, c_str.as_ptr()) };
 
         if unsafe { gl::GetError() } == 0 && location != -1 {
             Some(ShaderAttribute { id: location as GLuint })
@@ -141,7 +141,7 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
     }
 
     /// Binds this attribute to non contiguous parts of a gpu vector.
-    pub fn bind_sub_buffer(&mut self, vector: &mut GPUVector<T>, strides: uint, start_index: uint) {
+    pub fn bind_sub_buffer(&mut self, vector: &mut GPUVector<T>, strides: usize, start_index: usize) {
         vector.bind();
 
         unsafe {
@@ -162,8 +162,11 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
 fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (GLuint, GLuint, GLuint) {
     // Create and compile the vertex shader
     let vshader = verify!(gl::CreateShader(gl::VERTEX_SHADER));
+    let vertex_shader = CString::from_slice(vertex_shader.as_bytes());
+    let fragment_shader = CString::from_slice(fragment_shader.as_bytes());
+
     unsafe {
-        verify!(gl::ShaderSource(vshader, 1, &vertex_shader.to_c_str().into_inner(), ptr::null()));
+        verify!(gl::ShaderSource(vshader, 1, &vertex_shader.as_ptr(), ptr::null()));
         verify!(gl::CompileShader(vshader));
     }
     check_shader_error(vshader);
@@ -171,7 +174,7 @@ fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (GLuint, G
     // Create and compile the fragment shader
     let fshader = verify!(gl::CreateShader(gl::FRAGMENT_SHADER));
     unsafe {
-        verify!(gl::ShaderSource(fshader, 1, &fragment_shader.to_c_str().into_inner(), ptr::null()));
+        verify!(gl::ShaderSource(fshader, 1, &fragment_shader.as_ptr(), ptr::null()));
         verify!(gl::CompileShader(fshader));
     }
 
@@ -204,11 +207,10 @@ fn check_shader_error(shader: GLuint) {
             if info_log_len > 0 {
                 // error check for fail to allocate memory omitted
                 let mut chars_written = 0;
-                let info_log: String = repeat(' ').take(info_log_len as uint).collect();
+                let info_log: String = repeat(' ').take(info_log_len as usize).collect();
 
-                let mut c_str = info_log.to_c_str();
-
-                gl::GetShaderInfoLog(shader, info_log_len, &mut chars_written, c_str.as_mut_ptr());
+                let mut c_str = CString::from_slice(info_log.as_bytes());
+                gl::GetShaderInfoLog(shader, info_log_len, &mut chars_written, c_str.as_ptr() as *mut i8);
 
                 let bytes = c_str.as_bytes();
                 let bytes = bytes.slice_to(bytes.len() - 1);

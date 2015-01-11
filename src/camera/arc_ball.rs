@@ -1,5 +1,5 @@
 use std::f32;
-use std::num::{Float, FloatMath};
+use std::num::Float;
 use glfw::{Key, Action};
 use glfw;
 use glfw::WindowEvent;
@@ -17,7 +17,7 @@ use camera::Camera;
 /// direction
 /// * Scroll in/out - zoom in/out
 /// * Enter key - set the focus point to the origin
-#[deriving(Clone, Show)]
+#[derive(Clone, Show)]
 pub struct ArcBall {
     /// The focus point.
     at:    Pnt3<f32>,

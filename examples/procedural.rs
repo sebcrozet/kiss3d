@@ -1,17 +1,14 @@
 extern crate time;
-extern crate ncollide;
+extern crate ncollide_procedural;
+extern crate ncollide_transformation;
 extern crate kiss3d;
 extern crate "nalgebra" as na;
 
 use std::f32;
 use std::rand;
 use na::{Pnt2, Pnt3, Vec2, Vec3, Translation};
-use ncollide::parametric::ParametricSurface;
-use ncollide::procedural::{Polyline, TriMesh};
-use ncollide::procedural::path::{PolylinePath, PolylinePattern, StrokePattern, ArrowheadCap};
-use ncollide::procedural;
-use ncollide::utils;
-use ncollide::utils::symbolic::{BivariateFn, sin, cos, u, v};
+use ncollide_procedural::{Polyline, TriMesh};
+use ncollide_procedural::path::{PolylinePath, PolylinePattern, StrokePattern, ArrowheadCap};
 use kiss3d::window::Window;
 use kiss3d::light::Light;
 
@@ -21,7 +18,7 @@ fn main() {
     /*
      * A cube.
      */
-    let cube  = procedural::cuboid(&Vec3::new(0.7f32, 0.2, 0.4));
+    let cube  = ncollide_procedural::cuboid(&Vec3::new(0.7f32, 0.2, 0.4));
     let mut c = window.add_trimesh(cube, na::one());
     c.append_translation(&Vec3::new(1.0, 0.0, 0.0));
     c.set_texture_from_file(&Path::new("media/kitten.png"), "kitten");
@@ -29,14 +26,14 @@ fn main() {
     /*
      * A sphere.
      */
-    let sphere = procedural::sphere(0.4f32, 20, 20, true);
+    let sphere = ncollide_procedural::sphere(0.4f32, 20, 20, true);
     let mut s  = window.add_trimesh(sphere, na::one());
     s.set_texture_with_name("kitten");
 
     /*
      * A capsule.
      */
-    let capsule = procedural::capsule(&0.4f32, &0.4f32, 20, 20);
+    let capsule = ncollide_procedural::capsule(&0.4f32, &0.4f32, 20, 20);
     let mut c   = window.add_trimesh(capsule, na::one());
     c.append_translation(&Vec3::new(-1.0, 0.0, 0.0));
     c.set_color(0.0, 0.0, 1.0);
@@ -44,7 +41,7 @@ fn main() {
     /*
      * Triangulation.
      */
-    let to_triangulate = utils::triangulate(&[
+    let to_triangulate = ncollide_transformation::triangulate(&[
         Pnt3::new(5.0f32, 0.0, 0.0), Pnt3::new(6.1, 0.0, 0.5), Pnt3::new(7.4, 0.0, 0.5), Pnt3::new(8.2, 0.0, 0.0),
         Pnt3::new(5.1f32, 1.0, 0.0), Pnt3::new(6.2, 1.5, 0.5), Pnt3::new(7.2, 1.0, 0.5), Pnt3::new(8.0, 1.3, 0.0),
         Pnt3::new(5.3f32, 2.0, 0.0), Pnt3::new(6.1, 2.2, 0.5), Pnt3::new(7.3, 2.0, 0.5), Pnt3::new(8.2, 2.4, 0.0),
@@ -64,7 +61,7 @@ fn main() {
         Pnt3::new(0.0f32, 2.0, 2.0), Pnt3::new(1.0, 2.0, 3.0), Pnt3::new(2.0, 2.0, 3.0), Pnt3::new(3.0, 2.0, 2.0),
         Pnt3::new(0.0f32, 3.0, 0.0), Pnt3::new(1.0, 3.0, 2.0), Pnt3::new(2.0, 3.0, 2.0), Pnt3::new(3.0, 3.0, 0.0)
     ];
-    let bezier = procedural::bezier_surface(&control_points, 4, 4, 100, 100);
+    let bezier = ncollide_procedural::bezier_surface(&control_points, 4, 4, 100, 100);
     let mut b  = window.add_trimesh(bezier, na::one());
     b.append_translation(&Vec3::new(-1.5, -1.5, 0.0));
     b.enable_backface_culling(false);
@@ -99,9 +96,9 @@ fn main() {
         Pnt3::new(-2.0f32, 1.0, 4.0),
         Pnt3::new(-2.0f32, 4.0, 2.0),
     ];
-    let bezier      = procedural::bezier_curve(&control_points, 100);
+    let bezier      = ncollide_procedural::bezier_curve(&control_points, 100);
     let mut path    = PolylinePath::new(&bezier);
-    let pattern     = procedural::unit_circle(100);
+    let pattern     = ncollide_procedural::unit_circle(100);
     let start_cap   = ArrowheadCap::new(1.5f32, 2.0, 0.0);
     let end_cap     = ArrowheadCap::new(2.0f32, 2.0, 0.5);
     let mut pattern = PolylinePattern::new(&pattern, true, start_cap, end_cap);
@@ -118,7 +115,7 @@ fn main() {
         points.push(rand::random::<Pnt3<f32>>() * 2.0f32);
     }
 
-    let chull  = procedural::convex_hull3(points.as_slice());
+    let chull  = ncollide_transformation::convex_hull3(points.as_slice());
     let mut mhull = window.add_trimesh(chull, na::one());
     let mut mpts  = window.add_trimesh(TriMesh::new(points, None, None, None), na::one());
     mhull.append_translation(&Vec3::new(0.0, 2.0, -1.0));
@@ -141,29 +138,7 @@ fn main() {
     }
 
     let points   = points.as_slice();
-    let polyline = procedural::convex_hull2(points);
-
-    /*
-     * Uniform parametric surface mesher.
-     */
-    let banana = ParametricBananas::new();
-    let mesh   = procedural::parametric_surface_uniform(&banana, 20, 20);
-    let mut m  = window.add_trimesh(mesh, Vec3::new(0.5, 0.5, 0.5));
-    m.set_texture_from_file(&Path::new("media/banana.jpg"), "banana");
-    m.append_translation(&Vec3::new(-3.5, 0.0, 0.0));
-    m.set_surface_rendering_activation(false);
-    m.set_lines_width(2.0);
-
-    /*
-     * Uniform parametric surface mesher with max distance error.
-     */
-    let banana = ParametricBananas::new();
-    let mesh   = procedural::parametric_surface_uniform_with_distance_error(&banana, 0.01);
-    let mut m  = window.add_trimesh(mesh, Vec3::new(0.5, 0.5, 0.5));
-    m.set_texture_with_name("banana");
-    m.append_translation(&Vec3::new(-6.0, 0.0, 0.0));
-    m.set_surface_rendering_activation(false);
-    m.set_lines_width(2.0);
+    let polyline = ncollide_transformation::convex_hull2(points);
 
     /*
      *
@@ -195,61 +170,4 @@ fn draw_polyline(window: &mut Window, polyline: &Polyline<f32, Pnt2<f32>, Vec2<f
         window.draw_point(&Pnt3::new(pt.x, pt.y, 0.0), &Pnt3::new(1.0, 0.0, 0.0));
     }
 
-}
-
-// see https://www.pacifict.com/Examples/Example22.html
-
-struct ParametricBananas {
-    // we use trait-objects because we really do not want to know the exact type…
-    x: Box<BivariateFn<f32, f32> + 'static>,
-    y: Box<BivariateFn<f32, f32> + 'static>,
-    z: Box<BivariateFn<f32, f32> + 'static>
-}
-
-impl ParametricBananas {
-    fn new() -> ParametricBananas {
-        let pi: f32 = f32::consts::PI;
-        let u = u();
-        let v = v();
-        let x = (sin(u * 2.0f32 * pi) * sin(v * 2.0f32 * pi) + 2.0f32) * sin(v * 3.0f32 * pi);
-        let y = sin(v * 2.0f32 * pi) * cos(u * 2.0f32 * pi) + v * 4.0f32 - 2.0f32;
-        let z = (sin(u * 2.0f32 * pi) * sin(v * 2.0f32 * pi) + 2.0f32) * cos(v * 3.0f32 * pi);
-
-
-        ParametricBananas {
-            x: box x,
-            y: box y,
-            z: box z
-        }
-    }
-}
-
-impl ParametricSurface<f32, Pnt3<f32>, Vec3<f32>> for ParametricBananas {
-    fn at(&self, u: f32, v: f32) -> Pnt3<f32> {
-        Pnt3::new(self.x.d0(u, v), self.y.d0(u, v), self.z.d0(u, v))
-    }
-
-    fn at_u(&self, u: f32, v: f32) -> Vec3<f32> {
-        Vec3::new(self.x.du(u, v), self.y.du(u, v), self.z.du(u, v))
-    }
-
-    fn at_v(&self, u: f32, v: f32)  -> Vec3<f32> {
-        Vec3::new(self.x.dv(u, v), self.y.dv(u, v), self.z.dv(u, v))
-    }
-
-    fn at_uu(&self, u: f32, v: f32) -> Vec3<f32> {
-        Vec3::new(self.x.duu(u, v), self.y.duu(u, v), self.z.duu(u, v))
-    }
-
-    fn at_vv(&self, u: f32, v: f32) -> Vec3<f32> {
-        Vec3::new(self.x.dvv(u, v), self.y.dvv(u, v), self.z.dvv(u, v))
-    }
-
-    fn at_uv(&self, u: f32, v: f32) -> Vec3<f32> {
-        Vec3::new(self.x.duv(u, v), self.y.duv(u, v), self.z.duv(u, v))
-    }
-
-    fn at_uv_nk(&self, u: f32, v: f32, n: uint, k: uint) -> Vec3<f32> {
-        Vec3::new(self.x.duv_nk(u, v, n, k), self.y.duv_nk(u, v, n, k), self.z.duv_nk(u, v, n, k))
-    }
 }

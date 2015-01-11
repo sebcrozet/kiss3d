@@ -4,7 +4,7 @@ use na::Pnt3;
 use gl::types::GLfloat;
 
 /// The light configuration.
-#[deriving(Clone)]
+#[derive(Clone)]
 pub enum Light {
     /// A light with an absolute world position.
     Absolute(Pnt3<GLfloat>),

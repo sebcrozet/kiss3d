@@ -8,6 +8,7 @@ use glfw::{Context, Key, Action, WindowMode, WindowEvent};
 use std::io::timer::Timer;
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::sync::mpsc::Receiver;
 use libc;
 use std::iter::repeat;
 use std::time::Duration;
@@ -16,7 +17,7 @@ use gl;
 use gl::types::*;
 use na::{Pnt2, Vec2, Vec3, Pnt3};
 use na;
-use ncollide::procedural::TriMesh3;
+use ncollide_procedural::TriMesh3;
 use camera::Camera;
 use scene::SceneNode;
 use line_renderer::LineRenderer;
@@ -247,15 +248,15 @@ impl Window {
     /// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
     /// which will be placed vertically on each line. Must not be `0`.
     /// update.
-    pub fn add_quad(&mut self, w: f32, h: f32, usubdivs: uint, vsubdivs: uint) -> SceneNode {
+    pub fn add_quad(&mut self, w: f32, h: f32, usubdivs: usize, vsubdivs: usize) -> SceneNode {
         self.scene.add_quad(w, h, usubdivs, vsubdivs)
     }
 
     /// Adds a double-sided quad with the specified vertices.
     pub fn add_quad_with_vertices(&mut self,
                                   vertices: &[Pnt3<f32>],
-                                  nhpoints: uint,
-                                  nvpoints: uint)
+                                  nhpoints: usize,
+                                  nvpoints: usize)
                                   -> SceneNode {
         self.scene.add_quad_with_vertices(vertices, nhpoints, nvpoints)
     }
@@ -326,7 +327,7 @@ impl Window {
             line_renderer:         LineRenderer::new(),
             point_renderer:        PointRenderer::new(),
             text_renderer:         TextRenderer::new(),
-            post_process_render_target: FramebufferManager::new_render_target(width as uint, height as uint),
+            post_process_render_target: FramebufferManager::new_render_target(width as usize, height as usize),
             framebuffer_manager:   FramebufferManager::new(),
             timer:                 Timer::new().unwrap(),
             curr_time:             time::precise_time_ns(),
@@ -371,7 +372,7 @@ impl Window {
     pub fn snap(&self, out: &mut Vec<u8>) {
         let (width, height) = self.window.get_size();
 
-        let size = (width * height * 3) as uint;
+        let size = (width * height * 3) as usize;
 
         if out.len() < size {
             let diff = size - out.len();
@@ -410,7 +411,7 @@ impl Window {
             self.handle_event(camera, event)
         }
 
-        for event in glfw::flush_messages(events.deref()) {
+        for event in glfw::flush_messages(&*events) {
             self.handle_event(camera, &event.1)
         }
 
@@ -476,7 +477,7 @@ impl Window {
         let self_cam      = self.camera.clone(); // FIXME: this is ugly.
         let mut bself_cam = self_cam.borrow_mut();
         let camera = match camera {
-            None      => bself_cam.deref_mut() as &mut Camera,
+            None      => &mut *bself_cam as &mut Camera,
             Some(cam) => cam
         };
 
@@ -551,7 +552,7 @@ impl Window {
         !self.should_close()
     }
 
-    fn render_scene(&mut self, camera: &mut Camera, pass: uint) {
+    fn render_scene(&mut self, camera: &mut Camera, pass: usize) {
         // Activate the default texture
         verify!(gl::ActiveTexture(gl::TEXTURE0));
         // Clear the screen to black

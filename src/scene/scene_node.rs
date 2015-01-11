@@ -4,8 +4,8 @@ use std::mem;
 use na;
 use na::{Iso3, Pnt2, Vec3, Pnt3, Transformation, Rotation, Translation, RotationWithTranslation};
 use resource::{Mesh, MeshManager, Texture, TextureManager, Material, MaterialManager};
-use ncollide::procedural::TriMesh3;
-use ncollide::procedural;
+use ncollide_procedural::TriMesh3;
+use ncollide_procedural as procedural;
 use scene::Object;
 use camera::Camera;
 use light::Light;
@@ -28,7 +28,7 @@ pub struct SceneNodeData {
 /// A node of the scene graph.
 ///
 /// This may represent a group of other nodes, and/or contain an object that can be rendered.
-#[deriving(Clone)]
+#[derive(Clone)]
 pub struct SceneNode {
     data:   Rc<RefCell<SceneNodeData>>,
 }
@@ -54,8 +54,8 @@ impl SceneNodeData {
     }
 
     fn remove(&mut self, o: &SceneNode) {
-        match self.children.iter().rposition(|e| o.data.deref() as *const RefCell<SceneNodeData> as uint ==
-                                                 e.data.deref() as *const RefCell<SceneNodeData> as uint ) {
+        match self.children.iter().rposition(|e| &*o.data as *const RefCell<SceneNodeData> as usize ==
+                                                 &*e.data as *const RefCell<SceneNodeData> as usize ) {
             Some(i) => {
                 let _ = self.children.swap_remove(i);
             },
@@ -79,7 +79,7 @@ impl SceneNodeData {
     }
 
     /// Render the scene graph rooted by this node.
-    pub fn render(&mut self, pass: uint, camera: &mut Camera, light: &Light) {
+    pub fn render(&mut self, pass: usize, camera: &mut Camera, light: &Light) {
         if self.visible {
             self.do_render(&na::one(), &na::one(), pass, camera, light)
         }
@@ -88,7 +88,7 @@ impl SceneNodeData {
     fn do_render(&mut self,
                  transform:    &Iso3<f32>,
                  scale:        &Vec3<f32>,
-                 pass:         uint,
+                 pass:         usize,
                  camera:       &mut Camera,
                  light:        &Light) {
         if !self.up_to_date {
@@ -198,7 +198,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_vertices(&mut self, f: &mut |&mut Vec<Pnt3<f32>>| -> ()) {
+    pub fn modify_vertices<F: FnMut(&mut Vec<Pnt3<f32>>) -> ()>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_vertices(f))
     }
 
@@ -206,7 +206,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_vertices(&self, f: &mut |&[Pnt3<f32>]| -> ()) {
+    pub fn read_vertices<F: FnMut(&[Pnt3<f32>]) -> ()>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_vertices(f))
     }
 
@@ -221,7 +221,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_normals(&mut self, f: &mut |&mut Vec<Vec3<f32>>| -> ()) {
+    pub fn modify_normals<F: FnMut(&mut Vec<Vec3<f32>>) -> ()>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_normals(f))
     }
 
@@ -229,7 +229,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_normals(&self, f: &mut |&[Vec3<f32>]| -> ()) {
+    pub fn read_normals<F: FnMut(&[Vec3<f32>]) -> ()>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_normals(f))
     }
 
@@ -237,7 +237,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_faces(&mut self, f: &mut |&mut Vec<Vec3<u32>>| -> ()) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Pnt3<u32>>) -> ()>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_faces(f))
     }
 
@@ -245,7 +245,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_faces(&self, f: &mut |&[Vec3<u32>]| -> ()) {
+    pub fn read_faces<F: FnMut(&[Pnt3<u32>]) -> ()>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_faces(f))
     }
 
@@ -254,7 +254,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_uvs(&mut self, f: &mut |&mut Vec<Pnt2<f32>>| -> ()) {
+    pub fn modify_uvs<F: FnMut(&mut Vec<Pnt2<f32>>) -> ()>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_uvs(f))
     }
 
@@ -262,7 +262,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_uvs(&self, f: &mut |&[Pnt2<f32>]| -> ()) {
+    pub fn read_uvs<F: FnMut(&[Pnt2<f32>]) -> ()>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_uvs(f))
     }
 
@@ -305,9 +305,9 @@ impl SceneNodeData {
 
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
-    pub fn apply_to_objects_mut(&mut self, f: &mut |&mut Object| -> ()) {
+    pub fn apply_to_objects_mut<F: FnMut(&mut Object) -> ()>(&mut self, f: &mut F) {
         match self.object {
-            Some(ref mut o) => (*f)(o),
+            Some(ref mut o) => f(o),
             None            => { }
         }
 
@@ -318,9 +318,9 @@ impl SceneNodeData {
 
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
-    pub fn apply_to_objects(&self, f: &mut |&Object| -> ()) {
+    pub fn apply_to_objects<F: FnMut(&Object) -> ()>(&self, f: &mut F) {
         match self.object {
-            Some(ref o) => (*f)(o),
+            Some(ref o) => f(o),
             None        => { }
         }
 
@@ -687,7 +687,7 @@ impl SceneNode {
     /// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
     /// which will be placed vertically on each line. Must not be `0`.
     /// update.
-    pub fn add_quad(&mut self, w: f32, h: f32, usubdivs: uint, vsubdivs: uint) -> SceneNode {
+    pub fn add_quad(&mut self, w: f32, h: f32, usubdivs: usize, vsubdivs: usize) -> SceneNode {
         let mut node = self.add_trimesh(procedural::quad(w, h, usubdivs, vsubdivs), na::one());
         node.enable_backface_culling(false);
 
@@ -695,7 +695,7 @@ impl SceneNode {
     }
 
     /// Adds a double-sided quad with the specified vertices.
-    pub fn add_quad_with_vertices(&mut self, vertices: &[Pnt3<f32>], nhpoints: uint, nvpoints: uint) -> SceneNode {
+    pub fn add_quad_with_vertices(&mut self, vertices: &[Pnt3<f32>], nhpoints: usize, nvpoints: usize) -> SceneNode {
         let geom = procedural::quad_with_vertices(vertices, nhpoints, nvpoints);
 
         let mut node = self.add_trimesh(geom, na::one());
@@ -749,12 +749,7 @@ impl SceneNode {
             }
 
             for (_, mesh, mtl) in objs.into_iter() {
-                let mut object = Object::new(
-                    mesh,
-                    1.0, 1.0, 1.0,
-                    tex.clone(),
-                    mat.clone()
-                    );
+                let mut object = Object::new(mesh, 1.0, 1.0, 1.0, tex.clone(), mat.clone());
 
                 match mtl {
                     None      => { },
@@ -791,8 +786,8 @@ impl SceneNode {
 
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
-    pub fn apply_to_scene_nodes_mut(&mut self, f: &mut |&mut SceneNode| -> ()) {
-        (*f)(self);
+    pub fn apply_to_scene_nodes_mut<F: FnMut(&mut SceneNode) -> ()>(&mut self, f: &mut F) {
+        f(self);
 
         for c in self.data_mut().children.iter_mut() {
             c.apply_to_scene_nodes_mut(f)
@@ -801,8 +796,8 @@ impl SceneNode {
 
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
-    pub fn apply_to_scene_nodes(&self, f: &mut |&SceneNode| -> ()) {
-        (*f)(self);
+    pub fn apply_to_scene_nodes<F: FnMut(&SceneNode) -> ()>(&self, f: &mut F) {
+        f(self);
 
         for c in self.data().children.iter() {
             c.apply_to_scene_nodes(f)
@@ -816,7 +811,7 @@ impl SceneNode {
     //
 
     /// Render the scene graph rooted by this node.
-    pub fn render(&mut self, pass: uint, camera: &mut Camera, light: &Light) {
+    pub fn render(&mut self, pass: usize, camera: &mut Camera, light: &Light) {
         self.data_mut().render(pass, camera, light)
     }
 
@@ -862,7 +857,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_vertices(&mut self, f: &mut |&mut Vec<Pnt3<f32>>| -> ()) {
+    pub fn modify_vertices<F: FnMut(&mut Vec<Pnt3<f32>>) -> ()>(&mut self, f: &mut F) {
         self.data_mut().modify_vertices(f)
     }
 
@@ -870,7 +865,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_vertices(&self, f: &mut |&[Pnt3<f32>]| -> ()) {
+    pub fn read_vertices<F: FnMut(&[Pnt3<f32>]) -> ()>(&self, f: &mut F) {
         self.data().read_vertices(f)
     }
 
@@ -885,7 +880,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_normals(&mut self, f: &mut |&mut Vec<Vec3<f32>>| -> ()) {
+    pub fn modify_normals<F: FnMut(&mut Vec<Vec3<f32>>) -> ()>(&mut self, f: &mut F) {
         self.data_mut().modify_normals(f)
     }
 
@@ -893,7 +888,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_normals(&self, f: &mut |&[Vec3<f32>]| -> ()) {
+    pub fn read_normals<F: FnMut(&[Vec3<f32>]) -> ()>(&self, f: &mut F) {
         self.data().read_normals(f)
     }
 
@@ -901,7 +896,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_faces(&mut self, f: &mut |&mut Vec<Vec3<u32>>| -> ()) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Pnt3<u32>>) -> ()>(&mut self, f: &mut F) {
         self.data_mut().modify_faces(f)
     }
 
@@ -909,7 +904,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_faces(&self, f: &mut |&[Vec3<u32>]| -> ()) {
+    pub fn read_faces<F: FnMut(&[Pnt3<u32>]) -> ()>(&self, f: &mut F) {
         self.data().read_faces(f)
     }
 
@@ -918,7 +913,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_uvs(&mut self, f: &mut |&mut Vec<Pnt2<f32>>| -> ()) {
+    pub fn modify_uvs<F: FnMut(&mut Vec<Pnt2<f32>>) -> ()>(&mut self, f: &mut F) {
         self.data_mut().modify_uvs(f)
     }
 
@@ -926,7 +921,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_uvs(&self, f: &mut |&[Pnt2<f32>]| -> ()) {
+    pub fn read_uvs<F: FnMut(&[Pnt2<f32>]) -> ()>(&self, f: &mut F) {
         self.data().read_uvs(f)
     }
 

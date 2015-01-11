@@ -1,7 +1,6 @@
 //! Resource manager to allocate and switch between framebuffers.
 
 use std::ptr;
-use std::kinds::marker::NoCopy;
 use gl;
 use gl::types::*;
 
@@ -19,8 +18,7 @@ pub enum RenderTarget {
 /// OpenGL identifiers to an off-screen buffer.
 pub struct OffscreenBuffers {
     texture: GLuint,
-    depth:   GLuint,
-    ncpy:    NoCopy
+    depth:   GLuint
 }
 
 impl RenderTarget {
@@ -96,7 +94,7 @@ impl FramebufferManager {
 
     /// Creates a new render target. A render target is the combination of a color buffer and a
     /// depth buffer.
-    pub fn new_render_target(width: uint, height: uint) -> RenderTarget {
+    pub fn new_render_target(width: usize, height: usize) -> RenderTarget {
         let mut fbo_texture: GLuint = 0;
         let mut fbo_depth:   GLuint = 0;
 
@@ -128,7 +126,7 @@ impl FramebufferManager {
         }
         verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
-        RenderTarget::Offscreen(OffscreenBuffers { texture: fbo_texture, depth: fbo_depth, ncpy: NoCopy })
+        RenderTarget::Offscreen(OffscreenBuffers { texture: fbo_texture, depth: fbo_depth })
     }
 
     /// Returns the render target associated with the screen.

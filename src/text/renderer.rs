@@ -16,12 +16,12 @@ mod error;
 struct TextRenderContext {
     color: Pnt3<f32>,
     font:  Rc<Font>,
-    begin: uint,
-    size:  uint
+    begin: usize,
+    size:  usize
 }
 
 impl TextRenderContext {
-    pub fn new(color: Pnt3<f32>, font: Rc<Font>, begin: uint, size: uint) -> TextRenderContext {
+    pub fn new(color: Pnt3<f32>, font: Rc<Font>, begin: usize, size: usize) -> TextRenderContext {
         TextRenderContext {
             color:   color,
             font:    font,
@@ -71,11 +71,11 @@ impl TextRenderer {
 
             for (line_count, line) in text.lines_any().enumerate() {
                 let mut temp_pos = pos.clone();
-                temp_pos.y       = temp_pos.y + (font.height() as uint * (line_count + 1)) as f32;
+                temp_pos.y       = temp_pos.y + (font.height() as usize * (line_count + 1)) as f32;
 
                 for curr in line.chars() {
                     // XXX: do _not_ use a hashmap!
-                    let glyph = match font.glyphs()[curr as uint] {
+                    let glyph = match font.glyphs()[curr as usize] {
                         Some(ref g) => g,
                         None        => continue,
                     };

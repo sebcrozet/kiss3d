@@ -11,7 +11,7 @@ pub trait Material {
     // FIXME: add the number of the current pass?
     /// Renders an object using this material.
     fn render(&mut self,
-              pass:      uint,
+              pass:      usize,
               transform: &Iso3<f32>,
               scale:     &Vec3<f32>,
               camera:    &mut Camera,    // FIXME: replace those two arguments by

@@ -37,17 +37,17 @@ pub trait Camera {
     /// Upload the camera transformation to the gpu. This can be called multiple times on the
     /// render loop.
     #[inline]
-    fn upload(&self, _pass: uint, uniform: &mut ShaderUniform<Mat4<f32>>) {
+    fn upload(&self, _pass: usize, uniform: &mut ShaderUniform<Mat4<f32>>) {
         uniform.upload(&self.transformation());
     }
 
     /// The number of passes required by this camera.
     #[inline]
-    fn num_passes(&self) -> uint { 1u }
+    fn num_passes(&self) -> usize { 1u }
 
     /// Indicates that a pass will begin.
     #[inline]
-    fn start_pass(&self, _pass: uint, _window: &glfw::Window) { }
+    fn start_pass(&self, _pass: usize, _window: &glfw::Window) { }
 
     /// Indicates that the scene has been rendered and the post-processing is being run.
     #[inline]

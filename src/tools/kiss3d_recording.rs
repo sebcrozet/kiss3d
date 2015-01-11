@@ -47,14 +47,14 @@ static mut avformat_init: Once = ONCE_INIT;
 pub struct Recorder {
     tmp_frame_buf:    Vec<u8>,
     frame_buf:        Vec<u8>,
-    curr_frame_index: uint,
+    curr_frame_index: usize,
     initialized:      bool,
-    bit_rate:         uint,
-    width:            uint,
-    height:           uint,
-    time_base:        (uint, uint),
-    gop_size:         uint,
-    max_b_frames:     uint,
+    bit_rate:         usize,
+    width:            usize,
+    height:           usize,
+    time_base:        (usize, usize),
+    gop_size:         usize,
+    max_b_frames:     usize,
     pix_fmt:          i32,
     tmp_frame:        *mut AVFrame,
     frame:            *mut AVFrame,
@@ -72,7 +72,7 @@ impl Recorder {
     /// * `path`   - path to the output file.
     /// * `width`  - width of the recorded video.
     /// * `height` - height of the recorded video.
-    pub fn new(path: Path, width: uint, height: uint) -> Recorder {
+    pub fn new(path: Path, width: usize, height: usize) -> Recorder {
         Recorder::new_with_params(path, width, height, None, None, None, None, None)
     }
 
@@ -89,12 +89,12 @@ impl Recorder {
     /// * `max_b_frames` - maximum number of B-frames between non-B-frames. Default value: 1.
     /// * `pix_fmt`      - pixel format. Default value: `avutil::PIX_FMT_YUV420P`.
     pub fn new_with_params(path:         Path,
-                           width:        uint,
-                           height:       uint,
-                           bit_rate:     Option<uint>,
-                           time_base:    Option<(uint, uint)>,
-                           gop_size:     Option<uint>,
-                           max_b_frames: Option<uint>,
+                           width:        usize,
+                           height:       usize,
+                           bit_rate:     Option<usize>,
+                           time_base:    Option<(usize, usize)>,
+                           gop_size:     Option<usize>,
+                           max_b_frames: Option<usize>,
                            pix_fmt:      Option<i32>)
                            -> Recorder {
         unsafe {
@@ -158,7 +158,7 @@ impl Recorder {
         let win_width  = window.width() as i32;
         let win_height = window.height() as i32;
 
-        vflip(self.tmp_frame_buf.as_mut_slice(), win_width as uint * 3, win_height as uint);
+        vflip(self.tmp_frame_buf.as_mut_slice(), win_width as usize * 3, win_height as usize);
 
         unsafe {
             (*self.frame).pts += avutil::av_rescale_q(1, (*self.context).time_base, (*self.video_st).time_base);
@@ -336,7 +336,7 @@ impl Recorder {
             let nframe_bytes = avcodec::avpicture_get_size(self.pix_fmt,
                                                            self.width as i32,
                                                            self.height as i32);
-            self.frame_buf = Vec::from_elem(nframe_bytes as uint, 0u8);
+            self.frame_buf = Vec::from_elem(nframe_bytes as usize, 0u8);
 
             let _ = avcodec::avpicture_fill(self.frame as *mut avcodec::AVPicture,
                                             self.frame_buf.get(0),
@@ -421,7 +421,7 @@ impl Drop for Recorder {
     }
 }
 
-fn vflip(vec: &mut [u8], width: uint, height: uint) {
+fn vflip(vec: &mut [u8], width: usize, height: usize) {
     for j in range(0u, height / 2) {
         for i in range(0u, width) {
             vec.swap((height - j - 1) * width + i, j * width + i);

@@ -1,3 +1,4 @@
+use std::sync::mpsc::Receiver;
 use std::rc::Rc;
 use std::cell::RefCell;
 use glfw;
@@ -57,7 +58,9 @@ impl<'a> Events<'a> {
 }
 
 
-impl<'a> Iterator<Event<'a>> for Events<'a> {
+impl<'a> Iterator for Events<'a> {
+    type Item = Event<'a>;
+
     #[inline]
     fn next(&mut self) -> Option<Event<'a>> {
         match self.stream.next() {
@@ -90,6 +93,6 @@ impl EventManager {
     /// Gets an iterator to the glfw events already collected.
     #[inline]
     pub fn iter<'a>(&'a mut self) -> Events<'a> {
-        Events::new(glfw::flush_messages(self.events.deref()), self.inhibitor.deref())
+        Events::new(glfw::flush_messages(&*self.events), &*self.inhibitor)
     }
 }

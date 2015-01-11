@@ -1,5 +1,5 @@
 use std::f32;
-use std::num::{Float, FloatMath};
+use std::num::Float;
 use glfw;
 use glfw::{Key, Action, WindowEvent};
 use gl;
@@ -17,7 +17,7 @@ mod error;
 ///   * Right button press + drag - translates the camera position on the plane orthogonal to the
 ///   view direction
 ///   * Scroll in/out - zoom in/out
-#[deriving(Show)]
+#[derive(Show)]
 pub struct FirstPersonStereo {
     /// The camera position
     eye:        Pnt3<f32>,
@@ -172,7 +172,7 @@ impl FirstPersonStereo {
         self.proj_view_right = *self.projection.as_mat() * na::to_homogeneous(&na::inv(&self.view_transform_right()).unwrap());
     }
 
-    fn transformation_eye(&self, eye: uint) -> Mat4<f32> {
+    fn transformation_eye(&self, eye: usize) -> Mat4<f32> {
         match eye {
             0u => self.proj_view_left,
             1u => self.proj_view_right,
@@ -289,13 +289,13 @@ impl Camera for FirstPersonStereo {
         self.update_projviews();
     }
 
-    fn upload(&self, pass: uint, uniform: &mut ShaderUniform<Mat4<f32>>) {
+    fn upload(&self, pass: usize, uniform: &mut ShaderUniform<Mat4<f32>>) {
         uniform.upload(&self.transformation_eye(pass));
     }
 
-    fn num_passes(&self) -> uint { 2u }
+    fn num_passes(&self) -> usize { 2u }
 
-    fn start_pass(&self, pass: uint, window: &glfw::Window) {
+    fn start_pass(&self, pass: usize, window: &glfw::Window) {
         let (win_w, win_h) = window.get_size();
         let (x, y, w, h) = match pass {
             0u => (0, 0, win_w / 2 , win_h),
