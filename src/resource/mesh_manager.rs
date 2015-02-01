@@ -1,6 +1,6 @@
 //! A resource manager to load meshes.
 
-use std::io::IoResult;
+use std::old_io::IoResult;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;

@@ -7,7 +7,7 @@ use std::ptr;
 use std::num::Float;
 use std::rc::Rc;
 use std::cell::RefCell;
-use std::io::Reader;
+use std::old_io::Reader;
 use std::sync::{Arc, RwLock};
 use gl::types::{GLint, GLfloat};
 use glfw::{Key, Action, WindowEvent};

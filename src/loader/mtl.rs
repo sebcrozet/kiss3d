@@ -1,8 +1,8 @@
 //! Simplistic mtl loader.
 
 use std::mem;
-use std::io::fs::File;
-use std::io::{IoResult, Reader};
+use std::old_io::fs::File;
+use std::old_io::{IoResult, Reader};
 use std::str::Words;
 use std::str::FromStr;
 use na::Vec3;

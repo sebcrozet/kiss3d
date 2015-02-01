@@ -1,10 +1,10 @@
 //! Simplistic obj loader.
 
-use std::io::fs::File;
-use std::io::Reader;
+use std::old_io::fs::File;
+use std::old_io::Reader;
 use std::str::Words;
 use std::str::FromStr;
-use std::io::IoResult;
+use std::old_io::IoResult;
 use std::iter::repeat;
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;

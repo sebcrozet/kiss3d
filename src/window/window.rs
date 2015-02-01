@@ -5,7 +5,7 @@
 
 use glfw;
 use glfw::{Context, Key, Action, WindowMode, WindowEvent};
-use std::io::timer::Timer;
+use std::old_io::timer::Timer;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::mpsc::Receiver;
@@ -70,8 +70,14 @@ impl Window {
 
     /// Access the glfw window.
     #[inline]
-    pub fn glfw_window<'r>(&'r self) -> &'r glfw::Window {
+    pub fn glfw_window(&self) -> &glfw::Window {
         &self.window
+    }
+
+    /// Mutably access the glfw window.
+    #[inline]
+    pub fn glfw_window_mut(&mut self) -> &mut glfw::Window {
+        &mut self.window
     }
 
     /// The window width.
@@ -308,7 +314,7 @@ impl Window {
 
         let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
 
-        let (window, events) = glfw.create_window(width, height, title, WindowMode::Windowed).expect("Unable to open a glfw window.");
+        let (mut window, events) = glfw.create_window(width, height, title, WindowMode::Windowed).expect("Unable to open a glfw window.");
 
         window.make_current();
 

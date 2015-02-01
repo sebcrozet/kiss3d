@@ -21,7 +21,7 @@ fn main() {
     // Position the window correctly. -6/-26 takes care of icewm default
     // window decoration. Should probably just disable decorations (since
     // the top title is obscured anyway).
-    window.glfw_window().set_pos(-6, -26);
+    window.glfw_window_mut().set_pos(-6, -26);
     c.set_color(1.0, 0.0, 0.0);
 
     window.set_light(Light::StickToCamera);
