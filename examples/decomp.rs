@@ -36,9 +36,9 @@ fn main() {
     }
 
     let path = args[1].as_slice();
-    let scale: f32 = FromStr::from_str(args[2].as_slice()).expect("The second argument must be a float.");
-    let clusters: usize = FromStr::from_str(args[3].as_slice()).expect("The third argument must be an usize.");
-    let concavity: f32 = FromStr::from_str(args[4].as_slice()).expect("The fourth argument must be a float.");
+    let scale: f32 = FromStr::from_str(args[2].as_slice()).unwrap();
+    let clusters: usize = FromStr::from_str(args[3].as_slice()).unwrap();
+    let concavity: f32 = FromStr::from_str(args[4].as_slice()).unwrap();
     let scale = Vec3::new(scale, scale, scale);
 
     /*
@@ -57,10 +57,11 @@ fn main() {
     let mut m = window.add_obj(&obj_path, &mtl_path, scale);
     m.set_surface_rendering_activation(false);
     // m.set_lines_width(1.0);
-    let coords  = m.data().object().expect("here").mesh().borrow().coords().clone();
-    let normals = m.data().object().unwrap().mesh().borrow().normals().clone();
-    let uvs     = m.data().object().unwrap().mesh().borrow().uvs().clone();
-    let faces   = m.data().object().unwrap().mesh().borrow().faces().clone();
+    let data    = m.data();
+    let coords  = data.object().expect("here").mesh().borrow().coords().clone();
+    let normals = data.object().unwrap().mesh().borrow().normals().clone();
+    let uvs     = data.object().unwrap().mesh().borrow().uvs().clone();
+    let faces   = data.object().unwrap().mesh().borrow().faces().clone();
 
     // println!("objs: {}", teapot.len());
 

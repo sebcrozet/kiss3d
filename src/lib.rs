@@ -91,6 +91,14 @@ I’d love to see people improving this library for their own needs. However, ke
 #![allow(missing_copy_implementations)]
 #![feature(unsafe_destructor)]
 #![feature(int_uint)] // FIXME: remove this
+#![feature(old_io)]
+#![feature(libc)]
+#![feature(std_misc)]
+#![feature(old_path)]
+#![feature(core)]
+#![feature(alloc)]
+#![feature(str_words)]
+#![feature(collections)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
 
 extern crate libc;

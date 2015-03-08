@@ -1,3 +1,4 @@
+use std::marker::PhantomData;
 use std::ffi::CString;
 use std::mem;
 use std::ptr;
@@ -63,7 +64,7 @@ impl Shader {
         let location = unsafe { gl::GetUniformLocation(self.program, c_str.as_ptr()) };
 
         if unsafe { gl::GetError() } == 0 && location != -1 {
-            Some(ShaderUniform { id: location as GLuint })
+            Some(ShaderUniform { id: location as GLuint, data_type: PhantomData })
         }
         else {
             None
@@ -76,7 +77,7 @@ impl Shader {
         let location = unsafe { gl::GetAttribLocation(self.program, c_str.as_ptr()) };
 
         if unsafe { gl::GetError() } == 0 && location != -1 {
-            Some(ShaderAttribute { id: location as GLuint })
+            Some(ShaderAttribute { id: location as GLuint, data_type: PhantomData })
         }
         else {
             None
@@ -99,7 +100,8 @@ impl Drop for Shader {
 
 /// Structure encapsulating an uniform variable.
 pub struct ShaderUniform<T> {
-    id: GLuint
+    id:        GLuint,
+    data_type: PhantomData<T>
 }
 
 impl<T: GLPrimitive> ShaderUniform<T> {
@@ -111,7 +113,8 @@ impl<T: GLPrimitive> ShaderUniform<T> {
 
 /// Structure encapsulating an attribute.
 pub struct ShaderAttribute<T> {
-    id: GLuint
+    id:        GLuint,
+    data_type: PhantomData<T>
 }
 
 impl<T: GLPrimitive> ShaderAttribute<T> {

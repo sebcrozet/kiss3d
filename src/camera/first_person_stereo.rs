@@ -17,7 +17,7 @@ mod error;
 ///   * Right button press + drag - translates the camera position on the plane orthogonal to the
 ///   view direction
 ///   * Scroll in/out - zoom in/out
-#[derive(Show)]
+#[derive(Debug)]
 pub struct FirstPersonStereo {
     /// The camera position
     eye:        Pnt3<f32>,

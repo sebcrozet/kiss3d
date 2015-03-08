@@ -17,7 +17,7 @@ use camera::Camera;
 /// direction
 /// * Scroll in/out - zoom in/out
 /// * Enter key - set the focus point to the origin
-#[derive(Clone, Show)]
+#[derive(Clone, Debug)]
 pub struct ArcBall {
     /// The focus point.
     at:    Pnt3<f32>,

@@ -1,11 +1,11 @@
 extern crate time;
+extern crate rand;
 extern crate ncollide_procedural;
 extern crate ncollide_transformation;
 extern crate kiss3d;
 extern crate "nalgebra" as na;
 
 use std::f32;
-use std::rand;
 use na::{Pnt2, Pnt3, Vec2, Vec3, Translation};
 use ncollide_procedural::{Polyline, TriMesh};
 use ncollide_procedural::path::{PolylinePath, PolylinePattern, StrokePattern, ArrowheadCap};
@@ -111,7 +111,7 @@ fn main() {
      * Convex hull of 100,000 random 3d points.
      */
     let mut points = Vec::new();
-    for _ in range(0u, 100000) {
+    for _ in 0usize .. 100000 {
         points.push(rand::random::<Pnt3<f32>>() * 2.0f32);
     }
 
@@ -133,7 +133,7 @@ fn main() {
      */
     let mut points = Vec::new();
     let origin     = Pnt2::new(3.0f32, 2.0);
-    for _ in range(0u, 100000) {
+    for _ in 0usize .. 100000 {
         points.push(origin + rand::random::<Vec2<f32>>() * 2.0f32);
     }
 

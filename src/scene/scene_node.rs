@@ -50,7 +50,10 @@ impl SceneNodeData {
 
     // XXX: this exists because of a similar bug as `set_parent`.
     fn remove_from_parent(&mut self, to_remove: &SceneNode) {
-        let _ = self.parent.as_ref().map(|p| p.upgrade().map(|p| p.borrow_mut().remove(to_remove)));
+        let _ = self.parent.as_ref().map(|p| p.upgrade().map(|p| {
+            let mut bp = p.borrow_mut();
+            bp.remove(to_remove)
+        }));
     }
 
     fn remove(&mut self, o: &SceneNode) {
@@ -406,14 +409,14 @@ impl SceneNodeData {
     #[inline]
     pub fn append_transformation(&mut self, t: &Iso3<f32>) {
         self.invalidate();
-        self.local_transform.append_transformation(t)
+        self.local_transform.append_transformation_mut(t)
     }
 
     /// Prepends a transformation to this node local transformation.
     #[inline]
     pub fn prepend_to_local_transformation(&mut self, t: &Iso3<f32>) {
         self.invalidate();
-        self.local_transform.prepend_transformation(t)
+        self.local_transform.prepend_transformation_mut(t)
     }
 
     /// Set this node local transformation.
@@ -439,14 +442,14 @@ impl SceneNodeData {
     #[inline]
     pub fn append_translation(&mut self, t: &Vec3<f32>) {
         self.invalidate();
-        self.local_transform.append_translation(t)
+        self.local_transform.append_translation_mut(t)
     }
 
     /// Prepends a translation to this node local transformation.
     #[inline]
     pub fn prepend_to_local_translation(&mut self, t: &Vec3<f32>) {
         self.invalidate();
-        self.local_transform.prepend_translation(t)
+        self.local_transform.prepend_translation_mut(t)
     }
 
     /// Sets the local translation of this node.
@@ -472,21 +475,21 @@ impl SceneNodeData {
     #[inline]
     pub fn append_rotation(&mut self, r: &Vec3<f32>) {
         self.invalidate();
-        self.local_transform.append_rotation(r)
+        self.local_transform.append_rotation_mut(r)
     }
 
     /// Appends a rotation to this node local transformation.
     #[inline]
     pub fn append_rotation_wrt_center(&mut self, r: &Vec3<f32>) {
         self.invalidate();
-        self.local_transform.append_rotation_wrt_center(r)
+        self.local_transform.append_rotation_wrt_center_mut(r)
     }
 
     /// Prepends a rotation to this node local transformation.
     #[inline]
     pub fn prepend_to_local_rotation(&mut self, r: &Vec3<f32>) {
         self.invalidate();
-        self.local_transform.prepend_rotation(r)
+        self.local_transform.prepend_rotation_mut(r)
     }
 
     /// Sets the local rotation of this node.

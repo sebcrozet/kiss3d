@@ -2,6 +2,7 @@
 // available under the BSD-3 licence.
 // It has been modified to work with gl-rs, nalgebra, and rust-freetype
 
+use std::mem;
 use std::ffi::CString;
 use std::rc::Rc;
 use std::num::UnsignedInt;
@@ -141,7 +142,7 @@ impl Font {
                     verify!(gl::TexSubImage2D(
                                 gl::TEXTURE_2D, 0, offset.x, offset.y,
                                 glyph.dimensions.x as i32, glyph.dimensions.y as i32,
-                                gl::RED, gl::UNSIGNED_BYTE, &glyph.buffer[0] as *const u8 as *const c_void));
+                                gl::RED, gl::UNSIGNED_BYTE, mem::transmute(&glyph.buffer[0] as *const u8)));
                 }
 
                 /* Calculate the position in the texture. */

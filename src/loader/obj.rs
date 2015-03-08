@@ -176,13 +176,13 @@ fn parse_v_or_vn<'a>(l: usize, mut ws: Words<'a>) -> Vec3<f32> {
     let sy = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 1."));
     let sz = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 2."));
 
-    let x: Option<f32> = FromStr::from_str(sx);
-    let y: Option<f32> = FromStr::from_str(sy);
-    let z: Option<f32> = FromStr::from_str(sz);
+    let x: Result<f32, _> = FromStr::from_str(sx);
+    let y: Result<f32, _> = FromStr::from_str(sy);
+    let z: Result<f32, _> = FromStr::from_str(sz);
 
-    let x = x.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sx).as_slice()));
-    let y = y.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sy).as_slice()));
-    let z = z.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sz).as_slice()));
+    let x = x.unwrap_or_else(|e| error(l, format!("failed to parse `{}' as a f32: {}", sx, e).as_slice()));
+    let y = y.unwrap_or_else(|e| error(l, format!("failed to parse `{}' as a f32: {}", sy, e).as_slice()));
+    let z = z.unwrap_or_else(|e| error(l, format!("failed to parse `{}' as a f32: {}", sz, e).as_slice()));
 
     Vec3::new(x, y, z)
 }
@@ -203,10 +203,10 @@ fn parse_f<'a>(l:              usize,
 
         for (i, w) in word.split('/').enumerate() {
             if i == 0 || w.len() != 0 {
-                let idx: Option<i32> = FromStr::from_str(w);
+                let idx: Result<i32, _> = FromStr::from_str(w);
                 match idx {
-                    Some(id) => curr_ids[i] = id - 1,
-                    None     => error(l, format!("failed to parse `{}' as a i32.", w).as_slice())
+                    Ok(id) => curr_ids[i] = id - 1,
+                    Err(e) => error(l, format!("failed to parse `{}' as a i32: {}", w, e).as_slice())
                 }
             }
         }
@@ -274,12 +274,12 @@ fn parse_vt<'a>(l: usize, mut ws: Words<'a>) -> UV {
     let sy  = ws.next().unwrap_or_else(|| error(l, "at least 2 components were expected, found 1."));
     // let sz  = ws.next().unwrap_or(_0);
 
-    let x: Option<f32> = FromStr::from_str(sx);
-    let y: Option<f32> = FromStr::from_str(sy);
+    let x: Result<f32, _> = FromStr::from_str(sx);
+    let y: Result<f32, _> = FromStr::from_str(sy);
     // let z: Option<f32> = FromStr::from_str(sz);
 
-    let x = x.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sx).as_slice()));
-    let y = y.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sy).as_slice()));
+    let x = x.unwrap_or_else(|e| error(l, format!("failed to parse `{}' as a f32: {}", sx, e).as_slice()));
+    let y = y.unwrap_or_else(|e| error(l, format!("failed to parse `{}' as a f32: {}", sy, e).as_slice()));
     // let z = z.unwrap_or_else(|| error(l, "failed to parse `" + sz + "' as a f32."));
 
     Pnt2::new(x, y)

@@ -3,13 +3,14 @@
  * FIXME: this file is too big. Some heavy refactoring need to be done here.
  */
 
+use std::mem;
 use glfw;
 use glfw::{Context, Key, Action, WindowMode, WindowEvent};
 use std::old_io::timer::Timer;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::mpsc::Receiver;
-use libc;
+use libc::c_void;
 use std::iter::repeat;
 use std::time::Duration;
 use time;
@@ -395,7 +396,7 @@ impl Window {
                            width, height,
                            gl::RGB,
                            gl::UNSIGNED_BYTE,
-                           (&mut out[0]) as *mut u8 as *mut libc::c_void);
+                           mem::transmute((&mut out[0]) as *mut u8));
         }
     }
 

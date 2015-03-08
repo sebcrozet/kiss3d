@@ -92,13 +92,13 @@ fn parse_color<'a>(l: usize, mut ws: Words<'a>) -> Vec3<f32> {
     let sy = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 1."));
     let sz = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 2."));
 
-    let x: Option<f32> = FromStr::from_str(sx);
-    let y: Option<f32> = FromStr::from_str(sy);
-    let z: Option<f32> = FromStr::from_str(sz);
+    let x: Result<f32, _> = FromStr::from_str(sx);
+    let y: Result<f32, _> = FromStr::from_str(sy);
+    let z: Result<f32, _> = FromStr::from_str(sz);
 
-    let x = x.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sx).as_slice()));
-    let y = y.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sy).as_slice()));
-    let z = z.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sz).as_slice()));
+    let x = x.unwrap_or_else(|e| error(l, format!("failed to parse `{}' as a f32: {}", sx, e).as_slice()));
+    let y = y.unwrap_or_else(|e| error(l, format!("failed to parse `{}' as a f32: {}", sy, e).as_slice()));
+    let z = z.unwrap_or_else(|e| error(l, format!("failed to parse `{}' as a f32: {}", sz, e).as_slice()));
 
     Vec3::new(x, y, z)
 }
@@ -106,9 +106,9 @@ fn parse_color<'a>(l: usize, mut ws: Words<'a>) -> Vec3<f32> {
 fn parse_scalar<'a>(l: usize, mut ws: Words<'a>) -> f32 {
     let sx = ws.next().unwrap_or_else(|| error(l, "1 component was expected, found 0."));
 
-    let x: Option<f32> = FromStr::from_str(sx);
+    let x: Result<f32, _> = FromStr::from_str(sx);
 
-    let x = x.unwrap_or_else(|| error(l, format!("failed to parse `{}' as a f32.", sx).as_slice()));
+    let x = x.unwrap_or_else(|e| error(l, format!("failed to parse `{}' as a f32: {}", sx, e).as_slice()));
 
     x
 }

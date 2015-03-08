@@ -155,7 +155,7 @@ impl Camera for InertialCamera {
             self.velocity = self.velocity * self.deceleration;
         }
 
-        let speed = self.velocity.normalize().min(self.max_vel);
+        let speed = self.velocity.normalize_mut().min(self.max_vel);
 
         if speed != 0.0 {
             self.velocity.y = 0.0;
