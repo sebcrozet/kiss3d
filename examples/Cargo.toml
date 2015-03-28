@@ -4,19 +4,14 @@ version = "0.1.0"
 authors = [ "Sébastien Crozet <developer@crozet.re>" ]
 
 [dependencies]
-rand = "0.1"
-
-[dependencies.time]
-git = "https://github.com/rust-lang/time"
-
-[dependencies.gl]
-git = "https://github.com/bjz/gl-rs"
+rand = "*"
+nalgebra = "*"
+gl = "*"
+time = "*"
 
 [dependencies.glfw]
 git = "https://github.com/bjz/glfw-rs"
-
-[dependencies.nalgebra]
-git = "https://github.com/sebcrozet/nalgebra"
+default-features = false
 
 [dependencies.ncollide_procedural]
 git = "https://github.com/sebcrozet/ncollide"

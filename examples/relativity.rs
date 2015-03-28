@@ -1,13 +1,16 @@
+#![feature(std_misc)]
+
 extern crate gl;
 extern crate glfw;
 extern crate kiss3d;
-extern crate "nalgebra" as na;
+extern crate nalgebra as na;
 
 use std::ptr;
 use std::num::Float;
 use std::rc::Rc;
 use std::cell::RefCell;
-use std::old_io::Reader;
+use std::io::Read;
+use std::path::Path;
 use std::sync::{Arc, RwLock};
 use gl::types::{GLint, GLfloat};
 use glfw::{Key, Action, WindowEvent};
@@ -80,7 +83,7 @@ fn main() {
         let sop = na::norm(&obs_vel);
 
         window.draw_text(
-            format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop).as_slice(),
+            &format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop)[..],
             &na::orig(),
             &font,
             &Pnt3::new(1.0, 1.0, 1.0));

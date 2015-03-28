@@ -1,5 +1,5 @@
 extern crate glfw;
-extern crate "nalgebra" as na;
+extern crate nalgebra as na;
 extern crate kiss3d;
 
 use glfw::{Key, Action, WindowEvent};

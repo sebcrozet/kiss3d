@@ -3,6 +3,7 @@
 use std::any::Any;
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::path::Path;
 use gl::types::*;
 use na::{Pnt3, Pnt2, Vec3, Iso3};
 use resource::{Texture, TextureManager, Material, Mesh};
@@ -97,7 +98,7 @@ impl Object {
             draw_surface: true,
             cull:         true,
             material:     material,
-            user_data:    Box::new(user_data) as Box<Any>
+            user_data:    Box::new(user_data)
         };
 
         Object {
@@ -212,7 +213,7 @@ impl Object {
     #[inline(always)]
     pub fn read_vertices<F: FnMut(&[Pnt3<GLfloat>]) -> ()>(&self, f: &mut F) {
         let bmesh = self.mesh.borrow();
-        let _ = bmesh.coords().read().unwrap().data().as_ref().map(|coords| f(coords.as_slice()));
+        let _ = bmesh.coords().read().unwrap().data().as_ref().map(|coords| f(&coords[..]));
     }
 
     /// Recomputes the normals of this object's mesh.
@@ -232,7 +233,7 @@ impl Object {
     #[inline(always)]
     pub fn read_normals<F: FnMut(&[Vec3<GLfloat>]) -> ()>(&self, f: &mut F) {
         let bmesh = self.mesh.borrow();
-        let _ = bmesh.normals().read().unwrap().data().as_ref().map(|normals| f(normals.as_slice()));
+        let _ = bmesh.normals().read().unwrap().data().as_ref().map(|normals| f(&normals[..]));
     }
 
     /// Mutably access the object's faces.
@@ -246,7 +247,7 @@ impl Object {
     #[inline(always)]
     pub fn read_faces<F: FnMut(&[Pnt3<GLuint>]) -> ()>(&self, f: &mut F) {
         let bmesh = self.mesh.borrow();
-        let _ = bmesh.faces().read().unwrap().data().as_ref().map(|faces| f(faces.as_slice()));
+        let _ = bmesh.faces().read().unwrap().data().as_ref().map(|faces| f(&faces[..]));
     }
 
     /// Mutably access the object's texture coordinates.
@@ -260,7 +261,7 @@ impl Object {
     #[inline(always)]
     pub fn read_uvs<F: FnMut(&[Pnt2<GLfloat>]) -> ()>(&self, f: &mut F) {
         let bmesh = self.mesh.borrow();
-        let _ = bmesh.uvs().read().unwrap().data().as_ref().map(|uvs| f(uvs.as_slice()));
+        let _ = bmesh.uvs().read().unwrap().data().as_ref().map(|uvs| f(&uvs[..]));
     }
 
 

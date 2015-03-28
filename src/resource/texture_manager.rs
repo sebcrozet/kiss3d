@@ -5,6 +5,7 @@ use std::mem;
 use std::rc::Rc;
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
+use std::path::Path;
 use gl;
 use gl::types::*;
 use stb_image::image::LoadResult;
@@ -117,8 +118,8 @@ impl TextureManager {
 
                     // Flip the y axis
                     let elt_per_row = image.width * image.depth;
-                    for j in range(0u, image.height / 2) {
-                        for i in range(0u, elt_per_row) {
+                    for j in 0u .. image.height / 2 {
+                        for i in 0u .. elt_per_row {
                             image.data.as_mut_slice().swap(
                                 (image.height - j - 1) * elt_per_row + i, 
                                 j * elt_per_row + i)
@@ -150,7 +151,7 @@ impl TextureManager {
                     verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
                 }
                 _ => {
-                    panic!("Failed to load texture {}", path.as_str().unwrap());
+                    panic!("Failed to load texture {}", path.to_str().unwrap());
                 }
             }
         }

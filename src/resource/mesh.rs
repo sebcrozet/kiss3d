@@ -34,7 +34,7 @@ impl Mesh {
                -> Mesh {
         let normals = match normals {
             Some(ns) => ns,
-            None     => Mesh::compute_normals_array(coords.as_slice(), faces.as_slice())
+            None     => Mesh::compute_normals_array(&coords[..], &faces[..])
         };
 
         let uvs = match uvs {
@@ -162,8 +162,8 @@ impl Mesh {
 
     /// Recompute this mesh normals.
     pub fn recompute_normals(&mut self) {
-        Mesh::compute_normals(self.coords.read().unwrap().data().as_ref().unwrap().as_slice(),
-                              self.faces.read().unwrap().data().as_ref().unwrap().as_slice(),
+        Mesh::compute_normals(&self.coords.read().unwrap().data().as_ref().unwrap()[..],
+                              &self.faces.read().unwrap().data().as_ref().unwrap()[..],
                               self.normals.write().unwrap().data_mut().as_mut().unwrap());
     }
 

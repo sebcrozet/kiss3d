@@ -86,7 +86,6 @@ I’d love to see people improving this library for their own needs. However, ke
 #![deny(unused_qualifications)]
 #![warn(missing_docs)] // FIXME: should be denied.
 #![deny(unused_results)]
-#![deny(unused_typecasts)]
 #![allow(unused_unsafe)] // FIXME: should be denied
 #![allow(missing_copy_implementations)]
 #![feature(unsafe_destructor)]
@@ -94,7 +93,6 @@ I’d love to see people improving this library for their own needs. However, ke
 #![feature(old_io)]
 #![feature(libc)]
 #![feature(std_misc)]
-#![feature(old_path)]
 #![feature(core)]
 #![feature(alloc)]
 #![feature(str_words)]
@@ -103,12 +101,12 @@ I’d love to see people improving this library for their own needs. However, ke
 
 extern crate libc;
 extern crate time;
-extern crate glfw;
 extern crate gl;
-extern crate "nalgebra" as na;
+extern crate nalgebra as na;
 extern crate ncollide_procedural;
 extern crate stb_image;
 extern crate freetype;
+extern crate glfw;
 
 mod error;
 pub mod window;

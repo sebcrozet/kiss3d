@@ -1,14 +1,16 @@
+extern crate rand;
 extern crate time;
 extern crate ncollide_transformation;
 extern crate kiss3d;
-extern crate "nalgebra" as na;
+extern crate nalgebra as na;
 
 use std::str::FromStr;
-use std::os;
+use std::env;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::sync::{Arc, RwLock};
-use std::rand;
+use std::path::Path;
+use rand::random;
 use na::{Vec3, Translation};
 use kiss3d::window::Window;
 use kiss3d::light::Light;
@@ -29,16 +31,18 @@ fn main() {
     /*
      * Parse arguments.
      */
-    let args = os::args();
+    let mut args = env::args();
+    let exname = args.next().unwrap();
 
-    if args.len() != 5 {
-        usage(args[0].as_slice());
+    if args.len() != 4 {
+        usage(&exname[..]);
+        return;
     }
 
-    let path = args[1].as_slice();
-    let scale: f32 = FromStr::from_str(args[2].as_slice()).unwrap();
-    let clusters: usize = FromStr::from_str(args[3].as_slice()).unwrap();
-    let concavity: f32 = FromStr::from_str(args[4].as_slice()).unwrap();
+    let path = &args.next().unwrap()[..];
+    let scale: f32 = FromStr::from_str(&args.next().unwrap()[..]).unwrap();
+    let clusters: usize = FromStr::from_str(&args.next().unwrap()[..]).unwrap();
+    let concavity: f32 = FromStr::from_str(&args.next().unwrap()[..]).unwrap();
     let scale = Vec3::new(scale, scale, scale);
 
     /*
@@ -49,7 +53,7 @@ fn main() {
     /*
      * Convex decomposition.
      */
-    let obj_path = Path::new(path.to_string());
+    let obj_path = Path::new(path);
     // let obj_path = Path::new("/home/tortue/Downloads/models/ATST_medium.obj");
     let mtl_path = Path::new("none");
     let teapot   = obj::parse_file(&obj_path, &mtl_path, "none").unwrap();
@@ -77,9 +81,9 @@ fn main() {
                 println!("num comps: {}", decomp.len());
 
                 for (comp, partitioning) in decomp.into_iter().zip(partitioning.into_iter()) {
-                    let r = rand::random();
-                    let g = rand::random();
-                    let b = rand::random();
+                    let r = random();
+                    let g = random();
+                    let b = random();
 
                     let mut m  = window.add_trimesh(comp, scale);
                     m.set_color(r, g, b);

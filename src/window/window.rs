@@ -10,7 +10,7 @@ use std::old_io::timer::Timer;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::mpsc::Receiver;
-use libc::c_void;
+use std::path::Path;
 use std::iter::repeat;
 use std::time::Duration;
 use time;
@@ -396,7 +396,7 @@ impl Window {
                            width, height,
                            gl::RGB,
                            gl::UNSIGNED_BYTE,
-                           mem::transmute((&mut out[0]) as *mut u8));
+                           mem::transmute(&mut out[0]));
         }
     }
 
@@ -481,18 +481,25 @@ impl Window {
         let mut camera = camera;
         self.handle_events(&mut camera);
 
-        let self_cam      = self.camera.clone(); // FIXME: this is ugly.
-        let mut bself_cam = self_cam.borrow_mut();
-        let camera = match camera {
-            None      => &mut *bself_cam as &mut Camera,
-            Some(cam) => cam
-        };
+        match camera {
+            Some(cam) => self.do_render_with(cam, post_processing),
+            None      => {
+                let self_cam      = self.camera.clone(); // FIXME: this is ugly.
+                let mut bself_cam = self_cam.borrow_mut();
+                self.do_render_with(&mut *bself_cam, post_processing)
+            }
+        }
+    }
 
+    fn do_render_with(&mut self,
+                      camera:          &mut Camera,
+                      post_processing: Option<&mut PostProcessingEffect>)
+                      -> bool {
         // XXX: too bad we have to do this at each frame…
         let w = self.width();
         let h = self.height();
-        camera.handle_event(&self.window, &WindowEvent::FramebufferSize(w as i32, h as i32));
 
+        camera.handle_event(&self.window, &WindowEvent::FramebufferSize(w as i32, h as i32));
         camera.update(&self.window);
 
         match self.light_mode {
@@ -509,7 +516,7 @@ impl Window {
             self.framebuffer_manager.select(&FramebufferManager::screen());
         }
 
-        for pass in range(0u, camera.num_passes()) {
+        for pass in 0u .. camera.num_passes() {
             camera.start_pass(pass, &self.window);
             self.render_scene(camera, pass);
         }

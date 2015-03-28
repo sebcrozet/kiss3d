@@ -1,10 +1,9 @@
 extern crate rand;
 extern crate kiss3d;
-extern crate "nalgebra" as na;
+extern crate nalgebra as na;
 
 use std::num::Float;
-use std::rand::random;
-use na::BaseFloat;
+use rand::random;
 use kiss3d::window::Window;
 use kiss3d::light::Light;
 

@@ -1,5 +1,5 @@
 extern crate kiss3d;
-extern crate "nalgebra" as na;
+extern crate nalgebra as na;
 
 use na::Vec3;
 use kiss3d::window::Window;

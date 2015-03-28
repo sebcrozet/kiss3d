@@ -1,6 +1,7 @@
 use std::rc::{Rc, Weak};
 use std::cell::{Ref, RefMut, RefCell};
 use std::mem;
+use std::path::{Path, PathBuf};
 use na;
 use na::{Iso3, Pnt2, Vec3, Pnt3, Transformation, Rotation, Translation, RotationWithTranslation};
 use resource::{Mesh, MeshManager, Texture, TextureManager, Material, MaterialManager};
@@ -735,7 +736,7 @@ impl SceneNode {
         let mat = MaterialManager::get_global_manager(|mm| mm.get_default());
 
         // FIXME: is there some error-handling stuff to do here instead of the `let _`.
-        let result = MeshManager::load_obj(path, mtl_dir, path.as_str().unwrap()).map(|objs| {
+        let result = MeshManager::load_obj(path, mtl_dir, path.to_str().unwrap()).map(|objs| {
             let mut root;
 
             let self_root = objs.len() == 1;
@@ -760,15 +761,17 @@ impl SceneNode {
                         object.set_color(mtl.diffuse.x, mtl.diffuse.y, mtl.diffuse.z);
 
                         for t in mtl.diffuse_texture.iter() {
-                            let mut tpath = mtl_dir.clone();
-                            tpath.push(t.as_slice());
-                            object.set_texture_from_file(&tpath, tpath.as_str().unwrap())
+                            let mut tpath = PathBuf::new();
+                            tpath.push(mtl_dir);
+                            tpath.push(&t[..]);
+                            object.set_texture_from_file(&tpath, tpath.to_str().unwrap())
                         }
 
                         for t in mtl.ambiant_texture.iter() {
-                            let mut tpath = mtl_dir.clone();
-                            tpath.push(t.as_slice());
-                            object.set_texture_from_file(&tpath, tpath.as_str().unwrap())
+                            let mut tpath = PathBuf::new();
+                            tpath.push(mtl_dir);
+                            tpath.push(&t[..]);
+                            object.set_texture_from_file(&tpath, tpath.to_str().unwrap())
                         }
                     }
                 }

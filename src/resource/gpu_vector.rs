@@ -121,7 +121,7 @@ impl<T: GLPrimitive> GPUVector<T> {
 
             self.handle = self.data.as_ref().map(|d| {
                 *len = d.len();
-                (d.len(), GLHandle::new(upload_buffer(d.as_slice(), buf_type, alloc_type)))
+                (d.len(), GLHandle::new(upload_buffer(&d[..], buf_type, alloc_type)))
             });
         }
         else if self.trash() {
@@ -133,7 +133,7 @@ impl<T: GLPrimitive> GPUVector<T> {
                     Some((ref mut len, ref handle)) => {
                         let handle = handle.handle();
 
-                        *len = update_buffer(d.as_slice(), *len, handle, self.buf_type, self.alloc_type)
+                        *len = update_buffer(&d[..], *len, handle, self.buf_type, self.alloc_type)
                     }
                 }
             }

@@ -1,10 +1,12 @@
 //! Simplistic mtl loader.
 
 use std::mem;
-use std::old_io::fs::File;
-use std::old_io::{IoResult, Reader};
+use std::fs::File;
+use std::io::Result as IoResult;
+use std::io::Read;
 use std::str::Words;
 use std::str::FromStr;
+use std::path::Path;
 use na::Vec3;
 
 fn error(line: usize, err: &str) -> ! {
@@ -14,8 +16,11 @@ fn error(line: usize, err: &str) -> ! {
 /// Parses a mtl file.
 pub fn parse_file(path: &Path) -> IoResult<Vec<MtlMaterial>> {
     match File::open(path) {
-        Ok(mut file) => file.read_to_string().map(|mtl| parse(mtl.as_slice())),
-        Err(e)       => Err(e)
+        Ok(mut file) => {
+            let mut sfile = String::new();
+            file.read_to_string(&mut sfile).map(|_| parse(&sfile[..]))
+        },
+        Err(e) => Err(e)
     }
 }
 
@@ -96,9 +101,9 @@ fn parse_color<'a>(l: usize, mut ws: Words<'a>) -> Vec3<f32> {
     let y: Result<f32, _> = FromStr::from_str(sy);
     let z: Result<f32, _> = FromStr::from_str(sz);
 
-    let x = x.unwrap_or_else(|e| error(l, format!("failed to parse `{}' as a f32: {}", sx, e).as_slice()));
-    let y = y.unwrap_or_else(|e| error(l, format!("failed to parse `{}' as a f32: {}", sy, e).as_slice()));
-    let z = z.unwrap_or_else(|e| error(l, format!("failed to parse `{}' as a f32: {}", sz, e).as_slice()));
+    let x = x.unwrap_or_else(|e| error(l, &format!("failed to parse `{}' as a f32: {}", sx, e)[..]));
+    let y = y.unwrap_or_else(|e| error(l, &format!("failed to parse `{}' as a f32: {}", sy, e)[..]));
+    let z = z.unwrap_or_else(|e| error(l, &format!("failed to parse `{}' as a f32: {}", sz, e)[..]));
 
     Vec3::new(x, y, z)
 }
@@ -108,7 +113,7 @@ fn parse_scalar<'a>(l: usize, mut ws: Words<'a>) -> f32 {
 
     let x: Result<f32, _> = FromStr::from_str(sx);
 
-    let x = x.unwrap_or_else(|e| error(l, format!("failed to parse `{}' as a f32: {}", sx, e).as_slice()));
+    let x = x.unwrap_or_else(|e| error(l, &format!("failed to parse `{}' as a f32: {}", sx, e)[..]));
 
     x
 }

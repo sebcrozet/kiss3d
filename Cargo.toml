@@ -13,23 +13,20 @@ license = "BSD-3-Clause"
 name = "kiss3d"
 path = "src/lib.rs"
 
-[dependencies.nalgebra]
-git = "https://github.com/sebcrozet/nalgebra"
+[dependencies]
+nalgebra = "*"
+gl = "*"
+time = "*"
 
 [dependencies.ncollide_procedural]
 git = "https://github.com/sebcrozet/ncollide"
 
-[dependencies.gl]
-git = "https://github.com/bjz/gl-rs"
- 
 [dependencies.glfw]
 git = "https://github.com/bjz/glfw-rs"
+default-features = false
 
 [dependencies.freetype-rs]
 git = "https://github.com/PistonDevelopers/freetype-rs"
 
 [dependencies.stb_image]
 git = "https://github.com/servo/rust-stb-image"
-
-[dependencies.time]
-git = "https://github.com/rust-lang/time"

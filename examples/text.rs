@@ -1,6 +1,7 @@
-extern crate "nalgebra" as na;
+extern crate nalgebra as na;
 extern crate kiss3d;
 
+use std::path::Path;
 use na::{Pnt2, Pnt3};
 use kiss3d::window::Window;
 use kiss3d::text::Font;

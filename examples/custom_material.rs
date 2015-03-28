@@ -1,6 +1,6 @@
 extern crate gl;
 extern crate kiss3d;
-extern crate "nalgebra" as na;
+extern crate nalgebra as na;
 
 use std::ptr;
 use std::rc::Rc;

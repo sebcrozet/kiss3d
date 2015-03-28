@@ -1,8 +1,8 @@
 extern crate rand;
 extern crate kiss3d;
-extern crate "nalgebra" as na;
+extern crate nalgebra as na;
 
-use std::rand::random;
+use rand::random;
 use na::{Vec3, Translation};
 use kiss3d::window::Window;
 use kiss3d::light::Light;
@@ -37,8 +37,8 @@ fn main() {
     window.set_light(Light::StickToCamera);
     window.set_framerate_limit(Some(60));
 
-    let mut time    = 0u;
-    let mut counter = 0u;
+    let mut time    = 0usize;
+    let mut counter = 0usize;
 
     while !window.should_close() {
         if time % 200 == 0 {
