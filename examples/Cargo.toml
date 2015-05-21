@@ -8,6 +8,7 @@ rand = "*"
 nalgebra = "*"
 gl = "*"
 time = "*"
+num = "*"
 
 [dependencies.glfw]
 git = "https://github.com/bjz/glfw-rs"

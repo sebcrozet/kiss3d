@@ -1,5 +1,3 @@
-#![feature(core)]
-
 extern crate kiss3d;
 extern crate nalgebra as na;
 

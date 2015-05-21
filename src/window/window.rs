@@ -4,15 +4,14 @@
  */
 
 use std::mem;
+use std::thread;
 use glfw;
 use glfw::{Context, Key, Action, WindowMode, WindowEvent};
-use std::old_io::timer::Timer;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::mpsc::Receiver;
 use std::path::Path;
 use std::iter::repeat;
-use std::time::Duration;
 use time;
 use gl;
 use gl::types::*;
@@ -51,7 +50,6 @@ pub struct Window {
     text_renderer:              TextRenderer,
     framebuffer_manager:        FramebufferManager,
     post_process_render_target: RenderTarget,
-    timer:                      Timer,
     curr_time:                  u64,
     camera:                     Rc<RefCell<ArcBall>>
 }
@@ -336,7 +334,6 @@ impl Window {
             text_renderer:         TextRenderer::new(),
             post_process_render_target: FramebufferManager::new_render_target(width as usize, height as usize),
             framebuffer_manager:   FramebufferManager::new(),
-            timer:                 Timer::new().unwrap(),
             curr_time:             time::precise_time_ns(),
             camera:                Rc::new(RefCell::new(ArcBall::new(Pnt3::new(0.0f32, 0.0, -1.0), na::orig())))
         };
@@ -516,7 +513,7 @@ impl Window {
             self.framebuffer_manager.select(&FramebufferManager::screen());
         }
 
-        for pass in 0u .. camera.num_passes() {
+        for pass in 0usize .. camera.num_passes() {
             camera.start_pass(pass, &self.window);
             self.render_scene(camera, pass);
         }
@@ -553,7 +550,7 @@ impl Window {
             Some(ms) => {
                 let elapsed = (time::precise_time_ns() - self.curr_time) / 1000000;
                 if elapsed < ms {
-                    self.timer.sleep(Duration::milliseconds((ms - elapsed) as i64));
+                    thread::sleep_ms((ms - elapsed) as u32);
                 }
             }
         }

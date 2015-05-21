@@ -1,5 +1,5 @@
 use std::f32;
-use std::num::Float;
+use num::Float;
 use glfw;
 use glfw::{Key, Action, WindowEvent};
 use na::{Translation, Pnt3, Vec2, Vec3, Mat4, Iso3, PerspMat3};
@@ -31,7 +31,7 @@ pub struct FirstPerson {
 impl FirstPerson {
     /// Creates a first person camera with default sensitivity values.
     pub fn new(eye: Pnt3<f32>, at: Pnt3<f32>) -> FirstPerson {
-        FirstPerson::new_with_frustrum(45.0f32.to_radians(), 0.1, 1024.0, eye, at)
+        FirstPerson::new_with_frustrum(f32::consts::PI / 4.0, 0.1, 1024.0, eye, at)
     }
 
     /// Creates a new first person camera with default sensitivity values.

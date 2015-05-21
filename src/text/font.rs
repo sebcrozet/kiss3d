@@ -3,6 +3,7 @@
 // It has been modified to work with gl-rs, nalgebra, and rust-freetype
 
 use std::mem;
+use std::slice;
 use std::ffi::CString;
 use std::rc::Rc;
 use std::cmp;
@@ -77,7 +78,7 @@ impl Font {
             let mut row_width  = 0;
             let mut row_height = 0;
 
-            for curr in (0u .. 128) {
+            for curr in (0usize .. 128) {
                 if ffi::FT_Load_Char(font.face, curr as u64, ffi::FT_LOAD_RENDER) != 0 {
                     continue;
                 }
@@ -92,7 +93,8 @@ impl Font {
                 let advance    = Vec2::new(((*ft_glyph).advance.x >> 6) as f32, ((*ft_glyph).advance.y >> 6) as f32);
                 let dimensions = Vec2::new((*ft_glyph).bitmap.width as f32, (*ft_glyph).bitmap.rows as f32);
                 let offset     = Vec2::new((*ft_glyph).bitmap_left as f32, (*ft_glyph).bitmap_top as f32);
-                let buffer     = Vec::from_raw_buf(&*(*ft_glyph).bitmap.buffer, (dimensions.x * dimensions.y) as usize);
+                let buf_len    = (dimensions.x * dimensions.y) as usize;
+                let buffer     = slice::from_raw_parts(&*(*ft_glyph).bitmap.buffer, buf_len).to_vec();
                 let glyph      = Glyph::new(na::zero(), advance, dimensions, offset, buffer);
                     
 
@@ -126,7 +128,7 @@ impl Font {
             /* Copy all glyphs into the texture atlas. */
             let mut offset: Vec2<i32> = na::zero();
             row_height = 0;
-            for curr in (0u .. 128) {
+            for curr in (0usize .. 128) {
                 let glyph = match *&mut font.glyphs[curr] {
                     Some(ref mut g) => g,
                     None            => continue

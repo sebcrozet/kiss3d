@@ -1,5 +1,5 @@
 use std::f32;
-use std::num::Float;
+use num::Float;
 use glfw;
 use glfw::{Key, Action, WindowEvent};
 use gl;
@@ -51,7 +51,7 @@ pub struct FirstPersonStereo {
 impl FirstPersonStereo {
     /// Creates a first person camera with default sensitivity values.
     pub fn new(eye: Pnt3<f32>, at: Pnt3<f32>, ipd: f32) -> FirstPersonStereo {
-        FirstPersonStereo::new_with_frustrum(45.0f32.to_radians(), 0.1, 1024.0, eye, at, ipd)
+        FirstPersonStereo::new_with_frustrum(f32::consts::PI / 4.0, 0.1, 1024.0, eye, at, ipd)
     }
 
     /// Creates a new first person camera with default sensitivity values.
@@ -174,9 +174,9 @@ impl FirstPersonStereo {
 
     fn transformation_eye(&self, eye: usize) -> Mat4<f32> {
         match eye {
-            0u => self.proj_view_left,
-            1u => self.proj_view_right,
-            _ => panic!("bad eye index")
+            0usize => self.proj_view_left,
+            1usize => self.proj_view_right,
+            _      => panic!("bad eye index")
         }
     }
 
@@ -293,14 +293,14 @@ impl Camera for FirstPersonStereo {
         uniform.upload(&self.transformation_eye(pass));
     }
 
-    fn num_passes(&self) -> usize { 2u }
+    fn num_passes(&self) -> usize { 2usize }
 
     fn start_pass(&self, pass: usize, window: &glfw::Window) {
         let (win_w, win_h) = window.get_size();
         let (x, y, w, h) = match pass {
-            0u => (0, 0, win_w / 2 , win_h),
-            1u => (win_w / 2, 0, win_w / 2, win_h),
-            _ => panic!("stereo first person takes only two passes")
+            0usize => (0, 0, win_w / 2 , win_h),
+            1usize => (win_w / 2, 0, win_w / 2, win_h),
+            _      => panic!("stereo first person takes only two passes")
         };
         verify!(gl::Viewport(x, y, w, h));
         verify!(gl::Scissor(x, y, w, h));

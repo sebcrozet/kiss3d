@@ -118,9 +118,9 @@ impl TextureManager {
 
                     // Flip the y axis
                     let elt_per_row = image.width * image.depth;
-                    for j in 0u .. image.height / 2 {
-                        for i in 0u .. elt_per_row {
-                            image.data.as_mut_slice().swap(
+                    for j in 0usize .. image.height / 2 {
+                        for i in 0usize .. elt_per_row {
+                            image.data[..].swap(
                                 (image.height - j - 1) * elt_per_row + i, 
                                 j * elt_per_row + i)
                         }

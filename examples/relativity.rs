@@ -1,17 +1,17 @@
-#![feature(std_misc)]
-
+extern crate num;
 extern crate gl;
 extern crate glfw;
 extern crate kiss3d;
 extern crate nalgebra as na;
 
+use std::f32;
 use std::ptr;
-use std::num::Float;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::io::Read;
 use std::path::Path;
 use std::sync::{Arc, RwLock};
+use num::Float;
 use gl::types::{GLint, GLfloat};
 use glfw::{Key, Action, WindowEvent};
 use na::{Pnt2, Pnt3, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
@@ -27,7 +27,7 @@ fn main() {
 
     let eye      = Pnt3::new(0.0f32, -399.0, 400.0);
     let at       = Pnt3::new(0.0f32, -399.0, 0.0);
-    let fov      = 45.0f32.to_radians();
+    let fov      = f32::consts::PI / 4.0;
     let font     = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
     let context  = Arc::new(RwLock::new(Context::new(1000.0, na::zero(), eye)));
     let material = Rc::new(RefCell::new(Box::new(RelativisticMaterial::new(context.clone())) as Box<Material + 'static>));
@@ -40,19 +40,19 @@ fn main() {
     c.set_texture_from_file(&Path::new("media/kitten.png"), "kitten");
 
     let mut c = window.add_quad(800.0, 800.0, 40, 40);
-    c.append_rotation(&(Vec3::x() * 90.0f32.to_radians()));
+    c.append_rotation(&(Vec3::x() * f32::consts::PI / 2.0));
     c.append_translation(&(Vec3::new(0.0, -400.0, 400.0)));
     c.set_material(material.clone());
     c.set_texture_with_name("kitten");
 
     let mut c = window.add_quad(800.0, 800.0, 40, 40);
-    c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
+    c.append_rotation(&(Vec3::y() * f32::consts::PI / 2.0));
     c.append_translation(&(Vec3::new(400.0, 0.0, 400.0)));
     c.set_material(material.clone());
     c.set_texture_with_name("kitten");
 
     let mut c = window.add_quad(800.0, 800.0, 40, 40);
-    c.append_rotation(&(Vec3::y() * 90.0f32.to_radians()));
+    c.append_rotation(&(Vec3::y() * f32::consts::PI / 2.0));
     c.append_translation(&(Vec3::new(-400.0, 0.0, 400.0)));
     c.set_material(material.clone());
     c.set_texture_with_name("kitten");
@@ -162,7 +162,7 @@ impl Camera for InertialCamera {
 
         if speed != 0.0 {
             self.velocity.y = 0.0;
-            self.velocity.normalize();
+            self.velocity.normalize_mut();
             self.velocity = self.velocity * speed;
         }
         else {

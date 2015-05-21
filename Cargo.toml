@@ -17,6 +17,8 @@ path = "src/lib.rs"
 nalgebra = "*"
 gl = "*"
 time = "*"
+num = "*"
+libc = "*"
 
 [dependencies.ncollide_procedural]
 git = "https://github.com/sebcrozet/ncollide"

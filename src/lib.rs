@@ -88,20 +88,12 @@ I’d love to see people improving this library for their own needs. However, ke
 #![deny(unused_results)]
 #![allow(unused_unsafe)] // FIXME: should be denied
 #![allow(missing_copy_implementations)]
-#![feature(unsafe_destructor)]
-#![feature(int_uint)] // FIXME: remove this
-#![feature(old_io)]
-#![feature(libc)]
-#![feature(std_misc)]
-#![feature(core)]
-#![feature(alloc)]
-#![feature(str_words)]
-#![feature(collections)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
 
 extern crate libc;
 extern crate time;
 extern crate gl;
+extern crate num;
 extern crate nalgebra as na;
 extern crate ncollide_procedural;
 extern crate stb_image;
