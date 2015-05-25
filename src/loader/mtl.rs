@@ -4,10 +4,11 @@ use std::mem;
 use std::fs::File;
 use std::io::Result as IoResult;
 use std::io::Read;
-use std::str::Words;
 use std::str::FromStr;
 use std::path::Path;
 use na::Vec3;
+use loader::obj::Words;
+use loader::obj;
 
 fn error(line: usize, err: &str) -> ! {
     panic!("At line {}: {}", line, err)
@@ -30,14 +31,14 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
     let mut curr_material = MtlMaterial::new_default("".to_string());
 
     for (l, line) in string.lines_any().enumerate() {
-        let mut words = line.words();
+        let mut words = obj::split_words(line);
         let tag       = words.next();
 
         match tag {
             None    => { },
             Some(w) => {
                 if w.len() != 0 && w.as_bytes()[0] != ('#' as u8) {
-                    let mut p = line.words().peekable();
+                    let mut p = obj::split_words(line).peekable();
                     let     _ = p.next();
 
                     if p.peek().is_none() {

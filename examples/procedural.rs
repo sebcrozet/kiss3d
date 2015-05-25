@@ -152,7 +152,7 @@ fn main() {
     }
 }
 
-fn draw_polyline(window: &mut Window, polyline: &Polyline<f32, Pnt2<f32>, Vec2<f32>>, points: &[Pnt2<f32>]) {
+fn draw_polyline(window: &mut Window, polyline: &Polyline<Pnt2<f32>>, points: &[Pnt2<f32>]) {
     for pt in polyline.coords[..].windows(2) {
         window.draw_line(&Pnt3::new(pt[0].x, pt[0].y, 0.0), &Pnt3::new(pt[1].x, pt[1].y, 0.0), &Pnt3::new(0.0, 1.0, 0.0));
     }

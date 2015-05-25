@@ -1,4 +1,4 @@
-use std::rc::{Rc, Weak};
+use std::rc::Rc;
 use std::cell::{Ref, RefMut, RefCell};
 use std::mem;
 use std::path::{Path, PathBuf};
@@ -23,7 +23,8 @@ pub struct SceneNodeData {
     up_to_date:      bool,
     children:        Vec<SceneNode>,
     object:          Option<Object>,
-    parent:          Option<Weak<RefCell<SceneNodeData>>>
+    // FIXME: use Weak pointers instead of the raw pointer.
+    parent:          Option<*const RefCell<SceneNodeData>>
 }
 
 /// A node of the scene graph.
@@ -45,16 +46,18 @@ impl SceneNodeData {
     // `std::option::Option<std::rc::Weak<std::cell::RefCell<scene::scene_node::SceneNodeData>>>`
     // (expe cted &-ptr but found enum std::option::Option)
     // ```
-    fn set_parent(&mut self, parent: Weak<RefCell<SceneNodeData>>) {
+    fn set_parent(&mut self, parent: *const RefCell<SceneNodeData>) {
         self.parent = Some(parent);
     }
 
     // XXX: this exists because of a similar bug as `set_parent`.
     fn remove_from_parent(&mut self, to_remove: &SceneNode) {
-        let _ = self.parent.as_ref().map(|p| p.upgrade().map(|p| {
-            let mut bp = p.borrow_mut();
-            bp.remove(to_remove)
-        }));
+        let _ = self.parent.as_ref().map(|p| {
+            unsafe {
+                let mut bp = (**p).borrow_mut();
+                bp.remove(to_remove)
+            }
+        });
     }
 
     fn remove(&mut self, o: &SceneNode) {
@@ -76,10 +79,7 @@ impl SceneNodeData {
     /// Whether this node has no parent.
     #[inline]
     pub fn is_root(&self) -> bool {
-        match self.parent {
-            None             => true,
-            Some(ref parent) => parent.upgrade().is_none()
-        }
+        self.parent.is_none()
     }
 
     /// Render the scene graph rooted by this node.
@@ -383,6 +383,7 @@ impl SceneNodeData {
     /// This will force an update of the world transformation of its parents if they have been
     /// invalidated.
     #[inline]
+    #[allow(mutable_transmutes)]
     pub fn world_transformation(&self) -> Iso3<f32> {
         // NOTE: this is to have some kind of laziness without a `&mut self`.
         unsafe {
@@ -397,6 +398,7 @@ impl SceneNodeData {
     /// This will force an update of the world transformation of its parents if they have been
     /// invalidated.
     #[inline]
+    #[allow(mutable_transmutes)]
     pub fn inv_world_transformation(&self) -> Iso3<f32> {
         // NOTE: this is to have some kind of laziness without a `&mut self`.
         unsafe {
@@ -518,17 +520,14 @@ impl SceneNodeData {
         if !self.up_to_date {
             match self.parent {
                 Some(ref mut p) => {
-                    match p.upgrade() {
-                        Some(ref mut p) => {
-                            let mut dp = p.borrow_mut();
+                    unsafe {
+                        let mut dp = (**p).borrow_mut();
 
-                            dp.update();
-                            self.world_transform = self.local_transform * dp.world_transform;
-                            self.world_scale     = self.local_scale     * dp.local_scale;
-                            self.up_to_date      = true;
-                            return;
-                        }
-                        None => { }
+                        dp.update();
+                        self.world_transform = self.local_transform * dp.world_transform;
+                        self.world_scale     = self.local_scale     * dp.local_scale;
+                        self.up_to_date      = true;
+                        return;
                     }
                 },
                 None => { }
@@ -609,7 +608,7 @@ impl SceneNode {
         assert!(node.data().is_root(), "The added node must not have a parent yet.");
 
         let mut node = node;
-        node.data_mut().set_parent(self.data.downgrade());
+        node.data_mut().set_parent(&*self.data);
         self.data_mut().children.push(node)
     }
 

@@ -14,7 +14,6 @@ pub struct Event<'a> {
     inhibitor:     &'a RefCell<Vec<glfw::WindowEvent>>
 }
 
-#[unsafe_destructor]
 impl<'a> Drop for Event<'a> {
     #[inline]
     fn drop(&mut self) {

@@ -173,7 +173,7 @@ impl<T: GLPrimitive> GPUVector<T> {
             let mut data   = Vec::with_capacity(self.len);
 
             unsafe { data.set_len(self.len) };
-            download_buffer(handle, self.buf_type, data.as_mut_slice());
+            download_buffer(handle, self.buf_type, &mut data[..]);
             self.data = Some(data);
         }
     }
@@ -212,7 +212,7 @@ impl<T: Clone + GLPrimitive> GPUVector<T> {
 }
 
 /// Type of gpu buffer.
-#[derive(Copy)]
+#[derive(Clone, Copy)]
 pub enum BufferType {
     /// An array buffer bindable to a gl::ARRAY_BUFFER.
     Array,
@@ -231,7 +231,7 @@ impl BufferType {
 }
 
 /// Allocation type of gpu buffers.
-#[derive(Copy)]
+#[derive(Clone, Copy)]
 pub enum AllocationType {
     /// STATIC_DRAW allocation type.
     StaticDraw,

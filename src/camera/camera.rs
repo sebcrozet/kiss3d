@@ -43,7 +43,7 @@ pub trait Camera {
 
     /// The number of passes required by this camera.
     #[inline]
-    fn num_passes(&self) -> usize { 1u }
+    fn num_passes(&self) -> usize { 1usize }
 
     /// Indicates that a pass will begin.
     #[inline]

@@ -2,7 +2,6 @@
 
 use std::fs::File;
 use std::io::Read;
-use std::str::Words;
 use std::str::FromStr;
 use std::io::Result as IoResult;
 use std::iter::repeat;
@@ -10,6 +9,8 @@ use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use std::sync::{Arc, RwLock};
 use std::path::{Path, PathBuf};
+use std::iter::Filter;
+use std::str::Split;
 use gl::types::GLfloat;
 use na::{Vec3, Pnt2, Pnt3, Bounded};
 use na;
@@ -24,6 +25,21 @@ pub type Coord  = Pnt3<GLfloat>;
 pub type Normal = Vec3<GLfloat>;
 /// The type of texture coordinates.
 pub type UV     = Pnt2<GLfloat>;
+
+/// Iterator through words.
+pub type Words<'a> = Filter<Split<'a, fn(char) -> bool>, fn(&&str) -> bool>;
+
+// FIXME: replace by split_whitespaces from rust 1.1
+/// Returns an iterator through all the words of a string.
+pub fn split_words<'a>(s: &'a str) -> Words<'a> {
+    fn is_not_empty(s: &&str) -> bool { !s.is_empty() }
+    let is_not_empty: fn(&&str) -> bool = is_not_empty; // coerce to fn pointer
+
+    fn is_whitespace(c: char) -> bool { c.is_whitespace() }
+    let is_whitespace: fn(char) -> bool = is_whitespace; // coerce to fn pointer!s.is_empty())
+
+    s.split(is_whitespace).filter(is_not_empty)
+}
 
 fn error(line: usize, err: &str) -> ! {
     panic!("At line {}: {}", line, err)
@@ -62,7 +78,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
     let _ = groups.insert(basename.to_string(), 0);
 
     for (l, line) in string.lines_any().enumerate() {
-        let mut words = line.words();
+        let mut words = split_words(line);
         let tag = words.next();
         match tag {
             None    => { },
@@ -137,7 +153,7 @@ fn parse_usemtl<'a>(l:          usize,
                     let mut g = curr_group.to_string();
                     g.push_str(&mname[..]);
 
-                    let new_group = parse_g(l, g[..].words(), "auto_generated_group_", groups, groups_ids);
+                    let new_group = parse_g(l, split_words(&g[..]), "auto_generated_group_", groups, groups_ids);
 
                     let _ = group2mtl.insert(new_group, m.clone());
                     *curr_mtl = Some(m.clone());
@@ -265,7 +281,7 @@ fn parse_f<'a>(l:              usize,
 
     // there is not enough vertex to form a triangle. Complete it.
     if i < 2 {
-        for _ in 0u .. 3 - i {
+        for _ in 0usize .. 3 - i {
             let last = (*groups_ids)[curr_group].last().unwrap().clone();
             groups_ids[curr_group].push(last);
         }
