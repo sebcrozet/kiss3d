@@ -8,8 +8,7 @@ use std::collections::hash_map::Entry;
 use std::path::Path;
 use gl;
 use gl::types::*;
-use stb_image::image::LoadResult;
-use stb_image::image;
+use image::{self, DynamicImage};
 
 #[path = "../error.rs"]
 mod error;
@@ -111,49 +110,37 @@ impl TextureManager {
 
         // FIXME: dont re-load the texture if it already exists!
         unsafe {
-            match image::load(path) {
-                LoadResult::ImageU8(mut image) => {
-                    verify!(gl::ActiveTexture(gl::TEXTURE0));
-                    verify!(gl::BindTexture(gl::TEXTURE_2D, tex.id()));
+            verify!(gl::ActiveTexture(gl::TEXTURE0));
+            verify!(gl::BindTexture(gl::TEXTURE_2D, tex.id()));
 
-                    // Flip the y axis
-                    let elt_per_row = image.width * image.depth;
-                    for j in 0usize .. image.height / 2 {
-                        for i in 0usize .. elt_per_row {
-                            image.data[..].swap(
-                                (image.height - j - 1) * elt_per_row + i, 
-                                j * elt_per_row + i)
-                        }
-                    }
-
-                    if image.depth == 3 {
+            match image::open(path).unwrap() {
+                DynamicImage::ImageRgb8(image) => {
                         verify!(gl::TexImage2D(
                                 gl::TEXTURE_2D, 0,
                                 gl::RGB as GLint,
-                                image.width as GLsizei,
-                                image.height as GLsizei,
+                                image.width() as GLsizei,
+                                image.height() as GLsizei,
                                 0, gl::RGB, gl::UNSIGNED_BYTE,
-                                mem::transmute(&image.data[0])));
-                    }
-                    else {
+                                mem::transmute(&image.into_raw()[0])));
+                },
+                DynamicImage::ImageRgba8(image) => {
                         verify!(gl::TexImage2D(
                                 gl::TEXTURE_2D, 0,
                                 gl::RGBA as GLint,
-                                image.width as GLsizei,
-                                image.height as GLsizei,
+                                image.width() as GLsizei,
+                                image.height() as GLsizei,
                                 0, gl::RGBA, gl::UNSIGNED_BYTE,
-                                mem::transmute(&image.data[0])));
-                    }
-
-                    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));
-                    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
-                    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));
-                    verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
+                                mem::transmute(&image.into_raw()[0])));
                 }
                 _ => {
-                    panic!("Failed to load texture {}", path.to_str().unwrap());
+                    panic!("Failed to load texture {}, unsuported pixel format.", path.to_str().unwrap());
                 }
             }
+
+            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));
+            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
+            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));
+            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
         }
 
         tex.clone()

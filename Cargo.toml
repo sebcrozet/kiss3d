@@ -1,6 +1,6 @@
 [package]
 name    = "kiss3d"
-version = "0.1.0"
+version = "0.1.1"
 authors = [ "Sébastien Crozet <developer@crozet.re>" ]
 
 description = "3D graphics engine for Rust."
@@ -8,6 +8,16 @@ repository = "https://github.com/sebcrozet/kiss3d"
 readme = "README.md"
 keywords = [ "3D", "graphics", "OpenGL", "KISS" ]
 license = "BSD-3-Clause"
+
+include = [
+    "src/**/*.rs",
+    "examples/**/*.rs",
+    "examples/media",
+    "examples/Cargo.toml",
+    "Cargo.toml",
+    "LICENSE",
+    "Readme.md"
+]
 
 [lib]
 name = "kiss3d"
@@ -19,16 +29,7 @@ gl = "*"
 time = "*"
 num = "*"
 libc = "*"
-
-[dependencies.ncollide_procedural]
-git = "https://github.com/sebcrozet/ncollide"
-
-[dependencies.glfw]
-git = "https://github.com/bjz/glfw-rs"
-default-features = false
-
-[dependencies.freetype-rs]
-git = "https://github.com/PistonDevelopers/freetype-rs"
-
-[dependencies.stb_image]
-git = "https://github.com/servo/rust-stb-image"
+ncollide_procedural = "*"
+glfw = "*"
+freetype-rs = "*"
+image = "*"

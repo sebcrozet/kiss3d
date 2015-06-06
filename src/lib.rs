@@ -96,7 +96,7 @@ extern crate gl;
 extern crate num;
 extern crate nalgebra as na;
 extern crate ncollide_procedural;
-extern crate stb_image;
+extern crate image;
 extern crate freetype;
 extern crate glfw;
 

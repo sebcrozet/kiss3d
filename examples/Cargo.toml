@@ -9,16 +9,9 @@ nalgebra = "*"
 gl = "*"
 time = "*"
 num = "*"
-
-[dependencies.glfw]
-git = "https://github.com/bjz/glfw-rs"
-default-features = false
-
-[dependencies.ncollide_procedural]
-git = "https://github.com/sebcrozet/ncollide"
-
-[dependencies.ncollide_transformation]
-git = "https://github.com/sebcrozet/ncollide"
+glfw = "*"
+ncollide_procedural = "*"
+ncollide_transformation = "*"
 
 [dependencies.kiss3d]
 path = ".."
