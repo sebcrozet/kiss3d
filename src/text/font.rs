@@ -64,7 +64,7 @@ impl Font {
                     }
                 },
                 None => {
-                    if ffi::FT_New_Memory_Face(font.library, &memory[0], memory.len() as i64, 0, &mut font.face) != 0 {
+                    if ffi::FT_New_Memory_Face(font.library, &memory[0], memory.len() as ffi::FT_Long, 0, &mut font.face) != 0 {
                         panic!("Failed to create TTF face.");
                     }
                 }
@@ -79,7 +79,7 @@ impl Font {
             let mut row_height = 0;
 
             for curr in (0usize .. 128) {
-                if ffi::FT_Load_Char(font.face, curr as u64, ffi::FT_LOAD_RENDER) != 0 {
+                if ffi::FT_Load_Char(font.face, curr as ffi::FT_ULong, ffi::FT_LOAD_RENDER) != 0 {
                     continue;
                 }
 
