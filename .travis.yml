@@ -1,4 +1,8 @@
 language: rust
+rust:
+    - stable
+    - beta
+    - nightly
 before_install:
   # This ppa provides cmake 2.8.11, which travis doesn't have yet
   - sudo add-apt-repository --yes ppa:kalakris/cmake
