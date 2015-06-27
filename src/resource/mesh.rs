@@ -203,7 +203,7 @@ impl Mesh {
         let mut divisor:Vec<f32> = iter::repeat(0f32).take(coordinates.len()).collect();
     
         normals.clear();
-	normals.extend(iter::repeat(na::zero()).take(coordinates.len()));
+        normals.extend(iter::repeat(na::zero::<Vec3<GLfloat>>()).take(coordinates.len()));
     
         // Accumulate normals ...
         for f in faces.iter() {
