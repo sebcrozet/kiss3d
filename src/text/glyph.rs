@@ -4,7 +4,6 @@
 
 use na::Vec2;
 
-#[repr(packed)]
 /// A ttf glyph.
 pub struct Glyph {
     #[doc(hidden)]
