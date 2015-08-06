@@ -77,6 +77,11 @@ impl ArcBall {
         self.at
     }
 
+    /// Get a mutable reference to the point the camera is looking at.
+    pub fn at_mut(&mut self) -> &mut Pnt3<f32> {
+        &mut self.at
+    }
+
     /// The arc-ball camera `yaw`.
     pub fn yaw(&self) -> f32 {
         self.yaw
