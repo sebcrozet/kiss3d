@@ -375,12 +375,20 @@ impl Window {
     /// * `out` - the output buffer. It is automatically resized.
     pub fn snap(&self, out: &mut Vec<u8>) {
         let (width, height) = self.window.get_size();
+        self.snap_rect(out, 0, 0, width as usize, height as usize)
+    }
 
+    /// Read a section of pixels from the screen
+    ///
+    /// # Arguments:
+    /// * `out` - the output buffer. It is automatically resized
+    /// * `x, y, width, height` - the rectangle to capture
+    pub fn snap_rect(&self, out: &mut Vec<u8>, x: usize, y: usize, width: usize, height: usize) {
         let size = (width * height * 3) as usize;
 
         if out.len() < size {
             let diff = size - out.len();
-	    out.extend(repeat(0).take(diff));
+            out.extend(repeat(0).take(diff));
         }
         else {
             out.truncate(size)
@@ -389,8 +397,8 @@ impl Window {
         // FIXME: this is _not_ the fastest way of doing this.
         unsafe {
             gl::PixelStorei(gl::PACK_ALIGNMENT, 1);
-            gl::ReadPixels(0, 0,
-                           width, height,
+            gl::ReadPixels(x as i32, y as i32,
+                           width as i32, height as i32,
                            gl::RGB,
                            gl::UNSIGNED_BYTE,
                            mem::transmute(&mut out[0]));
