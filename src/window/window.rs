@@ -108,6 +108,11 @@ impl Window {
     pub fn set_framerate_limit(&mut self, fps: Option<u64>) {
         self.max_ms_per_frame = fps.map(|f| { assert!(f != 0); 1000 / f })
     }
+    
+    /// Set window title
+    pub fn set_title(&mut self, title: &str) {
+        self.window.set_title(title)
+    }
 
     /// Closes the window.
     #[inline]
