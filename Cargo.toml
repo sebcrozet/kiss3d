@@ -33,3 +33,7 @@ ncollide_procedural = "*"
 glfw = "*"
 freetype-rs = "*"
 image = "*"
+
+[dev-dependencies]
+rand = "*"
+ncollide_transformation = "*"
