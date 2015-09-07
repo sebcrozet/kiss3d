@@ -17,5 +17,5 @@ install:
   - make
   - sudo make install
 script:
-  - make all
-  - make examples
+  - cargo build
+  - cargo test

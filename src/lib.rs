@@ -29,19 +29,13 @@ Most features are one-liners.
 
 As an example, having a red, rotating cube with the light attached to the camera is as simple as:
 
-```rust
-extern crate native;
+```no_run
 extern crate kiss3d;
-extern crate "nalgebra" as na;
+extern crate nalgebra as na;
 
 use na::Vec3;
 use kiss3d::window::Window;
-use kiss3d::light;
-
-#[start]
-fn start(argc: isize, argv: *const *const u8) -> isize {
-    native::start(argc, argv, main)
-}
+use kiss3d::light::Light;
 
 fn main() {
     let mut window = Window::new("Kiss3d: cube");
@@ -49,7 +43,7 @@ fn main() {
 
     c.set_color(1.0, 0.0, 0.0);
 
-    window.set_light(light::StickToCamera);
+    window.set_light(Light::StickToCamera);
 
     while window.render() {
         c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
@@ -70,7 +64,7 @@ and the official package manager: [cargo](https://github.com/rust-lang/cargo).
 
 Simply add the following to your `Cargo.toml` file:
 
-```
+```text
 [dependencies.kiss3d]
 git = "https://github.com/sebcrozet/kiss3d"
 ```
