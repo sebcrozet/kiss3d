@@ -15,6 +15,8 @@ use std::iter::repeat;
 use time;
 use gl;
 use gl::types::*;
+use image::{ImageBuffer,Rgb};
+use image::imageops;
 use na::{Pnt2, Vec2, Vec3, Pnt3};
 use na;
 use ncollide_procedural::TriMesh3;
@@ -408,6 +410,16 @@ impl Window {
                            gl::UNSIGNED_BYTE,
                            mem::transmute(&mut out[0]));
         }
+    }
+    
+    /// Get the current screen as an image
+    pub fn snap_image(&self) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
+        let (width, height) = self.window.get_size();
+        let mut buf = Vec::new();
+        self.snap(&mut buf);
+        let img_opt = ImageBuffer::from_vec(width as u32, height as u32, buf);
+        let img = img_opt.expect("Buffer created from window was not big enough for image.");
+        imageops::flip_vertical(&img)
     }
 
     /// Gets the events manager that gives access to an event iterator.
