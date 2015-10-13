@@ -78,7 +78,7 @@ impl Font {
             let mut row_width  = 0;
             let mut row_height = 0;
 
-            for curr in (0usize .. 128) {
+            for curr in 0usize .. 128 {
                 if ffi::FT_Load_Char(font.face, curr as ffi::FT_ULong, ffi::FT_LOAD_RENDER) != 0 {
                     continue;
                 }
@@ -128,7 +128,7 @@ impl Font {
             /* Copy all glyphs into the texture atlas. */
             let mut offset: Vec2<i32> = na::zero();
             row_height = 0;
-            for curr in (0usize .. 128) {
+            for curr in 0usize .. 128 {
                 let glyph = match *&mut font.glyphs[curr] {
                     Some(ref mut g) => g,
                     None            => continue

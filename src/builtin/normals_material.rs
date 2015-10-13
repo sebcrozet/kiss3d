@@ -103,8 +103,10 @@ impl Material for NormalsMaterial {
     }
 }
 
+/// A vertex shader for coloring each point of an object depending on its normal.
 pub static NORMAL_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
 
+/// A fragment shader for coloring each point of an object depending on its normal.
 pub static NORMAL_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
 const A_VERY_LONG_STRING: &'static str =

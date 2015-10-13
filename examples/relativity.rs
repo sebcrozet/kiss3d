@@ -287,7 +287,7 @@ impl Material for RelativisticMaterial {
             let mut rot = na::one::<Rot3<f32>>();
 
             if na::sqnorm(&c.speed_of_player) != 0.0 {
-                rot.look_at_z(&(-c.speed_of_player), &Vec3::y());
+                rot = Rot3::look_at_z(&(-c.speed_of_player), &Vec3::y());
             }
 
             self.rot.upload(&rot);
