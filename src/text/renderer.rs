@@ -69,7 +69,7 @@ impl TextRenderer {
         for coords in self.coords.data_mut().iter_mut() {
             let begin = coords.len();
 
-            for (line_count, line) in text.lines_any().enumerate() {
+            for (line_count, line) in text.lines().enumerate() {
                 let mut temp_pos = pos.clone();
                 temp_pos.y       = temp_pos.y + (font.height() as usize * (line_count + 1)) as f32;
 

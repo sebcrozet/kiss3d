@@ -30,7 +30,7 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
     let mut res           = Vec::new();
     let mut curr_material = MtlMaterial::new_default("".to_string());
 
-    for (l, line) in string.lines_any().enumerate() {
+    for (l, line) in string.lines().enumerate() {
         let mut words = obj::split_words(line);
         let tag       = words.next();
 
@@ -90,7 +90,7 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
 
 fn parse_name<'a>(_: usize, ws: Words<'a>) -> String {
     let res: Vec<&'a str> = ws.collect();
-    res.connect(" ")
+    res.join(" ")
 }
 
 fn parse_color<'a>(l: usize, mut ws: Words<'a>) -> Vec3<f32> {
