@@ -77,4 +77,4 @@ I’d love to see people improving this library for their own needs. However, ke
 
 ## Acknowledgements
 
-Thanks to all the Rustafarians for their help, and their OpenGL/ffmpeg/stb-image/etc. bindings.
+Thanks to all the Rustaceans for their help, and their OpenGL/ffmpeg/stb-image/etc. bindings.
