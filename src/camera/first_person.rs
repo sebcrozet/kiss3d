@@ -218,10 +218,7 @@ impl Camera for FirstPerson {
 
     /// The camera view transformation (i-e transformation without projection).
     fn view_transform(&self) -> Iso3<f32> {
-        let mut id: Iso3<f32> = na::one();
-        id.look_at_z(&self.eye, &self.at(), &Vec3::y());
-
-        id
+        Iso3::look_at_z(&self.eye, &self.at(), &Vec3::y())
     }
 
     fn handle_event(&mut self, window: &glfw::Window, event: &WindowEvent) {

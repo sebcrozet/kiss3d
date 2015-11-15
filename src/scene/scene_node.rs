@@ -354,7 +354,7 @@ impl SceneNodeData {
     pub fn look_at(&mut self, eye: &Pnt3<f32>, at: &Pnt3<f32>, up: &Vec3<f32>) {
         self.invalidate();
         // FIXME: multiply by the parent's world transform?
-        self.local_transform.look_at(eye, at, up)
+        self.local_transform = Iso3::look_at(eye, at, up)
     }
 
     /// Move and orient the object such that it is placed at the point `eye` and have its `z` axis
@@ -363,7 +363,7 @@ impl SceneNodeData {
     pub fn look_at_z(&mut self, eye: &Pnt3<f32>, at: &Pnt3<f32>, up: &Vec3<f32>) {
         self.invalidate();
         // FIXME: multiply by the parent's world transform?
-        self.local_transform.look_at_z(eye, at, up)
+        self.local_transform = Iso3::look_at_z(eye, at, up)
     }
 
     /// This node local transformation.
