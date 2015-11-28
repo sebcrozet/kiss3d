@@ -324,7 +324,7 @@ impl Window {
 
         window.make_current();
 
-        verify!(gl::load_with(|name| window.get_proc_address(name)));
+        verify!(gl::load_with(|name| mem::transmute(window.get_proc_address(name))));
         init_gl();
 
         let mut usr_window = Window {
