@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["flip_horizontal","Flip an image horizontally"],["flip_vertical","Flip an image vertically"],["rotate180","Rotate an image 180 degrees clockwise."],["rotate270","Rotate an image 270 degrees clockwise."],["rotate90","Rotate an image 90 degrees clockwise."]]});

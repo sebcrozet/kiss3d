@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["RefWithCost","A reference packed with a cost value."]]});

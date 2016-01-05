@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["WebpDecoder","A Representation of a Webp Image format decoder."]]});

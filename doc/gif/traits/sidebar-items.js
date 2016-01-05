@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["Parameter","Configuration parameter trait."],["SetParameter","Implemented for objects that have parameters."]]});

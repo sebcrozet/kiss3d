@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["Primitive","Primitive trait from old stdlib"]]});

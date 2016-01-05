@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["IndexBuffer","Different representations of the index buffer."]],"struct":[["TriMesh","Shapeetric description of a mesh."]]});

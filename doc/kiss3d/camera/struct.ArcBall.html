@@ -9,6 +9,7 @@
 
     <title>kiss3d::camera::ArcBall - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
@@ -24,27 +25,28 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>camera</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.ArcBall.html'>ArcBall</a><a class='struct ' href='struct.FirstPerson.html'>FirstPerson</a><a class='struct ' href='struct.FirstPersonStereo.html'>FirstPersonStereo</a></div>
-    </section>
+        <p class='location'><a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>camera</a></p><script>window.sidebarCurrent = {name: 'ArcBall', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>camera</a>&#8203;::<a class='struct' href=''>ArcBall</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-8944' href='../../src/kiss3d/src/camera/arc_ball.rs.html#17-41'>[src]</a></div></h1>
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>camera</a>::<wbr><a class='struct' href=''>ArcBall</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-1239' class='srclink' href='../../src/kiss3d/camera/arc_ball.rs.html#21-42' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct ArcBall {
     // some fields omitted
 }</pre><div class='docblock'><p>Arc-ball camera mode.</p>
@@ -59,64 +61,79 @@ direction</li>
 <li>Scroll in/out - zoom in/out</li>
 <li>Enter key - set the focus point to the origin</li>
 </ul>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(eye: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(eye: <a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
 <div class='docblock'><p>Create a new arc-ball camera.</p>
-</div><h4 id='method.new_with_frustrum' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_with_frustrum' class='fnname'>new_with_frustrum</a>(fov: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, znear: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, zfar: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, eye: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
+</div><h4 id='method.new_with_frustrum' class='method'><code>fn <a href='#method.new_with_frustrum' class='fnname'>new_with_frustrum</a>(fov: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, znear: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, zfar: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, eye: <a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
 <div class='docblock'><p>Creates a new arc ball camera with default sensitivity values.</p>
-</div><h4 id='method.at' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.at' class='fnname'>at</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+</div><h4 id='method.at' class='method'><code>fn <a href='#method.at' class='fnname'>at</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></h4>
 <div class='docblock'><p>The point the arc-ball is looking at.</p>
-</div><h4 id='method.yaw' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.yaw' class='fnname'>yaw</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a></code></h4>
+</div><h4 id='method.set_at' class='method'><code>fn <a href='#method.set_at' class='fnname'>set_at</a>(&amp;mut self, at: <a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+<div class='docblock'><p>Get a mutable reference to the point the camera is looking at.</p>
+</div><h4 id='method.yaw' class='method'><code>fn <a href='#method.yaw' class='fnname'>yaw</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a></code></h4>
 <div class='docblock'><p>The arc-ball camera <code>yaw</code>.</p>
-</div><h4 id='method.set_yaw' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_yaw' class='fnname'>set_yaw</a>(&amp;mut self, yaw: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>)</code></h4>
+</div><h4 id='method.set_yaw' class='method'><code>fn <a href='#method.set_yaw' class='fnname'>set_yaw</a>(&amp;mut self, yaw: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</code></h4>
 <div class='docblock'><p>Sets the camera <code>yaw</code>. Change this to modify the rotation along the <code>up</code> axis.</p>
-</div><h4 id='method.pitch' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.pitch' class='fnname'>pitch</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a></code></h4>
+</div><h4 id='method.pitch' class='method'><code>fn <a href='#method.pitch' class='fnname'>pitch</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a></code></h4>
 <div class='docblock'><p>The arc-ball camera <code>pitch</code>.</p>
-</div><h4 id='method.set_pitch' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_pitch' class='fnname'>set_pitch</a>(&amp;mut self, pitch: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>)</code></h4>
+</div><h4 id='method.set_pitch' class='method'><code>fn <a href='#method.set_pitch' class='fnname'>set_pitch</a>(&amp;mut self, pitch: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</code></h4>
 <div class='docblock'><p>Sets the camera <code>pitch</code>.</p>
-</div><h4 id='method.dist' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.dist' class='fnname'>dist</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a></code></h4>
+</div><h4 id='method.dist' class='method'><code>fn <a href='#method.dist' class='fnname'>dist</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a></code></h4>
 <div class='docblock'><p>The distance from the camera position to its view point.</p>
-</div><h4 id='method.set_dist' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_dist' class='fnname'>set_dist</a>(&amp;mut self, dist: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>)</code></h4>
+</div><h4 id='method.set_dist' class='method'><code>fn <a href='#method.set_dist' class='fnname'>set_dist</a>(&amp;mut self, dist: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</code></h4>
 <div class='docblock'><p>Move the camera such that it is at a given distance from the view point.</p>
-</div><h4 id='method.look_at_z' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.look_at_z' class='fnname'>look_at_z</a>(&amp;mut self, eye: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.look_at_z' class='method'><code>fn <a href='#method.look_at_z' class='fnname'>look_at_z</a>(&amp;mut self, eye: <a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, at: <a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Move and orient the camera such that it looks at a specific point.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/master/core/fmt/trait.Show.html' title='core::fmt::Show'>Show</a> for <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h3><div class='impl-methods'><h4 id='method.fmt' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/master/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
-</div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/master/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h3><div class='impl-methods'><h4 id='method.clone' class='method'><a class='stability Unstable' title='Unstable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
-<h4 id='method.clone_from' class='method'><a class='stability Experimental' title='Experimental: this function is mostly unused'></a><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -128,6 +145,6 @@ direction</li>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>

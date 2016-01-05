@@ -9,6 +9,7 @@
 
     <title>kiss3d::resource::MeshManager - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
@@ -24,27 +25,28 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>resource</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='material/index.html'>material</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.FramebufferManager.html'>FramebufferManager</a><a class='struct ' href='struct.GPUVector.html'>GPUVector</a><a class='struct ' href='struct.MaterialManager.html'>MaterialManager</a><a class='struct ' href='struct.Mesh.html'>Mesh</a><a class='struct current' href='struct.MeshManager.html'>MeshManager</a><a class='struct ' href='struct.OffscreenBuffers.html'>OffscreenBuffers</a><a class='struct ' href='struct.Shader.html'>Shader</a><a class='struct ' href='struct.ShaderAttribute.html'>ShaderAttribute</a><a class='struct ' href='struct.ShaderUniform.html'>ShaderUniform</a><a class='struct ' href='struct.Texture.html'>Texture</a><a class='struct ' href='struct.TextureManager.html'>TextureManager</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.GLPrimitive.html'>GLPrimitive</a></div>
-    </section>
+        <p class='location'><a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>resource</a></p><script>window.sidebarCurrent = {name: 'MeshManager', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>resource</a>&#8203;::<a class='struct' href=''>MeshManager</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-34781' href='../../src/kiss3d/src/resource/mesh_manager.rs.html#22-24'>[src]</a></div></h1>
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>resource</a>::<wbr><a class='struct' href=''>MeshManager</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-3293' class='srclink' href='../../src/kiss3d/resource/mesh_manager.rs.html#22-24' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct MeshManager {
     // some fields omitted
 }</pre><div class='docblock'><p>The mesh manager.</p>
@@ -53,55 +55,68 @@
 
 <p>It keeps a cache of already-loaded meshes. Note that this is only a cache, nothing more.
 Thus, its usage is not required to load meshes.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../kiss3d/resource/struct.MeshManager.html' title='kiss3d::resource::MeshManager'>MeshManager</a></code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/resource/struct.MeshManager.html' title='kiss3d::resource::MeshManager'>MeshManager</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/resource/struct.MeshManager.html' title='kiss3d::resource::MeshManager'>MeshManager</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/resource/struct.MeshManager.html' title='kiss3d::resource::MeshManager'>MeshManager</a></code></h4>
 <div class='docblock'><p>Creates a new mesh manager.</p>
-</div><h4 id='method.get_global_manager' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_global_manager' class='fnname'>get_global_manager</a>&lt;T&gt;(f: |&amp;mut <a class='struct' href='../../kiss3d/resource/struct.MeshManager.html' title='kiss3d::resource::MeshManager'>MeshManager</a>| -&gt; T) -&gt; T</code></h4>
+</div><h4 id='method.get_global_manager' class='method'><code>fn <a href='#method.get_global_manager' class='fnname'>get_global_manager</a>&lt;T, F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(&amp;mut <a class='struct' href='../../kiss3d/resource/struct.MeshManager.html' title='kiss3d::resource::MeshManager'>MeshManager</a>) -&gt; T&gt;(f: F) -&gt; T</code></h4>
 <div class='docblock'><p>Mutably applies a function to the mesh manager.</p>
-</div><h4 id='method.get' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get' class='fnname'>get</a>(&amp;mut self, name: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>&gt;&gt;&gt;</code></h4>
+</div><h4 id='method.get' class='method'><code>fn <a href='#method.get' class='fnname'>get</a>(&amp;mut self, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>&gt;&gt;&gt;</code></h4>
 <div class='docblock'><p>Get a mesh with the specified name. Returns <code>None</code> if the mesh is not registered.</p>
-</div><h4 id='method.add' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add' class='fnname'>add</a>(&amp;mut self, mesh: <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>&gt;&gt;, name: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>)</code></h4>
+</div><h4 id='method.add' class='method'><code>fn <a href='#method.add' class='fnname'>add</a>(&amp;mut self, mesh: <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>&gt;&gt;, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
 <div class='docblock'><p>Adds a mesh with the specified name to this cache.</p>
-</div><h4 id='method.add_trimesh' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_trimesh' class='fnname'>add_trimesh</a>(&amp;mut self, descr: <a class='struct' href='../../ncollide3df32/procedural/trimesh/struct.TriMesh.html' title='ncollide3df32::procedural::trimesh::TriMesh'>TriMesh</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;&gt;, dynamic_draw: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>, name: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>&gt;&gt;</code></h4>
+</div><h4 id='method.add_trimesh' class='method'><code>fn <a href='#method.add_trimesh' class='fnname'>add_trimesh</a>(&amp;mut self, descr: <a class='type' href='../../ncollide_procedural/type.TriMesh3.html' title='ncollide_procedural::TriMesh3'>TriMesh3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, dynamic_draw: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>&gt;&gt;</code></h4>
 <div class='docblock'><p>Adds a mesh with the specified mesh descriptor and name.</p>
-</div><h4 id='method.remove' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.remove' class='fnname'>remove</a>(&amp;mut self, name: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>)</code></h4>
+</div><h4 id='method.remove' class='method'><code>fn <a href='#method.remove' class='fnname'>remove</a>(&amp;mut self, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
 <div class='docblock'><p>Removes a mesh from this cache.</p>
-</div><h4 id='method.load_obj' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.load_obj' class='fnname'>load_obj</a>(path: &amp;<a class='struct' href='http://doc.rust-lang.org/master/std/path/posix/struct.Path.html' title='std::path::posix::Path'>Path</a>, mtl_dir: &amp;<a class='struct' href='http://doc.rust-lang.org/master/std/path/posix/struct.Path.html' title='std::path::posix::Path'>Path</a>, geometry_name: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/std/io/type.IoResult.html' title='std::io::IoResult'>IoResult</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(<a class='struct' href='http://doc.rust-lang.org/master/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>&gt;&gt;, <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/loader/mtl/struct.MtlMaterial.html' title='kiss3d::loader::mtl::MtlMaterial'>MtlMaterial</a>&gt;)</a>&gt;&gt;</code></h4>
+</div><h4 id='method.load_obj' class='method'><code>fn <a href='#method.load_obj' class='fnname'>load_obj</a>(path: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>, mtl_dir: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>, geometry_name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/std/io/error/type.Result.html' title='std::io::error::Result'>IoResult</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>&gt;&gt;, <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/loader/mtl/struct.MtlMaterial.html' title='kiss3d::loader::mtl::MtlMaterial'>MtlMaterial</a>&gt;)</a>&gt;&gt;</code></h4>
 <div class='docblock'><p>Loads the meshes described by an obj file.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -113,6 +128,6 @@ Thus, its usage is not required to load meshes.</p>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>

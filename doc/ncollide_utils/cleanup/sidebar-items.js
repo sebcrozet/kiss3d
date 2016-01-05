@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["remove_unused_points","Given an index buffer, remove from `points` every point that is not indexed."]]});

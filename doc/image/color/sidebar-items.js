@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ColorType","An enumeration over supported color types and their bit depths"]],"fn":[["Luma",""],["LumaA",""],["Rgb",""],["Rgba",""]],"struct":[["Luma","Grayscale colors"],["LumaA","Grayscale colors + alpha channel"],["Rgb","RGB colors"],["Rgba","RGB colors + alpha channel"]]});

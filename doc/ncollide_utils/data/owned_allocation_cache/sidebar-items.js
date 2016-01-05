@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["OwnedAllocationCache","Cache for owned objects."]]});

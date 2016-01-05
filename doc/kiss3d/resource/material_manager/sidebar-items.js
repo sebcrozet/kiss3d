@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["MaterialManager","The material manager."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Object","A 3d objects on the scene."],["ObjectData","Set of data identifying a scene node."],["SceneNode","A node of the scene graph."],["SceneNodeData","The datas contained by a `SceneNode`."]]});

@@ -9,6 +9,7 @@
 
     <title>kiss3d::window::Event - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
@@ -24,73 +25,90 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>window</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.Event.html'>Event</a><a class='struct ' href='struct.EventManager.html'>EventManager</a><a class='struct ' href='struct.Events.html'>Events</a><a class='struct ' href='struct.Window.html'>Window</a></div>
-    </section>
+        <p class='location'><a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>window</a></p><script>window.sidebarCurrent = {name: 'Event', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>window</a>&#8203;::<a class='struct' href=''>Event</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-3761' href='../../src/kiss3d/src/window/event.rs.html#6-14'>[src]</a></div></h1>
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>window</a>::<wbr><a class='struct' href=''>Event</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-397' class='srclink' href='../../src/kiss3d/window/event.rs.html#7-15' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Event&lt;'a&gt; {
-    pub timestamp: <a href='http://doc.rust-lang.org/master/std/primitive.f64.html'>f64</a>,
-    pub value: <a class='type' href='../../glfw/type.WindowEvent.html' title='glfw::WindowEvent'>WindowEvent</a>,
-    pub inhibited: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>,
+    pub timestamp: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>,
+    pub value: <a class='enum' href='../../glfw/enum.WindowEvent.html' title='glfw::WindowEvent'>WindowEvent</a>,
+    pub inhibited: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
     // some fields omitted
 }</pre><div class='docblock'><p>An event.</p>
 </div><h2 class='fields'>Fields</h2>
-<table><tr><td id='structfield.timestamp'><a class='stability Unmarked' title='No stability level'></a><code>timestamp</code></td><td><div class='docblock'><p>The event timestamp.</p>
-</div></td></tr><tr><td id='structfield.value'><a class='stability Unmarked' title='No stability level'></a><code>value</code></td><td><div class='docblock'><p>The exact glfw event value. This can be modified to fool the other event handlers.</p>
-</div></td></tr><tr><td id='structfield.inhibited'><a class='stability Unmarked' title='No stability level'></a><code>inhibited</code></td><td><div class='docblock'><p>Set this to <code>true</code> to prevent the window or the camera from handling the event.</p>
-</div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a&gt; <a class='trait' href='http://doc.rust-lang.org/master/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/window/struct.Event.html' title='kiss3d::window::Event'>Event</a>&lt;'a&gt;</code></h3><div class='impl-methods'><h4 id='method.drop' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+<table><tr class='stab '>
+                                  <td id='structfield.timestamp'><code>timestamp</code></td><td><div class='docblock'><p>The event timestamp.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.value'><code>value</code></td><td><div class='docblock'><p>The exact glfw event value. This can be modified to fool the other event handlers.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.inhibited'><code>inhibited</code></td><td><div class='docblock'><p>Set this to <code>true</code> to prevent the window or the camera from handling the event.</p>
+</div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/window/struct.Event.html' title='kiss3d::window::Event'>Event</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -102,6 +120,6 @@
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>

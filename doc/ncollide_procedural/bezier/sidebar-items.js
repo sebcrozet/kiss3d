@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["bezier_curve","Given a set of control points, generates a (non-rational) Bezier curve."],["bezier_surface","Given a set of control points, generates a (non-rational) Bezier surface."]]});

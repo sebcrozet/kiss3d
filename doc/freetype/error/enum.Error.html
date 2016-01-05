@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Error` enum in crate `freetype`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Error">
+
+    <title>freetype::error::Error - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>freetype</a>::<wbr><a href='index.html'>error</a></p><script>window.sidebarCurrent = {name: 'Error', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content enum">
+<h1 class='fqn'><span class='in-band'>Enum <a href='../index.html'>freetype</a>::<wbr><a href='index.html'>error</a>::<wbr><a class='enum' href=''>Error</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-93' class='srclink' href='../../src/freetype/error.rs.html#9-104' title='goto source code'>[src]</a></span></h1>
+<pre class='rust enum'>pub enum Error {
+    Ok,
+    CannotOpenResource,
+    UnknownFileFormat,
+    InvalidFileFormat,
+    InvalidVersion,
+    LowerModuleVersion,
+    InvalidArgument,
+    UnimplementedFeature,
+    InvalidTable,
+    InvalidOffset,
+    ArrayTooLarge,
+    MissingModule,
+    MissingProperty,
+    InvalidGlyphIndex,
+    InvalidCharacterCode,
+    InvalidGlyphFormat,
+    CannotRenderGlyph,
+    InvalidOutline,
+    InvalidComposite,
+    TooManyHints,
+    InvalidPixelSize,
+    InvalidHandle,
+    InvalidLibraryHandle,
+    InvalidDriverHandle,
+    InvalidFaceHandle,
+    InvalidSizeHandle,
+    InvalidSlotHandle,
+    InvalidCharMapHandle,
+    InvalidCacheHandle,
+    InvalidStreamHandle,
+    TooManyDrivers,
+    TooManyExtensions,
+    OutOfMemory,
+    UnlistedObject,
+    CannotOpenStream,
+    InvalidStreamSeek,
+    InvalidStreamSkip,
+    InvalidStreamRead,
+    InvalidStreamOperation,
+    InvalidFrameOperation,
+    NestedFrameAccess,
+    InvalidFrameRead,
+    RasterUninitialized,
+    RasterCorrupted,
+    RasterOverflow,
+    RasterNegativeHeight,
+    TooManyCaches,
+    InvalidOpcode,
+    TooFewArguments,
+    StackOverflow,
+    CodeOverflow,
+    BadArgument,
+    DivideByZero,
+    InvalidReference,
+    DebugOpCode,
+    ENDFInExecStream,
+    NestedDEFS,
+    InvalidCodeRange,
+    ExecutionTooLong,
+    TooManyFunctionDefs,
+    TooManyInstructionDefs,
+    TableMissing,
+    HorizHeaderMissing,
+    LocationsMissing,
+    NameTableMissing,
+    CMapTableMissing,
+    HmtxTableMissing,
+    PostTableMissing,
+    InvalidHorizMetrics,
+    InvalidCharMapFormat,
+    InvalidPPem,
+    InvalidVertMetrics,
+    CouldNotFindContext,
+    InvalidPostTableFormat,
+    InvalidPostTable,
+    Syntax,
+    StackUnderflow,
+    Ignore,
+    NoUnicodeGlyphName,
+    MissingStartfontField,
+    MissingFontField,
+    MissingSizeField,
+    MissingFontboundingboxField,
+    MissingCharsField,
+    MissingStartcharField,
+    MissingEncodingField,
+    MissingBbxField,
+    BbxTooBig,
+    CorruptedFontHeader,
+    CorruptedFontGlyphs,
+    Max,
+    UnexpectedPixelMode,
+    InvalidPath,
+    Unknown,
+}</pre><h2 class='variants'>Variants</h2>
+<table><tr><td id='variant.Ok'><code>Ok</code></td><td></td></tr><tr><td id='variant.CannotOpenResource'><code>CannotOpenResource</code></td><td></td></tr><tr><td id='variant.UnknownFileFormat'><code>UnknownFileFormat</code></td><td></td></tr><tr><td id='variant.InvalidFileFormat'><code>InvalidFileFormat</code></td><td></td></tr><tr><td id='variant.InvalidVersion'><code>InvalidVersion</code></td><td></td></tr><tr><td id='variant.LowerModuleVersion'><code>LowerModuleVersion</code></td><td></td></tr><tr><td id='variant.InvalidArgument'><code>InvalidArgument</code></td><td></td></tr><tr><td id='variant.UnimplementedFeature'><code>UnimplementedFeature</code></td><td></td></tr><tr><td id='variant.InvalidTable'><code>InvalidTable</code></td><td></td></tr><tr><td id='variant.InvalidOffset'><code>InvalidOffset</code></td><td></td></tr><tr><td id='variant.ArrayTooLarge'><code>ArrayTooLarge</code></td><td></td></tr><tr><td id='variant.MissingModule'><code>MissingModule</code></td><td></td></tr><tr><td id='variant.MissingProperty'><code>MissingProperty</code></td><td></td></tr><tr><td id='variant.InvalidGlyphIndex'><code>InvalidGlyphIndex</code></td><td></td></tr><tr><td id='variant.InvalidCharacterCode'><code>InvalidCharacterCode</code></td><td></td></tr><tr><td id='variant.InvalidGlyphFormat'><code>InvalidGlyphFormat</code></td><td></td></tr><tr><td id='variant.CannotRenderGlyph'><code>CannotRenderGlyph</code></td><td></td></tr><tr><td id='variant.InvalidOutline'><code>InvalidOutline</code></td><td></td></tr><tr><td id='variant.InvalidComposite'><code>InvalidComposite</code></td><td></td></tr><tr><td id='variant.TooManyHints'><code>TooManyHints</code></td><td></td></tr><tr><td id='variant.InvalidPixelSize'><code>InvalidPixelSize</code></td><td></td></tr><tr><td id='variant.InvalidHandle'><code>InvalidHandle</code></td><td></td></tr><tr><td id='variant.InvalidLibraryHandle'><code>InvalidLibraryHandle</code></td><td></td></tr><tr><td id='variant.InvalidDriverHandle'><code>InvalidDriverHandle</code></td><td></td></tr><tr><td id='variant.InvalidFaceHandle'><code>InvalidFaceHandle</code></td><td></td></tr><tr><td id='variant.InvalidSizeHandle'><code>InvalidSizeHandle</code></td><td></td></tr><tr><td id='variant.InvalidSlotHandle'><code>InvalidSlotHandle</code></td><td></td></tr><tr><td id='variant.InvalidCharMapHandle'><code>InvalidCharMapHandle</code></td><td></td></tr><tr><td id='variant.InvalidCacheHandle'><code>InvalidCacheHandle</code></td><td></td></tr><tr><td id='variant.InvalidStreamHandle'><code>InvalidStreamHandle</code></td><td></td></tr><tr><td id='variant.TooManyDrivers'><code>TooManyDrivers</code></td><td></td></tr><tr><td id='variant.TooManyExtensions'><code>TooManyExtensions</code></td><td></td></tr><tr><td id='variant.OutOfMemory'><code>OutOfMemory</code></td><td></td></tr><tr><td id='variant.UnlistedObject'><code>UnlistedObject</code></td><td></td></tr><tr><td id='variant.CannotOpenStream'><code>CannotOpenStream</code></td><td></td></tr><tr><td id='variant.InvalidStreamSeek'><code>InvalidStreamSeek</code></td><td></td></tr><tr><td id='variant.InvalidStreamSkip'><code>InvalidStreamSkip</code></td><td></td></tr><tr><td id='variant.InvalidStreamRead'><code>InvalidStreamRead</code></td><td></td></tr><tr><td id='variant.InvalidStreamOperation'><code>InvalidStreamOperation</code></td><td></td></tr><tr><td id='variant.InvalidFrameOperation'><code>InvalidFrameOperation</code></td><td></td></tr><tr><td id='variant.NestedFrameAccess'><code>NestedFrameAccess</code></td><td></td></tr><tr><td id='variant.InvalidFrameRead'><code>InvalidFrameRead</code></td><td></td></tr><tr><td id='variant.RasterUninitialized'><code>RasterUninitialized</code></td><td></td></tr><tr><td id='variant.RasterCorrupted'><code>RasterCorrupted</code></td><td></td></tr><tr><td id='variant.RasterOverflow'><code>RasterOverflow</code></td><td></td></tr><tr><td id='variant.RasterNegativeHeight'><code>RasterNegativeHeight</code></td><td></td></tr><tr><td id='variant.TooManyCaches'><code>TooManyCaches</code></td><td></td></tr><tr><td id='variant.InvalidOpcode'><code>InvalidOpcode</code></td><td></td></tr><tr><td id='variant.TooFewArguments'><code>TooFewArguments</code></td><td></td></tr><tr><td id='variant.StackOverflow'><code>StackOverflow</code></td><td></td></tr><tr><td id='variant.CodeOverflow'><code>CodeOverflow</code></td><td></td></tr><tr><td id='variant.BadArgument'><code>BadArgument</code></td><td></td></tr><tr><td id='variant.DivideByZero'><code>DivideByZero</code></td><td></td></tr><tr><td id='variant.InvalidReference'><code>InvalidReference</code></td><td></td></tr><tr><td id='variant.DebugOpCode'><code>DebugOpCode</code></td><td></td></tr><tr><td id='variant.ENDFInExecStream'><code>ENDFInExecStream</code></td><td></td></tr><tr><td id='variant.NestedDEFS'><code>NestedDEFS</code></td><td></td></tr><tr><td id='variant.InvalidCodeRange'><code>InvalidCodeRange</code></td><td></td></tr><tr><td id='variant.ExecutionTooLong'><code>ExecutionTooLong</code></td><td></td></tr><tr><td id='variant.TooManyFunctionDefs'><code>TooManyFunctionDefs</code></td><td></td></tr><tr><td id='variant.TooManyInstructionDefs'><code>TooManyInstructionDefs</code></td><td></td></tr><tr><td id='variant.TableMissing'><code>TableMissing</code></td><td></td></tr><tr><td id='variant.HorizHeaderMissing'><code>HorizHeaderMissing</code></td><td></td></tr><tr><td id='variant.LocationsMissing'><code>LocationsMissing</code></td><td></td></tr><tr><td id='variant.NameTableMissing'><code>NameTableMissing</code></td><td></td></tr><tr><td id='variant.CMapTableMissing'><code>CMapTableMissing</code></td><td></td></tr><tr><td id='variant.HmtxTableMissing'><code>HmtxTableMissing</code></td><td></td></tr><tr><td id='variant.PostTableMissing'><code>PostTableMissing</code></td><td></td></tr><tr><td id='variant.InvalidHorizMetrics'><code>InvalidHorizMetrics</code></td><td></td></tr><tr><td id='variant.InvalidCharMapFormat'><code>InvalidCharMapFormat</code></td><td></td></tr><tr><td id='variant.InvalidPPem'><code>InvalidPPem</code></td><td></td></tr><tr><td id='variant.InvalidVertMetrics'><code>InvalidVertMetrics</code></td><td></td></tr><tr><td id='variant.CouldNotFindContext'><code>CouldNotFindContext</code></td><td></td></tr><tr><td id='variant.InvalidPostTableFormat'><code>InvalidPostTableFormat</code></td><td></td></tr><tr><td id='variant.InvalidPostTable'><code>InvalidPostTable</code></td><td></td></tr><tr><td id='variant.Syntax'><code>Syntax</code></td><td></td></tr><tr><td id='variant.StackUnderflow'><code>StackUnderflow</code></td><td></td></tr><tr><td id='variant.Ignore'><code>Ignore</code></td><td></td></tr><tr><td id='variant.NoUnicodeGlyphName'><code>NoUnicodeGlyphName</code></td><td></td></tr><tr><td id='variant.MissingStartfontField'><code>MissingStartfontField</code></td><td></td></tr><tr><td id='variant.MissingFontField'><code>MissingFontField</code></td><td></td></tr><tr><td id='variant.MissingSizeField'><code>MissingSizeField</code></td><td></td></tr><tr><td id='variant.MissingFontboundingboxField'><code>MissingFontboundingboxField</code></td><td></td></tr><tr><td id='variant.MissingCharsField'><code>MissingCharsField</code></td><td></td></tr><tr><td id='variant.MissingStartcharField'><code>MissingStartcharField</code></td><td></td></tr><tr><td id='variant.MissingEncodingField'><code>MissingEncodingField</code></td><td></td></tr><tr><td id='variant.MissingBbxField'><code>MissingBbxField</code></td><td></td></tr><tr><td id='variant.BbxTooBig'><code>BbxTooBig</code></td><td></td></tr><tr><td id='variant.CorruptedFontHeader'><code>CorruptedFontHeader</code></td><td></td></tr><tr><td id='variant.CorruptedFontGlyphs'><code>CorruptedFontGlyphs</code></td><td></td></tr><tr><td id='variant.Max'><code>Max</code></td><td></td></tr><tr><td id='variant.UnexpectedPixelMode'><code>UnexpectedPixelMode</code></td><td></td></tr><tr><td id='variant.InvalidPath'><code>InvalidPath</code></td><td></td></tr><tr><td id='variant.Unknown'><code>Unknown</code></td><td></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>&gt; for <a class='enum' href='../../freetype/error/enum.Error.html' title='freetype::error::Error'>Error</a></code></h3><div class='impl-items'><h4 id='method.from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#method.from' class='fnname'>from</a>(err: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>) -&gt; Self</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html' title='core::fmt::Display'>Display</a> for <a class='enum' href='../../freetype/error/enum.Error.html' title='freetype::error::Error'>Error</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html#method.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html' title='std::error::Error'>Error</a> for <a class='enum' href='../../freetype/error/enum.Error.html' title='freetype::error::Error'>Error</a></code></h3><div class='impl-items'><h4 id='method.description' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html#method.description' class='fnname'>description</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
+<h4 id='method.cause' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html#method.cause' class='fnname'>cause</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html' title='std::error::Error'>Error</a>&gt;</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../../freetype/error/enum.Error.html' title='freetype::error::Error'>Error</a></code></h3><div class='impl-items'><h4 id='method.fmt-1' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> for <a class='enum' href='../../freetype/error/enum.Error.html' title='freetype::error::Error'>Error</a></code></h3><div class='impl-items'></div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='enum' href='../../freetype/error/enum.Error.html' title='freetype::error::Error'>Error</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../../freetype/error/enum.Error.html' title='freetype::error::Error'>Error</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.ne' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../../freetype/error/enum.Error.html' title='freetype::error::Error'>Error</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='enum' href='../../freetype/error/enum.Error.html' title='freetype::error::Error'>Error</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='enum' href='../../freetype/error/enum.Error.html' title='freetype::error::Error'>Error</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='enum' href='../../freetype/error/enum.Error.html' title='freetype::error::Error'>Error</a></code></h3><div class='impl-items'></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "freetype";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

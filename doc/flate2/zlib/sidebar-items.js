@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["DecoderReader","A ZLIB decoder, or decompressor."],["DecoderWriter","A ZLIB decoder, or decompressor."],["EncoderReader","A ZLIB encoder, or compressor."],["EncoderWriter","A ZLIB encoder, or compressor."]]});

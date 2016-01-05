@@ -9,6 +9,7 @@
 
     <title>kiss3d::scene::SceneNodeData - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
@@ -24,215 +25,226 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>scene</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.Object.html'>Object</a><a class='struct ' href='struct.ObjectData.html'>ObjectData</a><a class='struct ' href='struct.SceneNode.html'>SceneNode</a><a class='struct current' href='struct.SceneNodeData.html'>SceneNodeData</a></div>
-    </section>
+        <p class='location'><a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>scene</a></p><script>window.sidebarCurrent = {name: 'SceneNodeData', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>scene</a>&#8203;::<a class='struct' href=''>SceneNodeData</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-5131' href='../../src/kiss3d/src/scene/scene_node.rs.html#16-26'>[src]</a></div></h1>
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>scene</a>::<wbr><a class='struct' href=''>SceneNodeData</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-636' class='srclink' href='../../src/kiss3d/scene/scene_node.rs.html#17-28' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct SceneNodeData {
     // some fields omitted
 }</pre><div class='docblock'><p>The datas contained by a <code>SceneNode</code>.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../kiss3d/scene/struct.SceneNodeData.html' title='kiss3d::scene::SceneNodeData'>SceneNodeData</a></code></h3><div class='impl-methods'><h4 id='method.has_object' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.has_object' class='fnname'>has_object</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/scene/struct.SceneNodeData.html' title='kiss3d::scene::SceneNodeData'>SceneNodeData</a></code></h3><div class='impl-items'><h4 id='method.has_object' class='method'><code>fn <a href='#method.has_object' class='fnname'>has_object</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Whether this node contains an <code>Object</code>.</p>
-</div><h4 id='method.is_root' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.is_root' class='fnname'>is_root</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.is_root' class='method'><code>fn <a href='#method.is_root' class='fnname'>is_root</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Whether this node has no parent.</p>
-</div><h4 id='method.render' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.render' class='fnname'>render</a>(&amp;mut self, pass: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, camera: &amp;mut Camera, light: &amp;<a class='type' href='../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a>)</code></h4>
+</div><h4 id='method.render' class='method'><code>fn <a href='#method.render' class='fnname'>render</a>(&amp;mut self, pass: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, camera: &amp;mut Camera, light: &amp;<a class='enum' href='../../kiss3d/light/enum.Light.html' title='kiss3d::light::Light'>Light</a>)</code></h4>
 <div class='docblock'><p>Render the scene graph rooted by this node.</p>
-</div><h4 id='method.object' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.object' class='fnname'>object</a>&lt;'a&gt;(&amp;'a self) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'a <a class='struct' href='../../kiss3d/scene/struct.Object.html' title='kiss3d::scene::Object'>Object</a>&gt;</code></h4>
+</div><h4 id='method.object' class='method'><code>fn <a href='#method.object' class='fnname'>object</a>&lt;'a&gt;(&amp;'a self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'a <a class='struct' href='../../kiss3d/scene/struct.Object.html' title='kiss3d::scene::Object'>Object</a>&gt;</code></h4>
 <div class='docblock'><p>A reference to the object possibly contained by this node.</p>
-</div><h4 id='method.object_mut' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.object_mut' class='fnname'>object_mut</a>&lt;'a&gt;(&amp;'a mut self) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'a mut <a class='struct' href='../../kiss3d/scene/struct.Object.html' title='kiss3d::scene::Object'>Object</a>&gt;</code></h4>
+</div><h4 id='method.object_mut' class='method'><code>fn <a href='#method.object_mut' class='fnname'>object_mut</a>&lt;'a&gt;(&amp;'a mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'a mut <a class='struct' href='../../kiss3d/scene/struct.Object.html' title='kiss3d::scene::Object'>Object</a>&gt;</code></h4>
 <div class='docblock'><p>A mutable reference to the object possibly contained by this node.</p>
-</div><h4 id='method.get_object' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_object' class='fnname'>get_object</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a class='struct' href='../../kiss3d/scene/struct.Object.html' title='kiss3d::scene::Object'>Object</a></code></h4>
+</div><h4 id='method.get_object' class='method'><code>fn <a href='#method.get_object' class='fnname'>get_object</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a class='struct' href='../../kiss3d/scene/struct.Object.html' title='kiss3d::scene::Object'>Object</a></code></h4>
 <div class='docblock'><p>A reference to the object possibly contained by this node.</p>
 
-<h1 id="failure" class='section-header'><a
-                           href="#failure">Failure</a></h1>
+<h1 id='failure' class='section-header'><a href='#failure'>Failure</a></h1>
 <p>Fails of this node does not contains an object.</p>
-</div><h4 id='method.get_object_mut' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_object_mut' class='fnname'>get_object_mut</a>&lt;'a&gt;(&amp;'a mut self) -&gt; &amp;'a mut <a class='struct' href='../../kiss3d/scene/struct.Object.html' title='kiss3d::scene::Object'>Object</a></code></h4>
+</div><h4 id='method.get_object_mut' class='method'><code>fn <a href='#method.get_object_mut' class='fnname'>get_object_mut</a>&lt;'a&gt;(&amp;'a mut self) -&gt; &amp;'a mut <a class='struct' href='../../kiss3d/scene/struct.Object.html' title='kiss3d::scene::Object'>Object</a></code></h4>
 <div class='docblock'><p>A mutable reference to the object possibly contained by this node.</p>
 
-<h1 id="failure-1" class='section-header'><a
-                           href="#failure-1">Failure</a></h1>
+<h1 id='failure-1' class='section-header'><a href='#failure-1'>Failure</a></h1>
 <p>Fails of this node does not contains an object.</p>
-</div><h4 id='method.set_material' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_material' class='fnname'>set_material</a>(&amp;mut self, material: <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='http://doc.rust-lang.org/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> + 'static&gt;&gt;&gt;)</code></h4>
+</div><h4 id='method.set_material' class='method'><code>fn <a href='#method.set_material' class='fnname'>set_material</a>(&amp;mut self, material: <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> + 'static&gt;&gt;&gt;)</code></h4>
 <div class='docblock'><p>Sets the material of the objects contained by this node and its children.</p>
-</div><h4 id='method.set_material_with_name' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_material_with_name' class='fnname'>set_material_with_name</a>(&amp;mut self, name: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>)</code></h4>
+</div><h4 id='method.set_material_with_name' class='method'><code>fn <a href='#method.set_material_with_name' class='fnname'>set_material_with_name</a>(&amp;mut self, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
 <div class='docblock'><p>Sets the material of the objects contained by this node and its children.</p>
 
 <p>The material must already have been registered as <code>name</code>.</p>
-</div><h4 id='method.set_lines_width' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_lines_width' class='fnname'>set_lines_width</a>(&amp;mut self, width: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>)</code></h4>
+</div><h4 id='method.set_lines_width' class='method'><code>fn <a href='#method.set_lines_width' class='fnname'>set_lines_width</a>(&amp;mut self, width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</code></h4>
 <div class='docblock'><p>Sets the width of the lines drawn for the objects contained by this node and its children.</p>
-</div><h4 id='method.set_points_size' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_points_size' class='fnname'>set_points_size</a>(&amp;mut self, size: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>)</code></h4>
+</div><h4 id='method.set_points_size' class='method'><code>fn <a href='#method.set_points_size' class='fnname'>set_points_size</a>(&amp;mut self, size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</code></h4>
 <div class='docblock'><p>Sets the size of the points drawn for the objects contained by this node and its children.</p>
-</div><h4 id='method.set_surface_rendering_activation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_surface_rendering_activation' class='fnname'>set_surface_rendering_activation</a>(&amp;mut self, active: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_surface_rendering_activation' class='method'><code>fn <a href='#method.set_surface_rendering_activation' class='fnname'>set_surface_rendering_activation</a>(&amp;mut self, active: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Activates or deactivates the rendering of the surfaces of the objects contained by this node and its
 children.</p>
-</div><h4 id='method.enable_backface_culling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.enable_backface_culling' class='fnname'>enable_backface_culling</a>(&amp;mut self, active: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.enable_backface_culling' class='method'><code>fn <a href='#method.enable_backface_culling' class='fnname'>enable_backface_culling</a>(&amp;mut self, active: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Activates or deactivates backface culling for the objects contained by this node and its
 children.</p>
-</div><h4 id='method.modify_vertices' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.modify_vertices' class='fnname'>modify_vertices</a>(&amp;mut self, f: &amp;mut |&amp;mut <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;&gt;|)</code></h4>
+</div><h4 id='method.modify_vertices' class='method'><code>fn <a href='#method.modify_vertices' class='fnname'>modify_vertices</a>&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(&amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;&gt;) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;(&amp;mut self, f: &amp;mut F)</code></h4>
 <div class='docblock'><p>Mutably accesses the vertices of the objects contained by this node and its children.</p>
 
 <p>The provided closure is called once per object.</p>
-</div><h4 id='method.read_vertices' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.read_vertices' class='fnname'>read_vertices</a>(&amp;self, f: &amp;mut |&amp;<a href='http://doc.rust-lang.org/master/std/primitive.slice.html'>[<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;]</a>|)</code></h4>
+</div><h4 id='method.read_vertices' class='method'><code>fn <a href='#method.read_vertices' class='fnname'>read_vertices</a>&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;(&amp;self, f: &amp;mut F)</code></h4>
 <div class='docblock'><p>Accesses the vertices of the objects contained by this node and its children.</p>
 
 <p>The provided closure is called once per object.</p>
-</div><h4 id='method.recompute_normals' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.recompute_normals' class='fnname'>recompute_normals</a>(&amp;mut self)</code></h4>
+</div><h4 id='method.recompute_normals' class='method'><code>fn <a href='#method.recompute_normals' class='fnname'>recompute_normals</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Recomputes the normals of the meshes of the objects contained by this node and its
 children.</p>
-</div><h4 id='method.modify_normals' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.modify_normals' class='fnname'>modify_normals</a>(&amp;mut self, f: &amp;mut |&amp;mut <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;&gt;|)</code></h4>
+</div><h4 id='method.modify_normals' class='method'><code>fn <a href='#method.modify_normals' class='fnname'>modify_normals</a>&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(&amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;&gt;) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;(&amp;mut self, f: &amp;mut F)</code></h4>
 <div class='docblock'><p>Mutably accesses the normals of the objects contained by this node and its children.</p>
 
 <p>The provided closure is called once per object.</p>
-</div><h4 id='method.read_normals' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.read_normals' class='fnname'>read_normals</a>(&amp;self, f: &amp;mut |&amp;<a href='http://doc.rust-lang.org/master/std/primitive.slice.html'>[<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;]</a>|)</code></h4>
+</div><h4 id='method.read_normals' class='method'><code>fn <a href='#method.read_normals' class='fnname'>read_normals</a>&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;(&amp;self, f: &amp;mut F)</code></h4>
 <div class='docblock'><p>Accesses the normals of the objects contained by this node and its children.</p>
 
 <p>The provided closure is called once per object.</p>
-</div><h4 id='method.modify_faces' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.modify_faces' class='fnname'>modify_faces</a>(&amp;mut self, f: &amp;mut |&amp;mut <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.u32.html'>u32</a>&gt;&gt;|)</code></h4>
+</div><h4 id='method.modify_faces' class='method'><code>fn <a href='#method.modify_faces' class='fnname'>modify_faces</a>&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(&amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>&gt;&gt;) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;(&amp;mut self, f: &amp;mut F)</code></h4>
 <div class='docblock'><p>Mutably accesses the faces of the objects contained by this node and its children.</p>
 
 <p>The provided closure is called once per object.</p>
-</div><h4 id='method.read_faces' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.read_faces' class='fnname'>read_faces</a>(&amp;self, f: &amp;mut |&amp;<a href='http://doc.rust-lang.org/master/std/primitive.slice.html'>[<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.u32.html'>u32</a>&gt;]</a>|)</code></h4>
+</div><h4 id='method.read_faces' class='method'><code>fn <a href='#method.read_faces' class='fnname'>read_faces</a>&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;(&amp;self, f: &amp;mut F)</code></h4>
 <div class='docblock'><p>Accesses the faces of the objects contained by this node and its children.</p>
 
 <p>The provided closure is called once per object.</p>
-</div><h4 id='method.modify_uvs' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.modify_uvs' class='fnname'>modify_uvs</a>(&amp;mut self, f: &amp;mut |&amp;mut <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;&gt;|)</code></h4>
+</div><h4 id='method.modify_uvs' class='method'><code>fn <a href='#method.modify_uvs' class='fnname'>modify_uvs</a>&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(&amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt2.html' title='nalgebra::structs::pnt::Pnt2'>Pnt2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;&gt;) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;(&amp;mut self, f: &amp;mut F)</code></h4>
 <div class='docblock'><p>Mutably accesses the texture coordinates of the objects contained by this node and its
 children.</p>
 
 <p>The provided closure is called once per object.</p>
-</div><h4 id='method.read_uvs' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.read_uvs' class='fnname'>read_uvs</a>(&amp;self, f: &amp;mut |&amp;<a href='http://doc.rust-lang.org/master/std/primitive.slice.html'>[<a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;]</a>|)</code></h4>
+</div><h4 id='method.read_uvs' class='method'><code>fn <a href='#method.read_uvs' class='fnname'>read_uvs</a>&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt2.html' title='nalgebra::structs::pnt::Pnt2'>Pnt2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;(&amp;self, f: &amp;mut F)</code></h4>
 <div class='docblock'><p>Accesses the texture coordinates of the objects contained by this node and its children.</p>
 
 <p>The provided closure is called once per object.</p>
-</div><h4 id='method.set_color' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_color' class='fnname'>set_color</a>(&amp;mut self, r: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, g: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, b: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>)</code></h4>
+</div><h4 id='method.set_color' class='method'><code>fn <a href='#method.set_color' class='fnname'>set_color</a>(&amp;mut self, r: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, g: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, b: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</code></h4>
 <div class='docblock'><p>Sets the color of the objects contained by this node and its children.</p>
 
 <p>Colors components must be on the range <code>[0.0, 1.0]</code>.</p>
-</div><h4 id='method.set_texture_from_file' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_texture_from_file' class='fnname'>set_texture_from_file</a>(&amp;mut self, path: &amp;<a class='struct' href='http://doc.rust-lang.org/master/std/path/posix/struct.Path.html' title='std::path::posix::Path'>Path</a>, name: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>)</code></h4>
+</div><h4 id='method.set_texture_from_file' class='method'><code>fn <a href='#method.set_texture_from_file' class='fnname'>set_texture_from_file</a>(&amp;mut self, path: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
 <div class='docblock'><p>Sets the texture of the objects contained by this node and its children.</p>
 
 <p>The texture is loaded from a file and registered by the global <code>TextureManager</code>.</p>
 
-<h1 id="arguments" class='section-header'><a
-                           href="#arguments">Arguments</a></h1>
+<h1 id='arguments' class='section-header'><a href='#arguments'>Arguments</a></h1>
 <ul>
 <li><code>path</code> - relative path of the texture on the disk</li>
 </ul>
-</div><h4 id='method.set_texture_with_name' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_texture_with_name' class='fnname'>set_texture_with_name</a>(&amp;mut self, name: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>)</code></h4>
+</div><h4 id='method.set_texture_with_name' class='method'><code>fn <a href='#method.set_texture_with_name' class='fnname'>set_texture_with_name</a>(&amp;mut self, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
 <div class='docblock'><p>Sets the texture of the objects contained by this node and its children.</p>
 
 <p>The texture must already have been registered as <code>name</code>.</p>
-</div><h4 id='method.set_texture' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_texture' class='fnname'>set_texture</a>(&amp;mut self, texture: <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a>&gt;)</code></h4>
+</div><h4 id='method.set_texture' class='method'><code>fn <a href='#method.set_texture' class='fnname'>set_texture</a>(&amp;mut self, texture: <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a>&gt;)</code></h4>
 <div class='docblock'><p>Sets the texture of the objects contained by this node and its children.</p>
-</div><h4 id='method.apply_to_objects_mut' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.apply_to_objects_mut' class='fnname'>apply_to_objects_mut</a>(&amp;mut self, f: &amp;mut |&amp;mut <a class='struct' href='../../kiss3d/scene/struct.Object.html' title='kiss3d::scene::Object'>Object</a>|)</code></h4>
+</div><h4 id='method.apply_to_objects_mut' class='method'><code>fn <a href='#method.apply_to_objects_mut' class='fnname'>apply_to_objects_mut</a>&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(&amp;mut <a class='struct' href='../../kiss3d/scene/struct.Object.html' title='kiss3d::scene::Object'>Object</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;(&amp;mut self, f: &amp;mut F)</code></h4>
 <div class='docblock'><p>Applies a closure to each object contained by this node and its children.</p>
-</div><h4 id='method.apply_to_objects' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.apply_to_objects' class='fnname'>apply_to_objects</a>(&amp;self, f: &amp;mut |&amp;<a class='struct' href='../../kiss3d/scene/struct.Object.html' title='kiss3d::scene::Object'>Object</a>|)</code></h4>
+</div><h4 id='method.apply_to_objects' class='method'><code>fn <a href='#method.apply_to_objects' class='fnname'>apply_to_objects</a>&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(&amp;<a class='struct' href='../../kiss3d/scene/struct.Object.html' title='kiss3d::scene::Object'>Object</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;(&amp;self, f: &amp;mut F)</code></h4>
 <div class='docblock'><p>Applies a closure to each object contained by this node and its children.</p>
-</div><h4 id='method.set_local_scale' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_local_scale' class='fnname'>set_local_scale</a>(&amp;mut self, sx: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, sy: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, sz: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>)</code></h4>
+</div><h4 id='method.set_local_scale' class='method'><code>fn <a href='#method.set_local_scale' class='fnname'>set_local_scale</a>(&amp;mut self, sx: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, sy: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, sz: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</code></h4>
 <div class='docblock'><p>Sets the local scaling factors of the object.</p>
-</div><h4 id='method.local_scale' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.local_scale' class='fnname'>local_scale</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+</div><h4 id='method.local_scale' class='method'><code>fn <a href='#method.local_scale' class='fnname'>local_scale</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></h4>
 <div class='docblock'><p>Returns the scaling factors of the object.</p>
-</div><h4 id='method.look_at' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.look_at' class='fnname'>look_at</a>(&amp;mut self, eye: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, at: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, up: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.look_at' class='method'><code>fn <a href='#method.look_at' class='fnname'>look_at</a>(&amp;mut self, eye: &amp;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, at: &amp;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, up: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Move and orient the object such that it is placed at the point <code>eye</code> and have its <code>x</code> axis
 oriented toward <code>at</code>.</p>
-</div><h4 id='method.look_at_z' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.look_at_z' class='fnname'>look_at_z</a>(&amp;mut self, eye: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, at: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, up: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.look_at_z' class='method'><code>fn <a href='#method.look_at_z' class='fnname'>look_at_z</a>(&amp;mut self, eye: &amp;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, at: &amp;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, up: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Move and orient the object such that it is placed at the point <code>eye</code> and have its <code>z</code> axis
 oriented toward <code>at</code>.</p>
-</div><h4 id='method.local_transformation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.local_transformation' class='fnname'>local_transformation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+</div><h4 id='method.local_transformation' class='method'><code>fn <a href='#method.local_transformation' class='fnname'>local_transformation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></h4>
 <div class='docblock'><p>This node local transformation.</p>
-</div><h4 id='method.inv_local_transformation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.inv_local_transformation' class='fnname'>inv_local_transformation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+</div><h4 id='method.inv_local_transformation' class='method'><code>fn <a href='#method.inv_local_transformation' class='fnname'>inv_local_transformation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></h4>
 <div class='docblock'><p>Inverse of this node local transformation.</p>
-</div><h4 id='method.world_transformation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.world_transformation' class='fnname'>world_transformation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+</div><h4 id='method.world_transformation' class='method'><code>fn <a href='#method.world_transformation' class='fnname'>world_transformation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></h4>
 <div class='docblock'><p>This node world transformation.</p>
 
 <p>This will force an update of the world transformation of its parents if they have been
 invalidated.</p>
-</div><h4 id='method.inv_world_transformation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.inv_world_transformation' class='fnname'>inv_world_transformation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+</div><h4 id='method.inv_world_transformation' class='method'><code>fn <a href='#method.inv_world_transformation' class='fnname'>inv_world_transformation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></h4>
 <div class='docblock'><p>The inverse of this node world transformation.</p>
 
 <p>This will force an update of the world transformation of its parents if they have been
 invalidated.</p>
-</div><h4 id='method.append_transformation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.append_transformation' class='fnname'>append_transformation</a>(&amp;mut self, t: &amp;<a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.append_transformation' class='method'><code>fn <a href='#method.append_transformation' class='fnname'>append_transformation</a>(&amp;mut self, t: &amp;<a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Appends a transformation to this node local transformation.</p>
-</div><h4 id='method.prepend_to_local_transformation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.prepend_to_local_transformation' class='fnname'>prepend_to_local_transformation</a>(&amp;mut self, t: &amp;<a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.prepend_to_local_transformation' class='method'><code>fn <a href='#method.prepend_to_local_transformation' class='fnname'>prepend_to_local_transformation</a>(&amp;mut self, t: &amp;<a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Prepends a transformation to this node local transformation.</p>
-</div><h4 id='method.set_local_transformation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_local_transformation' class='fnname'>set_local_transformation</a>(&amp;mut self, t: <a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.set_local_transformation' class='method'><code>fn <a href='#method.set_local_transformation' class='fnname'>set_local_transformation</a>(&amp;mut self, t: <a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Set this node local transformation.</p>
-</div><h4 id='method.local_translation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.local_translation' class='fnname'>local_translation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+</div><h4 id='method.local_translation' class='method'><code>fn <a href='#method.local_translation' class='fnname'>local_translation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></h4>
 <div class='docblock'><p>This node local translation.</p>
-</div><h4 id='method.inv_local_translation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.inv_local_translation' class='fnname'>inv_local_translation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+</div><h4 id='method.inv_local_translation' class='method'><code>fn <a href='#method.inv_local_translation' class='fnname'>inv_local_translation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></h4>
 <div class='docblock'><p>The inverse of this node local translation.</p>
-</div><h4 id='method.append_translation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.append_translation' class='fnname'>append_translation</a>(&amp;mut self, t: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.append_translation' class='method'><code>fn <a href='#method.append_translation' class='fnname'>append_translation</a>(&amp;mut self, t: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Appends a translation to this node local transformation.</p>
-</div><h4 id='method.prepend_to_local_translation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.prepend_to_local_translation' class='fnname'>prepend_to_local_translation</a>(&amp;mut self, t: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.prepend_to_local_translation' class='method'><code>fn <a href='#method.prepend_to_local_translation' class='fnname'>prepend_to_local_translation</a>(&amp;mut self, t: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Prepends a translation to this node local transformation.</p>
-</div><h4 id='method.set_local_translation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_local_translation' class='fnname'>set_local_translation</a>(&amp;mut self, t: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.set_local_translation' class='method'><code>fn <a href='#method.set_local_translation' class='fnname'>set_local_translation</a>(&amp;mut self, t: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Sets the local translation of this node.</p>
-</div><h4 id='method.local_rotation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.local_rotation' class='fnname'>local_rotation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+</div><h4 id='method.local_rotation' class='method'><code>fn <a href='#method.local_rotation' class='fnname'>local_rotation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></h4>
 <div class='docblock'><p>This node local rotation.</p>
-</div><h4 id='method.inv_local_rotation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.inv_local_rotation' class='fnname'>inv_local_rotation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+</div><h4 id='method.inv_local_rotation' class='method'><code>fn <a href='#method.inv_local_rotation' class='fnname'>inv_local_rotation</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></h4>
 <div class='docblock'><p>The inverse of this node local rotation.</p>
-</div><h4 id='method.append_rotation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.append_rotation' class='fnname'>append_rotation</a>(&amp;mut self, r: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.append_rotation' class='method'><code>fn <a href='#method.append_rotation' class='fnname'>append_rotation</a>(&amp;mut self, r: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Appends a rotation to this node local transformation.</p>
-</div><h4 id='method.append_rotation_wrt_center' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.append_rotation_wrt_center' class='fnname'>append_rotation_wrt_center</a>(&amp;mut self, r: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.append_rotation_wrt_center' class='method'><code>fn <a href='#method.append_rotation_wrt_center' class='fnname'>append_rotation_wrt_center</a>(&amp;mut self, r: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Appends a rotation to this node local transformation.</p>
-</div><h4 id='method.prepend_to_local_rotation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.prepend_to_local_rotation' class='fnname'>prepend_to_local_rotation</a>(&amp;mut self, r: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.prepend_to_local_rotation' class='method'><code>fn <a href='#method.prepend_to_local_rotation' class='fnname'>prepend_to_local_rotation</a>(&amp;mut self, r: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Prepends a rotation to this node local transformation.</p>
-</div><h4 id='method.set_local_rotation' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_local_rotation' class='fnname'>set_local_rotation</a>(&amp;mut self, r: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.set_local_rotation' class='method'><code>fn <a href='#method.set_local_rotation' class='fnname'>set_local_rotation</a>(&amp;mut self, r: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Sets the local rotation of this node.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -244,6 +256,6 @@ invalidated.</p>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>

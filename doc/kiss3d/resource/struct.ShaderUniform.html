@@ -9,6 +9,7 @@
 
     <title>kiss3d::resource::ShaderUniform - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
@@ -24,67 +25,81 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>resource</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='material/index.html'>material</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.FramebufferManager.html'>FramebufferManager</a><a class='struct ' href='struct.GPUVector.html'>GPUVector</a><a class='struct ' href='struct.MaterialManager.html'>MaterialManager</a><a class='struct ' href='struct.Mesh.html'>Mesh</a><a class='struct ' href='struct.MeshManager.html'>MeshManager</a><a class='struct ' href='struct.OffscreenBuffers.html'>OffscreenBuffers</a><a class='struct ' href='struct.Shader.html'>Shader</a><a class='struct ' href='struct.ShaderAttribute.html'>ShaderAttribute</a><a class='struct current' href='struct.ShaderUniform.html'>ShaderUniform</a><a class='struct ' href='struct.Texture.html'>Texture</a><a class='struct ' href='struct.TextureManager.html'>TextureManager</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.GLPrimitive.html'>GLPrimitive</a></div>
-    </section>
+        <p class='location'><a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>resource</a></p><script>window.sidebarCurrent = {name: 'ShaderUniform', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>resource</a>&#8203;::<a class='struct' href=''>ShaderUniform</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-42657' href='../../src/kiss3d/src/resource/shader.rs.html#99-101'>[src]</a></div></h1>
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>resource</a>::<wbr><a class='struct' href=''>ShaderUniform</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-4061' class='srclink' href='../../src/kiss3d/resource/shader.rs.html#94-97' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct ShaderUniform&lt;T&gt; {
     // some fields omitted
 }</pre><div class='docblock'><p>Structure encapsulating an uniform variable.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;T: <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt; <a class='struct' href='../../kiss3d/resource/struct.ShaderUniform.html' title='kiss3d::resource::ShaderUniform'>ShaderUniform</a>&lt;T&gt;</code></h3><div class='impl-methods'><h4 id='method.upload' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.upload' class='fnname'>upload</a>(&amp;mut self, value: &amp;T)</code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;T: <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt; <a class='struct' href='../../kiss3d/resource/struct.ShaderUniform.html' title='kiss3d::resource::ShaderUniform'>ShaderUniform</a>&lt;T&gt;</code></h3><div class='impl-items'><h4 id='method.upload' class='method'><code>fn <a href='#method.upload' class='fnname'>upload</a>(&amp;mut self, value: &amp;T)</code></h4>
 <div class='docblock'><p>Upload a value to this variable.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -96,6 +111,6 @@
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Window","Structure representing a window and a 3D scene."]]});

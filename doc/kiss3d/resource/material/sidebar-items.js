@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["Material","Trait implemented by materials."]]});

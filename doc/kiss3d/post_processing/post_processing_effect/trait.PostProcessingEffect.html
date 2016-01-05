@@ -9,6 +9,7 @@
 
     <title>kiss3d::post_processing::post_processing_effect::PostProcessingEffect - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
 
     
@@ -24,30 +25,31 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
-        <p class='location'><a href='../../index.html'>kiss3d</a>&#8203;::<a href='../index.html'>post_processing</a>&#8203;::<a href='index.html'>post_processing_effect</a></p><div class='block trait'><h2>Traits</h2><a class='trait current' href='trait.PostProcessingEffect.html'>PostProcessingEffect</a></div>
-    </section>
+        <p class='location'><a href='../../index.html'>kiss3d</a>::<wbr><a href='../index.html'>post_processing</a>::<wbr><a href='index.html'>post_processing_effect</a></p><script>window.sidebarCurrent = {name: 'PostProcessingEffect', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content trait">
-<h1 class='fqn'><div class='in-band'>Trait <a href='../../index.html'>kiss3d</a>&#8203;::<a href='../index.html'>post_processing</a>&#8203;::<a href='index.html'>post_processing_effect</a>&#8203;::<a class='trait' href=''>PostProcessingEffect</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-22647' href='../../../src/kiss3d/src/post_processing/post_processing_effect.rs.html#9-19'>[src]</a></div></h1>
+<h1 class='fqn'><span class='in-band'>Trait <a href='../../index.html'>kiss3d</a>::<wbr><a href='../index.html'>post_processing</a>::<wbr><a href='index.html'>post_processing_effect</a>::<wbr><a class='trait' href=''>PostProcessingEffect</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-2506' class='srclink' href='../../../src/kiss3d/post_processing/post_processing_effect.rs.html#9-19' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait PostProcessingEffect {
-    fn <a href='#tymethod.update' class='fnname'>update</a>(&amp;mut self, dt: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, w: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, h: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, znear: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, zfar: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>);
-    fn <a href='#tymethod.draw' class='fnname'>draw</a>(&amp;mut self, target: &amp;<a class='type' href='../../../kiss3d/resource/type.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a>);
+    fn <a href='#tymethod.update' class='fnname'>update</a>(&amp;mut self, dt: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, w: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, h: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, znear: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, zfar: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>);
+    fn <a href='#tymethod.draw' class='fnname'>draw</a>(&amp;mut self, target: &amp;<a class='enum' href='../../../kiss3d/resource/enum.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a>);
 }</pre><div class='docblock'><p>Trait of post processing effect.</p>
 
 <p>One post-processing effect can be used at a time. It is executed once the scene has been
@@ -55,11 +57,10 @@ rendered on a texture.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.update' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.update' class='fnname'>update</a>(&amp;mut self, dt: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, w: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, h: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, znear: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, zfar: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>)</code></h3><div class='docblock'><p>Updates the post processing effect.</p>
-</div><h3 id='tymethod.draw' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.draw' class='fnname'>draw</a>(&amp;mut self, target: &amp;<a class='type' href='../../../kiss3d/resource/type.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a>)</code></h3><div class='docblock'><p>Render the effect.</p>
+        <h3 id='tymethod.update' class='method stab '><code>fn <a href='#tymethod.update' class='fnname'>update</a>(&amp;mut self, dt: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, w: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, h: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, znear: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, zfar: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</code></h3><div class='docblock'><p>Updates the post processing effect.</p>
+</div><h3 id='tymethod.draw' class='method stab '><code>fn <a href='#tymethod.draw' class='fnname'>draw</a>(&amp;mut self, target: &amp;<a class='enum' href='../../../kiss3d/resource/enum.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a>)</code></h3><div class='docblock'><p>Render the effect.</p>
 
-<h1 id="arguments:" class='section-header'><a
-                           href="#arguments:">Arguments:</a></h1>
+<h1 id='arguments' class='section-header'><a href='#arguments'>Arguments:</a></h1>
 <ul>
 <li><code>shader_manager</code> - manager to switch between the different shaders.</li>
 <li><code>fbo_texture</code> - id to the texture containing the last scene drawn.</li>
@@ -68,10 +69,10 @@ rendered on a texture.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.Waves.html' title='kiss3d::post_processing::Waves'>Waves</a></code></li>
-<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.Grayscales.html' title='kiss3d::post_processing::Grayscales'>Grayscales</a></code></li>
-<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.SobelEdgeHighlight.html' title='kiss3d::post_processing::SobelEdgeHighlight'>SobelEdgeHighlight</a></code></li>
-<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.OculusStereo.html' title='kiss3d::post_processing::OculusStereo'>OculusStereo</a></code></li>
+    <li><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.Waves.html' title='kiss3d::post_processing::Waves'>Waves</a></code></li>
+<li><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.Grayscales.html' title='kiss3d::post_processing::Grayscales'>Grayscales</a></code></li>
+<li><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.SobelEdgeHighlight.html' title='kiss3d::post_processing::SobelEdgeHighlight'>SobelEdgeHighlight</a></code></li>
+<li><code>impl <a class='trait' href='../../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../../kiss3d/post_processing/struct.OculusStereo.html' title='kiss3d::post_processing::OculusStereo'>OculusStereo</a></code></li>
 </ul><script type="text/javascript" async
                               src="../../../implementors/kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.js">
                       </script></section>
@@ -79,36 +80,49 @@ rendered on a texture.</p>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -120,6 +134,6 @@ rendered on a texture.</p>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
     
-    <script async src="../../../search-index.js"></script>
+    <script defer src="../../../search-index.js"></script>
 </body>
 </html>

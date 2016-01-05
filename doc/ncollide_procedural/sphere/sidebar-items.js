@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["circle","Creates a circle lying on the `(x,y)` plane."],["sphere","Generates a UV sphere."],["unit_circle","Creates a circle lying on the `(x,y)` plane."],["unit_hemisphere","Creates an hemisphere with a diameter of 1."],["unit_sphere","Generates a UV sphere centered at the origin and with a unit diameter."]]});

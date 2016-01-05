@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["capsule","Generates a capsule."]]});

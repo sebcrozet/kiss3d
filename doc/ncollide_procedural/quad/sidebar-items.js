@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["quad","Adds a double-sided quad to the scene."],["quad_with_vertices","Adds a double-sided quad with the specified grid of vertices."],["unit_quad","Adds a double-sided quad with unit size to the scene."]]});

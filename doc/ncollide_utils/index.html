@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ncollide_utils` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ncollide_utils">
+
+    <title>ncollide_utils - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'ncollide_utils', ty: 'mod', relpath: '../'};</script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>ncollide_utils</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-0' class='srclink' href='../src/ncollide_utils/lib.rs.html#1-53' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Miscelaneous elementary geometric utilities.</p>
+</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='data/index.html'
+                               title='ncollide_utils::data'>data</a></td>
+                        <td class='docblock short'>
+                             <p>Data structure utilities.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BacktrackingLineSearch.html'
+                               title='ncollide_utils::BacktrackingLineSearch'>BacktrackingLineSearch</a></td>
+                        <td class='docblock short'>
+                             <p>The backtracking line search method.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.HashablePartialEq.html'
+                               title='ncollide_utils::HashablePartialEq'>HashablePartialEq</a></td>
+                        <td class='docblock short'>
+                             <p>A structure that implements <code>Eq</code> and is hashable even if the wrapped data implements only
+<code>PartialEq</code>.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.AsBytes.html'
+                               title='ncollide_utils::AsBytes'>AsBytes</a></td>
+                        <td class='docblock short'>
+                             <p>Trait that transforms thing to a slice of u8.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.LineSearch.html'
+                               title='ncollide_utils::LineSearch'>LineSearch</a></td>
+                        <td class='docblock short'>
+                             <p>Trait for line search methods.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.bfgs.html'
+                               title='ncollide_utils::bfgs'>bfgs</a></td>
+                        <td class='docblock short'>
+                             <p>Minimizes a function using the quasi-newton BFGS method.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.binom.html'
+                               title='ncollide_utils::binom'>binom</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the binomial coefficient C<sup>k_n</sup> (&quot;k among n&quot;).</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.center.html'
+                               title='ncollide_utils::center'>center</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the center of a set of point.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.center_reduce.html'
+                               title='ncollide_utils::center_reduce'>center_reduce</a></td>
+                        <td class='docblock short'>
+                             <p>Centers and reduces a set of data.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.circumcircle.html'
+                               title='ncollide_utils::circumcircle'>circumcircle</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the circumcircle of a triangle.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.cov.html'
+                               title='ncollide_utils::cov'>cov</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the convariance matrix of a set of points.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.cov_and_center.html'
+                               title='ncollide_utils::cov_and_center'>cov_and_center</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the covariance matrix and center of a set of points.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.cross3.html'
+                               title='ncollide_utils::cross3'>cross3</a></td>
+                        <td class='docblock short'>
+                             <p>A 3d cross product that do not require the <code>Cross&lt;Self, Self&gt;</code> trait impl.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.dcos.html'
+                               title='ncollide_utils::dcos'>dcos</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the n-th derivative of the cosinus function.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.dsin.html'
+                               title='ncollide_utils::dsin'>dsin</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the n-th derivative of the sinus function.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.is_affinely_dependent_triangle.html'
+                               title='ncollide_utils::is_affinely_dependent_triangle'>is_affinely_dependent_triangle</a></td>
+                        <td class='docblock short'>
+                             <p>Tests if three points are exactly aligned.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.is_affinely_dependent_triangle3.html'
+                               title='ncollide_utils::is_affinely_dependent_triangle3'>is_affinely_dependent_triangle3</a></td>
+                        <td class='docblock short'>
+                             <p>Tests if three 3D points are exactly aligned without the need of the <code>Cross</code> trait.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.is_point_in_triangle.html'
+                               title='ncollide_utils::is_point_in_triangle'>is_point_in_triangle</a></td>
+                        <td class='docblock short'>
+                             <p>Tests if a point is inside of a triangle.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.maximize_with_newton.html'
+                               title='ncollide_utils::maximize_with_newton'>maximize_with_newton</a></td>
+                        <td class='docblock short'>
+                             <p>Maximizes a real function using the Newton method.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.median.html'
+                               title='ncollide_utils::median'>median</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the median of a set of values.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.minimize_with_bfgs.html'
+                               title='ncollide_utils::minimize_with_bfgs'>minimize_with_bfgs</a></td>
+                        <td class='docblock short'>
+                             <p>Minimizes a function using the bfgs method.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.newton.html'
+                               title='ncollide_utils::newton'>newton</a></td>
+                        <td class='docblock short'>
+                             <p>Finds the root of a function using the Newton method.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.project_homogeneous.html'
+                               title='ncollide_utils::project_homogeneous'>project_homogeneous</a></td>
+                        <td class='docblock short'>
+                             <p>Project n-d point to a (n-1)-d space, dividing each vector by its <code>w</code> component.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.project_homogeneous_to.html'
+                               title='ncollide_utils::project_homogeneous_to'>project_homogeneous_to</a></td>
+                        <td class='docblock short'>
+                             <p>Project n-d point to a (n-1)-d space, dividing each vector by its <code>w</code> component.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.remove_unused_points.html'
+                               title='ncollide_utils::remove_unused_points'>remove_unused_points</a></td>
+                        <td class='docblock short'>
+                             <p>Given an index buffer, remove from <code>points</code> every point that is not indexed.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.sort3.html'
+                               title='ncollide_utils::sort3'>sort3</a></td>
+                        <td class='docblock short'>
+                             <p>Sorts a set of three values in increasing order.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.tetrahedron_center.html'
+                               title='ncollide_utils::tetrahedron_center'>tetrahedron_center</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the center of a tetrahedron.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.tetrahedron_signed_volume.html'
+                               title='ncollide_utils::tetrahedron_signed_volume'>tetrahedron_signed_volume</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the signed volume of a tetrahedron.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.tetrahedron_volume.html'
+                               title='ncollide_utils::tetrahedron_volume'>tetrahedron_volume</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the volume of a tetrahedron.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.triangle_area.html'
+                               title='ncollide_utils::triangle_area'>triangle_area</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the area of a triangle.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.triangle_center.html'
+                               title='ncollide_utils::triangle_center'>triangle_center</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the center of a triangle.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.triangle_perimeter.html'
+                               title='ncollide_utils::triangle_perimeter'>triangle_perimeter</a></td>
+                        <td class='docblock short'>
+                             <p>Computes the perimeter of a triangle.</p>
+
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "ncollide_utils";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

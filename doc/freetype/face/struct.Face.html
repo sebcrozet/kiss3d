@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Face` struct in crate `freetype`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Face">
+
+    <title>freetype::face::Face - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>freetype</a>::<wbr><a href='index.html'>face</a></p><script>window.sidebarCurrent = {name: 'Face', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>freetype</a>::<wbr><a href='index.html'>face</a>::<wbr><a class='struct' href=''>Face</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-707' class='srclink' href='../../src/freetype/face.rs.html#41-46' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Face&lt;'a&gt; {
+    // some fields omitted
+}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='struct' href='../../freetype/face/struct.Face.html' title='freetype::face::Face'>Face</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.from_raw' class='method'><code>fn <a href='#method.from_raw' class='fnname'>from_raw</a>(library_raw: <a class='type' href='../../freetype/ffi/type.FT_Library.html' title='freetype::ffi::FT_Library'>FT_Library</a>, raw: <a class='type' href='../../freetype/ffi/type.FT_Face.html' title='freetype::ffi::FT_Face'>FT_Face</a>) -&gt; Self</code></h4>
+<h4 id='method.attach_file' class='method'><code>fn <a href='#method.attach_file' class='fnname'>attach_file</a>(&amp;self, filepathname: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='type' href='../../freetype/error/type.FtResult.html' title='freetype::error::FtResult'>FtResult</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.reference' class='method'><code>fn <a href='#method.reference' class='fnname'>reference</a>(&amp;self) -&gt; <a class='type' href='../../freetype/error/type.FtResult.html' title='freetype::error::FtResult'>FtResult</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.set_char_size' class='method'><code>fn <a href='#method.set_char_size' class='fnname'>set_char_size</a>(&amp;self, char_width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>, char_height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>, horz_resolution: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, vert_resolution: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a class='type' href='../../freetype/error/type.FtResult.html' title='freetype::error::FtResult'>FtResult</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.set_pixel_sizes' class='method'><code>fn <a href='#method.set_pixel_sizes' class='fnname'>set_pixel_sizes</a>(&amp;self, pixel_width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, pixel_height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a class='type' href='../../freetype/error/type.FtResult.html' title='freetype::error::FtResult'>FtResult</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.load_glyph' class='method'><code>fn <a href='#method.load_glyph' class='fnname'>load_glyph</a>(&amp;self, glyph_index: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, load_flags: <a class='struct' href='../../freetype/face/struct.LoadFlag.html' title='freetype::face::LoadFlag'>LoadFlag</a>) -&gt; <a class='type' href='../../freetype/error/type.FtResult.html' title='freetype::error::FtResult'>FtResult</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.load_char' class='method'><code>fn <a href='#method.load_char' class='fnname'>load_char</a>(&amp;self, char_code: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, load_flags: <a class='struct' href='../../freetype/face/struct.LoadFlag.html' title='freetype::face::LoadFlag'>LoadFlag</a>) -&gt; <a class='type' href='../../freetype/error/type.FtResult.html' title='freetype::error::FtResult'>FtResult</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.set_transform' class='method'><code>fn <a href='#method.set_transform' class='fnname'>set_transform</a>(&amp;self, matrix: &amp;mut <a class='type' href='../../freetype/type.Matrix.html' title='freetype::Matrix'>Matrix</a>, delta: &amp;mut <a class='type' href='../../freetype/type.Vector.html' title='freetype::Vector'>Vector</a>)</code></h4>
+<h4 id='method.get_char_index' class='method'><code>fn <a href='#method.get_char_index' class='fnname'>get_char_index</a>(&amp;self, charcode: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+<h4 id='method.get_kerning' class='method'><code>fn <a href='#method.get_kerning' class='fnname'>get_kerning</a>(&amp;self, left_char_index: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, right_char_index: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, kern_mode: <a class='enum' href='../../freetype/face/enum.KerningMode.html' title='freetype::face::KerningMode'>KerningMode</a>) -&gt; <a class='type' href='../../freetype/error/type.FtResult.html' title='freetype::error::FtResult'>FtResult</a>&lt;<a class='type' href='../../freetype/type.Vector.html' title='freetype::Vector'>Vector</a>&gt;</code></h4>
+<h4 id='method.glyph' class='method'><code>fn <a href='#method.glyph' class='fnname'>glyph</a>(&amp;self) -&gt; &amp;<a class='struct' href='../../freetype/glyph_slot/struct.GlyphSlot.html' title='freetype::glyph_slot::GlyphSlot'>GlyphSlot</a></code></h4>
+<h4 id='method.has_horizontal' class='method'><code>fn <a href='#method.has_horizontal' class='fnname'>has_horizontal</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.has_vertical' class='method'><code>fn <a href='#method.has_vertical' class='fnname'>has_vertical</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.has_kerning' class='method'><code>fn <a href='#method.has_kerning' class='fnname'>has_kerning</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.is_scalable' class='method'><code>fn <a href='#method.is_scalable' class='fnname'>is_scalable</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.is_sfnt' class='method'><code>fn <a href='#method.is_sfnt' class='fnname'>is_sfnt</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.is_fixed_width' class='method'><code>fn <a href='#method.is_fixed_width' class='fnname'>is_fixed_width</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.has_fixed_sizes' class='method'><code>fn <a href='#method.has_fixed_sizes' class='fnname'>has_fixed_sizes</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.has_glyph_names' class='method'><code>fn <a href='#method.has_glyph_names' class='fnname'>has_glyph_names</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.is_cid_keyed' class='method'><code>fn <a href='#method.is_cid_keyed' class='fnname'>is_cid_keyed</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.is_tricky' class='method'><code>fn <a href='#method.is_tricky' class='fnname'>is_tricky</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.has_color' class='method'><code>fn <a href='#method.has_color' class='fnname'>has_color</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.raw' class='method'><code>fn <a href='#method.raw' class='fnname'>raw</a>(&amp;self) -&gt; &amp;<a class='struct' href='../../freetype/ffi/struct.FT_FaceRec.html' title='freetype::ffi::FT_FaceRec'>FT_FaceRec</a></code></h4>
+<h4 id='method.raw_mut' class='method'><code>fn <a href='#method.raw_mut' class='fnname'>raw_mut</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../../freetype/ffi/struct.FT_FaceRec.html' title='freetype::ffi::FT_FaceRec'>FT_FaceRec</a></code></h4>
+<h4 id='method.ascender' class='method'><code>fn <a href='#method.ascender' class='fnname'>ascender</a>(&amp;self) -&gt; <a class='type' href='../../freetype/ffi/type.FT_Short.html' title='freetype::ffi::FT_Short'>FT_Short</a></code></h4>
+<h4 id='method.descender' class='method'><code>fn <a href='#method.descender' class='fnname'>descender</a>(&amp;self) -&gt; <a class='type' href='../../freetype/ffi/type.FT_Short.html' title='freetype::ffi::FT_Short'>FT_Short</a></code></h4>
+<h4 id='method.em_size' class='method'><code>fn <a href='#method.em_size' class='fnname'>em_size</a>(&amp;self) -&gt; <a class='type' href='../../freetype/ffi/type.FT_Short.html' title='freetype::ffi::FT_Short'>FT_Short</a></code></h4>
+<h4 id='method.height' class='method'><code>fn <a href='#method.height' class='fnname'>height</a>(&amp;self) -&gt; <a class='type' href='../../freetype/ffi/type.FT_Short.html' title='freetype::ffi::FT_Short'>FT_Short</a></code></h4>
+<h4 id='method.max_advance_width' class='method'><code>fn <a href='#method.max_advance_width' class='fnname'>max_advance_width</a>(&amp;self) -&gt; <a class='type' href='../../freetype/ffi/type.FT_Short.html' title='freetype::ffi::FT_Short'>FT_Short</a></code></h4>
+<h4 id='method.max_advance_height' class='method'><code>fn <a href='#method.max_advance_height' class='fnname'>max_advance_height</a>(&amp;self) -&gt; <a class='type' href='../../freetype/ffi/type.FT_Short.html' title='freetype::ffi::FT_Short'>FT_Short</a></code></h4>
+<h4 id='method.underline_position' class='method'><code>fn <a href='#method.underline_position' class='fnname'>underline_position</a>(&amp;self) -&gt; <a class='type' href='../../freetype/ffi/type.FT_Short.html' title='freetype::ffi::FT_Short'>FT_Short</a></code></h4>
+<h4 id='method.underline_thickness' class='method'><code>fn <a href='#method.underline_thickness' class='fnname'>underline_thickness</a>(&amp;self) -&gt; <a class='type' href='../../freetype/ffi/type.FT_Short.html' title='freetype::ffi::FT_Short'>FT_Short</a></code></h4>
+<h4 id='method.family_name' class='method'><code>fn <a href='#method.family_name' class='fnname'>family_name</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h4>
+<h4 id='method.style_name' class='method'><code>fn <a href='#method.style_name' class='fnname'>style_name</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h4>
+<h4 id='method.size_metrics' class='method'><code>fn <a href='#method.size_metrics' class='fnname'>size_metrics</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../freetype/ffi/struct.FT_Size_Metrics.html' title='freetype::ffi::FT_Size_Metrics'>FT_Size_Metrics</a>&gt;</code></h4>
+<h4 id='method.postscript_name' class='method'><code>fn <a href='#method.postscript_name' class='fnname'>postscript_name</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../freetype/face/struct.Face.html' title='freetype::face::Face'>Face</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; Self</code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../freetype/face/struct.Face.html' title='freetype::face::Face'>Face</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, form: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../freetype/face/struct.Face.html' title='freetype::face::Face'>Face</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a> for <a class='struct' href='../../freetype/face/struct.Face.html' title='freetype::face::Face'>Face</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.hash' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#method.hash' class='fnname'>hash</a>&lt;__H: <a class='trait' href='https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html' title='core::hash::Hasher'>Hasher</a>&gt;(&amp;self, __arg_0: &amp;mut __H)</code></h4>
+<h4 id='method.hash_slice' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#method.hash_slice' class='fnname'>hash_slice</a>&lt;H&gt;(data: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[Self]</a>, state: &amp;mut H) <span class='where'>where H: <a class='trait' href='https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html' title='core::hash::Hasher'>Hasher</a></span></code></h4>
+</div><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='struct' href='../../freetype/face/struct.Face.html' title='freetype::face::Face'>Face</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.eq' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class='struct' href='../../freetype/face/struct.Face.html' title='freetype::face::Face'>Face</a>&lt;'a&gt;) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.ne' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, __arg_0: &amp;<a class='struct' href='../../freetype/face/struct.Face.html' title='freetype::face::Face'>Face</a>&lt;'a&gt;) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> for <a class='struct' href='../../freetype/face/struct.Face.html' title='freetype::face::Face'>Face</a>&lt;'a&gt;</code></h3><div class='impl-items'></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "freetype";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>
