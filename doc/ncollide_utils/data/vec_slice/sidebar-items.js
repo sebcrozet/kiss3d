@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["VecSlice","A vector slice with a specific length and stride."],["VecSliceMut","A mutable vector slice with a specific length and stride."]]});

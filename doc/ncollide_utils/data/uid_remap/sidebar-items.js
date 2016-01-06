@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["FastKey","A special type of key used by `UidRemap` to perform faster lookups than with the user-defined id of type `usize`."],["UidRemap","A set of values having large usize key."]]});

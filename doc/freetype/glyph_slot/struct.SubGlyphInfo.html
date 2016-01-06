@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `SubGlyphInfo` struct in crate `freetype`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, SubGlyphInfo">
+
+    <title>freetype::glyph_slot::SubGlyphInfo - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>freetype</a>::<wbr><a href='index.html'>glyph_slot</a></p><script>window.sidebarCurrent = {name: 'SubGlyphInfo', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>freetype</a>::<wbr><a href='index.html'>glyph_slot</a>::<wbr><a class='struct' href=''>SubGlyphInfo</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-941' class='srclink' href='../../src/freetype/glyph_slot.rs.html#16-27' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct SubGlyphInfo {
+    pub index: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>,
+    pub flags: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>,
+    pub arg1: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>,
+    pub arg2: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>,
+    pub transfrom: <a class='struct' href='../../freetype/ffi/struct.FT_Matrix.html' title='freetype::ffi::FT_Matrix'>FT_Matrix</a>,
+}</pre><div class='docblock'><p>A description of a given subglyph returned by <code>GlyphSlot::get_subglyph_info</code>
+function.</p>
+</div><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.index'><code>index</code></td><td><div class='docblock'><p>The glyph index of the subglyph.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.flags'><code>flags</code></td><td><div class='docblock'><p>The subglyph flags, see FT_SUBGLYPH_FLAG_XXX.</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.arg1'><code>arg1</code></td><td><div class='docblock'><p>The subglyph&#39;s first argument (if any).</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.arg2'><code>arg2</code></td><td><div class='docblock'><p>The subglyph&#39;s second argument (if any).</p>
+</div></td></tr><tr class='stab '>
+                                  <td id='structfield.transfrom'><code>transfrom</code></td><td><div class='docblock'><p>The subglyph transformation (if any).</p>
+</div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../../freetype/glyph_slot/struct.SubGlyphInfo.html' title='freetype::glyph_slot::SubGlyphInfo'>SubGlyphInfo</a></code></h3><div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#method.default' class='fnname'>default</a>() -&gt; Self</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../freetype/glyph_slot/struct.SubGlyphInfo.html' title='freetype::glyph_slot::SubGlyphInfo'>SubGlyphInfo</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../freetype/glyph_slot/struct.SubGlyphInfo.html' title='freetype::glyph_slot::SubGlyphInfo'>SubGlyphInfo</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../freetype/glyph_slot/struct.SubGlyphInfo.html' title='freetype::glyph_slot::SubGlyphInfo'>SubGlyphInfo</a></code></h3><div class='impl-items'></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "freetype";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

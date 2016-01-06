@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Texture","A gpu texture. It contains the texture id provided by opengl and is automatically released."],["TextureManager","The texture manager."]]});

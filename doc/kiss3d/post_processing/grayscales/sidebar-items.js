@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Grayscales","Post processing effect which turns everything in gray scales."]]});

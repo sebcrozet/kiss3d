@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Builder","A builder structure to create a new gzip Encoder."],["DecoderReader","A gzip streaming decoder"],["EncoderReader","A gzip streaming encoder"],["EncoderWriter","A gzip streaming encoder"],["Header","A structure representing the header of a gzip stream."]]});

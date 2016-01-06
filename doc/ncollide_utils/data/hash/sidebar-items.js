@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["key_from_pair","Combines two `usize` on a single one."],["tomas_wang_hash","Tomas Wang integer hash function."]],"struct":[["UintPairTWHash","Hash function for pairs of `usize`, using the Tomas Wang hash."],["UintTWHash","Hash function for `usize`."]],"trait":[["HashFun","Hash function."]]});

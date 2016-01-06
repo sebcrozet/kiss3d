@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `UidRemap` struct in crate `ncollide_utils`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, UidRemap">
+
+    <title>ncollide_utils::data::uid_remap::UidRemap - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>ncollide_utils</a>::<wbr><a href='../index.html'>data</a>::<wbr><a href='index.html'>uid_remap</a></p><script>window.sidebarCurrent = {name: 'UidRemap', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../../index.html'>ncollide_utils</a>::<wbr><a href='../index.html'>data</a>::<wbr><a href='index.html'>uid_remap</a>::<wbr><a class='struct' href=''>UidRemap</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-746' class='srclink' href='../../../src/ncollide_utils/data/uid_remap.rs.html#42-45' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct UidRemap&lt;O&gt; {
+    // some fields omitted
+}</pre><div class='docblock'><p>A set of values having large usize key.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;O&gt; <a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.UidRemap.html' title='ncollide_utils::data::uid_remap::UidRemap'>UidRemap</a>&lt;O&gt;</code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(small_uids: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; <a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.UidRemap.html' title='ncollide_utils::data::uid_remap::UidRemap'>UidRemap</a>&lt;O&gt;</code></h4>
+<div class='docblock'><p>Creates an empty <code>UidRemap</code>.</p>
+</div><h4 id='method.get_fast_key' class='method'><code>fn <a href='#method.get_fast_key' class='fnname'>get_fast_key</a>(&amp;self, uid: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.FastKey.html' title='ncollide_utils::data::uid_remap::FastKey'>FastKey</a>&gt;</code></h4>
+<div class='docblock'><p>Gets the fast key associated to the given key.</p>
+</div><h4 id='method.len' class='method'><code>fn <a href='#method.len' class='fnname'>len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
+<div class='docblock'><p>Return the number of elements in the map.</p>
+</div><h4 id='method.is_empty' class='method'><code>fn <a href='#method.is_empty' class='fnname'>is_empty</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Return true if the map contains no elements.</p>
+</div><h4 id='method.clear' class='method'><code>fn <a href='#method.clear' class='fnname'>clear</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Clears the map, removing all key-value pairs.</p>
+</div><h4 id='method.get' class='method'><code>fn <a href='#method.get' class='fnname'>get</a>(&amp;self, key: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;O&gt;</code></h4>
+<div class='docblock'><p>Returns a reference to the value corresponding to the key.</p>
+</div><h4 id='method.get_fast' class='method'><code>fn <a href='#method.get_fast' class='fnname'>get_fast</a>(&amp;self, key: &amp;<a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.FastKey.html' title='ncollide_utils::data::uid_remap::FastKey'>FastKey</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;O&gt;</code></h4>
+<div class='docblock'><p>Returns a reference to the value corresponding to the fast key.</p>
+</div><h4 id='method.contains_key' class='method'><code>fn <a href='#method.contains_key' class='fnname'>contains_key</a>(&amp;self, key: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Returns true if the map contains a value for the specified key.</p>
+</div><h4 id='method.contains_fast_key' class='method'><code>fn <a href='#method.contains_fast_key' class='fnname'>contains_fast_key</a>(&amp;self, key: &amp;<a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.FastKey.html' title='ncollide_utils::data::uid_remap::FastKey'>FastKey</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Returns true if the map contains a value for the specified fast key.</p>
+</div><h4 id='method.get_mut' class='method'><code>fn <a href='#method.get_mut' class='fnname'>get_mut</a>(&amp;mut self, key: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;mut O&gt;</code></h4>
+<div class='docblock'><p>Returns a mutable reference to the value corresponding to the key.</p>
+</div><h4 id='method.get_fast_mut' class='method'><code>fn <a href='#method.get_fast_mut' class='fnname'>get_fast_mut</a>&lt;'a&gt;(&amp;'a mut self, key: &amp;<a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.FastKey.html' title='ncollide_utils::data::uid_remap::FastKey'>FastKey</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'a mut O&gt;</code></h4>
+<div class='docblock'><p>Returns a mutable reference to the value corresponding to the fast key.</p>
+</div><h4 id='method.insert' class='method'><code>fn <a href='#method.insert' class='fnname'>insert</a>(&amp;mut self, uid: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, value: O) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.FastKey.html' title='ncollide_utils::data::uid_remap::FastKey'>FastKey</a>, <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;O&gt;)</a></code></h4>
+<div class='docblock'><p>Inserts a key-value pair to the map. If the key already had a value
+present in the map, that value and its fast key are returned. Otherwise, <code>None</code> is
+returned.</p>
+</div><h4 id='method.remove' class='method'><code>fn <a href='#method.remove' class='fnname'>remove</a>(&amp;mut self, uid: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.FastKey.html' title='ncollide_utils::data::uid_remap::FastKey'>FastKey</a>, O)</a>&gt;</code></h4>
+<div class='docblock'><p>Removes a key from the map, returning the value at the key if the key exists.</p>
+</div><h4 id='method.keys' class='method'><code>fn <a href='#method.keys' class='fnname'>keys</a>&lt;'a&gt;(&amp;'a self) -&gt; <a class='struct' href='../../../ncollide_utils/data/vec_map/struct.Keys.html' title='ncollide_utils::data::vec_map::Keys'>Keys</a>&lt;'a, O&gt;</code></h4>
+<div class='docblock'><p>Returns an iterator visiting all keys.</p>
+</div><h4 id='method.values' class='method'><code>fn <a href='#method.values' class='fnname'>values</a>&lt;'a&gt;(&amp;'a self) -&gt; <a class='struct' href='../../../ncollide_utils/data/vec_map/struct.Values.html' title='ncollide_utils::data::vec_map::Values'>Values</a>&lt;'a, O&gt;</code></h4>
+<div class='docblock'><p>Returns an iterator visiting all values.
+The iterator&#39;s element type is <code>&amp;&#39;r O</code>.</p>
+</div><h4 id='method.iter' class='method'><code>fn <a href='#method.iter' class='fnname'>iter</a>&lt;'a&gt;(&amp;'a self) -&gt; <a class='struct' href='../../../ncollide_utils/data/vec_map/struct.Iter.html' title='ncollide_utils::data::vec_map::Iter'>Iter</a>&lt;'a, O&gt;</code></h4>
+<div class='docblock'><p>Returns an iterator visiting all key-value pairs.</p>
+</div><h4 id='method.iter_mut' class='method'><code>fn <a href='#method.iter_mut' class='fnname'>iter_mut</a>&lt;'a&gt;(&amp;'a mut self) -&gt; <a class='struct' href='../../../ncollide_utils/data/vec_map/struct.IterMut.html' title='ncollide_utils::data::vec_map::IterMut'>IterMut</a>&lt;'a, O&gt;</code></h4>
+<div class='docblock'><p>Returns an iterator visiting all key-value pairs with mutable references to the values.</p>
+</div></div><h3 class='impl'><code>impl&lt;O: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>&gt; <a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.UidRemap.html' title='ncollide_utils::data::uid_remap::UidRemap'>UidRemap</a>&lt;O&gt;</code></h3><div class='impl-items'><h4 id='method.update' class='method'><code>fn <a href='#method.update' class='fnname'>update</a>&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Fn.html' title='core::ops::Fn'>Fn</a>(O, O) -&gt; O&gt;(&amp;mut self, key: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, newval: O, ff: F) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Updates a value in the map. If the key already exists in the map,
+modifies the value with <code>ff</code> taking <code>oldval, newval</code>.
+Otherwise, sets the value to <code>newval</code>.
+Returns <code>true</code> if the key did not already exist in the map.</p>
+</div><h4 id='method.update_with_key' class='method'><code>fn <a href='#method.update_with_key' class='fnname'>update_with_key</a>&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Fn.html' title='core::ops::Fn'>Fn</a>(&amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, O, O) -&gt; O&gt;(&amp;mut self, key: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, val: O, ff: F) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Updates a value in the map. If the key already exists in the map,
+modifies the value with <code>ff</code> taking <code>key, oldval, newval</code>.
+Otherwise, sets the value to <code>newval</code>.
+Returns <code>true</code> if the key did not already exist in the map.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;O&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.UidRemap.html' title='ncollide_utils::data::uid_remap::UidRemap'>UidRemap</a>&lt;O&gt;</code></h3><div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#method.default' class='fnname'>default</a>() -&gt; <a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.UidRemap.html' title='ncollide_utils::data::uid_remap::UidRemap'>UidRemap</a>&lt;O&gt;</code></h4>
+</div><h3 class='impl'><code>impl&lt;O&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.FromIterator.html' title='core::iter::FromIterator'>FromIterator</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, O)</a>&gt; for <a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.UidRemap.html' title='ncollide_utils::data::uid_remap::UidRemap'>UidRemap</a>&lt;O&gt;</code></h3><div class='impl-items'><h4 id='method.from_iter' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/iter/trait.FromIterator.html#method.from_iter' class='fnname'>from_iter</a>&lt;I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.IntoIterator.html' title='core::iter::IntoIterator'>IntoIterator</a>&lt;Item=<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, O)</a>&gt;&gt;(iter: I) -&gt; <a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.UidRemap.html' title='ncollide_utils::data::uid_remap::UidRemap'>UidRemap</a>&lt;O&gt;</code></h4>
+</div><h3 class='impl'><code>impl&lt;O&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.Extend.html' title='core::iter::Extend'>Extend</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, O)</a>&gt; for <a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.UidRemap.html' title='ncollide_utils::data::uid_remap::UidRemap'>UidRemap</a>&lt;O&gt;</code></h3><div class='impl-items'><h4 id='method.extend' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/iter/trait.Extend.html#method.extend' class='fnname'>extend</a>&lt;Iter: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.IntoIterator.html' title='core::iter::IntoIterator'>IntoIterator</a>&lt;Item=<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, O)</a>&gt;&gt;(&amp;mut self, iter: Iter)</code></h4>
+</div><h3 class='impl'><code>impl&lt;O&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Index.html' title='core::ops::Index'>Index</a>&lt;<a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.FastKey.html' title='ncollide_utils::data::uid_remap::FastKey'>FastKey</a>&gt; for <a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.UidRemap.html' title='ncollide_utils::data::uid_remap::UidRemap'>UidRemap</a>&lt;O&gt;</code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = O</code></h4>
+<h4 id='method.index' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Index.html#method.index' class='fnname'>index</a>(&amp;self, key: <a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.FastKey.html' title='ncollide_utils::data::uid_remap::FastKey'>FastKey</a>) -&gt; &amp;O</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl&lt;O: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.UidRemap.html' title='ncollide_utils::data::uid_remap::UidRemap'>UidRemap</a>&lt;O&gt;</code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.UidRemap.html' title='ncollide_utils::data::uid_remap::UidRemap'>UidRemap</a>&lt;O&gt;</code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><code>impl&lt;O: <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a>&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../../ncollide_utils/data/uid_remap/struct.UidRemap.html' title='ncollide_utils::data::uid_remap::UidRemap'>UidRemap</a>&lt;O&gt;</code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "ncollide_utils";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script defer src="../../../search-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Decoded","Result of the decoding process"],["DecodingError",""]],"struct":[["StreamingDecoder","PNG StreamingDecoder (low-level interface)"]]});

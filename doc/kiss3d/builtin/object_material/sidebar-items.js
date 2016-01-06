@@ -1,0 +1,1 @@
+initSidebarItems({"static":[["OBJECT_FRAGMENT_SRC","Fragment shader of the default object material."],["OBJECT_VERTEX_SRC","Vertex shader of the default object material."]],"struct":[["ObjectMaterial","The default material used to draw objects."]]});

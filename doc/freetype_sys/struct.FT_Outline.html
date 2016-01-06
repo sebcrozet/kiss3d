@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `FT_Outline` struct in crate `freetype_sys`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, FT_Outline">
+
+    <title>freetype_sys::FT_Outline - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>freetype_sys</a></p><script>window.sidebarCurrent = {name: 'FT_Outline', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>freetype_sys</a>::<wbr><a class='struct' href=''>FT_Outline</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-141' class='srclink' href='../src/freetype_sys/lib.rs.html#145-154' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct FT_Outline {
+    pub n_contours: <a class='type' href='../libc/type.c_short.html' title='libc::c_short'>c_short</a>,
+    pub n_points: <a class='type' href='../libc/type.c_short.html' title='libc::c_short'>c_short</a>,
+    pub points: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../freetype_sys/struct.FT_Vector.html' title='freetype_sys::FT_Vector'>FT_Vector</a></a>,
+    pub tags: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../libc/unix/bsd/type.c_char.html' title='libc::unix::bsd::c_char'>c_char</a></a>,
+    pub contours: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../libc/type.c_short.html' title='libc::c_short'>c_short</a></a>,
+    pub flags: <a class='type' href='../libc/type.c_int.html' title='libc::c_int'>c_int</a>,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.n_contours'><code>n_contours</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.n_points'><code>n_points</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.points'><code>points</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.tags'><code>tags</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.contours'><code>contours</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.flags'><code>flags</code></td><td></td></tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "freetype_sys";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

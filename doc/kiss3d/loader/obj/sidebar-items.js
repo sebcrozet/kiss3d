@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["parse","Parses a string representing an obj file."],["parse_file","Parses an obj file."],["split_words","Returns an iterator through all the words of a string."]],"type":[["Coord","The type of vertex coordinates."],["Normal","The type of normals."],["UV","The type of texture coordinates."],["Words","Iterator through words."]]});

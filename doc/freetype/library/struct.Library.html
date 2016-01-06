@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Library` struct in crate `freetype`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Library">
+
+    <title>freetype::library::Library - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>freetype</a>::<wbr><a href='index.html'>library</a></p><script>window.sidebarCurrent = {name: 'Library', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>freetype</a>::<wbr><a href='index.html'>library</a>::<wbr><a class='struct' href=''>Library</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-1052' class='srclink' href='../../src/freetype/library.rs.html#35-37' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Library {
+    // some fields omitted
+}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../freetype/library/struct.Library.html' title='freetype::library::Library'>Library</a></code></h3><div class='impl-items'><h4 id='method.init' class='method'><code>fn <a href='#method.init' class='fnname'>init</a>() -&gt; <a class='type' href='../../freetype/error/type.FtResult.html' title='freetype::error::FtResult'>FtResult</a>&lt;Self&gt;</code></h4>
+<h4 id='method.new_face' class='method'><code>fn <a href='#method.new_face' class='fnname'>new_face</a>&lt;P&gt;(&amp;self, path: P, face_index: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>) -&gt; <a class='type' href='../../freetype/error/type.FtResult.html' title='freetype::error::FtResult'>FtResult</a>&lt;<a class='struct' href='../../freetype/face/struct.Face.html' title='freetype::face::Face'>Face</a>&lt;'static&gt;&gt; <span class='where'>where P: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/ffi/os_str/struct.OsStr.html' title='std::ffi::os_str::OsStr'>OsStr</a>&gt;</span></code></h4>
+<h4 id='method.new_memory_face' class='method'><code>fn <a href='#method.new_memory_face' class='fnname'>new_memory_face</a>&lt;'a&gt;(&amp;self, buffer: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'a [</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, face_index: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>) -&gt; <a class='type' href='../../freetype/error/type.FtResult.html' title='freetype::error::FtResult'>FtResult</a>&lt;<a class='struct' href='../../freetype/face/struct.Face.html' title='freetype::face::Face'>Face</a>&lt;'a&gt;&gt;</code></h4>
+<h4 id='method.raw' class='method'><code>fn <a href='#method.raw' class='fnname'>raw</a>(&amp;self) -&gt; <a class='type' href='../../freetype/ffi/type.FT_Library.html' title='freetype::ffi::FT_Library'>FT_Library</a></code></h4>
+<h4 id='method.get_memory' class='method'><code>fn <a href='#method.get_memory' class='fnname'>get_memory</a>(&amp;self) -&gt; &amp;<a class='struct' href='../../freetype/ffi/struct.FT_MemoryRec.html' title='freetype::ffi::FT_MemoryRec'>FT_MemoryRec</a></code></h4>
+<h4 id='method.new_memory' class='method'><code>fn <a href='#method.new_memory' class='fnname'>new_memory</a>(&amp;self, alloc: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../freetype/ffi/type.FT_Alloc_Func.html' title='freetype::ffi::FT_Alloc_Func'>FT_Alloc_Func</a>&gt;, free: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../freetype/ffi/type.FT_Free_Func.html' title='freetype::ffi::FT_Free_Func'>FT_Free_Func</a>&gt;, realloc: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../freetype/ffi/type.FT_Realloc_Func.html' title='freetype::ffi::FT_Realloc_Func'>FT_Realloc_Func</a>&gt;, user: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../libc/enum.c_void.html' title='libc::c_void'>c_void</a></a>&gt;)</code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../freetype/library/struct.Library.html' title='freetype::library::Library'>Library</a></code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "freetype";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

@@ -9,6 +9,7 @@
 
     <title>glfw::Window - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
 
     
@@ -24,207 +25,222 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
-        <p class='location'><a href='index.html'>glfw</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='ffi/index.html'>ffi</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.Callback.html'>Callback</a><a class='struct ' href='struct.FlushedMessages.html'>FlushedMessages</a><a class='struct ' href='struct.GammaRamp.html'>GammaRamp</a><a class='struct ' href='struct.Glfw.html'>Glfw</a><a class='struct ' href='struct.Joystick.html'>Joystick</a><a class='struct ' href='struct.Modifiers.html'>Modifiers</a><a class='struct ' href='struct.Monitor.html'>Monitor</a><a class='struct ' href='struct.RenderContext.html'>RenderContext</a><a class='struct ' href='struct.ShowAliases.html'>ShowAliases</a><a class='struct ' href='struct.VidMode.html'>VidMode</a><a class='struct current' href='struct.Window.html'>Window</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.Context.html'>Context</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.fail_on_errors.html'>fail_on_errors</a><a class='fn ' href='fn.flush_messages.html'>flush_messages</a><a class='fn ' href='fn.get_version.html'>get_version</a><a class='fn ' href='fn.get_version_string.html'>get_version_string</a><a class='fn ' href='fn.init.html'>init</a><a class='fn ' href='fn.log_errors.html'>log_errors</a><a class='fn ' href='fn.make_context_current.html'>make_context_current</a></div>
-    </section>
+        <p class='location'><a href='index.html'>glfw</a></p><script>window.sidebarCurrent = {name: 'Window', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><div class='in-band'>Struct <a href='index.html'>glfw</a>&#8203;::<a class='struct' href=''>Window</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-21007' href='../src/glfw/src/glfw/lib.rs.html#1092-1102'>[src]</a></div></h1>
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>glfw</a>::<wbr><a class='struct' href=''>Window</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-3404' class='srclink' href='../src/glfw/lib.rs.html#1134-1144' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Window {
-    pub ptr: *mut <a class='type' href='../glfw/ffi/type.GLFWwindow.html' title='glfw::ffi::GLFWwindow'>GLFWwindow</a>,
+    pub ptr: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../glfw/ffi/enum.GLFWwindow.html' title='glfw::ffi::GLFWwindow'>GLFWwindow</a></a>,
     pub glfw: <a class='struct' href='../glfw/struct.Glfw.html' title='glfw::Glfw'>Glfw</a>,
-    pub is_shared: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>,
+    pub is_shared: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
     // some fields omitted
 }</pre><div class='docblock'><p>A struct that wraps a <code>*GLFWwindow</code> handle.</p>
 </div><h2 class='fields'>Fields</h2>
-<table><tr><td id='structfield.ptr'><a class='stability Unmarked' title='No stability level'></a><code>ptr</code></td><td></td></tr><tr><td id='structfield.glfw'><a class='stability Unmarked' title='No stability level'></a><code>glfw</code></td><td></td></tr><tr><td id='structfield.is_shared'><a class='stability Unmarked' title='No stability level'></a><code>is_shared</code></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../glfw/struct.Window.html' title='glfw::Window'>Window</a></code></h3><div class='impl-methods'><h4 id='method.create_shared' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.create_shared' class='fnname'>create_shared</a>(&amp;self, width: <a href='http://doc.rust-lang.org/master/std/primitive.u32.html'>u32</a>, height: <a href='http://doc.rust-lang.org/master/std/primitive.u32.html'>u32</a>, title: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>, mode: <a class='type' href='../glfw/type.WindowMode.html' title='glfw::WindowMode'>WindowMode</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(<a class='struct' href='../glfw/struct.Window.html' title='glfw::Window'>Window</a>, <a class='struct' href='http://doc.rust-lang.org/master/sync/comm/struct.Receiver.html' title='sync::comm::Receiver'>Receiver</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/master/std/primitive.f64.html'>f64</a>, <a class='type' href='../glfw/type.WindowEvent.html' title='glfw::WindowEvent'>WindowEvent</a>)</a>&gt;)</a>&gt;</code></h4>
+<table><tr class='stab '>
+                                  <td id='structfield.ptr'><code>ptr</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.glfw'><code>glfw</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.is_shared'><code>is_shared</code></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../glfw/struct.Window.html' title='glfw::Window'>Window</a></code></h3><div class='impl-items'><h4 id='method.get_proc_address' class='method'><code>fn <a href='#method.get_proc_address' class='fnname'>get_proc_address</a>(&amp;mut self, procname: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='type' href='../glfw/type.GLProc.html' title='glfw::GLProc'>GLProc</a></code></h4>
+<div class='docblock'><p>Returns the address of the specified client API or extension function if
+it is supported by the context associated with this Window. If this Window is not the
+current context, it will make it the current context.</p>
+
+<p>Wrapper for <code>glfwGetProcAddress</code>.</p>
+</div><h4 id='method.create_shared' class='method'><code>fn <a href='#method.create_shared' class='fnname'>create_shared</a>(&amp;self, width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, title: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, mode: <a class='enum' href='../glfw/enum.WindowMode.html' title='glfw::WindowMode'>WindowMode</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='../glfw/struct.Window.html' title='glfw::Window'>Window</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/std/sync/mpsc/struct.Receiver.html' title='std::sync::mpsc::Receiver'>Receiver</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>, <a class='enum' href='../glfw/enum.WindowEvent.html' title='glfw::WindowEvent'>WindowEvent</a>)</a>&gt;)</a>&gt;</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwCreateWindow</code>.</p>
-</div><h4 id='method.close' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.close' class='fnname'>close</a>(self)</code></h4>
+</div><h4 id='method.close' class='method'><code>fn <a href='#method.close' class='fnname'>close</a>(self)</code></h4>
 <div class='docblock'><p>Calling this method forces the destructor to be called, closing the
 window.</p>
-</div><h4 id='method.render_context' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.render_context' class='fnname'>render_context</a>(&amp;mut self) -&gt; <a class='struct' href='../glfw/struct.RenderContext.html' title='glfw::RenderContext'>RenderContext</a></code></h4>
+</div><h4 id='method.render_context' class='method'><code>fn <a href='#method.render_context' class='fnname'>render_context</a>(&amp;mut self) -&gt; <a class='struct' href='../glfw/struct.RenderContext.html' title='glfw::RenderContext'>RenderContext</a></code></h4>
 <div class='docblock'><p>Returns a render context that can be shared between tasks, allowing
 for concurrent rendering.</p>
-</div><h4 id='method.should_close' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.should_close' class='fnname'>should_close</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.should_close' class='method'><code>fn <a href='#method.should_close' class='fnname'>should_close</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwWindowShouldClose</code>.</p>
-</div><h4 id='method.set_should_close' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_should_close' class='fnname'>set_should_close</a>(&amp;self, value: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_should_close' class='method'><code>fn <a href='#method.set_should_close' class='fnname'>set_should_close</a>(&amp;mut self, value: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetWindowShouldClose</code>.</p>
-</div><h4 id='method.set_title' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_title' class='fnname'>set_title</a>(&amp;self, title: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>)</code></h4>
+</div><h4 id='method.set_title' class='method'><code>fn <a href='#method.set_title' class='fnname'>set_title</a>(&amp;mut self, title: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
 <div class='docblock'><p>Sets the title of the window.</p>
 
 <p>Wrapper for <code>glfwSetWindowTitle</code>.</p>
-</div><h4 id='method.get_pos' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_pos' class='fnname'>get_pos</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/master/std/primitive.i32.html'>i32</a>, <a href='http://doc.rust-lang.org/master/std/primitive.i32.html'>i32</a>)</a></code></h4>
+</div><h4 id='method.get_pos' class='method'><code>fn <a href='#method.get_pos' class='fnname'>get_pos</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetWindowPos</code>.</p>
-</div><h4 id='method.set_pos' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_pos' class='fnname'>set_pos</a>(&amp;self, xpos: <a href='http://doc.rust-lang.org/master/std/primitive.i32.html'>i32</a>, ypos: <a href='http://doc.rust-lang.org/master/std/primitive.i32.html'>i32</a>)</code></h4>
+</div><h4 id='method.set_pos' class='method'><code>fn <a href='#method.set_pos' class='fnname'>set_pos</a>(&amp;mut self, xpos: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, ypos: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetWindowPos</code>.</p>
-</div><h4 id='method.get_size' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_size' class='fnname'>get_size</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/master/std/primitive.i32.html'>i32</a>, <a href='http://doc.rust-lang.org/master/std/primitive.i32.html'>i32</a>)</a></code></h4>
+</div><h4 id='method.get_size' class='method'><code>fn <a href='#method.get_size' class='fnname'>get_size</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetWindowSize</code>.</p>
-</div><h4 id='method.set_size' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_size' class='fnname'>set_size</a>(&amp;self, width: <a href='http://doc.rust-lang.org/master/std/primitive.i32.html'>i32</a>, height: <a href='http://doc.rust-lang.org/master/std/primitive.i32.html'>i32</a>)</code></h4>
+</div><h4 id='method.set_size' class='method'><code>fn <a href='#method.set_size' class='fnname'>set_size</a>(&amp;mut self, width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetWindowSize</code>.</p>
-</div><h4 id='method.get_framebuffer_size' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_framebuffer_size' class='fnname'>get_framebuffer_size</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/master/std/primitive.i32.html'>i32</a>, <a href='http://doc.rust-lang.org/master/std/primitive.i32.html'>i32</a>)</a></code></h4>
+</div><h4 id='method.get_framebuffer_size' class='method'><code>fn <a href='#method.get_framebuffer_size' class='fnname'>get_framebuffer_size</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetFramebufferSize</code>.</p>
-</div><h4 id='method.iconify' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.iconify' class='fnname'>iconify</a>(&amp;self)</code></h4>
+</div><h4 id='method.iconify' class='method'><code>fn <a href='#method.iconify' class='fnname'>iconify</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwIconifyWindow</code>.</p>
-</div><h4 id='method.restore' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.restore' class='fnname'>restore</a>(&amp;self)</code></h4>
+</div><h4 id='method.restore' class='method'><code>fn <a href='#method.restore' class='fnname'>restore</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwRestoreWindow</code>.</p>
-</div><h4 id='method.show' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.show' class='fnname'>show</a>(&amp;self)</code></h4>
+</div><h4 id='method.show' class='method'><code>fn <a href='#method.show' class='fnname'>show</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwShowWindow</code>.</p>
-</div><h4 id='method.hide' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.hide' class='fnname'>hide</a>(&amp;self)</code></h4>
+</div><h4 id='method.hide' class='method'><code>fn <a href='#method.hide' class='fnname'>hide</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwHideWindow</code>.</p>
-</div><h4 id='method.with_window_mode' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.with_window_mode' class='fnname'>with_window_mode</a>&lt;T&gt;(&amp;self, f: |<a class='type' href='../glfw/type.WindowMode.html' title='glfw::WindowMode'>WindowMode</a>| -&gt; T) -&gt; T</code></h4>
+</div><h4 id='method.with_window_mode' class='method'><code>fn <a href='#method.with_window_mode' class='fnname'>with_window_mode</a>&lt;T, F&gt;(&amp;self, f: F) -&gt; T <span class='where'>where F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Fn.html' title='core::ops::Fn'>Fn</a>(<a class='enum' href='../glfw/enum.WindowMode.html' title='glfw::WindowMode'>WindowMode</a>) -&gt; T</span></code></h4>
 <div class='docblock'><p>Returns whether the window is fullscreen or windowed.</p>
 
-<h1 id="example" class='section-header'><a
-                           href="#example">Example</a></h1><pre class='rust '>
+<h1 id='example' class='section-header'><a href='#example'>Example</a></h1><pre class='rust rust-example-rendered'>
 <span class='ident'>window</span>.<span class='ident'>with_window_mode</span>(<span class='op'>|</span><span class='ident'>mode</span><span class='op'>|</span> {
     <span class='kw'>match</span> <span class='ident'>mode</span> {
-        <span class='ident'>glfw</span>::<span class='ident'>Windowed</span>() <span class='op'>=&gt;</span> <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;Windowed&quot;</span>),
+        <span class='ident'>glfw</span>::<span class='ident'>Windowed</span> <span class='op'>=&gt;</span> <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;Windowed&quot;</span>),
         <span class='ident'>glfw</span>::<span class='ident'>FullScreen</span>(<span class='ident'>m</span>) <span class='op'>=&gt;</span> <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;FullScreen({})&quot;</span>, <span class='ident'>m</span>.<span class='ident'>get_name</span>()),
     }
-});
-</pre>
-</div><h4 id='method.is_focused' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.is_focused' class='fnname'>is_focused</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+});</pre>
+</div><h4 id='method.is_focused' class='method'><code>fn <a href='#method.is_focused' class='fnname'>is_focused</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetWindowAttrib</code> called with <code>FOCUSED</code>.</p>
-</div><h4 id='method.is_iconified' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.is_iconified' class='fnname'>is_iconified</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.is_iconified' class='method'><code>fn <a href='#method.is_iconified' class='fnname'>is_iconified</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetWindowAttrib</code> called with <code>ICONIFIED</code>.</p>
-</div><h4 id='method.get_client_api' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_client_api' class='fnname'>get_client_api</a>(&amp;self) -&gt; <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code></h4>
+</div><h4 id='method.get_client_api' class='method'><code>fn <a href='#method.get_client_api' class='fnname'>get_client_api</a>(&amp;self) -&gt; <a class='type' href='../libc/type.c_int.html' title='libc::c_int'>c_int</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetWindowAttrib</code> called with <code>CLIENT_API</code>.</p>
-</div><h4 id='method.get_context_version' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_context_version' class='fnname'>get_context_version</a>(&amp;self) -&gt; <a class='struct' href='../semver/struct.Version.html' title='semver::Version'>Version</a></code></h4>
+</div><h4 id='method.get_context_version' class='method'><code>fn <a href='#method.get_context_version' class='fnname'>get_context_version</a>(&amp;self) -&gt; <a class='struct' href='../semver/version/struct.Version.html' title='semver::version::Version'>Version</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetWindowAttrib</code> called with
 <code>CONTEXT_VERSION_MAJOR</code>, <code>CONTEXT_VERSION_MINOR</code> and <code>CONTEXT_REVISION</code>.</p>
 
-<h1 id="returns" class='section-header'><a
-                           href="#returns">Returns</a></h1>
+<h1 id='returns' class='section-header'><a href='#returns'>Returns</a></h1>
 <p>The client API version of the window&#39;s context in a version struct.</p>
-</div><h4 id='method.get_context_robustness' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_context_robustness' class='fnname'>get_context_robustness</a>(&amp;self) -&gt; <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code></h4>
+</div><h4 id='method.get_context_robustness' class='method'><code>fn <a href='#method.get_context_robustness' class='fnname'>get_context_robustness</a>(&amp;self) -&gt; <a class='type' href='../libc/type.c_int.html' title='libc::c_int'>c_int</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetWindowAttrib</code> called with <code>CONTEXT_ROBUSTNESS</code>.</p>
-</div><h4 id='method.is_opengl_forward_compat' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.is_opengl_forward_compat' class='fnname'>is_opengl_forward_compat</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.is_opengl_forward_compat' class='method'><code>fn <a href='#method.is_opengl_forward_compat' class='fnname'>is_opengl_forward_compat</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetWindowAttrib</code> called with <code>OPENGL_FORWARD_COMPAT</code>.</p>
-</div><h4 id='method.is_opengl_debug_context' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.is_opengl_debug_context' class='fnname'>is_opengl_debug_context</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.is_opengl_debug_context' class='method'><code>fn <a href='#method.is_opengl_debug_context' class='fnname'>is_opengl_debug_context</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetWindowAttrib</code> called with <code>OPENGL_DEBUG_CONTEXT</code>.</p>
-</div><h4 id='method.get_opengl_profile' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_opengl_profile' class='fnname'>get_opengl_profile</a>(&amp;self) -&gt; <a class='type' href='http://doc.rust-lang.org/master/libc/types/os/arch/c95/type.c_int.html' title='libc::types::os::arch::c95::c_int'>c_int</a></code></h4>
+</div><h4 id='method.get_opengl_profile' class='method'><code>fn <a href='#method.get_opengl_profile' class='fnname'>get_opengl_profile</a>(&amp;self) -&gt; <a class='type' href='../libc/type.c_int.html' title='libc::c_int'>c_int</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetWindowAttrib</code> called with <code>OPENGL_PROFILE</code>.</p>
-</div><h4 id='method.is_resizable' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.is_resizable' class='fnname'>is_resizable</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.is_resizable' class='method'><code>fn <a href='#method.is_resizable' class='fnname'>is_resizable</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetWindowAttrib</code> called with <code>RESIZABLE</code>.</p>
-</div><h4 id='method.is_visible' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.is_visible' class='fnname'>is_visible</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.is_visible' class='method'><code>fn <a href='#method.is_visible' class='fnname'>is_visible</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetWindowAttrib</code> called with <code>VISIBLE</code>.</p>
-</div><h4 id='method.is_decorated' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.is_decorated' class='fnname'>is_decorated</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.is_decorated' class='method'><code>fn <a href='#method.is_decorated' class='fnname'>is_decorated</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetWindowAttrib</code> called with <code>DECORATED</code>.</p>
-</div><h4 id='method.set_pos_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_pos_polling' class='fnname'>set_pos_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_pos_polling' class='method'><code>fn <a href='#method.set_pos_polling' class='fnname'>set_pos_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetWindowPosCallback</code>.</p>
-</div><h4 id='method.set_all_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_all_polling' class='fnname'>set_all_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
-<h4 id='method.set_size_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_size_polling' class='fnname'>set_size_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_all_polling' class='method'><code>fn <a href='#method.set_all_polling' class='fnname'>set_all_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
+<h4 id='method.set_size_polling' class='method'><code>fn <a href='#method.set_size_polling' class='fnname'>set_size_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetWindowSizeCallback</code>.</p>
-</div><h4 id='method.set_close_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_close_polling' class='fnname'>set_close_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_close_polling' class='method'><code>fn <a href='#method.set_close_polling' class='fnname'>set_close_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetWindowCloseCallback</code>.</p>
-</div><h4 id='method.set_refresh_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_refresh_polling' class='fnname'>set_refresh_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_refresh_polling' class='method'><code>fn <a href='#method.set_refresh_polling' class='fnname'>set_refresh_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetWindowRefreshCallback</code>.</p>
-</div><h4 id='method.set_focus_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_focus_polling' class='fnname'>set_focus_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_focus_polling' class='method'><code>fn <a href='#method.set_focus_polling' class='fnname'>set_focus_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetWindowFocusCallback</code>.</p>
-</div><h4 id='method.set_iconify_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_iconify_polling' class='fnname'>set_iconify_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_iconify_polling' class='method'><code>fn <a href='#method.set_iconify_polling' class='fnname'>set_iconify_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetWindowIconifyCallback</code>.</p>
-</div><h4 id='method.set_framebuffer_size_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_framebuffer_size_polling' class='fnname'>set_framebuffer_size_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_framebuffer_size_polling' class='method'><code>fn <a href='#method.set_framebuffer_size_polling' class='fnname'>set_framebuffer_size_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetFramebufferSizeCallback</code>.</p>
-</div><h4 id='method.get_cursor_mode' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_cursor_mode' class='fnname'>get_cursor_mode</a>(&amp;self) -&gt; <a class='type' href='../glfw/type.CursorMode.html' title='glfw::CursorMode'>CursorMode</a></code></h4>
+</div><h4 id='method.get_cursor_mode' class='method'><code>fn <a href='#method.get_cursor_mode' class='fnname'>get_cursor_mode</a>(&amp;self) -&gt; <a class='enum' href='../glfw/enum.CursorMode.html' title='glfw::CursorMode'>CursorMode</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetInputMode</code> called with <code>CURSOR</code>.</p>
-</div><h4 id='method.set_cursor_mode' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_cursor_mode' class='fnname'>set_cursor_mode</a>(&amp;self, mode: <a class='type' href='../glfw/type.CursorMode.html' title='glfw::CursorMode'>CursorMode</a>)</code></h4>
+</div><h4 id='method.set_cursor_mode' class='method'><code>fn <a href='#method.set_cursor_mode' class='fnname'>set_cursor_mode</a>(&amp;mut self, mode: <a class='enum' href='../glfw/enum.CursorMode.html' title='glfw::CursorMode'>CursorMode</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetInputMode</code> called with <code>CURSOR</code>.</p>
-</div><h4 id='method.has_sticky_keys' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.has_sticky_keys' class='fnname'>has_sticky_keys</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.has_sticky_keys' class='method'><code>fn <a href='#method.has_sticky_keys' class='fnname'>has_sticky_keys</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetInputMode</code> called with <code>STICKY_KEYS</code>.</p>
-</div><h4 id='method.set_sticky_keys' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_sticky_keys' class='fnname'>set_sticky_keys</a>(&amp;self, value: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_sticky_keys' class='method'><code>fn <a href='#method.set_sticky_keys' class='fnname'>set_sticky_keys</a>(&amp;mut self, value: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetInputMode</code> called with <code>STICKY_KEYS</code>.</p>
-</div><h4 id='method.has_sticky_mouse_buttons' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.has_sticky_mouse_buttons' class='fnname'>has_sticky_mouse_buttons</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.has_sticky_mouse_buttons' class='method'><code>fn <a href='#method.has_sticky_mouse_buttons' class='fnname'>has_sticky_mouse_buttons</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetInputMode</code> called with <code>STICKY_MOUSE_BUTTONS</code>.</p>
-</div><h4 id='method.set_sticky_mouse_buttons' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_sticky_mouse_buttons' class='fnname'>set_sticky_mouse_buttons</a>(&amp;self, value: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_sticky_mouse_buttons' class='method'><code>fn <a href='#method.set_sticky_mouse_buttons' class='fnname'>set_sticky_mouse_buttons</a>(&amp;mut self, value: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetInputMode</code> called with <code>STICKY_MOUSE_BUTTONS</code>.</p>
-</div><h4 id='method.get_key' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_key' class='fnname'>get_key</a>(&amp;self, key: <a class='type' href='../glfw/type.Key.html' title='glfw::Key'>Key</a>) -&gt; <a class='type' href='../glfw/type.Action.html' title='glfw::Action'>Action</a></code></h4>
+</div><h4 id='method.get_key' class='method'><code>fn <a href='#method.get_key' class='fnname'>get_key</a>(&amp;self, key: <a class='enum' href='../glfw/enum.Key.html' title='glfw::Key'>Key</a>) -&gt; <a class='enum' href='../glfw/enum.Action.html' title='glfw::Action'>Action</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetKey</code>.</p>
-</div><h4 id='method.get_mouse_button' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_mouse_button' class='fnname'>get_mouse_button</a>(&amp;self, button: <a class='type' href='../glfw/type.MouseButton.html' title='glfw::MouseButton'>MouseButton</a>) -&gt; <a class='type' href='../glfw/type.Action.html' title='glfw::Action'>Action</a></code></h4>
+</div><h4 id='method.get_mouse_button' class='method'><code>fn <a href='#method.get_mouse_button' class='fnname'>get_mouse_button</a>(&amp;self, button: <a class='enum' href='../glfw/enum.MouseButton.html' title='glfw::MouseButton'>MouseButton</a>) -&gt; <a class='enum' href='../glfw/enum.Action.html' title='glfw::Action'>Action</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetMouseButton</code>.</p>
-</div><h4 id='method.get_cursor_pos' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_cursor_pos' class='fnname'>get_cursor_pos</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/master/std/primitive.f64.html'>f64</a>, <a href='http://doc.rust-lang.org/master/std/primitive.f64.html'>f64</a>)</a></code></h4>
+</div><h4 id='method.get_cursor_pos' class='method'><code>fn <a href='#method.get_cursor_pos' class='fnname'>get_cursor_pos</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>)</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetCursorPos</code>.</p>
-</div><h4 id='method.set_cursor_pos' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_cursor_pos' class='fnname'>set_cursor_pos</a>(&amp;self, xpos: <a href='http://doc.rust-lang.org/master/std/primitive.f64.html'>f64</a>, ypos: <a href='http://doc.rust-lang.org/master/std/primitive.f64.html'>f64</a>)</code></h4>
+</div><h4 id='method.set_cursor_pos' class='method'><code>fn <a href='#method.set_cursor_pos' class='fnname'>set_cursor_pos</a>(&amp;mut self, xpos: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>, ypos: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetCursorPos</code>.</p>
-</div><h4 id='method.set_key_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_key_polling' class='fnname'>set_key_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_key_polling' class='method'><code>fn <a href='#method.set_key_polling' class='fnname'>set_key_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetKeyCallback</code>.</p>
-</div><h4 id='method.set_char_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_char_polling' class='fnname'>set_char_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_char_polling' class='method'><code>fn <a href='#method.set_char_polling' class='fnname'>set_char_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetCharCallback</code>.</p>
-</div><h4 id='method.set_mouse_button_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_mouse_button_polling' class='fnname'>set_mouse_button_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_mouse_button_polling' class='method'><code>fn <a href='#method.set_mouse_button_polling' class='fnname'>set_mouse_button_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetMouseButtonCallback</code>.</p>
-</div><h4 id='method.set_cursor_pos_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_cursor_pos_polling' class='fnname'>set_cursor_pos_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_cursor_pos_polling' class='method'><code>fn <a href='#method.set_cursor_pos_polling' class='fnname'>set_cursor_pos_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetCursorPosCallback</code>.</p>
-</div><h4 id='method.set_cursor_enter_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_cursor_enter_polling' class='fnname'>set_cursor_enter_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_cursor_enter_polling' class='method'><code>fn <a href='#method.set_cursor_enter_polling' class='fnname'>set_cursor_enter_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetCursorEnterCallback</code>.</p>
-</div><h4 id='method.set_scroll_polling' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_scroll_polling' class='fnname'>set_scroll_polling</a>(&amp;self, should_poll: <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h4 id='method.set_scroll_polling' class='method'><code>fn <a href='#method.set_scroll_polling' class='fnname'>set_scroll_polling</a>(&amp;mut self, should_poll: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwSetScrollCallback</code>.</p>
-</div><h4 id='method.set_clipboard_string' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_clipboard_string' class='fnname'>set_clipboard_string</a>(&amp;self, string: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>)</code></h4>
+</div><h4 id='method.set_clipboard_string' class='method'><code>fn <a href='#method.set_clipboard_string' class='fnname'>set_clipboard_string</a>(&amp;mut self, string: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetClipboardString</code>.</p>
-</div><h4 id='method.get_clipboard_string' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_clipboard_string' class='fnname'>get_clipboard_string</a>(&amp;self) -&gt; <a class='struct' href='http://doc.rust-lang.org/master/collections/string/struct.String.html' title='collections::string::String'>String</a></code></h4>
+</div><h4 id='method.get_clipboard_string' class='method'><code>fn <a href='#method.get_clipboard_string' class='fnname'>get_clipboard_string</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code></h4>
 <div class='docblock'><p>Wrapper for <code>glfwGetClipboardString</code>.</p>
-</div><h4 id='method.get_x11_window' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_x11_window' class='fnname'>get_x11_window</a>(&amp;self) -&gt; *mut <a class='type' href='http://doc.rust-lang.org/master/libc/types/common/c95/type.c_void.html' title='libc::types::common::c95::c_void'>c_void</a></code></h4>
-<div class='docblock'><p>Wrapper for <code>glfwGetX11Window</code></p>
-</div><h4 id='method.get_glx_context' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_glx_context' class='fnname'>get_glx_context</a>(&amp;self) -&gt; *mut <a class='type' href='http://doc.rust-lang.org/master/libc/types/common/c95/type.c_void.html' title='libc::types::common::c95::c_void'>c_void</a></code></h4>
-<div class='docblock'><p>Wrapper for <code>glfwGetGLXContext</code></p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/master/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../glfw/struct.Window.html' title='glfw::Window'>Window</a></code></h3><div class='impl-methods'><h4 id='method.drop' class='method'><a class='stability Experimental' title='Experimental'></a><code>fn <a href='#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
-<div class='docblock'><p>Closes the window and performs the necessary cleanups. This will block
-until all associated <code>RenderContext</code>s were also dropped, and emit a
-<code>debug!</code> message to that effect.</p>
-
-<p>Wrapper for <code>glfwDestroyWindow</code>.</p>
-</div></div><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../glfw/trait.Context.html' title='glfw::Context'>Context</a> for <a class='struct' href='../glfw/struct.Window.html' title='glfw::Window'>Window</a></code></h3><div class='impl-methods'><h4 id='method.window_ptr' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.window_ptr' class='fnname'>window_ptr</a>(&amp;self) -&gt; *mut <a class='type' href='../glfw/ffi/type.GLFWwindow.html' title='glfw::ffi::GLFWwindow'>GLFWwindow</a></code></h4>
-<h4 id='method.swap_buffers' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.swap_buffers' class='fnname'>swap_buffers</a>(&amp;self)</code></h4>
-<h4 id='method.is_current' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.is_current' class='fnname'>is_current</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
-<h4 id='method.make_current' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.make_current' class='fnname'>make_current</a>(&amp;self)</code></h4>
+</div><h4 id='method.get_cocoa_window' class='method'><code>fn <a href='#method.get_cocoa_window' class='fnname'>get_cocoa_window</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../libc/enum.c_void.html' title='libc::c_void'>c_void</a></a></code></h4>
+<div class='docblock'><p>Wrapper for <code>glfwGetCocoaWindow</code></p>
+</div><h4 id='method.get_nsgl_context' class='method'><code>fn <a href='#method.get_nsgl_context' class='fnname'>get_nsgl_context</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../libc/enum.c_void.html' title='libc::c_void'>c_void</a></a></code></h4>
+<div class='docblock'><p>Wrapper for <code>glfwGetNSGLContext</code></p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../glfw/struct.Window.html' title='glfw::Window'>Window</a></code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='../glfw/trait.Context.html' title='glfw::Context'>Context</a> for <a class='struct' href='../glfw/struct.Window.html' title='glfw::Window'>Window</a></code></h3><div class='impl-items'><h4 id='method.window_ptr' class='method'><code>fn <a href='../glfw/trait.Context.html#method.window_ptr' class='fnname'>window_ptr</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../glfw/ffi/enum.GLFWwindow.html' title='glfw::ffi::GLFWwindow'>GLFWwindow</a></a></code></h4>
+<h4 id='method.swap_buffers' class='method'><code>fn <a href='../glfw/trait.Context.html#method.swap_buffers' class='fnname'>swap_buffers</a>(&amp;mut self)</code></h4>
+<h4 id='method.is_current' class='method'><code>fn <a href='../glfw/trait.Context.html#method.is_current' class='fnname'>is_current</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.make_current' class='method'><code>fn <a href='../glfw/trait.Context.html#method.make_current' class='fnname'>make_current</a>(&amp;mut self)</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -236,6 +252,6 @@ until all associated <code>RenderContext</code>s were also dropped, and emit a
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
     
-    <script async src="../search-index.js"></script>
+    <script defer src="../search-index.js"></script>
 </body>
 </html>

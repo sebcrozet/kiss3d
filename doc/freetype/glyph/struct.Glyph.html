@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Glyph` struct in crate `freetype`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Glyph">
+
+    <title>freetype::glyph::Glyph - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>freetype</a>::<wbr><a href='index.html'>glyph</a></p><script>window.sidebarCurrent = {name: 'Glyph', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>freetype</a>::<wbr><a href='index.html'>glyph</a>::<wbr><a class='struct' href=''>Glyph</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-890' class='srclink' href='../../src/freetype/glyph.rs.html#12-15' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Glyph {
+    // some fields omitted
+}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../freetype/glyph/struct.Glyph.html' title='freetype::glyph::Glyph'>Glyph</a></code></h3><div class='impl-items'><h4 id='method.from_raw' class='method'><code>fn <a href='#method.from_raw' class='fnname'>from_raw</a>(library_raw: <a class='type' href='../../freetype/ffi/type.FT_Library.html' title='freetype::ffi::FT_Library'>FT_Library</a>, raw: <a class='type' href='../../freetype/ffi/type.FT_Glyph.html' title='freetype::ffi::FT_Glyph'>FT_Glyph</a>) -&gt; Self</code></h4>
+<h4 id='method.transform' class='method'><code>fn <a href='#method.transform' class='fnname'>transform</a>(&amp;self, matrix: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../freetype/type.Matrix.html' title='freetype::Matrix'>Matrix</a>&gt;, delta: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../freetype/type.Vector.html' title='freetype::Vector'>Vector</a>&gt;) -&gt; <a class='type' href='../../freetype/error/type.FtResult.html' title='freetype::error::FtResult'>FtResult</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.get_cbox' class='method'><code>fn <a href='#method.get_cbox' class='fnname'>get_cbox</a>(&amp;self, bbox_mode: <a class='type' href='../../freetype/ffi/type.FT_Glyph_BBox_Mode.html' title='freetype::ffi::FT_Glyph_BBox_Mode'>FT_Glyph_BBox_Mode</a>) -&gt; <a class='type' href='../../freetype/type.BBox.html' title='freetype::BBox'>BBox</a></code></h4>
+<h4 id='method.to_bitmap' class='method'><code>fn <a href='#method.to_bitmap' class='fnname'>to_bitmap</a>(&amp;self, render_mode: <a class='enum' href='../../freetype/render_mode/enum.RenderMode.html' title='freetype::render_mode::RenderMode'>RenderMode</a>, origin: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='type' href='../../freetype/type.Vector.html' title='freetype::Vector'>Vector</a>&gt;) -&gt; <a class='type' href='../../freetype/error/type.FtResult.html' title='freetype::error::FtResult'>FtResult</a>&lt;<a class='struct' href='../../freetype/bitmap_glyph/struct.BitmapGlyph.html' title='freetype::bitmap_glyph::BitmapGlyph'>BitmapGlyph</a>&gt;</code></h4>
+<h4 id='method.advance_x' class='method'><code>fn <a href='#method.advance_x' class='fnname'>advance_x</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a></code></h4>
+<h4 id='method.advance_y' class='method'><code>fn <a href='#method.advance_y' class='fnname'>advance_y</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a></code></h4>
+<h4 id='method.format' class='method'><code>fn <a href='#method.format' class='fnname'>format</a>(&amp;self) -&gt; <a class='type' href='../../freetype/ffi/type.FT_Glyph_Format.html' title='freetype::ffi::FT_Glyph_Format'>FT_Glyph_Format</a></code></h4>
+<h4 id='method.raw' class='method'><code>fn <a href='#method.raw' class='fnname'>raw</a>(&amp;self) -&gt; &amp;<a class='struct' href='../../freetype/ffi/struct.FT_GlyphRec.html' title='freetype::ffi::FT_GlyphRec'>FT_GlyphRec</a></code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../freetype/glyph/struct.Glyph.html' title='freetype::glyph::Glyph'>Glyph</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; Self</code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../freetype/glyph/struct.Glyph.html' title='freetype::glyph::Glyph'>Glyph</a></code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "freetype";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

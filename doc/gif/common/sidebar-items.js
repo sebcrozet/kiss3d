@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Block","Known GIF block types"],["DisposalMethod","Disposal method"],["Extension","Known GIF extensions"]],"struct":[["Frame","A GIF frame"]]});

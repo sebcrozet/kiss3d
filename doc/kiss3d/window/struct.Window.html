@@ -9,6 +9,7 @@
 
     <title>kiss3d::window::Window - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
@@ -24,137 +25,135 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>window</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.Event.html'>Event</a><a class='struct ' href='struct.EventManager.html'>EventManager</a><a class='struct ' href='struct.Events.html'>Events</a><a class='struct current' href='struct.Window.html'>Window</a></div>
-    </section>
+        <p class='location'><a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>window</a></p><script>window.sidebarCurrent = {name: 'Window', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>window</a>&#8203;::<a class='struct' href=''>Window</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-67' href='../../src/kiss3d/src/window/window.rs.html#37-54'>[src]</a></div></h1>
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>window</a>::<wbr><a class='struct' href=''>Window</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-50' class='srclink' href='../../src/kiss3d/window/window.rs.html#41-57' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Window {
     // some fields omitted
 }</pre><div class='docblock'><p>Structure representing a window and a 3D scene.</p>
 
 <p>This is the main interface with the 3d engine.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a></code></h3><div class='impl-methods'><h4 id='method.should_close' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.should_close' class='fnname'>should_close</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a></code></h3><div class='impl-items'><h4 id='method.should_close' class='method'><code>fn <a href='#method.should_close' class='fnname'>should_close</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Indicates whether this window should be closed.</p>
-</div><h4 id='method.context' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.context' class='fnname'>context</a>&lt;'r&gt;(&amp;'r self) -&gt; &amp;'r <a class='struct' href='../../glfw/struct.Glfw.html' title='glfw::Glfw'>Glfw</a></code></h4>
+</div><h4 id='method.context' class='method'><code>fn <a href='#method.context' class='fnname'>context</a>&lt;'r&gt;(&amp;'r self) -&gt; &amp;'r <a class='struct' href='../../glfw/struct.Glfw.html' title='glfw::Glfw'>Glfw</a></code></h4>
 <div class='docblock'><p>Access the glfw context.</p>
-</div><h4 id='method.glfw_window' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.glfw_window' class='fnname'>glfw_window</a>&lt;'r&gt;(&amp;'r self) -&gt; &amp;'r <a class='struct' href='../../glfw/struct.Window.html' title='glfw::Window'>Window</a></code></h4>
+</div><h4 id='method.glfw_window' class='method'><code>fn <a href='#method.glfw_window' class='fnname'>glfw_window</a>(&amp;self) -&gt; &amp;<a class='struct' href='../../glfw/struct.Window.html' title='glfw::Window'>Window</a></code></h4>
 <div class='docblock'><p>Access the glfw window.</p>
-</div><h4 id='method.width' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.width' class='fnname'>width</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a></code></h4>
+</div><h4 id='method.glfw_window_mut' class='method'><code>fn <a href='#method.glfw_window_mut' class='fnname'>glfw_window_mut</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../../glfw/struct.Window.html' title='glfw::Window'>Window</a></code></h4>
+<div class='docblock'><p>Mutably access the glfw window.</p>
+</div><h4 id='method.width' class='method'><code>fn <a href='#method.width' class='fnname'>width</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a></code></h4>
 <div class='docblock'><p>The window width.</p>
-</div><h4 id='method.height' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.height' class='fnname'>height</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a></code></h4>
+</div><h4 id='method.height' class='method'><code>fn <a href='#method.height' class='fnname'>height</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a></code></h4>
 <div class='docblock'><p>The window height.</p>
-</div><h4 id='method.size' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.size' class='fnname'>size</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;</code></h4>
+</div><h4 id='method.size' class='method'><code>fn <a href='#method.size' class='fnname'>size</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></h4>
 <div class='docblock'><p>The size of the window.</p>
-</div><h4 id='method.set_framerate_limit' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_framerate_limit' class='fnname'>set_framerate_limit</a>(&amp;mut self, fps: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.u64.html'>u64</a>&gt;)</code></h4>
+</div><h4 id='method.set_framerate_limit' class='method'><code>fn <a href='#method.set_framerate_limit' class='fnname'>set_framerate_limit</a>(&amp;mut self, fps: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>&gt;)</code></h4>
 <div class='docblock'><p>Sets the maximum number of frames per second. Cannot be 0. <code>None</code> means there is no limit.</p>
-</div><h4 id='method.close' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.close' class='fnname'>close</a>(&amp;mut self)</code></h4>
+</div><h4 id='method.set_title' class='method'><code>fn <a href='#method.set_title' class='fnname'>set_title</a>(&amp;mut self, title: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
+<div class='docblock'><p>Set window title</p>
+</div><h4 id='method.close' class='method'><code>fn <a href='#method.close' class='fnname'>close</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Closes the window.</p>
-</div><h4 id='method.hide' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.hide' class='fnname'>hide</a>(&amp;mut self)</code></h4>
+</div><h4 id='method.hide' class='method'><code>fn <a href='#method.hide' class='fnname'>hide</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Hides the window, without closing it. Use <code>show</code> to make it visible again.</p>
-</div><h4 id='method.show' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.show' class='fnname'>show</a>(&amp;mut self)</code></h4>
+</div><h4 id='method.show' class='method'><code>fn <a href='#method.show' class='fnname'>show</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Makes the window visible. Use <code>hide</code> to hide it.</p>
-</div><h4 id='method.set_background_color' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_background_color' class='fnname'>set_background_color</a>(&amp;mut self, r: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, g: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, b: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>)</code></h4>
+</div><h4 id='method.set_background_color' class='method'><code>fn <a href='#method.set_background_color' class='fnname'>set_background_color</a>(&amp;mut self, r: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, g: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, b: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</code></h4>
 <div class='docblock'><p>Sets the background color.</p>
-</div><h4 id='method.draw_line' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.draw_line' class='fnname'>draw_line</a>(&amp;mut self, a: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, b: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, color: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.draw_line' class='method'><code>fn <a href='#method.draw_line' class='fnname'>draw_line</a>(&amp;mut self, a: &amp;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, b: &amp;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, color: &amp;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Adds a line to be drawn during the next frame.</p>
-</div><h4 id='method.draw_point' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.draw_point' class='fnname'>draw_point</a>(&amp;mut self, pt: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, color: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.draw_point' class='method'><code>fn <a href='#method.draw_point' class='fnname'>draw_point</a>(&amp;mut self, pt: &amp;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, color: &amp;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Adds a point to be drawn during the next frame.</p>
-</div><h4 id='method.draw_text' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.draw_text' class='fnname'>draw_text</a>(&amp;mut self, text: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>, pos: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, font: &amp;<a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a>&gt;, color: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
+</div><h4 id='method.draw_text' class='method'><code>fn <a href='#method.draw_text' class='fnname'>draw_text</a>(&amp;mut self, text: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, pos: &amp;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt2.html' title='nalgebra::structs::pnt::Pnt2'>Pnt2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, font: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a>&gt;, color: &amp;<a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)</code></h4>
 <div class='docblock'><p>Adds a string to be drawn during the next frame.</p>
-</div><h4 id='method.remove' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.remove' class='fnname'>remove</a>(&amp;mut self, sn: &amp;mut <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a>)</code></h4>
+</div><h4 id='method.remove' class='method'><code>fn <a href='#method.remove' class='fnname'>remove</a>(&amp;mut self, sn: &amp;mut <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a>)</code></h4>
 <div class='docblock'><p>Removes an object from the scene.</p>
-</div><h4 id='method.add_group' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_group' class='fnname'>add_group</a>(&amp;mut self) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
+</div><h4 id='method.add_group' class='method'><code>fn <a href='#method.add_group' class='fnname'>add_group</a>(&amp;mut self) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Adds a group to the scene.</p>
 
 <p>A group is a node not containing any object.</p>
-</div><h4 id='method.add_obj' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_obj' class='fnname'>add_obj</a>(&amp;mut self, path: &amp;<a class='struct' href='http://doc.rust-lang.org/master/std/path/posix/struct.Path.html' title='std::path::posix::Path'>Path</a>, mtl_dir: &amp;<a class='struct' href='http://doc.rust-lang.org/master/std/path/posix/struct.Path.html' title='std::path::posix::Path'>Path</a>, scale: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
+</div><h4 id='method.add_obj' class='method'><code>fn <a href='#method.add_obj' class='fnname'>add_obj</a>(&amp;mut self, path: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>, mtl_dir: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>, scale: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Adds an obj model to the scene.</p>
 
-<h1 id="arguments" class='section-header'><a
-                           href="#arguments">Arguments</a></h1>
+<h1 id='arguments' class='section-header'><a href='#arguments'>Arguments</a></h1>
 <ul>
 <li><code>path</code>  - relative path to the obj file.</li>
 <li><code>scale</code> - scale to apply to the model.</li>
 </ul>
-</div><h4 id='method.add_mesh' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_mesh' class='fnname'>add_mesh</a>(&amp;mut self, mesh: <a class='struct' href='http://doc.rust-lang.org/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='http://doc.rust-lang.org/master/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>&gt;&gt;, scale: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
+</div><h4 id='method.add_mesh' class='method'><code>fn <a href='#method.add_mesh' class='fnname'>add_mesh</a>(&amp;mut self, mesh: <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>&gt;&gt;, scale: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Adds an unnamed mesh to the scene.</p>
-</div><h4 id='method.add_trimesh' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_trimesh' class='fnname'>add_trimesh</a>(&amp;mut self, descr: <a class='struct' href='../../ncollide3df32/procedural/trimesh/struct.TriMesh.html' title='ncollide3df32::procedural::trimesh::TriMesh'>TriMesh</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;&gt;, scale: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
+</div><h4 id='method.add_trimesh' class='method'><code>fn <a href='#method.add_trimesh' class='fnname'>add_trimesh</a>(&amp;mut self, descr: <a class='type' href='../../ncollide_procedural/type.TriMesh3.html' title='ncollide_procedural::TriMesh3'>TriMesh3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, scale: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Creates and adds a new object using the geometry generated by a given procedural generator.
 Creates and adds a new object using a mesh descriptor.</p>
-</div><h4 id='method.add_geom_with_name' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_geom_with_name' class='fnname'>add_geom_with_name</a>(&amp;mut self, geometry_name: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>, scale: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a>&gt;</code></h4>
+</div><h4 id='method.add_geom_with_name' class='method'><code>fn <a href='#method.add_geom_with_name' class='fnname'>add_geom_with_name</a>(&amp;mut self, geometry_name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, scale: <a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a>&gt;</code></h4>
 <div class='docblock'><p>Creates and adds a new object using the geometry registered as <code>geometry_name</code>.</p>
-</div><h4 id='method.add_cube' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_cube' class='fnname'>add_cube</a>(&amp;mut self, wx: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, wy: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, wz: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
+</div><h4 id='method.add_cube' class='method'><code>fn <a href='#method.add_cube' class='fnname'>add_cube</a>(&amp;mut self, wx: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, wy: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, wz: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).</p>
 
-<h1 id="arguments-1" class='section-header'><a
-                           href="#arguments-1">Arguments</a></h1>
+<h1 id='arguments-1' class='section-header'><a href='#arguments-1'>Arguments</a></h1>
 <ul>
 <li><code>wx</code> - the cube extent along the z axis</li>
 <li><code>wy</code> - the cube extent along the y axis</li>
 <li><code>wz</code> - the cube extent along the z axis</li>
 </ul>
-</div><h4 id='method.add_sphere' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_sphere' class='fnname'>add_sphere</a>(&amp;mut self, r: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
+</div><h4 id='method.add_sphere' class='method'><code>fn <a href='#method.add_sphere' class='fnname'>add_sphere</a>(&amp;mut self, r: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Adds a sphere to the scene. The sphere is initially centered at (0, 0, 0).</p>
 
-<h1 id="arguments-2" class='section-header'><a
-                           href="#arguments-2">Arguments</a></h1>
+<h1 id='arguments-2' class='section-header'><a href='#arguments-2'>Arguments</a></h1>
 <ul>
 <li><code>r</code> - the sphere radius</li>
 </ul>
-</div><h4 id='method.add_cone' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_cone' class='fnname'>add_cone</a>(&amp;mut self, r: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, h: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
+</div><h4 id='method.add_cone' class='method'><code>fn <a href='#method.add_cone' class='fnname'>add_cone</a>(&amp;mut self, r: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, h: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Adds a cone to the scene. The cone is initially centered at (0, 0, 0) and points toward the
 positive <code>y</code> axis.</p>
 
-<h1 id="arguments-3" class='section-header'><a
-                           href="#arguments-3">Arguments</a></h1>
+<h1 id='arguments-3' class='section-header'><a href='#arguments-3'>Arguments</a></h1>
 <ul>
 <li><code>h</code> - the cone height</li>
 <li><code>r</code> - the cone base radius</li>
 </ul>
-</div><h4 id='method.add_cylinder' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_cylinder' class='fnname'>add_cylinder</a>(&amp;mut self, r: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, h: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
+</div><h4 id='method.add_cylinder' class='method'><code>fn <a href='#method.add_cylinder' class='fnname'>add_cylinder</a>(&amp;mut self, r: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, h: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Adds a cylinder to the scene. The cylinder is initially centered at (0, 0, 0) and has its
 principal axis aligned with the <code>y</code> axis.</p>
 
-<h1 id="arguments-4" class='section-header'><a
-                           href="#arguments-4">Arguments</a></h1>
+<h1 id='arguments-4' class='section-header'><a href='#arguments-4'>Arguments</a></h1>
 <ul>
 <li><code>h</code> - the cylinder height</li>
 <li><code>r</code> - the cylinder base radius</li>
 </ul>
-</div><h4 id='method.add_capsule' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_capsule' class='fnname'>add_capsule</a>(&amp;mut self, r: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, h: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
+</div><h4 id='method.add_capsule' class='method'><code>fn <a href='#method.add_capsule' class='fnname'>add_capsule</a>(&amp;mut self, r: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>, h: <a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Adds a capsule to the scene. The capsule is initially centered at (0, 0, 0) and has its
 principal axis aligned with the <code>y</code> axis.</p>
 
-<h1 id="arguments-5" class='section-header'><a
-                           href="#arguments-5">Arguments</a></h1>
+<h1 id='arguments-5' class='section-header'><a href='#arguments-5'>Arguments</a></h1>
 <ul>
 <li><code>h</code> - the capsule height</li>
 <li><code>r</code> - the capsule caps radius</li>
 </ul>
-</div><h4 id='method.add_quad' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_quad' class='fnname'>add_quad</a>(&amp;mut self, w: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, h: <a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>, usubdivs: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, vsubdivs: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
+</div><h4 id='method.add_quad' class='method'><code>fn <a href='#method.add_quad' class='fnname'>add_quad</a>(&amp;mut self, w: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, h: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, usubdivs: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, vsubdivs: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Adds a double-sided quad to the scene. The quad is initially centered at (0, 0, 0). The
 quad itself is composed of a user-defined number of triangles regularly spaced on a grid.
 This is the main way to draw height maps.</p>
 
-<h1 id="arguments-6" class='section-header'><a
-                           href="#arguments-6">Arguments</a></h1>
+<h1 id='arguments-6' class='section-header'><a href='#arguments-6'>Arguments</a></h1>
 <ul>
 <li><code>w</code> - the quad width.</li>
 <li><code>h</code> - the quad height.</li>
@@ -164,69 +163,75 @@ which will be placed horizontally on each line. Must not be <code>0</code>.</li>
 which will be placed vertically on each line. Must not be <code>0</code>.
 update.</li>
 </ul>
-</div><h4 id='method.add_quad_with_vertices' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.add_quad_with_vertices' class='fnname'>add_quad_with_vertices</a>(&amp;mut self, vertices: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.slice.html'>[<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;]</a>, nhpoints: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, nvpoints: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
+</div><h4 id='method.add_quad_with_vertices' class='method'><code>fn <a href='#method.add_quad_with_vertices' class='fnname'>add_quad_with_vertices</a>(&amp;mut self, vertices: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, nhpoints: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, nvpoints: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Adds a double-sided quad with the specified vertices.</p>
-</div><h4 id='method.is_closed' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.is_closed' class='fnname'>is_closed</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.is_closed' class='method'><code>fn <a href='#method.is_closed' class='fnname'>is_closed</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Returns whether this window is closed or not.</p>
-</div><h4 id='method.set_light' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.set_light' class='fnname'>set_light</a>(&amp;mut self, pos: <a class='type' href='../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a>)</code></h4>
+</div><h4 id='method.set_light' class='method'><code>fn <a href='#method.set_light' class='fnname'>set_light</a>(&amp;mut self, pos: <a class='enum' href='../../kiss3d/light/enum.Light.html' title='kiss3d::light::Light'>Light</a>)</code></h4>
 <div class='docblock'><p>Sets the light mode. Only one light is supported.</p>
-</div><h4 id='method.new_hidden' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_hidden' class='fnname'>new_hidden</a>(title: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a></code></h4>
+</div><h4 id='method.new_hidden' class='method'><code>fn <a href='#method.new_hidden' class='fnname'>new_hidden</a>(title: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a></code></h4>
 <div class='docblock'><p>Opens a window, hide it then calls a user-defined procedure.</p>
 
-<h1 id="arguments-7" class='section-header'><a
-                           href="#arguments-7">Arguments</a></h1>
+<h1 id='arguments-7' class='section-header'><a href='#arguments-7'>Arguments</a></h1>
 <ul>
 <li><code>title</code> - the window title</li>
 </ul>
-</div><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(title: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a></code></h4>
+</div><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(title: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a></code></h4>
 <div class='docblock'><p>Opens a window then calls a user-defined procedure.</p>
 
-<h1 id="arguments-8" class='section-header'><a
-                           href="#arguments-8">Arguments</a></h1>
+<h1 id='arguments-8' class='section-header'><a href='#arguments-8'>Arguments</a></h1>
 <ul>
 <li><code>title</code> - the window title</li>
 </ul>
-</div><h4 id='method.new_with_size' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_with_size' class='fnname'>new_with_size</a>(title: &amp;<a href='http://doc.rust-lang.org/master/std/primitive.str.html'>str</a>, width: <a href='http://doc.rust-lang.org/master/std/primitive.u32.html'>u32</a>, height: <a href='http://doc.rust-lang.org/master/std/primitive.u32.html'>u32</a>) -&gt; <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a></code></h4>
+</div><h4 id='method.new_with_size' class='method'><code>fn <a href='#method.new_with_size' class='fnname'>new_with_size</a>(title: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a class='struct' href='../../kiss3d/window/struct.Window.html' title='kiss3d::window::Window'>Window</a></code></h4>
 <div class='docblock'><p>Opens a window with a custom size then calls a user-defined procedure.</p>
 
-<h1 id="arguments-9" class='section-header'><a
-                           href="#arguments-9">Arguments</a></h1>
+<h1 id='arguments-9' class='section-header'><a href='#arguments-9'>Arguments</a></h1>
 <ul>
 <li><code>title</code> - the window title.</li>
 <li><code>width</code> - the window width.</li>
 <li><code>height</code> - the window height.</li>
 </ul>
-</div><h4 id='method.scene' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.scene' class='fnname'>scene</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
+</div><h4 id='method.scene' class='method'><code>fn <a href='#method.scene' class='fnname'>scene</a>&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Reference to the scene associated with this window.</p>
-</div><h4 id='method.scene_mut' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.scene_mut' class='fnname'>scene_mut</a>&lt;'a&gt;(&amp;'a mut self) -&gt; &amp;'a mut <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
+</div><h4 id='method.scene_mut' class='method'><code>fn <a href='#method.scene_mut' class='fnname'>scene_mut</a>&lt;'a&gt;(&amp;'a mut self) -&gt; &amp;'a mut <a class='struct' href='../../kiss3d/scene/struct.SceneNode.html' title='kiss3d::scene::SceneNode'>SceneNode</a></code></h4>
 <div class='docblock'><p>Mutable reference to the scene associated with this window.</p>
-</div><h4 id='method.snap' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.snap' class='fnname'>snap</a>(&amp;self, out: &amp;mut <a class='struct' href='http://doc.rust-lang.org/master/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.u8.html'>u8</a>&gt;)</code></h4>
+</div><h4 id='method.snap' class='method'><code>fn <a href='#method.snap' class='fnname'>snap</a>(&amp;self, out: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt;)</code></h4>
 <div class='docblock'><p>Read the pixels currently displayed to the screen.</p>
 
-<h1 id="arguments:" class='section-header'><a
-                           href="#arguments:">Arguments:</a></h1>
+<h1 id='arguments-10' class='section-header'><a href='#arguments-10'>Arguments:</a></h1>
 <ul>
 <li><code>out</code> - the output buffer. It is automatically resized.</li>
 </ul>
-</div><h4 id='method.events' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.events' class='fnname'>events</a>(&amp;self) -&gt; <a class='struct' href='../../kiss3d/window/struct.EventManager.html' title='kiss3d::window::EventManager'>EventManager</a></code></h4>
+</div><h4 id='method.snap_rect' class='method'><code>fn <a href='#method.snap_rect' class='fnname'>snap_rect</a>(&amp;self, out: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt;, x: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, y: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>)</code></h4>
+<div class='docblock'><p>Read a section of pixels from the screen</p>
+
+<h1 id='arguments-11' class='section-header'><a href='#arguments-11'>Arguments:</a></h1>
+<ul>
+<li><code>out</code> - the output buffer. It is automatically resized</li>
+<li><code>x, y, width, height</code> - the rectangle to capture</li>
+</ul>
+</div><h4 id='method.snap_image' class='method'><code>fn <a href='#method.snap_image' class='fnname'>snap_image</a>(&amp;self) -&gt; <a class='struct' href='../../image/buffer/struct.ImageBuffer.html' title='image::buffer::ImageBuffer'>ImageBuffer</a>&lt;<a class='struct' href='../../image/color/struct.Rgb.html' title='image::color::Rgb'>Rgb</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt;, <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt;&gt;</code></h4>
+<div class='docblock'><p>Get the current screen as an image</p>
+</div><h4 id='method.events' class='method'><code>fn <a href='#method.events' class='fnname'>events</a>(&amp;self) -&gt; <a class='struct' href='../../kiss3d/window/struct.EventManager.html' title='kiss3d::window::EventManager'>EventManager</a></code></h4>
 <div class='docblock'><p>Gets the events manager that gives access to an event iterator.</p>
-</div><h4 id='method.render' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.render' class='fnname'>render</a>(&amp;mut self) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.render' class='method'><code>fn <a href='#method.render' class='fnname'>render</a>(&amp;mut self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Renders the scene using the default camera.</p>
 
 <p>Returns <code>false</code> if the window should be closed.</p>
-</div><h4 id='method.render_with_effect' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.render_with_effect' class='fnname'>render_with_effect</a>(&amp;mut self, effect: &amp;mut <a class='trait' href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a>) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.render_with_effect' class='method'><code>fn <a href='#method.render_with_effect' class='fnname'>render_with_effect</a>(&amp;mut self, effect: &amp;mut <a class='trait' href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Render using a specific post processing effect.</p>
 
 <p>Returns <code>false</code> if the window should be closed.</p>
-</div><h4 id='method.render_with_camera' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.render_with_camera' class='fnname'>render_with_camera</a>(&amp;mut self, camera: &amp;mut Camera) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.render_with_camera' class='method'><code>fn <a href='#method.render_with_camera' class='fnname'>render_with_camera</a>(&amp;mut self, camera: &amp;mut Camera) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Render using a specific camera.</p>
 
 <p>Returns <code>false</code> if the window should be closed.</p>
-</div><h4 id='method.render_with_camera_and_effect' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.render_with_camera_and_effect' class='fnname'>render_with_camera_and_effect</a>(&amp;mut self, camera: &amp;mut Camera, effect: &amp;mut <a class='trait' href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a>) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.render_with_camera_and_effect' class='method'><code>fn <a href='#method.render_with_camera_and_effect' class='fnname'>render_with_camera_and_effect</a>(&amp;mut self, camera: &amp;mut Camera, effect: &amp;mut <a class='trait' href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Render using a specific camera and post processing effect.</p>
 
 <p>Returns <code>false</code> if the window should be closed.</p>
-</div><h4 id='method.render_with' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.render_with' class='fnname'>render_with</a>(&amp;mut self, camera: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;&amp;mut Camera&gt;, post_processing: <a class='type' href='http://doc.rust-lang.org/master/core/option/type.Option.html' title='core::option::Option'>Option</a>&lt;&amp;mut <a class='trait' href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a>&gt;) -&gt; <a href='http://doc.rust-lang.org/master/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.render_with' class='method'><code>fn <a href='#method.render_with' class='fnname'>render_with</a>(&amp;mut self, camera: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;mut Camera&gt;, post_processing: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;mut <a class='trait' href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a>&gt;) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Draws the scene with the given camera and post-processing effect.</p>
 
 <p>Returns <code>false</code> if the window should be closed.</p>
@@ -235,36 +240,49 @@ update.</li>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -276,6 +294,6 @@ update.</li>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>

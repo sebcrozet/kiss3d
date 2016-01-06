@@ -9,6 +9,7 @@
 
     <title>kiss3d::builtin::NormalsMaterial - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
@@ -24,68 +25,82 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>builtin</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.NormalsMaterial.html'>NormalsMaterial</a><a class='struct ' href='struct.ObjectMaterial.html'>ObjectMaterial</a><a class='struct ' href='struct.UvsMaterial.html'>UvsMaterial</a></div>
-    </section>
+        <p class='location'><a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>builtin</a></p><script>window.sidebarCurrent = {name: 'NormalsMaterial', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><div class='in-band'>Struct <a href='../index.html'>kiss3d</a>&#8203;::<a href='index.html'>builtin</a>&#8203;::<a class='struct' href=''>NormalsMaterial</a>&#8203;</div><div class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-21476' href='../../src/kiss3d/src/builtin/normals_material.rs.html#17-24'>[src]</a></div></h1>
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>builtin</a>::<wbr><a class='struct' href=''>NormalsMaterial</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-2404' class='srclink' href='../../src/kiss3d/builtin/normals_material.rs.html#17-24' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct NormalsMaterial {
     // some fields omitted
 }</pre><div class='docblock'><p>A material that draws normals of an object.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../kiss3d/builtin/struct.NormalsMaterial.html' title='kiss3d::builtin::NormalsMaterial'>NormalsMaterial</a></code></h3><div class='impl-methods'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/builtin/struct.NormalsMaterial.html' title='kiss3d::builtin::NormalsMaterial'>NormalsMaterial</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/builtin/struct.NormalsMaterial.html' title='kiss3d::builtin::NormalsMaterial'>NormalsMaterial</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/builtin/struct.NormalsMaterial.html' title='kiss3d::builtin::NormalsMaterial'>NormalsMaterial</a></code></h4>
 <div class='docblock'><p>Creates a new NormalsMaterial.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> for <a class='struct' href='../../kiss3d/builtin/struct.NormalsMaterial.html' title='kiss3d::builtin::NormalsMaterial'>NormalsMaterial</a></code></h3><div class='impl-methods'><h4 id='method.render' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.render' class='fnname'>render</a>(&amp;mut self, pass: <a href='http://doc.rust-lang.org/master/std/primitive.uint.html'>uint</a>, transform: &amp;<a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, scale: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a href='http://doc.rust-lang.org/master/std/primitive.f32.html'>f32</a>&gt;, camera: &amp;mut Camera, _: &amp;<a class='type' href='../../kiss3d/light/type.Light.html' title='kiss3d::light::Light'>Light</a>, data: &amp;<a class='struct' href='../../kiss3d/scene/struct.ObjectData.html' title='kiss3d::scene::ObjectData'>ObjectData</a>, mesh: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>)</code></h4>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> for <a class='struct' href='../../kiss3d/builtin/struct.NormalsMaterial.html' title='kiss3d::builtin::NormalsMaterial'>NormalsMaterial</a></code></h3><div class='impl-items'><h4 id='method.render' class='method'><code>fn <a href='../../kiss3d/resource/material/trait.Material.html#method.render' class='fnname'>render</a>(&amp;mut self, pass: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, transform: &amp;<a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, scale: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, camera: &amp;mut Camera, _: &amp;<a class='enum' href='../../kiss3d/light/enum.Light.html' title='kiss3d::light::Light'>Light</a>, data: &amp;<a class='struct' href='../../kiss3d/scene/struct.ObjectData.html' title='kiss3d::scene::ObjectData'>ObjectData</a>, mesh: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>)</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -97,6 +112,6 @@
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>

@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["project_homogeneous","Project n-d point to a (n-1)-d space, dividing each vector by its `w` component."],["project_homogeneous_to","Project n-d point to a (n-1)-d space, dividing each vector by its `w` component."]]});

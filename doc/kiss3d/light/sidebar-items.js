@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Light","The light configuration."]]});

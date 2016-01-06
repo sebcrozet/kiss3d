@@ -1,0 +1,1 @@
+initSidebarItems({"static":[["LINES_FRAGMENT_SRC","Fragment shader used by the material to display line."],["LINES_VERTEX_SRC","Vertex shader used by the material to display line."]],"struct":[["LineRenderer","Structure which manages the display of short-living lines."]]});

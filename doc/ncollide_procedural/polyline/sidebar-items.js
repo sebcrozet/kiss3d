@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Polyline","Shapeetric description of a polyline."]]});

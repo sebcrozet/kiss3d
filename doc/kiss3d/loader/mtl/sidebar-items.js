@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["parse","Parses a string representing a mtl file."],["parse_file","Parses a mtl file."]],"struct":[["MtlMaterial","Material informations read from a `.mtl` file."]]});

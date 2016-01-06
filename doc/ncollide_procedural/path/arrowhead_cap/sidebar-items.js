@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["ArrowheadCap","A cap that looks like an arrow."]]});
