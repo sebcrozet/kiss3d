@@ -205,7 +205,7 @@ fn check_shader_error(shader: GLuint) {
                 let info_log: String = repeat(' ').take(info_log_len as usize).collect();
 
                 let c_str = CString::new(info_log.as_bytes()).unwrap();
-                gl::GetShaderInfoLog(shader, info_log_len, &mut chars_written, c_str.as_ptr() as *mut i8);
+                gl::GetShaderInfoLog(shader, info_log_len, &mut chars_written, c_str.as_ptr() as *mut _);
 
                 let bytes = c_str.as_bytes();
                 let bytes = &bytes[.. bytes.len() - 1];
