@@ -5,6 +5,7 @@
 
 use std::mem;
 use std::thread;
+use std::time::Duration;
 use glfw;
 use glfw::{Context, Key, Action, WindowMode, WindowEvent};
 use std::cell::RefCell;
@@ -324,7 +325,7 @@ impl Window {
 
         window.make_current();
 
-        verify!(gl::load_with(|name| window.get_proc_address(name)));
+        verify!(gl::load_with(|name| window.get_proc_address(name) as *const _));
         init_gl();
 
         let mut usr_window = Window {
@@ -575,7 +576,7 @@ impl Window {
             Some(ms) => {
                 let elapsed = (time::precise_time_ns() - self.curr_time) / 1000000;
                 if elapsed < ms {
-                    thread::sleep_ms((ms - elapsed) as u32);
+                    thread::sleep(Duration::from_millis(ms - elapsed));
                 }
             }
         }
