@@ -166,9 +166,7 @@ impl FirstPerson {
     }
 
     fn update_projviews(&mut self) {
-        let _ = na::inv(&self.view_transform()).map(|inv_view|
-            self.proj_view = *self.projection.as_mat() * na::to_homogeneous(&inv_view)
-        );
+        let _ = self.proj_view = *self.projection.as_mat() * na::to_homogeneous(&self.view_transform());
 
         let _ = na::inv(&self.proj_view).map(|inv_proj| self.inv_proj_view = inv_proj);
     }
@@ -218,7 +216,7 @@ impl Camera for FirstPerson {
 
     /// The camera view transformation (i-e transformation without projection).
     fn view_transform(&self) -> Iso3<f32> {
-        Iso3::look_at_z(&self.eye, &self.at(), &Vec3::y())
+        Iso3::look_at(&self.eye, &self.at(), &Vec3::y())
     }
 
     fn handle_event(&mut self, window: &glfw::Window, event: &WindowEvent) {
