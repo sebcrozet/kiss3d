@@ -188,7 +188,7 @@ impl Camera for ArcBall {
     }
 
     fn view_transform(&self) -> Iso3<f32> {
-        Iso3::look_at(&self.eye(), &self.at, &Vec3::y())
+        Iso3::look_at_rh(&self.eye(), &self.at, &Vec3::y())
     }
 
     fn eye(&self) -> Pnt3<f32> {
