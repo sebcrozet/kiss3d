@@ -53,7 +53,7 @@ impl FirstPerson {
             last_cursor_pos: na::zero(),
         };
 
-        res.look_at_z(eye, at);
+        res.look_at(eye, at);
 
         res
     }
@@ -102,7 +102,7 @@ impl FirstPerson {
     }
 
     /// Changes the orientation and position of the camera to look at the specified point.
-    pub fn look_at_z(&mut self, eye: Pnt3<f32>, at: Pnt3<f32>) {
+    pub fn look_at(&mut self, eye: Pnt3<f32>, at: Pnt3<f32>) {
         let dist  = na::norm(&(eye - at));
 
         let pitch = ((at.y - eye.y) / dist).acos();
@@ -166,9 +166,7 @@ impl FirstPerson {
     }
 
     fn update_projviews(&mut self) {
-        let _ = na::inv(&self.view_transform()).map(|inv_view|
-            self.proj_view = *self.projection.as_mat() * na::to_homogeneous(&inv_view)
-        );
+        let _ = self.proj_view = *self.projection.as_mat() * na::to_homogeneous(&self.view_transform());
 
         let _ = na::inv(&self.proj_view).map(|inv_proj| self.inv_proj_view = inv_proj);
     }
@@ -218,7 +216,7 @@ impl Camera for FirstPerson {
 
     /// The camera view transformation (i-e transformation without projection).
     fn view_transform(&self) -> Iso3<f32> {
-        Iso3::look_at_z(&self.eye, &self.at(), &Vec3::y())
+        Iso3::look_at_rh(&self.eye, &self.at(), &Vec3::y())
     }
 
     fn handle_event(&mut self, window: &glfw::Window, event: &WindowEvent) {

@@ -9,7 +9,7 @@ use kiss3d::light::Light;
 
 // Based on cube example.
 fn main() {
-    let mut window = Window::new("Kiss3d: cube");
+    let mut window = Window::new("Kiss3d: screenshot");
     let mut c      = window.add_cube(0.2, 0.2, 0.2);
 
     c.set_color(1.0, 0.0, 0.0);
@@ -20,8 +20,9 @@ fn main() {
 
     while window.render() {
         let img = window.snap_image();
-        let img_path = Path::new("cube.png");
+        let img_path = Path::new("screenshot.png");
         img.save(img_path).unwrap();
+        println!("Screeshot saved to `screenshot.png`");
         break;
     }
 }

@@ -80,14 +80,14 @@ impl FirstPersonStereo {
             proj_view_right: na::zero(),
         };
 
-        res.look_at_z(eye, at);
+        res.look_at(eye, at);
 
         res
     }
 
 
     /// Changes the orientation and position of the camera to look at the specified point.
-    pub fn look_at_z(&mut self, eye: Pnt3<f32>, at: Pnt3<f32>) {
+    pub fn look_at(&mut self, eye: Pnt3<f32>, at: Pnt3<f32>) {
         let dist  = na::norm(&(eye - at));
 
         let pitch = ((at.y - eye.y) / dist).acos();
@@ -156,7 +156,7 @@ impl FirstPersonStereo {
 
     #[doc(hidden)]
     pub fn handle_scroll(&mut self, yoff: f32) {
-        let front: Vec3<f32> = self.view_transform().rotate(&Vec3::z());
+        let front: Vec3<f32> = self.view_transform().inv_rotate(&Vec3::z());
 
         self.eye = self.eye + front * (self.move_step * yoff);
 
@@ -166,10 +166,10 @@ impl FirstPersonStereo {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view = *self.projection.as_mat() * na::to_homogeneous(&na::inv(&self.view_transform()).unwrap());
+        self.proj_view = *self.projection.as_mat() * na::to_homogeneous(&self.view_transform());
         self.inv_proj_view = na::inv(&self.proj_view).unwrap();
-        self.proj_view_left = *self.projection.as_mat() * na::to_homogeneous(&na::inv(&self.view_transform_left()).unwrap());
-        self.proj_view_right = *self.projection.as_mat() * na::to_homogeneous(&na::inv(&self.view_transform_right()).unwrap());
+        self.proj_view_left = *self.projection.as_mat() * na::to_homogeneous(&self.view_transform_left());
+        self.proj_view_right = *self.projection.as_mat() * na::to_homogeneous(&self.view_transform_right());
     }
 
     fn transformation_eye(&self, eye: usize) -> Mat4<f32> {
@@ -182,12 +182,12 @@ impl FirstPersonStereo {
 
     /// The left eye camera view transformation
     fn view_transform_left(&self) -> Iso3<f32> {
-        Iso3::look_at_z(&self.eye_left, &self.at(), &Vec3::y())
+        Iso3::look_at_rh(&self.eye_left, &self.at(), &Vec3::y())
     }
 
     /// The right eye camera view transformation
     fn view_transform_right(&self) -> Iso3<f32> {
-        Iso3::look_at_z(&self.eye_right, &self.at(), &Vec3::y())
+        Iso3::look_at_rh(&self.eye_right, &self.at(), &Vec3::y())
     }
 
     /// return Inter Pupilary Distance
@@ -213,7 +213,7 @@ impl Camera for FirstPersonStereo {
 
     /// The imaginary middle eye camera view transformation (i-e transformation without projection).
     fn view_transform(&self) -> Iso3<f32> {
-        Iso3::look_at_z(&self.eye, &self.at(), &Vec3::y())
+        Iso3::look_at_rh(&self.eye, &self.at(), &Vec3::y())
     }
 
     fn handle_event(&mut self, window: &glfw::Window, event: &WindowEvent) {
@@ -256,8 +256,8 @@ impl Camera for FirstPersonStereo {
 
     fn update(&mut self, window: &glfw::Window) {
         let t                = self.view_transform();
-        let front: Vec3<f32> = t.rotate(&Vec3::z());
-        let right: Vec3<f32> = t.rotate(&Vec3::x());
+        let front: Vec3<f32> = t.inv_rotate(&Vec3::z());
+        let right: Vec3<f32> = t.inv_rotate(&Vec3::x());
 
         if window.get_key(Key::Up) == Action::Press {
             self.eye = self.eye + front * self.move_step

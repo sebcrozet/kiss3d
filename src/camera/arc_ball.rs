@@ -67,7 +67,7 @@ impl ArcBall {
             last_cursor_pos: na::zero()
         };
 
-        res.look_at_z(eye, at);
+        res.look_at(eye, at);
 
         res
     }
@@ -123,7 +123,7 @@ impl ArcBall {
     }
 
     /// Move and orient the camera such that it looks at a specific point.
-    pub fn look_at_z(&mut self, eye: Pnt3<f32>, at: Pnt3<f32>) {
+    pub fn look_at(&mut self, eye: Pnt3<f32>, at: Pnt3<f32>) {
         let dist  = na::norm(&(eye - at));
         let pitch = ((eye.y - at.y) / dist).acos();
         let yaw   = (eye.z - at.z).atan2(eye.x - at.x);
@@ -141,13 +141,13 @@ impl ArcBall {
             self.dist = 0.00001
         }
 
-        if self.pitch <= 0.0001 {
-            self.pitch = 0.0001
+        if self.pitch <= 0.01 {
+            self.pitch = 0.01
         }
 
         let _pi: f32 = f32::consts::PI;
-        if self.pitch > _pi - 0.0001 {
-            self.pitch = _pi - 0.0001
+        if self.pitch > _pi - 0.01 {
+            self.pitch = _pi - 0.01
         }
     }
 
@@ -177,7 +177,7 @@ impl ArcBall {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view     = *self.projection.as_mat() * na::to_homogeneous(&na::inv(&self.view_transform()).unwrap());
+        self.proj_view     = *self.projection.as_mat() * na::to_homogeneous(&self.view_transform());
         self.inv_proj_view = na::inv(&self.proj_view).unwrap();
     }
 }
@@ -188,7 +188,7 @@ impl Camera for ArcBall {
     }
 
     fn view_transform(&self) -> Iso3<f32> {
-        Iso3::look_at_z(&self.eye(), &self.at, &Vec3::y())
+        Iso3::look_at_rh(&self.eye(), &self.at, &Vec3::y())
     }
 
     fn eye(&self) -> Pnt3<f32> {
