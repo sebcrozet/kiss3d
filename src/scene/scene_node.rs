@@ -3,8 +3,8 @@ use std::cell::{Ref, RefMut, RefCell};
 use std::mem;
 use std::path::{Path, PathBuf};
 use na;
-use na::{Iso3, Pnt2, Vec3, Pnt3, Transformation, Rotation, Translation, RotationWithTranslation};
-use resource::{Mesh, MeshManager, Texture, TextureManager, Material, MaterialManager};
+use na::{Isometry3, Point2, Vector3, Point3, Transformation, Rotation, Translation, RotationWithTranslation};
+use resource::{Mesh, MeshManager, Texture, TextureManager, Matrixerial, MatrixerialManager};
 use ncollide_procedural::TriMesh3;
 use ncollide_procedural as procedural;
 use scene::Object;
@@ -15,10 +15,10 @@ use light::Light;
 // will not be needed any more.
 /// The datas contained by a `SceneNode`.
 pub struct SceneNodeData {
-    local_scale:     Vec3<f32>,
-    local_transform: Iso3<f32>,
-    world_scale:     Vec3<f32>,
-    world_transform: Iso3<f32>,
+    local_scale:     Vector3<f32>,
+    local_transform: Isometry3<f32>,
+    world_scale:     Vector3<f32>,
+    world_transform: Isometry3<f32>,
     visible:         bool,
     up_to_date:      bool,
     children:        Vec<SceneNode>,
@@ -90,8 +90,8 @@ impl SceneNodeData {
     }
 
     fn do_render(&mut self,
-                 transform:    &Iso3<f32>,
-                 scale:        &Vec3<f32>,
+                 transform:    &Isometry3<f32>,
+                 scale:        &Vector3<f32>,
                  pass:         usize,
                  camera:       &mut Camera,
                  light:        &Light) {
@@ -157,7 +157,7 @@ impl SceneNodeData {
     // we are on a leaf? (to avoid the call to a closure required by the apply_to_*).
     /// Sets the material of the objects contained by this node and its children.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<Matrixerial + 'static>>>) {
         self.apply_to_objects_mut(&mut |o| o.set_material(material.clone()))
     }
 
@@ -166,7 +166,7 @@ impl SceneNodeData {
     /// The material must already have been registered as `name`.
     #[inline]
     pub fn set_material_with_name(&mut self, name: &str) {
-        let material = MaterialManager::get_global_manager(|tm| tm.get(name).unwrap_or_else(
+        let material = MatrixerialManager::get_global_manager(|tm| tm.get(name).unwrap_or_else(
             || panic!("Invalid attempt to use the unregistered material: {}", name)));
 
         self.set_material(material)
@@ -202,7 +202,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_vertices<F: FnMut(&mut Vec<Pnt3<f32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_vertices<F: FnMut(&mut Vec<Point3<f32>>) -> ()>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_vertices(f))
     }
 
@@ -210,7 +210,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_vertices<F: FnMut(&[Pnt3<f32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_vertices<F: FnMut(&[Point3<f32>]) -> ()>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_vertices(f))
     }
 
@@ -225,7 +225,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_normals<F: FnMut(&mut Vec<Vec3<f32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_normals<F: FnMut(&mut Vec<Vector3<f32>>) -> ()>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_normals(f))
     }
 
@@ -233,7 +233,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_normals<F: FnMut(&[Vec3<f32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_normals<F: FnMut(&[Vector3<f32>]) -> ()>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_normals(f))
     }
 
@@ -241,7 +241,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_faces<F: FnMut(&mut Vec<Pnt3<u32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u32>>) -> ()>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_faces(f))
     }
 
@@ -249,7 +249,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_faces<F: FnMut(&[Pnt3<u32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_faces<F: FnMut(&[Point3<u32>]) -> ()>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_faces(f))
     }
 
@@ -258,7 +258,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_uvs<F: FnMut(&mut Vec<Pnt2<f32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_uvs<F: FnMut(&mut Vec<Point2<f32>>) -> ()>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_uvs(f))
     }
 
@@ -266,7 +266,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_uvs<F: FnMut(&[Pnt2<f32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_uvs<F: FnMut(&[Point2<f32>]) -> ()>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_uvs(f))
     }
 
@@ -339,34 +339,34 @@ impl SceneNodeData {
     #[inline]
     pub fn set_local_scale(&mut self, sx: f32, sy: f32, sz: f32) {
         self.invalidate();
-        self.local_scale = Vec3::new(sx, sy, sz)
+        self.local_scale = Vector3::new(sx, sy, sz)
     }
 
     /// Returns the scaling factors of the object.
     #[inline]
-    pub fn local_scale(&self) -> Vec3<f32> {
+    pub fn local_scale(&self) -> Vector3<f32> {
         self.local_scale
     }
 
     /// Move and orient the object such that it is placed at the point `eye` and have its `z` axis
     /// oriented toward `at`.
     #[inline]
-    pub fn reorient(&mut self, eye: &Pnt3<f32>, at: &Pnt3<f32>, up: &Vec3<f32>) {
+    pub fn reorient(&mut self, eye: &Point3<f32>, at: &Point3<f32>, up: &Vector3<f32>) {
         self.invalidate();
         // FIXME: multiply by the parent's world transform?
-        self.local_transform = Iso3::new_observer_frame(eye, at, up)
+        self.local_transform = Isometry3::new_observer_frame(eye, at, up)
     }
 
     /// This node local transformation.
     #[inline]
-    pub fn local_transformation(&self) -> Iso3<f32> {
+    pub fn local_transformation(&self) -> Isometry3<f32> {
         self.local_transform.clone()
     }
 
     /// Inverse of this node local transformation.
     #[inline]
-    pub fn inv_local_transformation(&self) -> Iso3<f32> {
-        self.local_transform.inv_transformation()
+    pub fn inverse_local_transformation(&self) -> Isometry3<f32> {
+        self.local_transform.inverse_transformation()
     }
 
     /// This node world transformation.
@@ -375,7 +375,7 @@ impl SceneNodeData {
     /// invalidated.
     #[inline]
     #[allow(mutable_transmutes)]
-    pub fn world_transformation(&self) -> Iso3<f32> {
+    pub fn world_transformation(&self) -> Isometry3<f32> {
         // NOTE: this is to have some kind of laziness without a `&mut self`.
         unsafe {
             let mself: &mut SceneNodeData = mem::transmute(self);
@@ -390,105 +390,105 @@ impl SceneNodeData {
     /// invalidated.
     #[inline]
     #[allow(mutable_transmutes)]
-    pub fn inv_world_transformation(&self) -> Iso3<f32> {
+    pub fn inverse_world_transformation(&self) -> Isometry3<f32> {
         // NOTE: this is to have some kind of laziness without a `&mut self`.
         unsafe {
             let mself: &mut SceneNodeData = mem::transmute(self);
             mself.update();
         }
-        self.local_transform.inv_transformation()
+        self.local_transform.inverse_transformation()
     }
 
     /// Appends a transformation to this node local transformation.
     #[inline]
-    pub fn append_transformation(&mut self, t: &Iso3<f32>) {
+    pub fn append_transformation(&mut self, t: &Isometry3<f32>) {
         self.invalidate();
         self.local_transform.append_transformation_mut(t)
     }
 
     /// Prepends a transformation to this node local transformation.
     #[inline]
-    pub fn prepend_to_local_transformation(&mut self, t: &Iso3<f32>) {
+    pub fn prepend_to_local_transformation(&mut self, t: &Isometry3<f32>) {
         self.invalidate();
         self.local_transform.prepend_transformation_mut(t)
     }
 
     /// Set this node local transformation.
     #[inline]
-    pub fn set_local_transformation(&mut self, t: Iso3<f32>) {
+    pub fn set_local_transformation(&mut self, t: Isometry3<f32>) {
         self.invalidate();
         self.local_transform.set_transformation(t)
     }
 
     /// This node local translation.
     #[inline]
-    pub fn local_translation(&self) -> Vec3<f32> {
+    pub fn local_translation(&self) -> Vector3<f32> {
         self.local_transform.translation()
     }
 
     /// The inverse of this node local translation.
     #[inline]
-    pub fn inv_local_translation(&self) -> Vec3<f32> {
-        self.local_transform.inv_translation()
+    pub fn inverse_local_translation(&self) -> Vector3<f32> {
+        self.local_transform.inverse_translation()
     }
 
     /// Appends a translation to this node local transformation.
     #[inline]
-    pub fn append_translation(&mut self, t: &Vec3<f32>) {
+    pub fn append_translation(&mut self, t: &Vector3<f32>) {
         self.invalidate();
         self.local_transform.append_translation_mut(t)
     }
 
     /// Prepends a translation to this node local transformation.
     #[inline]
-    pub fn prepend_to_local_translation(&mut self, t: &Vec3<f32>) {
+    pub fn prepend_to_local_translation(&mut self, t: &Vector3<f32>) {
         self.invalidate();
         self.local_transform.prepend_translation_mut(t)
     }
 
     /// Sets the local translation of this node.
     #[inline]
-    pub fn set_local_translation(&mut self, t: Vec3<f32>) {
+    pub fn set_local_translation(&mut self, t: Vector3<f32>) {
         self.invalidate();
         self.local_transform.set_translation(t)
     }
 
     /// This node local rotation.
     #[inline]
-    pub fn local_rotation(&self) -> Vec3<f32> {
+    pub fn local_rotation(&self) -> Vector3<f32> {
         self.local_transform.rotation()
     }
 
     /// The inverse of this node local rotation.
     #[inline]
-    pub fn inv_local_rotation(&self) -> Vec3<f32> {
-        self.local_transform.inv_rotation()
+    pub fn inverse_local_rotation(&self) -> Vector3<f32> {
+        self.local_transform.inverse_rotation()
     }
 
     /// Appends a rotation to this node local transformation.
     #[inline]
-    pub fn append_rotation(&mut self, r: &Vec3<f32>) {
+    pub fn append_rotation(&mut self, r: &Vector3<f32>) {
         self.invalidate();
         self.local_transform.append_rotation_mut(r)
     }
 
     /// Appends a rotation to this node local transformation.
     #[inline]
-    pub fn append_rotation_wrt_center(&mut self, r: &Vec3<f32>) {
+    pub fn append_rotation_wrt_center(&mut self, r: &Vector3<f32>) {
         self.invalidate();
         self.local_transform.append_rotation_wrt_center_mut(r)
     }
 
     /// Prepends a rotation to this node local transformation.
     #[inline]
-    pub fn prepend_to_local_rotation(&mut self, r: &Vec3<f32>) {
+    pub fn prepend_to_local_rotation(&mut self, r: &Vector3<f32>) {
         self.invalidate();
         self.local_transform.prepend_rotation_mut(r)
     }
 
     /// Sets the local rotation of this node.
     #[inline]
-    pub fn set_local_rotation(&mut self, r: Vec3<f32>) {
+    pub fn set_local_rotation(&mut self, r: Vector3<f32>) {
         self.invalidate();
         self.local_transform.set_rotation(r)
     }
@@ -535,8 +535,8 @@ impl SceneNodeData {
 
 impl SceneNode {
     /// Creates a new scene node that is not rooted.
-    pub fn new(local_scale:     Vec3<f32>,
-               local_transform: Iso3<f32>,
+    pub fn new(local_scale:     Vector3<f32>,
+               local_transform: Isometry3<f32>,
                object:          Option<Object>)
                -> SceneNode {
         let data = SceneNodeData {
@@ -604,7 +604,7 @@ impl SceneNode {
     }
 
     /// Adds a node containing an object to this node children.
-    pub fn add_object(&mut self, local_scale: Vec3<f32>, local_transform: Iso3<f32>, object: Object) -> SceneNode {
+    pub fn add_object(&mut self, local_scale: Vector3<f32>, local_transform: Isometry3<f32>, object: Object) -> SceneNode {
         let node = SceneNode::new(local_scale, local_transform, Some(object));
 
         self.add_child(node.clone());
@@ -620,7 +620,7 @@ impl SceneNode {
     /// * `wy` - the cube extent along the y axis
     /// * `wz` - the cube extent along the z axis
     pub fn add_cube(&mut self, wx: f32, wy: f32, wz: f32) -> SceneNode {
-        let res = self.add_geom_with_name("cube", Vec3::new(wx, wy, wz));
+        let res = self.add_geom_with_name("cube", Vector3::new(wx, wy, wz));
 
         res.expect("Unable to load the default cube geometry.")
     }
@@ -630,7 +630,7 @@ impl SceneNode {
     /// # Arguments
     /// * `r` - the sphere radius
     pub fn add_sphere(&mut self, r: f32) -> SceneNode {
-        let res = self.add_geom_with_name("sphere", Vec3::new(r * 2.0, r * 2.0, r * 2.0));
+        let res = self.add_geom_with_name("sphere", Vector3::new(r * 2.0, r * 2.0, r * 2.0));
 
         res.expect("Unable to load the default sphere geometry.")
     }
@@ -642,7 +642,7 @@ impl SceneNode {
     /// * `h` - the cone height
     /// * `r` - the cone base radius
     pub fn add_cone(&mut self, r: f32, h: f32) -> SceneNode {
-        let res = self.add_geom_with_name("cone", Vec3::new(r * 2.0, h, r * 2.0));
+        let res = self.add_geom_with_name("cone", Vector3::new(r * 2.0, h, r * 2.0));
 
         res.expect("Unable to load the default cone geometry.")
     }
@@ -654,7 +654,7 @@ impl SceneNode {
     /// * `h` - the cylinder height
     /// * `r` - the cylinder base radius
     pub fn add_cylinder(&mut self, r: f32, h: f32) -> SceneNode {
-        let res = self.add_geom_with_name("cylinder", Vec3::new(r * 2.0, h, r * 2.0));
+        let res = self.add_geom_with_name("cylinder", Vector3::new(r * 2.0, h, r * 2.0));
 
         res.expect("Unable to load the default cylinder geometry.")
     }
@@ -689,7 +689,7 @@ impl SceneNode {
     }
 
     /// Adds a double-sided quad with the specified vertices.
-    pub fn add_quad_with_vertices(&mut self, vertices: &[Pnt3<f32>], nhpoints: usize, nvpoints: usize) -> SceneNode {
+    pub fn add_quad_with_vertices(&mut self, vertices: &[Point3<f32>], nhpoints: usize, nvpoints: usize) -> SceneNode {
         let geom = procedural::quad_with_vertices(vertices, nhpoints, nvpoints);
 
         let mut node = self.add_trimesh(geom, na::one());
@@ -699,21 +699,21 @@ impl SceneNode {
     }
 
     /// Creates and adds a new object using the geometry registered as `geometry_name`.
-    pub fn add_geom_with_name(&mut self, geometry_name: &str, scale: Vec3<f32>) -> Option<SceneNode> {
+    pub fn add_geom_with_name(&mut self, geometry_name: &str, scale: Vector3<f32>) -> Option<SceneNode> {
         MeshManager::get_global_manager(|mm| mm.get(geometry_name)).map(|g| self.add_mesh(g, scale))
     }
 
     /// Creates and adds a new object to this node children using a mesh.
-    pub fn add_mesh(&mut self, mesh: Rc<RefCell<Mesh>>, scale: Vec3<f32>) -> SceneNode {
+    pub fn add_mesh(&mut self, mesh: Rc<RefCell<Mesh>>, scale: Vector3<f32>) -> SceneNode {
         let tex    = TextureManager::get_global_manager(|tm| tm.get_default());
-        let mat    = MaterialManager::get_global_manager(|mm| mm.get_default());
+        let mat    = MatrixerialManager::get_global_manager(|mm| mm.get_default());
         let object = Object::new(mesh, 1.0, 1.0, 1.0, tex, mat);
 
         self.add_object(scale, na::one(), object)
     }
 
     /// Creates and adds a new object using a mesh descriptor.
-    pub fn add_trimesh(&mut self, descr: TriMesh3<f32>, scale: Vec3<f32>) -> SceneNode {
+    pub fn add_trimesh(&mut self, descr: TriMesh3<f32>, scale: Vector3<f32>) -> SceneNode {
         self.add_mesh(Rc::new(RefCell::new(Mesh::from_trimesh(descr, false))), scale)
     }
 
@@ -721,9 +721,9 @@ impl SceneNode {
     ///
     /// This will create a new node serving as a root of the scene described by the obj file. This
     /// newly created node is added to this node's children.
-    pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: Vec3<f32>) -> SceneNode {
+    pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: Vector3<f32>) -> SceneNode {
         let tex = TextureManager::get_global_manager(|tm| tm.get_default());
-        let mat = MaterialManager::get_global_manager(|mm| mm.get_default());
+        let mat = MatrixerialManager::get_global_manager(|mm| mm.get_default());
 
         // FIXME: is there some error-handling stuff to do here instead of the `let _`.
         let result = MeshManager::load_obj(path, mtl_dir, path.to_str().unwrap()).map(|objs| {
@@ -813,7 +813,7 @@ impl SceneNode {
 
     /// Sets the material of the objects contained by this node and its children.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<Matrixerial + 'static>>>) {
         self.data_mut().set_material(material)
     }
 
@@ -853,7 +853,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_vertices<F: FnMut(&mut Vec<Pnt3<f32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_vertices<F: FnMut(&mut Vec<Point3<f32>>) -> ()>(&mut self, f: &mut F) {
         self.data_mut().modify_vertices(f)
     }
 
@@ -861,7 +861,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_vertices<F: FnMut(&[Pnt3<f32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_vertices<F: FnMut(&[Point3<f32>]) -> ()>(&self, f: &mut F) {
         self.data().read_vertices(f)
     }
 
@@ -876,7 +876,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_normals<F: FnMut(&mut Vec<Vec3<f32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_normals<F: FnMut(&mut Vec<Vector3<f32>>) -> ()>(&mut self, f: &mut F) {
         self.data_mut().modify_normals(f)
     }
 
@@ -884,7 +884,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_normals<F: FnMut(&[Vec3<f32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_normals<F: FnMut(&[Vector3<f32>]) -> ()>(&self, f: &mut F) {
         self.data().read_normals(f)
     }
 
@@ -892,7 +892,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_faces<F: FnMut(&mut Vec<Pnt3<u32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u32>>) -> ()>(&mut self, f: &mut F) {
         self.data_mut().modify_faces(f)
     }
 
@@ -900,7 +900,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_faces<F: FnMut(&[Pnt3<u32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_faces<F: FnMut(&[Point3<u32>]) -> ()>(&self, f: &mut F) {
         self.data().read_faces(f)
     }
 
@@ -909,7 +909,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_uvs<F: FnMut(&mut Vec<Pnt2<f32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_uvs<F: FnMut(&mut Vec<Point2<f32>>) -> ()>(&mut self, f: &mut F) {
         self.data_mut().modify_uvs(f)
     }
 
@@ -917,7 +917,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_uvs<F: FnMut(&[Pnt2<f32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_uvs<F: FnMut(&[Point2<f32>]) -> ()>(&self, f: &mut F) {
         self.data().read_uvs(f)
     }
 
@@ -962,67 +962,67 @@ impl SceneNode {
     /// Move and orient the object such that it is placed at the point `eye` and have its `x` axis
     /// oriented toward `at`.
     #[inline]
-    pub fn reorient(&mut self, eye: &Pnt3<f32>, at: &Pnt3<f32>, up: &Vec3<f32>) {
+    pub fn reorient(&mut self, eye: &Point3<f32>, at: &Point3<f32>, up: &Vector3<f32>) {
         self.data_mut().reorient(eye, at, up)
     }
 
     /// Appends a transformation to this node local transformation.
     #[inline]
-    pub fn append_transformation(&mut self, t: &Iso3<f32>) {
+    pub fn append_transformation(&mut self, t: &Isometry3<f32>) {
         self.data_mut().append_transformation(t)
     }
 
     /// Prepends a transformation to this node local transformation.
     #[inline]
-    pub fn prepend_to_local_transformation(&mut self, t: &Iso3<f32>) {
+    pub fn prepend_to_local_transformation(&mut self, t: &Isometry3<f32>) {
         self.data_mut().prepend_to_local_transformation(t)
     }
 
     /// Set this node local transformation.
     #[inline]
-    pub fn set_local_transformation(&mut self, t: Iso3<f32>) {
+    pub fn set_local_transformation(&mut self, t: Isometry3<f32>) {
         self.data_mut().set_local_transformation(t)
     }
 
     /// Appends a translation to this node local transformation.
     #[inline]
-    pub fn append_translation(&mut self, t: &Vec3<f32>) {
+    pub fn append_translation(&mut self, t: &Vector3<f32>) {
         self.data_mut().append_translation(t)
     }
 
     /// Prepends a translation to this node local transformation.
     #[inline]
-    pub fn prepend_to_local_translation(&mut self, t: &Vec3<f32>) {
+    pub fn prepend_to_local_translation(&mut self, t: &Vector3<f32>) {
         self.data_mut().prepend_to_local_translation(t)
     }
 
     /// Sets the local translation of this node.
     #[inline]
-    pub fn set_local_translation(&mut self, t: Vec3<f32>) {
+    pub fn set_local_translation(&mut self, t: Vector3<f32>) {
         self.data_mut().set_local_translation(t)
     }
 
     /// Appends a rotation to this node local transformation.
     #[inline]
-    pub fn append_rotation(&mut self, r: &Vec3<f32>) {
+    pub fn append_rotation(&mut self, r: &Vector3<f32>) {
         self.data_mut().append_rotation(r)
     }
 
     /// Appends a rotation to this node local transformation.
     #[inline]
-    pub fn append_rotation_wrt_center(&mut self, r: &Vec3<f32>) {
+    pub fn append_rotation_wrt_center(&mut self, r: &Vector3<f32>) {
         (*self.data_mut()).append_rotation_wrt_center(r)
     }
 
     /// Prepends a rotation to this node local transformation.
     #[inline]
-    pub fn prepend_to_local_rotation(&mut self, r: &Vec3<f32>) {
+    pub fn prepend_to_local_rotation(&mut self, r: &Vector3<f32>) {
         self.data_mut().prepend_to_local_rotation(r)
     }
 
     /// Sets the local rotation of this node.
     #[inline]
-    pub fn set_local_rotation(&mut self, r: Vec3<f32>) {
+    pub fn set_local_rotation(&mut self, r: Vector3<f32>) {
         self.data_mut().set_local_rotation(r)
     }
 }

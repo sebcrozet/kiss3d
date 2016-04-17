@@ -1,5 +1,5 @@
 use glfw;
-use na::{Pnt2, Pnt3, Pnt4, Vec2, Vec3, Mat4, Iso3};
+use na::{Point2, Point3, Point4, Vector2, Vector3, Matrix4, Isometry3};
 use na;
 use resource::ShaderUniform;
 
@@ -15,15 +15,15 @@ pub trait Camera {
      * Transformation-related methods.
      */
     /// The camera position.
-    fn eye(&self) -> Pnt3<f32>; // FIXME: should this be here?
+    fn eye(&self) -> Point3<f32>; // FIXME: should this be here?
     /// The camera view transform.
-    fn view_transform(&self) -> Iso3<f32>;
+    fn view_transform(&self) -> Isometry3<f32>;
     /// The transformation applied by the camera to transform a point in world coordinates to
     /// a point in device coordinates.
-    fn transformation(&self) -> Mat4<f32>;
+    fn transformation(&self) -> Matrix4<f32>;
     /// The transformation applied by the camera to transform point in device coordinates to a
     /// point in world coordinate.
-    fn inv_transformation(&self) -> Mat4<f32>;
+    fn inverse_transformation(&self) -> Matrix4<f32>;
     /// The clipping planes, aka. (`znear`, `zfar`).
     fn clip_planes(&self) -> (f32, f32); // FIXME: should this be here?
 
@@ -37,7 +37,7 @@ pub trait Camera {
     /// Upload the camera transformation to the gpu. This can be called multiple times on the
     /// render loop.
     #[inline]
-    fn upload(&self, _pass: usize, uniform: &mut ShaderUniform<Mat4<f32>>) {
+    fn upload(&self, _pass: usize, uniform: &mut ShaderUniform<Matrix4<f32>>) {
         uniform.upload(&self.transformation());
     }
 
@@ -54,13 +54,13 @@ pub trait Camera {
     fn render_complete(&self, _window: &glfw::Window) { }
 
     /// Converts a 3d point to 2d screen coordinates, assuming the screen has the size `size`.
-    fn project(&self, world_coord: &Pnt3<f32>, size: &Vec2<f32>) -> Vec2<f32> {
+    fn project(&self, world_coord: &Point3<f32>, size: &Vector2<f32>) -> Vector2<f32> {
         let h_world_coord      = na::to_homogeneous(world_coord);
         let h_normalized_coord = self.transformation() * h_world_coord;
 
-        let normalized_coord: Pnt3<f32> = na::from_homogeneous(&h_normalized_coord);
+        let normalized_coord: Point3<f32> = na::from_homogeneous(&h_normalized_coord);
 
-        Vec2::new(
+        Vector2::new(
             (1.0 + normalized_coord.x) * size.x / 2.0,
             (1.0 + normalized_coord.y) * size.y / 2.0)
     }
@@ -68,21 +68,21 @@ pub trait Camera {
     /// Converts a point in 2d screen coordinates to a ray (a 3d position and a direction).
     ///
     /// The screen is assumed to have a size given by `size`.
-    fn unproject(&self, window_coord: &Pnt2<f32>, size: &Vec2<f32>) -> (Pnt3<f32>, Vec3<f32>) {
-        let normalized_coord = Pnt2::new(
+    fn unproject(&self, window_coord: &Point2<f32>, size: &Vector2<f32>) -> (Point3<f32>, Vector3<f32>) {
+        let normalized_coord = Point2::new(
             2.0 * window_coord.x  / size.x - 1.0,
             2.0 * -window_coord.y / size.y + 1.0);
 
-        let normalized_begin = Pnt4::new(normalized_coord.x, normalized_coord.y, -1.0, 1.0);
-        let normalized_end   = Pnt4::new(normalized_coord.x, normalized_coord.y, 1.0, 1.0);
+        let normalized_begin = Point4::new(normalized_coord.x, normalized_coord.y, -1.0, 1.0);
+        let normalized_end   = Point4::new(normalized_coord.x, normalized_coord.y, 1.0, 1.0);
 
-        let cam = self.inv_transformation();
+        let cam = self.inverse_transformation();
 
         let h_unprojected_begin = cam * normalized_begin;
         let h_unprojected_end   = cam * normalized_end;
 
-        let unprojected_begin: Pnt3<f32> = na::from_homogeneous(&h_unprojected_begin);
-        let unprojected_end:   Pnt3<f32> = na::from_homogeneous(&h_unprojected_end);
+        let unprojected_begin: Point3<f32> = na::from_homogeneous(&h_unprojected_begin);
+        let unprojected_end:   Point3<f32> = na::from_homogeneous(&h_unprojected_end);
 
         (unprojected_begin, na::normalize(&(unprojected_end - unprojected_begin)))
     }

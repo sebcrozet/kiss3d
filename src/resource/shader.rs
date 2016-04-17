@@ -10,7 +10,7 @@ use std::path::Path;
 use gl;
 use gl::types::*;
 use camera::Camera;
-use resource::{GLPrimitive, GPUVector};
+use resource::{GLPrimitive, GPUVec};
 
 #[path = "../error.rs"]
 mod error;
@@ -121,7 +121,7 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
     }
 
     /// Binds this attribute to a gpu vector.
-    pub fn bind(&mut self, vector: &mut GPUVector<T>) {
+    pub fn bind(&mut self, vector: &mut GPUVec<T>) {
         vector.bind();
 
         unsafe {
@@ -136,7 +136,7 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
     }
 
     /// Binds this attribute to non contiguous parts of a gpu vector.
-    pub fn bind_sub_buffer(&mut self, vector: &mut GPUVector<T>, strides: usize, start_index: usize) {
+    pub fn bind_sub_buffer(&mut self, vector: &mut GPUVec<T>, strides: usize, start_index: usize) {
         vector.bind();
 
         unsafe {

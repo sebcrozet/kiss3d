@@ -1,9 +1,9 @@
 use std::ptr;
 use gl;
 use gl::types::*;
-use na::{Pnt3, Vec3, Mat3, Mat4, Iso3};
+use na::{Point3, Vector3, Matrix3, Matrix4, Isometry3};
 use na;
-use resource::Material;
+use resource::Matrixerial;
 use scene::ObjectData;
 use light::Light;
 use camera::Camera;
@@ -14,23 +14,23 @@ mod error;
 
 
 /// A material that draws normals of an object.
-pub struct NormalsMaterial {
+pub struct NormalsMatrixerial {
     shader:    Shader,
-    position:  ShaderAttribute<Pnt3<f32>>,
-    normal:    ShaderAttribute<Vec3<f32>>,
-    view:      ShaderUniform<Mat4<f32>>,
-    transform: ShaderUniform<Mat4<f32>>,
-    scale:     ShaderUniform<Mat3<f32>>
+    position:  ShaderAttribute<Point3<f32>>,
+    normal:    ShaderAttribute<Vector3<f32>>,
+    view:      ShaderUniform<Matrix4<f32>>,
+    transform: ShaderUniform<Matrix4<f32>>,
+    scale:     ShaderUniform<Matrix3<f32>>
 }
 
-impl NormalsMaterial {
-    /// Creates a new NormalsMaterial.
-    pub fn new() -> NormalsMaterial {
+impl NormalsMatrixerial {
+    /// Creates a new NormalsMatrixerial.
+    pub fn new() -> NormalsMatrixerial {
         let mut shader = Shader::new_from_str(NORMAL_VERTEX_SRC, NORMAL_FRAGMENT_SRC);
 
         shader.use_program();
 
-        NormalsMaterial {
+        NormalsMatrixerial {
             position:  shader.get_attrib("position").unwrap(),
             normal:    shader.get_attrib("normal").unwrap(),
             transform: shader.get_uniform("transform").unwrap(),
@@ -41,11 +41,11 @@ impl NormalsMaterial {
     }
 }
 
-impl Material for NormalsMaterial {
+impl Matrixerial for NormalsMatrixerial {
     fn render(&mut self,
               pass:      usize,
-              transform: &Iso3<f32>,
-              scale:     &Vec3<f32>,
+              transform: &Isometry3<f32>,
+              scale:     &Vector3<f32>,
               camera:    &mut Camera,
               _:         &Light,
               data:      &ObjectData,
@@ -78,9 +78,9 @@ impl Material for NormalsMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform: Mat4<f32> = na::to_homogeneous(transform);
+        let formated_transform: Matrix4<f32> = na::to_homogeneous(transform);
         // FIXME: add a function `na::diagonal(scale)` to nalgebra.
-        let formated_scale:     Mat3<f32> = Mat3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
+        let formated_scale:     Matrix3<f32> = Matrix3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
 
         self.transform.upload(&formated_transform);
         self.scale.upload(&formated_scale);

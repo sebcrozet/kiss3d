@@ -2,9 +2,9 @@
 
 use gl;
 use gl::types::*;
-use na::Vec2;
+use na::Vector2;
 use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, RenderTarget,
-               GPUVector};
+               GPUVec};
 use post_processing::post_processing_effect::PostProcessingEffect;
 
 #[path = "../error.rs"]
@@ -25,20 +25,20 @@ pub struct SobelEdgeHighlight {
     gl_znear:        ShaderUniform<GLfloat>,
     gl_zfar:         ShaderUniform<GLfloat>,
     gl_threshold:    ShaderUniform<GLfloat>,
-    gl_v_coord:      ShaderAttribute<Vec2<f32>>,
-    gl_fbo_vertices: GPUVector<Vec2<f32>>
+    gl_v_coord:      ShaderAttribute<Vector2<f32>>,
+    gl_fbo_vertices: GPUVec<Vector2<f32>>
 }
 
 impl SobelEdgeHighlight {
     /// Creates a new SobelEdgeHighlight post processing effect.
     pub fn new(threshold: f32) -> SobelEdgeHighlight {
-        let fbo_vertices: Vec<Vec2<GLfloat>>  = vec!(
-            Vec2::new(-1.0, -1.0),
-            Vec2::new(1.0, -1.0),
-            Vec2::new(-1.0,  1.0),
-            Vec2::new(1.0,  1.0));
+        let fbo_vertices: Vec<Vector2<GLfloat>>  = vec!(
+            Vector2::new(-1.0, -1.0),
+            Vector2::new(1.0, -1.0),
+            Vector2::new(-1.0,  1.0),
+            Vector2::new(1.0,  1.0));
 
-        let mut fbo_vertices = GPUVector::new(fbo_vertices, BufferType::Array, AllocationType::StaticDraw);
+        let mut fbo_vertices = GPUVec::new(fbo_vertices, BufferType::Array, AllocationType::StaticDraw);
         fbo_vertices.load_to_gpu();
         fbo_vertices.unload_from_ram();
 

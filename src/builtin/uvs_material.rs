@@ -1,9 +1,9 @@
 use std::ptr;
 use gl;
 use gl::types::*;
-use na::{Pnt3, Pnt2, Vec3, Mat3, Mat4, Iso3};
+use na::{Point3, Point2, Vector3, Matrix3, Matrix4, Isometry3};
 use na;
-use resource::Material;
+use resource::Matrixerial;
 use scene::ObjectData;
 use light::Light;
 use camera::Camera;
@@ -14,23 +14,23 @@ mod error;
 
 
 /// A material that draws normals of an object.
-pub struct UvsMaterial {
+pub struct UvsMatrixerial {
     shader:    Shader,
-    position:  ShaderAttribute<Pnt3<f32>>,
-    uvs:       ShaderAttribute<Pnt2<f32>>,
-    view:      ShaderUniform<Mat4<f32>>,
-    transform: ShaderUniform<Mat4<f32>>,
-    scale:     ShaderUniform<Mat3<f32>>
+    position:  ShaderAttribute<Point3<f32>>,
+    uvs:       ShaderAttribute<Point2<f32>>,
+    view:      ShaderUniform<Matrix4<f32>>,
+    transform: ShaderUniform<Matrix4<f32>>,
+    scale:     ShaderUniform<Matrix3<f32>>
 }
 
-impl UvsMaterial {
-    /// Creates a new UvsMaterial.
-    pub fn new() -> UvsMaterial {
+impl UvsMatrixerial {
+    /// Creates a new UvsMatrixerial.
+    pub fn new() -> UvsMatrixerial {
         let mut shader = Shader::new_from_str(UVS_VERTEX_SRC, UVS_FRAGMENT_SRC);
 
         shader.use_program();
 
-        UvsMaterial {
+        UvsMatrixerial {
             position:  shader.get_attrib("position").unwrap(),
             uvs:       shader.get_attrib("uvs").unwrap(),
             transform: shader.get_uniform("transform").unwrap(),
@@ -41,11 +41,11 @@ impl UvsMaterial {
     }
 }
 
-impl Material for UvsMaterial {
+impl Matrixerial for UvsMatrixerial {
     fn render(&mut self,
               pass:      usize,
-              transform: &Iso3<f32>,
-              scale:     &Vec3<f32>,
+              transform: &Isometry3<f32>,
+              scale:     &Vector3<f32>,
               camera:    &mut Camera,
               _:         &Light,
               data:      &ObjectData,
@@ -78,9 +78,9 @@ impl Material for UvsMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform: Mat4<f32> = na::to_homogeneous(transform);
+        let formated_transform: Matrix4<f32> = na::to_homogeneous(transform);
         // FIXME: add a function `na::diagonal(scale)` to nalgebra.
-        let formated_scale:     Mat3<f32> = Mat3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
+        let formated_scale:     Matrix3<f32> = Matrix3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
 
         self.transform.upload(&formated_transform);
         self.scale.upload(&formated_scale);

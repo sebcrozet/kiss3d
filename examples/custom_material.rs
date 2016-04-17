@@ -6,42 +6,42 @@ use std::ptr;
 use std::rc::Rc;
 use std::cell::RefCell;
 use gl::types::GLint;
-use na::{Pnt3, Vec3, Mat3, Mat4, Iso3};
+use na::{Point3, Vector3, Matrix3, Matrix4, Isometry3};
 use kiss3d::window::Window;
 use kiss3d::scene::ObjectData;
 use kiss3d::camera::Camera;
 use kiss3d::light::Light;
-use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
+use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Matrixerial, Mesh};
 
 fn main() {
     let mut window = Window::new("Kiss3d: custom_material");
     let mut c      = window.add_sphere(1.0);
-    let material   = Rc::new(RefCell::new(Box::new(NormalMaterial::new()) as Box<Material + 'static>));
+    let material   = Rc::new(RefCell::new(Box::new(NormalMatrixerial::new()) as Box<Matrixerial + 'static>));
 
     c.set_material(material);
 
     while window.render() {
-        c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
+        c.prepend_to_local_rotation(&Vector3::new(0.0f32, 0.014, 0.0));
     }
 }
 
 // A material that draws normals
-pub struct NormalMaterial {
+pub struct NormalMatrixerial {
     shader:    Shader,
-    position:  ShaderAttribute<Pnt3<f32>>,
-    normal:    ShaderAttribute<Vec3<f32>>,
-    view:      ShaderUniform<Mat4<f32>>,
-    transform: ShaderUniform<Mat4<f32>>,
-    scale:     ShaderUniform<Mat3<f32>>
+    position:  ShaderAttribute<Point3<f32>>,
+    normal:    ShaderAttribute<Vector3<f32>>,
+    view:      ShaderUniform<Matrix4<f32>>,
+    transform: ShaderUniform<Matrix4<f32>>,
+    scale:     ShaderUniform<Matrix3<f32>>
 }
 
-impl NormalMaterial {
-    pub fn new() -> NormalMaterial {
+impl NormalMatrixerial {
+    pub fn new() -> NormalMatrixerial {
         let mut shader = Shader::new_from_str(NORMAL_VERTEX_SRC, NORMAL_FRAGMENT_SRC);
 
         shader.use_program();
 
-        NormalMaterial {
+        NormalMatrixerial {
             position:  shader.get_attrib("position").unwrap(),
             normal:    shader.get_attrib("normal").unwrap(),
             transform: shader.get_uniform("transform").unwrap(),
@@ -52,11 +52,11 @@ impl NormalMaterial {
     }
 }
 
-impl Material for NormalMaterial {
+impl Matrixerial for NormalMatrixerial {
     fn render(&mut self,
               pass:      usize,
-              transform: &Iso3<f32>,
-              scale:     &Vec3<f32>,
+              transform: &Isometry3<f32>,
+              scale:     &Vector3<f32>,
               camera:    &mut Camera,
               _:         &Light,
               _:         &ObjectData,
@@ -77,9 +77,9 @@ impl Material for NormalMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform: Mat4<f32> = na::to_homogeneous(transform);
+        let formated_transform: Matrix4<f32> = na::to_homogeneous(transform);
         // FIXME: add a function `na::diagonal(scale)` to nalgebra.
-        let formated_scale:     Mat3<f32> = Mat3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
+        let formated_scale:     Matrix3<f32> = Matrix3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
 
         self.transform.upload(&formated_transform);
         self.scale.upload(&formated_scale);

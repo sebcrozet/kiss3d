@@ -1,9 +1,9 @@
 use std::ptr;
 use gl;
 use gl::types::*;
-use na::{Pnt2, Pnt3, Vec3, Mat3, Mat4, Iso3};
+use na::{Point2, Point3, Vector3, Matrix3, Matrix4, Isometry3};
 use na;
-use resource::Material;
+use resource::Matrixerial;
 use scene::ObjectData;
 use light::Light;
 use camera::Camera;
@@ -13,29 +13,29 @@ use resource::{Mesh, Shader, ShaderAttribute, ShaderUniform};
 mod error;
 
 /// The default material used to draw objects.
-pub struct ObjectMaterial {
+pub struct ObjectMatrixerial {
     shader:     Shader,
-    pos:        ShaderAttribute<Pnt3<f32>>,
-    normal:     ShaderAttribute<Vec3<f32>>,
-    tex_coord:  ShaderAttribute<Pnt2<f32>>,
-    light:      ShaderUniform<Pnt3<f32>>,
-    color:      ShaderUniform<Pnt3<f32>>,
-    transform:  ShaderUniform<Mat4<f32>>,
-    scale:      ShaderUniform<Mat3<f32>>,
-    ntransform: ShaderUniform<Mat3<f32>>,
-    view:       ShaderUniform<Mat4<f32>>
+    pos:        ShaderAttribute<Point3<f32>>,
+    normal:     ShaderAttribute<Vector3<f32>>,
+    tex_coord:  ShaderAttribute<Point2<f32>>,
+    light:      ShaderUniform<Point3<f32>>,
+    color:      ShaderUniform<Point3<f32>>,
+    transform:  ShaderUniform<Matrix4<f32>>,
+    scale:      ShaderUniform<Matrix3<f32>>,
+    ntransform: ShaderUniform<Matrix3<f32>>,
+    view:       ShaderUniform<Matrix4<f32>>
 }
 
-impl ObjectMaterial {
-    /// Creates a new `ObjectMaterial`.
-    pub fn new() -> ObjectMaterial {
+impl ObjectMatrixerial {
+    /// Creates a new `ObjectMatrixerial`.
+    pub fn new() -> ObjectMatrixerial {
         // load the shader
         let mut shader = Shader::new_from_str(OBJECT_VERTEX_SRC, OBJECT_FRAGMENT_SRC);
 
         shader.use_program();
 
         // get the variables locations
-        ObjectMaterial {
+        ObjectMatrixerial {
             pos:        shader.get_attrib("position").unwrap(),
             normal:     shader.get_attrib("normal").unwrap(),
             tex_coord:  shader.get_attrib("tex_coord_v").unwrap(),
@@ -63,11 +63,11 @@ impl ObjectMaterial {
     }
 }
 
-impl Material for ObjectMaterial {
+impl Matrixerial for ObjectMatrixerial {
     fn render(&mut self,
               pass:      usize,
-              transform: &Iso3<f32>,
-              scale:     &Vec3<f32>,
+              transform: &Isometry3<f32>,
+              scale:     &Vector3<f32>,
               camera:    &mut Camera,
               light:     &Light,
               data:      &ObjectData,
@@ -94,9 +94,9 @@ impl Material for ObjectMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform:  Mat4<f32> = na::to_homogeneous(transform);
-        let formated_ntransform: Mat3<f32> = *transform.rotation.submat();
-        let formated_scale:      Mat3<f32> = Mat3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
+        let formated_transform:  Matrix4<f32> = na::to_homogeneous(transform);
+        let formated_ntransform: Matrix3<f32> = *transform.rotation.submatrix();
+        let formated_scale:      Matrix3<f32> = Matrix3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
 
         unsafe {
             self.transform.upload(&formated_transform);

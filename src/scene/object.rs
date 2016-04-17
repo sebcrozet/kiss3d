@@ -5,8 +5,8 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::path::Path;
 use gl::types::*;
-use na::{Pnt3, Pnt2, Vec3, Iso3};
-use resource::{Texture, TextureManager, Material, Mesh};
+use na::{Point3, Point2, Vector3, Isometry3};
+use resource::{Texture, TextureManager, Matrixerial, Mesh};
 use camera::Camera;
 use light::Light;
 
@@ -15,9 +15,9 @@ mod error;
 
 /// Set of data identifying a scene node.
 pub struct ObjectData {
-    material:     Rc<RefCell<Box<Material + 'static>>>,
+    material:     Rc<RefCell<Box<Matrixerial + 'static>>>,
     texture:      Rc<Texture>,
-    color:        Pnt3<f32>,
+    color:        Point3<f32>,
     wlines:       f32,
     wpoints:      f32,
     draw_surface: bool,
@@ -34,7 +34,7 @@ impl ObjectData {
 
     /// The color of this object.
     #[inline]
-    pub fn color<'a>(&'a self) -> &'a Pnt3<f32> {
+    pub fn color<'a>(&'a self) -> &'a Point3<f32> {
         &self.color
     }
 
@@ -88,10 +88,10 @@ impl Object {
                g:            f32,
                b:            f32,
                texture:      Rc<Texture>,
-               material:     Rc<RefCell<Box<Material + 'static>>>) -> Object {
+               material:     Rc<RefCell<Box<Matrixerial + 'static>>>) -> Object {
         let user_data = ();
         let data = ObjectData {
-            color:        Pnt3::new(r, g, b),
+            color:        Point3::new(r, g, b),
             texture:      texture,
             wlines:       0.0,
             wpoints:      0.0,
@@ -109,8 +109,8 @@ impl Object {
 
     #[doc(hidden)]
     pub fn render(&self,
-                  transform: &Iso3<f32>,
-                  scale:     &Vec3<f32>,
+                  transform: &Isometry3<f32>,
+                  scale:     &Vector3<f32>,
                   pass:      usize,
                   camera:    &mut Camera,
                   light:     &Light) {
@@ -150,13 +150,13 @@ impl Object {
 
     /// Gets the material of this object.
     #[inline]
-    pub fn material(&self) -> Rc<RefCell<Box<Material + 'static>>> {
+    pub fn material(&self) -> Rc<RefCell<Box<Matrixerial + 'static>>> {
         self.data.material.clone()
     }
 
     /// Sets the material of this object.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<Matrixerial + 'static>>>) {
         self.data.material = material;
     }
 
@@ -204,14 +204,14 @@ impl Object {
 
     /// Mutably access the object's vertices.
     #[inline(always)]
-    pub fn modify_vertices<F: FnMut(&mut Vec<Pnt3<GLfloat>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_vertices<F: FnMut(&mut Vec<Point3<GLfloat>>) -> ()>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
         let _ = bmesh.coords().write().unwrap().data_mut().as_mut().map(|coords| f(coords));
     }
 
     /// Access the object's vertices.
     #[inline(always)]
-    pub fn read_vertices<F: FnMut(&[Pnt3<GLfloat>]) -> ()>(&self, f: &mut F) {
+    pub fn read_vertices<F: FnMut(&[Point3<GLfloat>]) -> ()>(&self, f: &mut F) {
         let bmesh = self.mesh.borrow();
         let _ = bmesh.coords().read().unwrap().data().as_ref().map(|coords| f(&coords[..]));
     }
@@ -224,42 +224,42 @@ impl Object {
 
     /// Mutably access the object's normals.
     #[inline(always)]
-    pub fn modify_normals<F: FnMut(&mut Vec<Vec3<GLfloat>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_normals<F: FnMut(&mut Vec<Vector3<GLfloat>>) -> ()>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
         let _ = bmesh.normals().write().unwrap().data_mut().as_mut().map(|normals| f(normals));
     }
 
     /// Access the object's normals.
     #[inline(always)]
-    pub fn read_normals<F: FnMut(&[Vec3<GLfloat>]) -> ()>(&self, f: &mut F) {
+    pub fn read_normals<F: FnMut(&[Vector3<GLfloat>]) -> ()>(&self, f: &mut F) {
         let bmesh = self.mesh.borrow();
         let _ = bmesh.normals().read().unwrap().data().as_ref().map(|normals| f(&normals[..]));
     }
 
     /// Mutably access the object's faces.
     #[inline(always)]
-    pub fn modify_faces<F: FnMut(&mut Vec<Pnt3<GLuint>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Point3<GLuint>>) -> ()>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
         let _ = bmesh.faces().write().unwrap().data_mut().as_mut().map(|faces| f(faces));
     }
 
     /// Access the object's faces.
     #[inline(always)]
-    pub fn read_faces<F: FnMut(&[Pnt3<GLuint>]) -> ()>(&self, f: &mut F) {
+    pub fn read_faces<F: FnMut(&[Point3<GLuint>]) -> ()>(&self, f: &mut F) {
         let bmesh = self.mesh.borrow();
         let _ = bmesh.faces().read().unwrap().data().as_ref().map(|faces| f(&faces[..]));
     }
 
     /// Mutably access the object's texture coordinates.
     #[inline(always)]
-    pub fn modify_uvs<F: FnMut(&mut Vec<Pnt2<GLfloat>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_uvs<F: FnMut(&mut Vec<Point2<GLfloat>>) -> ()>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
         let _ = bmesh.uvs().write().unwrap().data_mut().as_mut().map(|uvs| f(uvs));
     }
 
     /// Access the object's texture coordinates.
     #[inline(always)]
-    pub fn read_uvs<F: FnMut(&[Pnt2<GLfloat>]) -> ()>(&self, f: &mut F) {
+    pub fn read_uvs<F: FnMut(&[Point2<GLfloat>]) -> ()>(&self, f: &mut F) {
         let bmesh = self.mesh.borrow();
         let _ = bmesh.uvs().read().unwrap().data().as_ref().map(|uvs| f(&uvs[..]));
     }

@@ -14,23 +14,23 @@ use std::sync::{Arc, RwLock};
 use num::Float;
 use gl::types::{GLint, GLfloat};
 use glfw::{Key, Action, WindowEvent};
-use na::{Pnt2, Pnt3, Vec3, Mat3, Mat4, Rot3, Iso3, Rotation, Translation, Norm};
+use na::{Point2, Point3, Vector3, Matrix3, Matrix4, Rotation3, Isometry3, Rotation, Translation, Norm};
 use kiss3d::window::Window;
 use kiss3d::text::Font;
 use kiss3d::scene::ObjectData;
 use kiss3d::camera::{Camera, FirstPerson};
 use kiss3d::light::Light;
-use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
+use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Matrixerial, Mesh};
 
 fn main() {
     let mut window = Window::new("Kiss3d: relativity");
 
-    let eye      = Pnt3::new(0.0f32, -399.0, 400.0);
-    let at       = Pnt3::new(0.0f32, -399.0, 0.0);
+    let eye      = Point3::new(0.0f32, -399.0, 400.0);
+    let at       = Point3::new(0.0f32, -399.0, 0.0);
     let fov      = f32::consts::PI / 4.0;
     let font     = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
     let context  = Arc::new(RwLock::new(Context::new(1000.0, na::zero(), eye)));
-    let material = Rc::new(RefCell::new(Box::new(RelativisticMaterial::new(context.clone())) as Box<Material + 'static>));
+    let material = Rc::new(RefCell::new(Box::new(RelativisticMatrixerial::new(context.clone())) as Box<Matrixerial + 'static>));
     let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
 
     window.set_framerate_limit(Some(60));
@@ -40,20 +40,20 @@ fn main() {
     c.set_texture_from_file(&Path::new("media/kitten.png"), "kitten");
 
     let mut c = window.add_quad(800.0, 800.0, 40, 40);
-    c.append_rotation(&(Vec3::x() * f32::consts::PI / 2.0));
-    c.append_translation(&(Vec3::new(0.0, -400.0, 400.0)));
+    c.append_rotation(&(Vector3::x() * f32::consts::PI / 2.0));
+    c.append_translation(&(Vector3::new(0.0, -400.0, 400.0)));
     c.set_material(material.clone());
     c.set_texture_with_name("kitten");
 
     let mut c = window.add_quad(800.0, 800.0, 40, 40);
-    c.append_rotation(&(Vec3::y() * f32::consts::PI / 2.0));
-    c.append_translation(&(Vec3::new(400.0, 0.0, 400.0)));
+    c.append_rotation(&(Vector3::y() * f32::consts::PI / 2.0));
+    c.append_translation(&(Vector3::new(400.0, 0.0, 400.0)));
     c.set_material(material.clone());
     c.set_texture_with_name("kitten");
 
     let mut c = window.add_quad(800.0, 800.0, 40, 40);
-    c.append_rotation(&(Vec3::y() * f32::consts::PI / 2.0));
-    c.append_translation(&(Vec3::new(-400.0, 0.0, 400.0)));
+    c.append_rotation(&(Vector3::y() * f32::consts::PI / 2.0));
+    c.append_translation(&(Vector3::new(-400.0, 0.0, 400.0)));
     c.set_material(material.clone());
     c.set_texture_with_name("kitten");
 
@@ -84,9 +84,9 @@ fn main() {
 
         window.draw_text(
             &format!("Speed of light: {}\nSpeed of player: {}", c.speed_of_light, sop)[..],
-            &na::orig(),
+            &na::origin(),
             &font,
-            &Pnt3::new(1.0, 1.0, 1.0));
+            &Point3::new(1.0, 1.0, 1.0));
 
         observer.max_vel  = c.speed_of_light * 0.85;
         c.speed_of_player = obs_vel;
@@ -99,11 +99,11 @@ struct InertialCamera {
     acceleration: f32,
     deceleration: f32,
     max_vel:      f32,
-    velocity:     Vec3<f32>
+    velocity:     Vector3<f32>
 }
 
 impl InertialCamera {
-    fn new(fov: f32, znear: f32, zfar: f32, eye: Pnt3<f32>, at: Pnt3<f32>) -> InertialCamera {
+    fn new(fov: f32, znear: f32, zfar: f32, eye: Point3<f32>, at: Point3<f32>) -> InertialCamera {
         let mut fp = FirstPerson::new_with_frustrum(fov, znear, zfar, eye, at);
 
         fp.set_move_step(0.0);
@@ -123,7 +123,7 @@ impl Camera for InertialCamera {
         self.cam.clip_planes()
     }
 
-    fn view_transform(&self) -> Iso3<f32> {
+    fn view_transform(&self) -> Isometry3<f32> {
         self.cam.view_transform()
     }
 
@@ -131,16 +131,16 @@ impl Camera for InertialCamera {
         self.cam.handle_event(window, event)
     }
 
-    fn eye(&self) -> Pnt3<f32> {
+    fn eye(&self) -> Point3<f32> {
         self.cam.eye()
     }
 
-    fn transformation(&self) -> Mat4<f32> {
+    fn transformation(&self) -> Matrix4<f32> {
         self.cam.transformation()
     }
 
-    fn inv_transformation(&self) -> Mat4<f32> {
-        self.cam.inv_transformation()
+    fn inverse_transformation(&self) -> Matrix4<f32> {
+        self.cam.inverse_transformation()
     }
 
     fn update(&mut self, window: &glfw::Window) {
@@ -175,12 +175,12 @@ impl Camera for InertialCamera {
 
 struct Context {
     speed_of_light:  f32,
-    speed_of_player: Vec3<f32>,
-    position:        Pnt3<f32>
+    speed_of_player: Vector3<f32>,
+    position:        Point3<f32>
 }
 
 impl Context {
-    fn new(speed_of_light: f32, speed_of_player: Vec3<f32>, position: Pnt3<f32>) -> Context {
+    fn new(speed_of_light: f32, speed_of_player: Vector3<f32>, position: Point3<f32>) -> Context {
         Context {
             speed_of_light:  speed_of_light,
             speed_of_player: speed_of_player,
@@ -190,34 +190,34 @@ impl Context {
 }
 
 /// The default material used to draw objects.
-struct RelativisticMaterial {
+struct RelativisticMatrixerial {
     context:         Arc<RwLock<Context>>,
     shader:          Shader,
-    pos:             ShaderAttribute<Pnt3<f32>>,
-    normal:          ShaderAttribute<Vec3<f32>>,
-    tex_coord:       ShaderAttribute<Pnt2<f32>>,
-    light:           ShaderUniform<Pnt3<f32>>,
-    color:           ShaderUniform<Pnt3<f32>>,
-    transform:       ShaderUniform<Mat4<f32>>,
-    scale:           ShaderUniform<Mat3<f32>>,
-    ntransform:      ShaderUniform<Mat3<f32>>,
-    view:            ShaderUniform<Mat4<f32>>,
+    pos:             ShaderAttribute<Point3<f32>>,
+    normal:          ShaderAttribute<Vector3<f32>>,
+    tex_coord:       ShaderAttribute<Point2<f32>>,
+    light:           ShaderUniform<Point3<f32>>,
+    color:           ShaderUniform<Point3<f32>>,
+    transform:       ShaderUniform<Matrix4<f32>>,
+    scale:           ShaderUniform<Matrix3<f32>>,
+    ntransform:      ShaderUniform<Matrix3<f32>>,
+    view:            ShaderUniform<Matrix4<f32>>,
     light_vel:       ShaderUniform<GLfloat>,
-    rel_vel:         ShaderUniform<Vec3<f32>>,
-    rot:             ShaderUniform<Rot3<f32>>,
-    player_position: ShaderUniform<Pnt3<f32>>
+    rel_vel:         ShaderUniform<Vector3<f32>>,
+    rot:             ShaderUniform<Rotation3<f32>>,
+    player_position: ShaderUniform<Point3<f32>>
 }
 
-impl RelativisticMaterial {
-    /// Creates a new `RelativisticMaterial`.
-    fn new(context: Arc<RwLock<Context>>) -> RelativisticMaterial {
+impl RelativisticMatrixerial {
+    /// Creates a new `RelativisticMatrixerial`.
+    fn new(context: Arc<RwLock<Context>>) -> RelativisticMatrixerial {
         // load the shader
         let mut shader = Shader::new_from_str(RELATIVISTIC_VERTEX_SRC, RELATIVISTIC_FRAGMENT_SRC);
 
         shader.use_program();
 
         // get the variables locations
-        RelativisticMaterial {
+        RelativisticMatrixerial {
             context:         context,
             pos:             shader.get_attrib("position").unwrap(),
             normal:          shader.get_attrib("normal").unwrap(),
@@ -250,11 +250,11 @@ impl RelativisticMaterial {
     }
 }
 
-impl Material for RelativisticMaterial {
+impl Matrixerial for RelativisticMatrixerial {
     fn render(&mut self,
               pass:      usize,
-              transform: &Iso3<f32>, 
-              scale:     &Vec3<f32>,
+              transform: &Isometry3<f32>, 
+              scale:     &Vector3<f32>,
               camera:    &mut Camera,
               light:     &Light,
               data:      &ObjectData,
@@ -284,10 +284,10 @@ impl Material for RelativisticMaterial {
             self.light_vel.upload(&c.speed_of_light);
             self.player_position.upload(&c.position);
 
-            let mut rot = na::one::<Rot3<f32>>();
+            let mut rot = na::one::<Rotation3<f32>>();
 
-            if na::sqnorm(&c.speed_of_player) != 0.0 {
-                rot = Rot3::new_observer_frame(&(-c.speed_of_player), &Vec3::y());
+            if na::norm_squared(&c.speed_of_player) != 0.0 {
+                rot = Rotation3::new_observer_frame(&(-c.speed_of_player), &Vector3::y());
             }
 
             self.rot.upload(&rot);
@@ -298,9 +298,9 @@ impl Material for RelativisticMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform:  Mat4<f32> = na::to_homogeneous(transform);
-        let formated_ntransform: Mat3<f32> = *transform.rotation.submat();
-        let formated_scale:      Mat3<f32> = Mat3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
+        let formated_transform:  Matrix4<f32> = na::to_homogeneous(transform);
+        let formated_ntransform: Matrix3<f32> = *transform.rotation.submatrix();
+        let formated_scale:      Matrix3<f32> = Matrix3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
         // XXX: there should be a `na::diagonal(scale)` function on nalgebra.
 
         self.transform.upload(&formated_transform);

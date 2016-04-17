@@ -3,7 +3,7 @@
 use std::mem;
 use gl;
 use gl::types::*;
-use na::{Pnt2, Pnt3, Vec2, Vec3, Mat2, Mat3, Mat4, Rot2, Rot3};
+use na::{Point2, Point3, Vector2, Vector3, Matrix2, Matrix3, Matrix4, Rotation2, Rotation3};
 
 #[path = "../error.rs"]
 mod error;
@@ -79,14 +79,14 @@ impl GLPrimitive for GLuint {
  * Impl for matrices
  *
  */
-impl GLPrimitive for Mat2<GLfloat> {
+impl GLPrimitive for Matrix2<GLfloat> {
     #[inline]
-    fn gl_type(_: Option<Mat2<GLfloat>>) -> GLuint {
+    fn gl_type(_: Option<Matrix2<GLfloat>>) -> GLuint {
         gl::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Mat2<GLfloat>>) -> GLuint {
+    fn size(_: Option<Matrix2<GLfloat>>) -> GLuint {
         4
     }
 
@@ -98,14 +98,14 @@ impl GLPrimitive for Mat2<GLfloat> {
     }
 }
 
-impl GLPrimitive for Rot2<GLfloat> {
+impl GLPrimitive for Rotation2<GLfloat> {
     #[inline]
-    fn gl_type(_: Option<Rot2<GLfloat>>) -> GLuint {
+    fn gl_type(_: Option<Rotation2<GLfloat>>) -> GLuint {
         gl::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Rot2<GLfloat>>) -> GLuint {
+    fn size(_: Option<Rotation2<GLfloat>>) -> GLuint {
         4
     }
 
@@ -117,14 +117,14 @@ impl GLPrimitive for Rot2<GLfloat> {
     }
 }
 
-impl GLPrimitive for Mat3<GLfloat> {
+impl GLPrimitive for Matrix3<GLfloat> {
     #[inline]
-    fn gl_type(_: Option<Mat3<GLfloat>>) -> GLuint {
+    fn gl_type(_: Option<Matrix3<GLfloat>>) -> GLuint {
         gl::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Mat3<GLfloat>>) -> GLuint {
+    fn size(_: Option<Matrix3<GLfloat>>) -> GLuint {
         9
     }
 
@@ -136,14 +136,14 @@ impl GLPrimitive for Mat3<GLfloat> {
     }
 }
 
-impl GLPrimitive for Rot3<GLfloat> {
+impl GLPrimitive for Rotation3<GLfloat> {
     #[inline]
-    fn gl_type(_: Option<Rot3<GLfloat>>) -> GLuint {
+    fn gl_type(_: Option<Rotation3<GLfloat>>) -> GLuint {
         gl::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Rot3<GLfloat>>) -> GLuint {
+    fn size(_: Option<Rotation3<GLfloat>>) -> GLuint {
         9
     }
 
@@ -155,14 +155,14 @@ impl GLPrimitive for Rot3<GLfloat> {
     }
 }
 
-impl GLPrimitive for Mat4<GLfloat> {
+impl GLPrimitive for Matrix4<GLfloat> {
     #[inline]
-    fn gl_type(_: Option<Mat4<GLfloat>>) -> GLuint {
+    fn gl_type(_: Option<Matrix4<GLfloat>>) -> GLuint {
         gl::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Mat4<GLfloat>>) -> GLuint {
+    fn size(_: Option<Matrix4<GLfloat>>) -> GLuint {
         16
     }
 
@@ -178,14 +178,14 @@ impl GLPrimitive for Mat4<GLfloat> {
  * Impl for vectors
  *
  */
-impl GLPrimitive for Vec3<GLfloat> {
+impl GLPrimitive for Vector3<GLfloat> {
     #[inline]
-    fn gl_type(_: Option<Vec3<GLfloat>>) -> GLuint {
+    fn gl_type(_: Option<Vector3<GLfloat>>) -> GLuint {
         gl::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Vec3<GLfloat>>) -> GLuint {
+    fn size(_: Option<Vector3<GLfloat>>) -> GLuint {
         3
     }
 
@@ -195,14 +195,14 @@ impl GLPrimitive for Vec3<GLfloat> {
     }
 }
 
-impl GLPrimitive for Vec2<GLfloat> {
+impl GLPrimitive for Vector2<GLfloat> {
     #[inline]
-    fn gl_type(_: Option<Vec2<GLfloat>>) -> GLuint {
+    fn gl_type(_: Option<Vector2<GLfloat>>) -> GLuint {
         gl::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Vec2<GLfloat>>) -> GLuint {
+    fn size(_: Option<Vector2<GLfloat>>) -> GLuint {
         2
     }
 
@@ -212,14 +212,14 @@ impl GLPrimitive for Vec2<GLfloat> {
     }
 }
 
-impl GLPrimitive for Vec2<GLuint> {
+impl GLPrimitive for Vector2<GLuint> {
     #[inline]
-    fn gl_type(_: Option<Vec2<GLuint>>) -> GLuint {
+    fn gl_type(_: Option<Vector2<GLuint>>) -> GLuint {
         gl::UNSIGNED_INT
     }
 
     #[inline]
-    fn size(_: Option<Vec2<GLuint>>) -> GLuint {
+    fn size(_: Option<Vector2<GLuint>>) -> GLuint {
         2
     }
 
@@ -229,14 +229,14 @@ impl GLPrimitive for Vec2<GLuint> {
     }
 }
 
-impl GLPrimitive for Vec3<GLuint> {
+impl GLPrimitive for Vector3<GLuint> {
     #[inline]
-    fn gl_type(_: Option<Vec3<GLuint>>) -> GLuint {
+    fn gl_type(_: Option<Vector3<GLuint>>) -> GLuint {
         gl::UNSIGNED_INT
     }
 
     #[inline]
-    fn size(_: Option<Vec3<GLuint>>) -> GLuint {
+    fn size(_: Option<Vector3<GLuint>>) -> GLuint {
         3
     }
 
@@ -251,14 +251,14 @@ impl GLPrimitive for Vec3<GLuint> {
  * Impl for points
  *
  */
-impl GLPrimitive for Pnt3<GLfloat> {
+impl GLPrimitive for Point3<GLfloat> {
     #[inline]
-    fn gl_type(_: Option<Pnt3<GLfloat>>) -> GLuint {
+    fn gl_type(_: Option<Point3<GLfloat>>) -> GLuint {
         gl::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Pnt3<GLfloat>>) -> GLuint {
+    fn size(_: Option<Point3<GLfloat>>) -> GLuint {
         3
     }
 
@@ -268,14 +268,14 @@ impl GLPrimitive for Pnt3<GLfloat> {
     }
 }
 
-impl GLPrimitive for Pnt2<GLfloat> {
+impl GLPrimitive for Point2<GLfloat> {
     #[inline]
-    fn gl_type(_: Option<Pnt2<GLfloat>>) -> GLuint {
+    fn gl_type(_: Option<Point2<GLfloat>>) -> GLuint {
         gl::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Pnt2<GLfloat>>) -> GLuint {
+    fn size(_: Option<Point2<GLfloat>>) -> GLuint {
         2
     }
 
@@ -285,14 +285,14 @@ impl GLPrimitive for Pnt2<GLfloat> {
     }
 }
 
-impl GLPrimitive for Pnt2<GLuint> {
+impl GLPrimitive for Point2<GLuint> {
     #[inline]
-    fn gl_type(_: Option<Pnt2<GLuint>>) -> GLuint {
+    fn gl_type(_: Option<Point2<GLuint>>) -> GLuint {
         gl::UNSIGNED_INT
     }
 
     #[inline]
-    fn size(_: Option<Pnt2<GLuint>>) -> GLuint {
+    fn size(_: Option<Point2<GLuint>>) -> GLuint {
         2
     }
 
@@ -302,14 +302,14 @@ impl GLPrimitive for Pnt2<GLuint> {
     }
 }
 
-impl GLPrimitive for Pnt3<GLuint> {
+impl GLPrimitive for Point3<GLuint> {
     #[inline]
-    fn gl_type(_: Option<Pnt3<GLuint>>) -> GLuint {
+    fn gl_type(_: Option<Point3<GLuint>>) -> GLuint {
         gl::UNSIGNED_INT
     }
 
     #[inline]
-    fn size(_: Option<Pnt3<GLuint>>) -> GLuint {
+    fn size(_: Option<Point3<GLuint>>) -> GLuint {
         3
     }
 

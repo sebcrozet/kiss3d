@@ -3,7 +3,7 @@ extern crate kiss3d;
 extern crate nalgebra as na;
 
 use rand::random;
-use na::{Vec3, Translation, RotationWithTranslation};
+use na::{Vector3, Translation, RotationWithTranslation};
 use kiss3d::window::Window;
 use kiss3d::light::Light;
 
@@ -23,11 +23,11 @@ fn main() {
         let mut cy = window.add_cylinder(dim2, dim);
         let mut ca = window.add_capsule(dim2, dim);
 
-        cu.append_translation(&Vec3::new(offset, 1.0, 0.0));
-        sp.append_translation(&Vec3::new(offset, -1.0, 0.0));
-        co.append_translation(&Vec3::new(offset, 2.0, 0.0));
-        cy.append_translation(&Vec3::new(offset, -2.0, 0.0));
-        ca.append_translation(&Vec3::new(offset, 0.0, 0.0));
+        cu.append_translation(&Vector3::new(offset, 1.0, 0.0));
+        sp.append_translation(&Vector3::new(offset, -1.0, 0.0));
+        co.append_translation(&Vector3::new(offset, 2.0, 0.0));
+        cy.append_translation(&Vector3::new(offset, -2.0, 0.0));
+        ca.append_translation(&Vector3::new(offset, 0.0, 0.0));
 
         cu.set_color(random(), random(), random());
         sp.set_color(random(), random(), random());
@@ -40,6 +40,6 @@ fn main() {
 
     while window.render() {
         // XXX: applying this to each object individually became complicated…
-        window.scene_mut().append_rotation_wrt_center(&Vec3::new(0.0f32, 0.014, 0.0));
+        window.scene_mut().append_rotation_wrt_center(&Vector3::new(0.0f32, 0.014, 0.0));
     }
 }

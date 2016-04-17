@@ -11,11 +11,11 @@ use std::cell::RefCell;
 use std::sync::{Arc, RwLock};
 use std::path::Path;
 use rand::random;
-use na::{Vec3, Translation};
+use na::{Vector3, Translation};
 use kiss3d::window::Window;
 use kiss3d::light::Light;
 use kiss3d::loader::obj;
-use kiss3d::resource::{BufferType, AllocationType, GPUVector, Mesh};
+use kiss3d::resource::{BufferType, AllocationType, GPUVec, Mesh};
 
 fn usage(exe_name: &str) {
     println!("Usage: {} obj_file scale clusters concavity", exe_name);
@@ -43,7 +43,7 @@ fn main() {
     let scale: f32 = FromStr::from_str(&args.next().unwrap()[..]).unwrap();
     let clusters: usize = FromStr::from_str(&args.next().unwrap()[..]).unwrap();
     let concavity: f32 = FromStr::from_str(&args.next().unwrap()[..]).unwrap();
-    let scale = Vec3::new(scale, scale, scale);
+    let scale = Vector3::new(scale, scale, scale);
 
     /*
      * Create the window.
@@ -87,7 +87,7 @@ fn main() {
 
                     let mut m  = window.add_trimesh(comp, scale);
                     m.set_color(r, g, b);
-                    m.append_translation(&Vec3::new(-0.1, 0.1, 0.0));
+                    m.append_translation(&Vector3::new(-0.1, 0.1, 0.0));
                     // m.set_surface_rendering_activation(false);
                     // m.enable_backface_culling(false);
                     // m.set_lines_width(1.0);
@@ -98,14 +98,14 @@ fn main() {
                         part_faces.push(faces.read().unwrap().data().as_ref().unwrap()[i]);
                     }
 
-                    let faces = GPUVector::new(part_faces, BufferType::ElementArray, AllocationType::StaticDraw);
+                    let faces = GPUVec::new(part_faces, BufferType::ElementArray, AllocationType::StaticDraw);
                     let faces = Arc::new(RwLock::new(faces));
 
                     let mesh = Mesh::new_with_gpu_vectors(coords.clone(), faces, normals.clone(), uvs.clone());
                     let mesh = Rc::new(RefCell::new(mesh));
                     let mut m  = window.add_mesh(mesh, scale);
                     m.set_color(r, g, b);
-                    m.append_translation(&Vec3::new(0.1, 0.1, 0.0));
+                    m.append_translation(&Vector3::new(0.1, 0.1, 0.0));
                     // m.set_surface_rendering_activation(false);
                     // m.enable_backface_culling(false);
                     m.set_lines_width(1.0);

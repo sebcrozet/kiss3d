@@ -12,19 +12,19 @@ use std::path::{Path, PathBuf};
 use std::iter::Filter;
 use std::str::Split;
 use gl::types::GLfloat;
-use na::{Vec3, Pnt2, Pnt3, Bounded};
+use na::{Vector3, Point2, Point3, Bounded};
 use na;
 use resource::{BufferType, AllocationType, Mesh};
-use loader::mtl::MtlMaterial;
+use loader::mtl::MtlMatrixerial;
 use loader::mtl;
-use resource::GPUVector;
+use resource::GPUVec;
 
 /// The type of vertex coordinates.
-pub type Coord  = Pnt3<GLfloat>;
+pub type Coord  = Point3<GLfloat>;
 /// The type of normals.
-pub type Normal = Vec3<GLfloat>;
+pub type Normal = Vector3<GLfloat>;
 /// The type of texture coordinates.
-pub type UV     = Pnt2<GLfloat>;
+pub type UV     = Point2<GLfloat>;
 
 /// Iterator through words.
 pub type Words<'a> = Filter<Split<'a, fn(char) -> bool>, fn(&&str) -> bool>;
@@ -50,7 +50,7 @@ fn warn(line: usize, err: &str) {
 }
 
 /// Parses an obj file.
-pub fn parse_file(path: &Path, mtl_base_dir: &Path, basename: &str) -> IoResult<Vec<(String, Mesh, Option<MtlMaterial>)>> {
+pub fn parse_file(path: &Path, mtl_base_dir: &Path, basename: &str) -> IoResult<Vec<(String, Mesh, Option<MtlMatrixerial>)>> {
     match File::open(path) {
         Ok(mut file) => {
             let mut sfile = String::new();
@@ -61,18 +61,18 @@ pub fn parse_file(path: &Path, mtl_base_dir: &Path, basename: &str) -> IoResult<
 }
 
 /// Parses a string representing an obj file.
-pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, Mesh, Option<MtlMaterial>)> {
+pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, Mesh, Option<MtlMatrixerial>)> {
     let mut coords:     Vec<Coord>             = Vec::new();
     let mut normals:    Vec<Normal>            = Vec::new();
     let mut uvs:        Vec<UV>                = Vec::new();
     let mut groups:     HashMap<String, usize> = HashMap::new();
-    let mut groups_ids: Vec<Vec<Pnt3<u32>>>    = Vec::new();
+    let mut groups_ids: Vec<Vec<Point3<u32>>>    = Vec::new();
     let mut curr_group: usize                  = 0;
     let mut ignore_normals                     = false;
     let mut ignore_uvs                         = false;
     let mut mtllib                             = HashMap::new();
     let mut group2mtl                          = HashMap::new();
-    let mut curr_mtl                           = None::<MtlMaterial>;
+    let mut curr_mtl                           = None::<MtlMatrixerial>;
 
     groups_ids.push(Vec::new());
     let _ = groups.insert(basename.to_string(), 0);
@@ -85,7 +85,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
             Some(w) => {
                 if w.len() != 0 && w.as_bytes()[0] != ('#' as u8) {
                     match w {
-                        "v"      => coords.push(na::orig::<Pnt3<f32>>() + parse_v_or_vn(l, words)),
+                        "v"      => coords.push(na::origin::<Point3<f32>>() + parse_v_or_vn(l, words)),
                         "vn"     => if !ignore_normals { normals.push(parse_v_or_vn(l, words)) },
                         "f"      => parse_f(l, words, &coords[..], &uvs[..], &normals[..], &mut ignore_uvs, &mut ignore_normals, &mut groups_ids, curr_group),
                         "vt"     => if !ignore_uvs { uvs.push(parse_vt(l, words)) },
@@ -124,11 +124,11 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
 fn parse_usemtl<'a>(l:          usize,
                     ws:         Words<'a>,
                     curr_group: usize,
-                    mtllib:     &HashMap<String, MtlMaterial>,
-                    group2mtl:  &mut HashMap<usize, MtlMaterial>,
+                    mtllib:     &HashMap<String, MtlMatrixerial>,
+                    group2mtl:  &mut HashMap<usize, MtlMatrixerial>,
                     groups:     &mut HashMap<String, usize>,
-                    groups_ids: &mut Vec<Vec<Pnt3<u32>>>,
-                    curr_mtl:   &mut Option<MtlMaterial>)
+                    groups_ids: &mut Vec<Vec<Point3<u32>>>,
+                    curr_mtl:   &mut Option<MtlMatrixerial>)
                     -> usize {
     let mname: Vec<&'a str> = ws.collect();
     let mname = mname.join(" ");
@@ -172,7 +172,7 @@ fn parse_usemtl<'a>(l:          usize,
 fn parse_mtllib<'a>(l:            usize,
                     ws:           Words<'a>,
                     mtl_base_dir: &Path,
-                    mtllib:       &mut HashMap<String, MtlMaterial>) {
+                    mtllib:       &mut HashMap<String, MtlMatrixerial>) {
     let filename: Vec<&'a str> = ws.collect();
     let filename = filename.join(" ");
 
@@ -191,7 +191,7 @@ fn parse_mtllib<'a>(l:            usize,
     }
 }
 
-fn parse_v_or_vn<'a>(l: usize, mut ws: Words<'a>) -> Vec3<f32> {
+fn parse_v_or_vn<'a>(l: usize, mut ws: Words<'a>) -> Vector3<f32> {
     let sx = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 0."));
     let sy = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 1."));
     let sz = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 2."));
@@ -204,22 +204,22 @@ fn parse_v_or_vn<'a>(l: usize, mut ws: Words<'a>) -> Vec3<f32> {
     let y = y.unwrap_or_else(|e| error(l, &format!("failed to parse `{}' as a f32: {}", sy, e)[..]));
     let z = z.unwrap_or_else(|e| error(l, &format!("failed to parse `{}' as a f32: {}", sz, e)[..]));
 
-    Vec3::new(x, y, z)
+    Vector3::new(x, y, z)
 }
 
 fn parse_f<'a>(l:              usize,
                ws:             Words<'a>,
-               coords:         &[Pnt3<f32>],
-               uvs:            &[Pnt2<f32>],
-               normals:        &[Vec3<f32>],
+               coords:         &[Point3<f32>],
+               uvs:            &[Point2<f32>],
+               normals:        &[Vector3<f32>],
                ignore_uvs:     &mut bool,
                ignore_normals: &mut bool,
-               groups_ids:     &mut Vec<Vec<Pnt3<u32>>>,
+               groups_ids:     &mut Vec<Vec<Point3<u32>>>,
                curr_group:     usize) {
     // Four formats possible: v   v/t   v//n   v/t/n
     let mut i = 0;
     for word in ws {
-        let mut curr_ids: Vec3<i32> = Bounded::max_value();
+        let mut curr_ids: Vector3<i32> = Bounded::max_value();
 
         for (i, w) in word.split('/').enumerate() {
             if i == 0 || w.len() != 0 {
@@ -274,7 +274,7 @@ fn parse_f<'a>(l:              usize,
             z = curr_ids.z as u32;
         }
 
-        groups_ids[curr_group].push(Pnt3::new(x, y, z));
+        groups_ids[curr_group].push(Point3::new(x, y, z));
 
         i = i + 1;
     }
@@ -302,14 +302,14 @@ fn parse_vt<'a>(l: usize, mut ws: Words<'a>) -> UV {
     let y = y.unwrap_or_else(|e| error(l, &format!("failed to parse `{}' as a f32: {}", sy, e)[..]));
     // let z = z.unwrap_or_else(|| error(l, "failed to parse `" + sz + "' as a f32."));
 
-    Pnt2::new(x, y)
+    Point2::new(x, y)
 }
 
 fn parse_g<'a>(_:          usize,
                ws:         Words<'a>,
                prefix:     &str,
                groups:     &mut HashMap<String, usize>,
-               groups_ids: &mut Vec<Vec<Pnt3<u32>>>)
+               groups_ids: &mut Vec<Vec<Point3<u32>>>)
                -> usize {
     let suffix: Vec<&'a str> = ws.collect();
     let suffix = suffix.join(" ");
@@ -329,19 +329,19 @@ fn parse_g<'a>(_:          usize,
 fn reformat(coords:     Vec<Coord>,
             normals:    Option<Vec<Normal>>,
             uvs:        Option<Vec<UV>>,
-            groups_ids: Vec<Vec<Pnt3<u32>>>,
+            groups_ids: Vec<Vec<Point3<u32>>>,
             groups:     HashMap<String, usize>,
-            group2mtl:  HashMap<usize, MtlMaterial>)
-            -> Vec<(String, Mesh, Option<MtlMaterial>)> {
-    let mut vt2id:  HashMap<Pnt3<u32>, u32> = HashMap::new();
+            group2mtl:  HashMap<usize, MtlMatrixerial>)
+            -> Vec<(String, Mesh, Option<MtlMatrixerial>)> {
+    let mut vt2id:  HashMap<Point3<u32>, u32> = HashMap::new();
     let mut vertex_ids: Vec<u32>            = Vec::new();
     let mut resc: Vec<Coord>                = Vec::new();
     let mut resn: Option<Vec<Normal>>       = normals.as_ref().map(|_| Vec::new());
     let mut resu: Option<Vec<UV>>           = uvs.as_ref().map(|_| Vec::new());
-    let mut resfs: Vec<Vec<Pnt3<u32>>>      = Vec::new();
-    let mut allfs: Vec<Pnt3<u32>>           = Vec::new();
+    let mut resfs: Vec<Vec<Point3<u32>>>      = Vec::new();
+    let mut allfs: Vec<Point3<u32>>           = Vec::new();
     let mut names: Vec<String>              = Vec::new();
-    let mut mtls:  Vec<Option<MtlMaterial>> = Vec::new();
+    let mut mtls:  Vec<Option<MtlMatrixerial>> = Vec::new();
 
     for (name, i) in groups.into_iter() {
         names.push(name);
@@ -372,8 +372,8 @@ fn reformat(coords:     Vec<Coord>,
         assert!(vertex_ids.len() % 3 == 0);
 
         for f in vertex_ids[..].chunks(3) {
-            resf.push(Pnt3::new(f[0], f[1], f[2]));
-            allfs.push(Pnt3::new(f[0], f[1], f[2]));
+            resf.push(Point3::new(f[0], f[1], f[2]));
+            allfs.push(Point3::new(f[0], f[1], f[2]));
         }
 
         resfs.push(resf);
@@ -381,15 +381,15 @@ fn reformat(coords:     Vec<Coord>,
     }
 
     let resn = resn.unwrap_or_else(|| Mesh::compute_normals_array(&resc[..], &allfs[..]));
-    let resn = Arc::new(RwLock::new(GPUVector::new(resn, BufferType::Array, AllocationType::StaticDraw)));
-    let resu = resu.unwrap_or_else(|| repeat(na::orig()).take(resc.len()).collect());
-    let resu = Arc::new(RwLock::new(GPUVector::new(resu, BufferType::Array, AllocationType::StaticDraw)));
-    let resc = Arc::new(RwLock::new(GPUVector::new(resc, BufferType::Array, AllocationType::StaticDraw)));
+    let resn = Arc::new(RwLock::new(GPUVec::new(resn, BufferType::Array, AllocationType::StaticDraw)));
+    let resu = resu.unwrap_or_else(|| repeat(na::origin()).take(resc.len()).collect());
+    let resu = Arc::new(RwLock::new(GPUVec::new(resu, BufferType::Array, AllocationType::StaticDraw)));
+    let resc = Arc::new(RwLock::new(GPUVec::new(resc, BufferType::Array, AllocationType::StaticDraw)));
 
     let mut meshes = Vec::new();
     for ((fs, name), mtl) in resfs.into_iter().zip(names.into_iter()).zip(mtls.into_iter()) {
         if fs.len() != 0 {
-            let fs   = Arc::new(RwLock::new(GPUVector::new(fs, BufferType::ElementArray, AllocationType::StaticDraw)));
+            let fs   = Arc::new(RwLock::new(GPUVec::new(fs, BufferType::ElementArray, AllocationType::StaticDraw)));
             let mesh = Mesh::new_with_gpu_vectors(resc.clone(), fs, resn.clone(), resu.clone());
             meshes.push((name, mesh, mtl))
         }

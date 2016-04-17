@@ -6,7 +6,7 @@ use std::io::Result as IoResult;
 use std::io::Read;
 use std::str::FromStr;
 use std::path::Path;
-use na::Vec3;
+use na::Vector3;
 use loader::obj::Words;
 use loader::obj;
 
@@ -15,7 +15,7 @@ fn error(line: usize, err: &str) -> ! {
 }
 
 /// Parses a mtl file.
-pub fn parse_file(path: &Path) -> IoResult<Vec<MtlMaterial>> {
+pub fn parse_file(path: &Path) -> IoResult<Vec<MtlMatrixerial>> {
     match File::open(path) {
         Ok(mut file) => {
             let mut sfile = String::new();
@@ -26,9 +26,9 @@ pub fn parse_file(path: &Path) -> IoResult<Vec<MtlMaterial>> {
 }
 
 /// Parses a string representing a mtl file.
-pub fn parse(string: &str) -> Vec<MtlMaterial> {
+pub fn parse(string: &str) -> Vec<MtlMatrixerial> {
     let mut res           = Vec::new();
-    let mut curr_material = MtlMaterial::new_default("".to_string());
+    let mut curr_material = MtlMatrixerial::new_default("".to_string());
 
     for (l, line) in string.lines().enumerate() {
         let mut words = obj::split_words(line);
@@ -48,7 +48,7 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
                     match w {
                         // texture name
                         "newmtl"      => {
-                            let old = mem::replace(&mut curr_material, MtlMaterial::new_default(parse_name(l, words)));
+                            let old = mem::replace(&mut curr_material, MtlMatrixerial::new_default(parse_name(l, words)));
 
                             if old.name.len() != 0 {
                                 res.push(old);
@@ -93,7 +93,7 @@ fn parse_name<'a>(_: usize, ws: Words<'a>) -> String {
     res.join(" ")
 }
 
-fn parse_color<'a>(l: usize, mut ws: Words<'a>) -> Vec3<f32> {
+fn parse_color<'a>(l: usize, mut ws: Words<'a>) -> Vector3<f32> {
     let sx = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 0."));
     let sy = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 1."));
     let sz = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 2."));
@@ -106,7 +106,7 @@ fn parse_color<'a>(l: usize, mut ws: Words<'a>) -> Vec3<f32> {
     let y = y.unwrap_or_else(|e| error(l, &format!("failed to parse `{}' as a f32: {}", sy, e)[..]));
     let z = z.unwrap_or_else(|e| error(l, &format!("failed to parse `{}' as a f32: {}", sz, e)[..]));
 
-    Vec3::new(x, y, z)
+    Vector3::new(x, y, z)
 }
 
 fn parse_scalar<'a>(l: usize, mut ws: Words<'a>) -> f32 {
@@ -119,9 +119,9 @@ fn parse_scalar<'a>(l: usize, mut ws: Words<'a>) -> f32 {
     x
 }
 
-/// Material informations read from a `.mtl` file.
+/// Matrixerial informations read from a `.mtl` file.
 #[derive(Clone)]
-pub struct MtlMaterial {
+pub struct MtlMatrixerial {
     /// Name of the material.
     pub name:             String,
     /// Path to the ambiant texture.
@@ -133,21 +133,21 @@ pub struct MtlMaterial {
     /// Path to the opacity map.
     pub opacity_map:      Option<String>,
     /// The ambiant color.
-    pub ambiant:          Vec3<f32>,
+    pub ambiant:          Vector3<f32>,
     /// The diffuse color.
-    pub diffuse:          Vec3<f32>,
+    pub diffuse:          Vector3<f32>,
     /// The specular color.
-    pub specular:         Vec3<f32>,
+    pub specular:         Vector3<f32>,
     /// The shininess.
     pub shininess:        f32,
     /// Alpha blending.
     pub alpha:            f32,
 }
 
-impl MtlMaterial {
+impl MtlMatrixerial {
     /// Creates a new mtl material with a name and default values.
-    pub fn new_default(name: String) -> MtlMaterial {
-        MtlMaterial {
+    pub fn new_default(name: String) -> MtlMatrixerial {
+        MtlMatrixerial {
             name:             name,
             shininess:        60.0,
             alpha:            1.0,
@@ -155,9 +155,9 @@ impl MtlMaterial {
             diffuse_texture:  None,
             specular_texture: None,
             opacity_map:      None,
-            ambiant:          Vec3::new(1.0, 1.0, 1.0),
-            diffuse:          Vec3::new(1.0, 1.0, 1.0),
-            specular:         Vec3::new(1.0, 1.0, 1.0),
+            ambiant:          Vector3::new(1.0, 1.0, 1.0),
+            diffuse:          Vector3::new(1.0, 1.0, 1.0),
+            specular:         Vector3::new(1.0, 1.0, 1.0),
         }
     }
 
@@ -165,15 +165,15 @@ impl MtlMaterial {
     pub fn new(name:             String,
                shininess:        f32,
                alpha:            f32,
-               ambiant:          Vec3<f32>,
-               diffuse:          Vec3<f32>,
-               specular:         Vec3<f32>,
+               ambiant:          Vector3<f32>,
+               diffuse:          Vector3<f32>,
+               specular:         Vector3<f32>,
                ambiant_texture:  Option<String>,
                diffuse_texture:  Option<String>,
                specular_texture: Option<String>,
                opacity_map:      Option<String>)
-               -> MtlMaterial {
-        MtlMaterial {
+               -> MtlMatrixerial {
+        MtlMatrixerial {
             name:             name,
             ambiant:          ambiant,
             diffuse:          diffuse,

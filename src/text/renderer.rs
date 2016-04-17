@@ -5,23 +5,23 @@
 use std::rc::Rc;
 use gl;
 use gl::types::*;
-use na::{Vec2, Pnt2, Pnt3};
+use na::{Vector2, Point2, Point3};
 use text::Font;
 use camera::Camera;
-use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, GPUVector};
+use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, GPUVec};
 
 #[path = "../error.rs"]
 mod error;
 
 struct TextRenderContext {
-    color: Pnt3<f32>,
+    color: Point3<f32>,
     font:  Rc<Font>,
     begin: usize,
     size:  usize
 }
 
 impl TextRenderContext {
-    pub fn new(color: Pnt3<f32>, font: Rc<Font>, begin: usize, size: usize) -> TextRenderContext {
+    pub fn new(color: Point3<f32>, font: Rc<Font>, begin: usize, size: usize) -> TextRenderContext {
         TextRenderContext {
             color:   color,
             font:    font,
@@ -34,13 +34,13 @@ impl TextRenderContext {
 /// A ttf text renderer.
 pub struct TextRenderer {
     shader:   Shader,
-    invsz:    ShaderUniform<Vec2<f32>>,
+    invsz:    ShaderUniform<Vector2<f32>>,
     tex:      ShaderUniform<GLint>,
-    color:    ShaderUniform<Pnt3<f32>>,
-    pos:      ShaderAttribute<Pnt2<f32>>,
-    uvs:      ShaderAttribute<Pnt2<f32>>,
+    color:    ShaderUniform<Point3<f32>>,
+    pos:      ShaderAttribute<Point2<f32>>,
+    uvs:      ShaderAttribute<Point2<f32>>,
     contexts: Vec<TextRenderContext>,
-    coords:   GPUVector<Pnt2<f32>>,
+    coords:   GPUVec<Point2<f32>>,
 }
 
 impl TextRenderer {
@@ -58,14 +58,14 @@ impl TextRenderer {
             uvs:      shader.get_attrib("uvs").expect("Could not find uvs"),
             shader:   shader,
             contexts: Vec::new(),
-            coords:   GPUVector::new(Vec::new(), BufferType::Array, AllocationType::StreamDraw)
+            coords:   GPUVec::new(Vec::new(), BufferType::Array, AllocationType::StreamDraw)
         }
     }
 
     /// Adds a piece of text to be drawn during the next frame. The text is not persistent between
     /// frames. This method must be called for each text to draw, and at each update loop
     /// iteration.
-    pub fn draw_text(&mut self, text: &str, pos: &Pnt2<f32>, font: &Rc<Font>, color: &Pnt3<f32>) {
+    pub fn draw_text(&mut self, text: &str, pos: &Point2<f32>, font: &Rc<Font>, color: &Point3<f32>) {
         for coords in self.coords.data_mut().iter_mut() {
             let begin = coords.len();
 
@@ -96,23 +96,23 @@ impl TextRenderer {
                     let adimx = font.atlas_dimensions().x as f32;
                     let adimy = font.atlas_dimensions().y as f32;
 
-                    coords.push(Pnt2::new(end_x, -end_y - end_h));
-                    coords.push(Pnt2::new(glyph.tex.x, glyph.tex.y));
+                    coords.push(Point2::new(end_x, -end_y - end_h));
+                    coords.push(Point2::new(glyph.tex.x, glyph.tex.y));
 
-                    coords.push(Pnt2::new(end_x, -end_y));
-                    coords.push(Pnt2::new(glyph.tex.x, glyph.tex.y + (end_h / adimy)));
+                    coords.push(Point2::new(end_x, -end_y));
+                    coords.push(Point2::new(glyph.tex.x, glyph.tex.y + (end_h / adimy)));
 
-                    coords.push(Pnt2::new(end_x + end_w, -end_y));
-                    coords.push(Pnt2::new(glyph.tex.x + (end_w / adimx), glyph.tex.y + (end_h / adimy)));
+                    coords.push(Point2::new(end_x + end_w, -end_y));
+                    coords.push(Point2::new(glyph.tex.x + (end_w / adimx), glyph.tex.y + (end_h / adimy)));
 
-                    coords.push(Pnt2::new(end_x, -end_y - end_h));
-                    coords.push(Pnt2::new(glyph.tex.x, glyph.tex.y));
+                    coords.push(Point2::new(end_x, -end_y - end_h));
+                    coords.push(Point2::new(glyph.tex.x, glyph.tex.y));
 
-                    coords.push(Pnt2::new(end_x + end_w, -end_y));
-                    coords.push(Pnt2::new(glyph.tex.x + (end_w / adimx), glyph.tex.y + (end_h / adimy)));
+                    coords.push(Point2::new(end_x + end_w, -end_y));
+                    coords.push(Point2::new(glyph.tex.x + (end_w / adimx), glyph.tex.y + (end_h / adimy)));
 
-                    coords.push(Pnt2::new(end_x + end_w, -end_y - end_h));
-                    coords.push(Pnt2::new(glyph.tex.x + (end_w / adimx), glyph.tex.y));
+                    coords.push(Point2::new(end_x + end_w, -end_y - end_h));
+                    coords.push(Point2::new(glyph.tex.x + (end_w / adimx), glyph.tex.y));
                 }
             }
 
@@ -138,7 +138,7 @@ impl TextRenderer {
         self.pos.enable();
         self.uvs.enable();
         self.tex.upload(&0);
-        self.invsz.upload(&Vec2::new(1.0 / width, -1.0 / height));
+        self.invsz.upload(&Vector2::new(1.0 / width, -1.0 / height));
 
         for ctxt in self.contexts.iter() {
             verify!(gl::BindTexture(gl::TEXTURE_2D, ctxt.font.texture_atlas()));

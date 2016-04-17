@@ -13,7 +13,7 @@ use libc::c_uint;
 use gl;
 use gl::types::*;
 use freetype::ffi;
-use na::Vec2;
+use na::Vector2;
 use na;
 use text::Glyph;
 
@@ -25,7 +25,7 @@ pub struct Font {
     library:          ffi::FT_Library,
     face:             ffi::FT_Face,
     texture_atlas:    GLuint,
-    atlas_dimensions: Vec2<usize>,
+    atlas_dimensions: Vector2<usize>,
     glyphs:           Vec<Option<Glyph>>,
     height:           i32,
 }
@@ -90,9 +90,9 @@ impl Font {
                     row_width = 0; row_height = 0;
                 }
 
-                let advance    = Vec2::new(((*ft_glyph).advance.x >> 6) as f32, ((*ft_glyph).advance.y >> 6) as f32);
-                let dimensions = Vec2::new((*ft_glyph).bitmap.width as f32, (*ft_glyph).bitmap.rows as f32);
-                let offset     = Vec2::new((*ft_glyph).bitmap_left as f32, (*ft_glyph).bitmap_top as f32);
+                let advance    = Vector2::new(((*ft_glyph).advance.x >> 6) as f32, ((*ft_glyph).advance.y >> 6) as f32);
+                let dimensions = Vector2::new((*ft_glyph).bitmap.width as f32, (*ft_glyph).bitmap.rows as f32);
+                let offset     = Vector2::new((*ft_glyph).bitmap_left as f32, (*ft_glyph).bitmap_top as f32);
                 let buf_len    = (dimensions.x * dimensions.y) as usize;
                 let buffer     = slice::from_raw_parts(&*(*ft_glyph).bitmap.buffer, buf_len).to_vec();
                 let glyph      = Glyph::new(na::zero(), advance, dimensions, offset, buffer);
@@ -126,7 +126,7 @@ impl Font {
             verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32));
 
             /* Copy all glyphs into the texture atlas. */
-            let mut offset: Vec2<i32> = na::zero();
+            let mut offset: Vector2<i32> = na::zero();
             row_height = 0;
             for curr in 0usize .. 128 {
                 let glyph = match *&mut font.glyphs[curr] {
@@ -172,7 +172,7 @@ impl Font {
 
     /// The dimensions of the texture atlas of this font.
     #[inline]
-    pub fn atlas_dimensions(&self) -> Vec2<usize> {
+    pub fn atlas_dimensions(&self) -> Vector2<usize> {
         self.atlas_dimensions
     }
 

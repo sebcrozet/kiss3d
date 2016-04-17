@@ -6,8 +6,8 @@
 
 use gl;
 use gl::types::*;
-use na::Vec2;
-use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, RenderTarget, GPUVector};
+use na::Vector2;
+use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, RenderTarget, GPUVec};
 use post_processing::post_processing_effect::PostProcessingEffect;
 
 #[path = "../error.rs"]
@@ -21,20 +21,20 @@ pub struct Waves {
     time:         f32,
     offset:       ShaderUniform<GLfloat>,
     fbo_texture:  ShaderUniform<GLint>,
-    v_coord:      ShaderAttribute<Vec2<f32>>,
-    fbo_vertices: GPUVector<Vec2<GLfloat>>
+    v_coord:      ShaderAttribute<Vector2<f32>>,
+    fbo_vertices: GPUVec<Vector2<GLfloat>>
 }
 
 impl Waves {
     /// Creates a new Waves post processing effect.
     pub fn new() -> Waves {
-        let fbo_vertices: Vec<Vec2<GLfloat>>  = vec!(
-            Vec2::new(-1.0, -1.0),
-            Vec2::new(1.0, -1.0),
-            Vec2::new(-1.0,  1.0),
-            Vec2::new(1.0,  1.0));
+        let fbo_vertices: Vec<Vector2<GLfloat>>  = vec!(
+            Vector2::new(-1.0, -1.0),
+            Vector2::new(1.0, -1.0),
+            Vector2::new(-1.0,  1.0),
+            Vector2::new(1.0,  1.0));
 
-        let mut fbo_vertices = GPUVector::new(fbo_vertices, BufferType::Array, AllocationType::StaticDraw);
+        let mut fbo_vertices = GPUVec::new(fbo_vertices, BufferType::Array, AllocationType::StaticDraw);
         fbo_vertices.load_to_gpu();
         fbo_vertices.unload_from_ram();
 

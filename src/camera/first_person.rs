@@ -2,7 +2,7 @@ use std::f32;
 use num::Float;
 use glfw;
 use glfw::{Key, Action, WindowEvent};
-use na::{Translation, Pnt3, Vec2, Vec3, Mat4, Iso3, PerspMat3};
+use na::{Translation, Point3, Vector2, Vector3, Matrix4, Isometry3, PerspectiveMatrix3};
 use na;
 use camera::Camera;
 
@@ -14,7 +14,7 @@ use camera::Camera;
 ///   * Scroll in/out - zoom in/out
 #[derive(Debug, Clone)]
 pub struct FirstPerson {
-    eye:             Pnt3<f32>,
+    eye:             Point3<f32>,
     yaw:             f32,
     pitch:           f32,
 
@@ -22,15 +22,15 @@ pub struct FirstPerson {
     pitch_step:      f32,
     move_step:       f32,
 
-    projection:      PerspMat3<f32>,
-    proj_view:       Mat4<f32>,
-    inv_proj_view:   Mat4<f32>,
-    last_cursor_pos: Vec2<f32>
+    projection:      PerspectiveMatrix3<f32>,
+    proj_view:       Matrix4<f32>,
+    inverse_proj_view:   Matrix4<f32>,
+    last_cursor_pos: Vector2<f32>
 }
 
 impl FirstPerson {
     /// Creates a first person camera with default sensitivity values.
-    pub fn new(eye: Pnt3<f32>, at: Pnt3<f32>) -> FirstPerson {
+    pub fn new(eye: Point3<f32>, at: Point3<f32>) -> FirstPerson {
         FirstPerson::new_with_frustrum(f32::consts::PI / 4.0, 0.1, 1024.0, eye, at)
     }
 
@@ -38,18 +38,18 @@ impl FirstPerson {
     pub fn new_with_frustrum(fov:    f32,
                              znear:  f32,
                              zfar:   f32,
-                             eye:    Pnt3<f32>,
-                             at:     Pnt3<f32>) -> FirstPerson {
+                             eye:    Point3<f32>,
+                             at:     Point3<f32>) -> FirstPerson {
         let mut res = FirstPerson {
-            eye:             Pnt3::new(0.0, 0.0, 0.0),
+            eye:             Point3::new(0.0, 0.0, 0.0),
             yaw:             0.0,
             pitch:           0.0,
             yaw_step:        0.005,
             pitch_step:      0.005,
             move_step:       0.5,
-            projection:      PerspMat3::new(800.0 / 600.0, fov, znear, zfar),
+            projection:      PerspectiveMatrix3::new(800.0 / 600.0, fov, znear, zfar),
             proj_view:       na::zero(),
-            inv_proj_view:   na::zero(),
+            inverse_proj_view:   na::zero(),
             last_cursor_pos: na::zero(),
         };
 
@@ -102,7 +102,7 @@ impl FirstPerson {
     }
 
     /// Changes the orientation and position of the camera to look at the specified point.
-    pub fn look_at(&mut self, eye: Pnt3<f32>, at: Pnt3<f32>) {
+    pub fn look_at(&mut self, eye: Point3<f32>, at: Point3<f32>) {
         let dist  = na::norm(&(eye - at));
 
         let pitch = ((at.y - eye.y) / dist).acos();
@@ -115,12 +115,12 @@ impl FirstPerson {
     }
 
     /// The point the camera is looking at.
-    pub fn at(&self) -> Pnt3<f32> {
+    pub fn at(&self) -> Point3<f32> {
         let ax = self.eye.x + self.yaw.cos() * self.pitch.sin();
         let ay = self.eye.y + self.pitch.cos();
         let az = self.eye.z + self.yaw.sin() * self.pitch.sin();
 
-        Pnt3::new(ax, ay, az)
+        Point3::new(ax, ay, az)
     }
 
     fn update_restrictions(&mut self) {
@@ -135,7 +135,7 @@ impl FirstPerson {
     }
 
     #[doc(hidden)]
-    pub fn handle_left_button_displacement(&mut self, dpos: &Vec2<f32>) {
+    pub fn handle_left_button_displacement(&mut self, dpos: &Vector2<f32>) {
         self.yaw   = self.yaw   + dpos.x * self.yaw_step;
         self.pitch = self.pitch + dpos.y * self.pitch_step;
 
@@ -144,10 +144,10 @@ impl FirstPerson {
     }
 
     #[doc(hidden)]
-    pub fn handle_right_button_displacement(&mut self, dpos: &Vec2<f32>) {
+    pub fn handle_right_button_displacement(&mut self, dpos: &Vector2<f32>) {
         let at        = self.at();
         let dir       = na::normalize(&(at - self.eye));
-        let tangent   = na::normalize(&na::cross(&Vec3::y(), &dir));
+        let tangent   = na::normalize(&na::cross(&Vector3::y(), &dir));
         let bitangent = na::cross(&dir, &tangent);
 
         self.eye = self.eye + tangent * (0.01 * dpos.x / 10.0) + bitangent * (0.01 * dpos.y / 10.0);
@@ -157,7 +157,7 @@ impl FirstPerson {
 
     #[doc(hidden)]
     pub fn handle_scroll(&mut self, yoff: f32) {
-        let front: Vec3<f32> = na::rotate(&self.view_transform(), &Vec3::z());
+        let front: Vector3<f32> = na::rotate(&self.view_transform(), &Vector3::z());
 
         self.eye = self.eye + front * (self.move_step * yoff);
 
@@ -166,23 +166,23 @@ impl FirstPerson {
     }
 
     fn update_projviews(&mut self) {
-        let _ = self.proj_view = *self.projection.as_mat() * na::to_homogeneous(&self.view_transform());
+        let _ = self.proj_view = *self.projection.as_matrix() * na::to_homogeneous(&self.view_transform());
 
-        let _ = na::inv(&self.proj_view).map(|inv_proj| self.inv_proj_view = inv_proj);
+        let _ = na::inverse(&self.proj_view).map(|inverse_proj| self.inverse_proj_view = inverse_proj);
     }
 
     /// The direction this camera is looking at.
-    pub fn eye_dir(&self) -> Vec3<f32> {
+    pub fn eye_dir(&self) -> Vector3<f32> {
         na::normalize(&(self.at() - self.eye))
     }
 
     /// The direction this camera is being moved by the keyboard keys for a given set of key states.
-    pub fn move_dir(&self, up: bool, down: bool, right: bool, left: bool) -> Vec3<f32> {
+    pub fn move_dir(&self, up: bool, down: bool, right: bool, left: bool) -> Vector3<f32> {
         let t                = self.view_transform();
-        let frontv: Vec3<f32> = na::rotate(&t, &Vec3::z());
-        let rightv: Vec3<f32> = na::rotate(&t, &Vec3::x());
+        let frontv: Vector3<f32> = na::rotate(&t, &Vector3::z());
+        let rightv: Vector3<f32> = na::rotate(&t, &Vector3::x());
 
-        let mut movement = na::zero::<Vec3<f32>>();
+        let mut movement = na::zero::<Vector3<f32>>();
 
         if up {
             movement = movement + frontv
@@ -215,14 +215,14 @@ impl Camera for FirstPerson {
     }
 
     /// The camera view transformation (i-e transformation without projection).
-    fn view_transform(&self) -> Iso3<f32> {
-        Iso3::look_at_rh(&self.eye, &self.at(), &Vec3::y())
+    fn view_transform(&self) -> Isometry3<f32> {
+        Isometry3::look_at_rh(&self.eye, &self.at(), &Vector3::y())
     }
 
     fn handle_event(&mut self, window: &glfw::Window, event: &WindowEvent) {
         match *event {
             WindowEvent::CursorPos(x, y) => {
-                let curr_pos = Vec2::new(x as f32, y as f32);
+                let curr_pos = Vector2::new(x as f32, y as f32);
 
                 if window.get_mouse_button(glfw::MouseButtonLeft) == Action::Press {
                     let dpos = curr_pos - self.last_cursor_pos;
@@ -245,16 +245,16 @@ impl Camera for FirstPerson {
         }
     }
 
-    fn eye(&self) -> Pnt3<f32> {
+    fn eye(&self) -> Point3<f32> {
         self.eye
     }
 
-    fn transformation(&self) -> Mat4<f32> {
+    fn transformation(&self) -> Matrix4<f32> {
         self.proj_view
     }
 
-    fn inv_transformation(&self) -> Mat4<f32> {
-        self.inv_proj_view
+    fn inverse_transformation(&self) -> Matrix4<f32> {
+        self.inverse_proj_view
     }
 
     fn update(&mut self, window: &glfw::Window) {
@@ -269,26 +269,26 @@ impl Camera for FirstPerson {
     }
 }
 
-impl Translation<Vec3<f32>> for FirstPerson {
+impl Translation<Vector3<f32>> for FirstPerson {
     #[inline]
-    fn translation(&self) -> Vec3<f32> {
-        self.eye.as_vec().clone()
+    fn translation(&self) -> Vector3<f32> {
+        self.eye.as_vector().clone()
     }
 
     #[inline]
-    fn inv_translation(&self) -> Vec3<f32> {
-        -self.eye.as_vec().clone()
+    fn inverse_translation(&self) -> Vector3<f32> {
+        -self.eye.as_vector().clone()
     }
 
     #[inline]
-    fn append_translation_mut(&mut self, t: &Vec3<f32>) {
+    fn append_translation_mut(&mut self, t: &Vector3<f32>) {
         let new_t = self.eye + *t;
 
-        self.set_translation(new_t.to_vec());
+        self.set_translation(new_t.to_vector());
     }
 
     #[inline]
-    fn append_translation(&self, t: &Vec3<f32>) -> FirstPerson {
+    fn append_translation(&self, t: &Vector3<f32>) -> FirstPerson {
         let mut res = self.clone();
 
         res.append_translation_mut(t);
@@ -297,14 +297,14 @@ impl Translation<Vec3<f32>> for FirstPerson {
     }
 
     #[inline]
-    fn prepend_translation_mut(&mut self, t: &Vec3<f32>) {
+    fn prepend_translation_mut(&mut self, t: &Vector3<f32>) {
         let new_t = self.eye - *t;
 
-        self.set_translation(new_t.to_vec()); // FIXME: is this correct?
+        self.set_translation(new_t.to_vector()); // FIXME: is this correct?
     }
 
     #[inline]
-    fn prepend_translation(&self, t: &Vec3<f32>) -> FirstPerson {
+    fn prepend_translation(&self, t: &Vector3<f32>) -> FirstPerson {
         let mut res = self.clone();
 
         res.prepend_translation_mut(t);
@@ -313,8 +313,8 @@ impl Translation<Vec3<f32>> for FirstPerson {
     }
 
     #[inline]
-    fn set_translation(&mut self, t: Vec3<f32>) {
-        self.eye = na::orig::<Pnt3<f32>>() + t;
+    fn set_translation(&mut self, t: Vector3<f32>) {
+        self.eye = na::origin::<Point3<f32>>() + t;
         self.update_restrictions();
         self.update_projviews();
     }

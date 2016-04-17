@@ -2,9 +2,9 @@
 
 use gl;
 use gl::types::*;
-use na::Vec2;
+use na::Vector2;
 use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, RenderTarget,
-               GPUVector};
+               GPUVec};
 use post_processing::post_processing_effect::PostProcessingEffect;
 
 #[path = "../error.rs"]
@@ -13,15 +13,15 @@ mod error;
 /// An post-processing effect to support the oculus rift.
 pub struct OculusStereo {
     shader:       Shader,
-    fbo_vertices: GPUVector<Vec2<f32>>,
+    fbo_vertices: GPUVec<Vector2<f32>>,
     fbo_texture:  ShaderUniform<GLint>,
-    v_coord:      ShaderAttribute<Vec2<GLfloat>>,
+    v_coord:      ShaderAttribute<Vector2<GLfloat>>,
     kappa_0:      ShaderUniform<GLfloat>,
     kappa_1:      ShaderUniform<GLfloat>,
     kappa_2:      ShaderUniform<GLfloat>,
     kappa_3:      ShaderUniform<GLfloat>,
-    scale:        ShaderUniform<Vec2<GLfloat>>,
-    scale_in:     ShaderUniform<Vec2<GLfloat>>,
+    scale:        ShaderUniform<Vector2<GLfloat>>,
+    scale_in:     ShaderUniform<Vector2<GLfloat>>,
     w:            f32,
     h:            f32
 }
@@ -29,13 +29,13 @@ pub struct OculusStereo {
 impl OculusStereo {
     /// Creates a new OculusStereo post processing effect.
     pub fn new() -> OculusStereo {
-        let fbo_vertices: Vec<Vec2<GLfloat>>  = vec!(
-            Vec2::new(-1.0, -1.0),
-            Vec2::new(1.0, -1.0),
-            Vec2::new(-1.0,  1.0),
-            Vec2::new(1.0,  1.0));
+        let fbo_vertices: Vec<Vector2<GLfloat>>  = vec!(
+            Vector2::new(-1.0, -1.0),
+            Vector2::new(1.0, -1.0),
+            Vector2::new(-1.0,  1.0),
+            Vector2::new(1.0,  1.0));
 
-        let mut fbo_vertices = GPUVector::new(fbo_vertices, BufferType::Array, AllocationType::StaticDraw);
+        let mut fbo_vertices = GPUVec::new(fbo_vertices, BufferType::Array, AllocationType::StaticDraw);
         fbo_vertices.load_to_gpu();
         fbo_vertices.unload_from_ram();
 
@@ -82,8 +82,8 @@ impl PostProcessingEffect for OculusStereo {
         self.kappa_1.upload(&kappa[1]);
         self.kappa_2.upload(&kappa[2]);
         self.kappa_3.upload(&kappa[3]);
-        self.scale.upload(&Vec2::new(0.5f32, aspect));
-        self.scale_in.upload(&Vec2::new(2.0f32 * scale_factor, 1.0f32 / aspect * scale_factor));
+        self.scale.upload(&Vector2::new(0.5f32, aspect));
+        self.scale_in.upload(&Vector2::new(2.0f32 * scale_factor, 1.0f32 / aspect * scale_factor));
 
         /*
          * Finalize draw

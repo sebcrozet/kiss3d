@@ -3,7 +3,7 @@ use num::Float;
 use glfw;
 use glfw::{Key, Action, WindowEvent};
 use gl;
-use na::{Pnt3, Pnt2, Vec2, Vec3, Mat4, Iso3, PerspMat3, Rotate};
+use na::{Point3, Point2, Vector2, Vector3, Matrix4, Isometry3, PerspectiveMatrix3, Rotate};
 use na;
 use resource::ShaderUniform;
 use camera::Camera;
@@ -20,9 +20,9 @@ mod error;
 #[derive(Debug)]
 pub struct FirstPersonStereo {
     /// The camera position
-    eye:        Pnt3<f32>,
-    eye_left:   Pnt3<f32>,
-    eye_right:  Pnt3<f32>,
+    eye:        Point3<f32>,
+    eye_left:   Point3<f32>,
+    eye_right:  Point3<f32>,
 
     /// Inter Pupilary Distance
     ipd:        f32,
@@ -40,17 +40,17 @@ pub struct FirstPersonStereo {
     move_step:  f32,
 
     /// Low level datas
-    projection:      PerspMat3<f32>,
-    proj_view:       Mat4<f32>,
-    proj_view_left:  Mat4<f32>,
-    proj_view_right: Mat4<f32>,
-    inv_proj_view:   Mat4<f32>,
-    last_cursor_pos: Pnt2<f32>
+    projection:      PerspectiveMatrix3<f32>,
+    proj_view:       Matrix4<f32>,
+    proj_view_left:  Matrix4<f32>,
+    proj_view_right: Matrix4<f32>,
+    inverse_proj_view:   Matrix4<f32>,
+    last_cursor_pos: Point2<f32>
 }
 
 impl FirstPersonStereo {
     /// Creates a first person camera with default sensitivity values.
-    pub fn new(eye: Pnt3<f32>, at: Pnt3<f32>, ipd: f32) -> FirstPersonStereo {
+    pub fn new(eye: Point3<f32>, at: Point3<f32>, ipd: f32) -> FirstPersonStereo {
         FirstPersonStereo::new_with_frustrum(f32::consts::PI / 4.0, 0.1, 1024.0, eye, at, ipd)
     }
 
@@ -58,24 +58,24 @@ impl FirstPersonStereo {
     pub fn new_with_frustrum(fov:    f32,
                              znear:  f32,
                              zfar:   f32,
-                             eye:    Pnt3<f32>,
-                             at:     Pnt3<f32>,
+                             eye:    Point3<f32>,
+                             at:     Point3<f32>,
                              ipd:    f32) -> FirstPersonStereo {
         let mut res = FirstPersonStereo {
-            eye:           Pnt3::new(0.0, 0.0, 0.0),
+            eye:           Point3::new(0.0, 0.0, 0.0),
             // left & right are initially wrong, don't take ipd into accound
-            eye_left:      Pnt3::new(0.0, 0.0, 0.0),
-            eye_right:     Pnt3::new(0.0, 0.0, 0.0),
+            eye_left:      Point3::new(0.0, 0.0, 0.0),
+            eye_right:     Point3::new(0.0, 0.0, 0.0),
             ipd:           ipd,
             yaw:           0.0,
             pitch:         0.0,
             yaw_step:      0.005,
             pitch_step:    0.005,
             move_step:     0.5,
-            projection: PerspMat3::new(800.0 / 600.0, fov, znear, zfar),
+            projection: PerspectiveMatrix3::new(800.0 / 600.0, fov, znear, zfar),
             proj_view:  na::zero(),
-            inv_proj_view:   na::zero(),
-            last_cursor_pos: na::orig(),
+            inverse_proj_view:   na::zero(),
+            last_cursor_pos: na::origin(),
             proj_view_left:  na::zero(),
             proj_view_right: na::zero(),
         };
@@ -87,7 +87,7 @@ impl FirstPersonStereo {
 
 
     /// Changes the orientation and position of the camera to look at the specified point.
-    pub fn look_at(&mut self, eye: Pnt3<f32>, at: Pnt3<f32>) {
+    pub fn look_at(&mut self, eye: Point3<f32>, at: Point3<f32>) {
         let dist  = na::norm(&(eye - at));
 
         let pitch = ((at.y - eye.y) / dist).acos();
@@ -100,12 +100,12 @@ impl FirstPersonStereo {
     }
 
     /// The point the camera is looking at.
-    pub fn at(&self) -> Pnt3<f32> {
+    pub fn at(&self) -> Point3<f32> {
         let ax = self.eye.x + self.yaw.cos() * self.pitch.sin();
         let ay = self.eye.y + self.pitch.cos();
         let az = self.eye.z + self.yaw.sin() * self.pitch.sin();
 
-        Pnt3::new(ax, ay, az)
+        Point3::new(ax, ay, az)
     }
 
     fn update_restrictions(&mut self) {
@@ -120,7 +120,7 @@ impl FirstPersonStereo {
     }
 
     #[doc(hidden)]
-    pub fn handle_left_button_displacement(&mut self, dpos: &Vec2<f32>) {
+    pub fn handle_left_button_displacement(&mut self, dpos: &Vector2<f32>) {
         self.yaw   = self.yaw   + dpos.x * self.yaw_step;
         self.pitch = self.pitch + dpos.y * self.pitch_step;
 
@@ -132,7 +132,7 @@ impl FirstPersonStereo {
         // left and right are on a line perpendicular to both up and the target
         // up is always y
         let dir       = na::normalize(&(self.at() - self.eye));
-        let tangent   = na::normalize(&na::cross(&Vec3::y(), &dir));
+        let tangent   = na::normalize(&na::cross(&Vector3::y(), &dir));
         self.eye_left = self.eye - tangent * (self.ipd / 2.0);
         self.eye_right = self.eye + tangent * (self.ipd / 2.0);
         //println(fmt!("eye_left = %f,%f,%f", self.eye_left.x as float, self.eye_left.y as float, self.eye_left.z as float));
@@ -141,10 +141,10 @@ impl FirstPersonStereo {
     }
 
     #[doc(hidden)]
-    pub fn handle_right_button_displacement(&mut self, dpos: &Vec2<f32>) {
+    pub fn handle_right_button_displacement(&mut self, dpos: &Vector2<f32>) {
         let at        = self.at();
         let dir       = na::normalize(&(at - self.eye));
-        let tangent   = na::normalize(&na::cross(&Vec3::y(), &dir));
+        let tangent   = na::normalize(&na::cross(&Vector3::y(), &dir));
         let bitangent = na::cross(&dir, &tangent);
 
         self.eye = self.eye + tangent * (0.01 * dpos.x / 10.0) + bitangent * (0.01 * dpos.y / 10.0);
@@ -156,7 +156,7 @@ impl FirstPersonStereo {
 
     #[doc(hidden)]
     pub fn handle_scroll(&mut self, yoff: f32) {
-        let front: Vec3<f32> = self.view_transform().inv_rotate(&Vec3::z());
+        let front: Vector3<f32> = self.view_transform().inverse_rotate(&Vector3::z());
 
         self.eye = self.eye + front * (self.move_step * yoff);
 
@@ -166,13 +166,13 @@ impl FirstPersonStereo {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view = *self.projection.as_mat() * na::to_homogeneous(&self.view_transform());
-        self.inv_proj_view = na::inv(&self.proj_view).unwrap();
-        self.proj_view_left = *self.projection.as_mat() * na::to_homogeneous(&self.view_transform_left());
-        self.proj_view_right = *self.projection.as_mat() * na::to_homogeneous(&self.view_transform_right());
+        self.proj_view = *self.projection.as_matrix() * na::to_homogeneous(&self.view_transform());
+        self.inverse_proj_view = na::inverse(&self.proj_view).unwrap();
+        self.proj_view_left = *self.projection.as_matrix() * na::to_homogeneous(&self.view_transform_left());
+        self.proj_view_right = *self.projection.as_matrix() * na::to_homogeneous(&self.view_transform_right());
     }
 
-    fn transformation_eye(&self, eye: usize) -> Mat4<f32> {
+    fn transformation_eye(&self, eye: usize) -> Matrix4<f32> {
         match eye {
             0usize => self.proj_view_left,
             1usize => self.proj_view_right,
@@ -181,13 +181,13 @@ impl FirstPersonStereo {
     }
 
     /// The left eye camera view transformation
-    fn view_transform_left(&self) -> Iso3<f32> {
-        Iso3::look_at_rh(&self.eye_left, &self.at(), &Vec3::y())
+    fn view_transform_left(&self) -> Isometry3<f32> {
+        Isometry3::look_at_rh(&self.eye_left, &self.at(), &Vector3::y())
     }
 
     /// The right eye camera view transformation
-    fn view_transform_right(&self) -> Iso3<f32> {
-        Iso3::look_at_rh(&self.eye_right, &self.at(), &Vec3::y())
+    fn view_transform_right(&self) -> Isometry3<f32> {
+        Isometry3::look_at_rh(&self.eye_right, &self.at(), &Vector3::y())
     }
 
     /// return Inter Pupilary Distance
@@ -212,14 +212,14 @@ impl Camera for FirstPersonStereo {
     }
 
     /// The imaginary middle eye camera view transformation (i-e transformation without projection).
-    fn view_transform(&self) -> Iso3<f32> {
-        Iso3::look_at_rh(&self.eye, &self.at(), &Vec3::y())
+    fn view_transform(&self) -> Isometry3<f32> {
+        Isometry3::look_at_rh(&self.eye, &self.at(), &Vector3::y())
     }
 
     fn handle_event(&mut self, window: &glfw::Window, event: &WindowEvent) {
         match *event {
             WindowEvent::CursorPos(x, y) => {
-                let curr_pos = Pnt2::new(x as f32, y as f32);
+                let curr_pos = Point2::new(x as f32, y as f32);
 
                 if window.get_mouse_button(glfw::MouseButtonLeft) == Action::Press {
                     let dpos = curr_pos - self.last_cursor_pos;
@@ -242,22 +242,22 @@ impl Camera for FirstPersonStereo {
         }
     }
 
-    fn eye(&self) -> Pnt3<f32> {
+    fn eye(&self) -> Point3<f32> {
         self.eye
     }
 
-    fn transformation(&self) -> Mat4<f32> {
+    fn transformation(&self) -> Matrix4<f32> {
         self.proj_view
     }
 
-    fn inv_transformation(&self) -> Mat4<f32> {
-        self.inv_proj_view
+    fn inverse_transformation(&self) -> Matrix4<f32> {
+        self.inverse_proj_view
     }
 
     fn update(&mut self, window: &glfw::Window) {
         let t                = self.view_transform();
-        let front: Vec3<f32> = t.inv_rotate(&Vec3::z());
-        let right: Vec3<f32> = t.inv_rotate(&Vec3::x());
+        let front: Vector3<f32> = t.inverse_rotate(&Vector3::z());
+        let right: Vector3<f32> = t.inverse_rotate(&Vector3::x());
 
         if window.get_key(Key::Up) == Action::Press {
             self.eye = self.eye + front * self.move_step
@@ -280,7 +280,7 @@ impl Camera for FirstPersonStereo {
         self.update_projviews();
     }
 
-    fn upload(&self, pass: usize, uniform: &mut ShaderUniform<Mat4<f32>>) {
+    fn upload(&self, pass: usize, uniform: &mut ShaderUniform<Matrix4<f32>>) {
         uniform.upload(&self.transformation_eye(pass));
     }
 

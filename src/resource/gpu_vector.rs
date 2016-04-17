@@ -34,7 +34,7 @@ impl Drop for GLHandle {
 
 // FIXME: generalize this for any resource: GPUResource
 /// A vector of elements that can be loaded to the GPU, on the RAM, or both.
-pub struct GPUVector<T> {
+pub struct GPUVec<T> {
     trash:      bool,
     len:        usize,
     buf_type:   BufferType,
@@ -45,10 +45,10 @@ pub struct GPUVector<T> {
 
 // FIXME: implement Clone
 
-impl<T: GLPrimitive> GPUVector<T> {
-    /// Creates a new `GPUVector` that is not yet uploaded to the GPU.
-    pub fn new(data: Vec<T>, buf_type: BufferType, alloc_type: AllocationType) -> GPUVector<T> {
-        GPUVector {
+impl<T: GLPrimitive> GPUVec<T> {
+    /// Creates a new `GPUVec` that is not yet uploaded to the GPU.
+    pub fn new(data: Vec<T>, buf_type: BufferType, alloc_type: AllocationType) -> GPUVec<T> {
+        GPUVec {
             trash:      true,
             len:        data.len(),
             buf_type:   buf_type,
@@ -103,7 +103,7 @@ impl<T: GLPrimitive> GPUVector<T> {
 
     /// Returns `true` if this vector is available on RAM.
     ///
-    /// Note that a `GPUVector` may be both on RAM and on the GPU.
+    /// Note that a `GPUVec` may be both on RAM and on the GPU.
     #[inline]
     pub fn is_on_ram(&self) -> bool {
         self.data.is_some()
@@ -200,7 +200,7 @@ impl<T: GLPrimitive> GPUVector<T> {
     }
 }
 
-impl<T: Clone + GLPrimitive> GPUVector<T> {
+impl<T: Clone + GLPrimitive> GPUVec<T> {
     /// Returns this vector as an owned vector if it is available on RAM.
     ///
     /// If it has been uploaded to the GPU, and unloaded from the RAM, call `load_to_ram` first to

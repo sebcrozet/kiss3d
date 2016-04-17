@@ -2,8 +2,8 @@
 
 use gl;
 use gl::types::*;
-use na::{Pnt3, Mat4};
-use resource::{BufferType, AllocationType, GPUVector, Shader, ShaderAttribute, ShaderUniform};
+use na::{Point3, Matrix4};
+use resource::{BufferType, AllocationType, GPUVec, Shader, ShaderAttribute, ShaderUniform};
 use camera::Camera;
 
 #[path = "error.rs"]
@@ -12,10 +12,10 @@ mod error;
 /// Structure which manages the display of short-living lines.
 pub struct LineRenderer {
     shader:    Shader,
-    pos:       ShaderAttribute<Pnt3<f32>>,
-    color:     ShaderAttribute<Pnt3<f32>>,
-    view:      ShaderUniform<Mat4<f32>>,
-    lines:     GPUVector<Pnt3<GLfloat>>
+    pos:       ShaderAttribute<Point3<f32>>,
+    color:     ShaderAttribute<Point3<f32>>,
+    view:      ShaderUniform<Matrix4<f32>>,
+    lines:     GPUVec<Point3<GLfloat>>
 }
 
 impl LineRenderer {
@@ -26,10 +26,10 @@ impl LineRenderer {
         shader.use_program();
 
         LineRenderer {
-            lines:     GPUVector::new(Vec::new(), BufferType::Array, AllocationType::StreamDraw),
-            pos:       shader.get_attrib::<Pnt3<f32>>("position").unwrap(),
-            color:     shader.get_attrib::<Pnt3<f32>>("color").unwrap(),
-            view:      shader.get_uniform::<Mat4<f32>>("view").unwrap(),
+            lines:     GPUVec::new(Vec::new(), BufferType::Array, AllocationType::StreamDraw),
+            pos:       shader.get_attrib::<Point3<f32>>("position").unwrap(),
+            color:     shader.get_attrib::<Point3<f32>>("color").unwrap(),
+            view:      shader.get_uniform::<Matrix4<f32>>("view").unwrap(),
             shader:    shader
         }
     }
@@ -41,7 +41,7 @@ impl LineRenderer {
 
     /// Adds a line to be drawn during the next frame. Lines are not persistent between frames.
     /// This method must be called for each line to draw, and at each update loop iteration.
-    pub fn draw_line(&mut self, a: Pnt3<GLfloat>, b: Pnt3<GLfloat>, color: Pnt3<GLfloat>) {
+    pub fn draw_line(&mut self, a: Point3<GLfloat>, b: Point3<GLfloat>, color: Point3<GLfloat>) {
         for lines in self.lines.data_mut().iter_mut() {
             lines.push(a);
             lines.push(color);
