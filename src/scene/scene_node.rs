@@ -270,6 +270,20 @@ impl SceneNodeData {
         self.apply_to_objects(&mut |o| o.read_uvs(f))
     }
 
+    /// Get the visibility status of node.
+    #[inline]
+    pub fn is_visible(&self) -> bool {
+        self.visible
+    }
+
+    /// Sets the visibility of this node.
+    ///
+    /// The node and its children are not rendered if it is not visible.
+    #[inline]
+    pub fn set_visible(&mut self, visible: bool) {
+        self.visible = visible;
+    }
+
     /// Sets the color of the objects contained by this node and its children.
     ///
     /// Colors components must be on the range `[0.0, 1.0]`.
@@ -919,6 +933,20 @@ impl SceneNode {
     #[inline(always)]
     pub fn read_uvs<F: FnMut(&[Point2<f32>]) -> ()>(&self, f: &mut F) {
         self.data().read_uvs(f)
+    }
+
+    /// Get the visibility status of node.
+    #[inline]
+    pub fn is_visible(&self) -> bool {
+        self.data().is_visible()
+    }
+
+    /// Sets the visibility of this node.
+    ///
+    /// The node and its children are not rendered if it is not visible.
+    #[inline]
+    pub fn set_visible(&mut self, visible: bool) {
+        self.data_mut().set_visible(visible)
     }
 
     /// Sets the color of the objects contained by this node and its children.
