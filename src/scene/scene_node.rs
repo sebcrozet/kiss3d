@@ -116,13 +116,13 @@ impl SceneNodeData {
 
     /// A reference to the object possibly contained by this node.
     #[inline]
-    pub fn object<'a>(&'a self) -> Option<&'a Object> {
+    pub fn object(&self) -> Option<&Object> {
         self.object.as_ref()
     }
 
     /// A mutable reference to the object possibly contained by this node.
     #[inline]
-    pub fn object_mut<'a>(&'a mut self) -> Option<&'a mut Object> {
+    pub fn object_mut(&mut self) -> Option<&mut Object> {
         self.object.as_mut()
     }
 
@@ -131,7 +131,7 @@ impl SceneNodeData {
     /// # Failure
     /// Fails of this node does not contains an object.
     #[inline]
-    pub fn get_object<'a>(&'a self) -> &'a Object {
+    pub fn get_object(&self) -> &Object {
         self.object().expect("This scene node does not contain an Object.")
     }
 
@@ -140,7 +140,7 @@ impl SceneNodeData {
     /// # Failure
     /// Fails of this node does not contains an object.
     #[inline]
-    pub fn get_object_mut<'a>(&'a mut self) -> &'a mut Object {
+    pub fn get_object_mut(&mut self) -> &mut Object {
         self.object_mut().expect("This scene node does not contain an Object.")
     }
 
@@ -582,12 +582,12 @@ impl SceneNode {
     }
 
     /// The data of this scene node.
-    pub fn data<'a>(&'a self) -> Ref<'a, SceneNodeData> {
+    pub fn data(&self) -> Ref<SceneNodeData> {
         self.data.borrow()
     }
 
     /// The data of this scene node.
-    pub fn data_mut<'a>(&'a mut self) -> RefMut<'a, SceneNodeData> {
+    pub fn data_mut(&mut self) -> RefMut<SceneNodeData> {
         self.data.borrow_mut()
     }
 

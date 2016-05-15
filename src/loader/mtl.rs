@@ -93,7 +93,7 @@ fn parse_name<'a>(_: usize, ws: Words<'a>) -> String {
     res.join(" ")
 }
 
-fn parse_color<'a>(l: usize, mut ws: Words<'a>) -> Vector3<f32> {
+fn parse_color(l: usize, mut ws: Words) -> Vector3<f32> {
     let sx = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 0."));
     let sy = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 1."));
     let sz = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 2."));
@@ -109,7 +109,7 @@ fn parse_color<'a>(l: usize, mut ws: Words<'a>) -> Vector3<f32> {
     Vector3::new(x, y, z)
 }
 
-fn parse_scalar<'a>(l: usize, mut ws: Words<'a>) -> f32 {
+fn parse_scalar(l: usize, mut ws: Words) -> f32 {
     let sx = ws.next().unwrap_or_else(|| error(l, "1 component was expected, found 0."));
 
     let x: Result<f32, _> = FromStr::from_str(sx);

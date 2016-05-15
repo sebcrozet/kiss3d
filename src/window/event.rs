@@ -27,8 +27,8 @@ impl<'a> Event<'a> {
     #[inline]
     fn new(timestamp: f64,
            value:     glfw::WindowEvent,
-           inhibitor: &'a RefCell<Vec<glfw::WindowEvent>>)
-           -> Event<'a> {
+           inhibitor: &RefCell<Vec<glfw::WindowEvent>>)
+           -> Event {
         Event {
             timestamp: timestamp,
             value:     value,
@@ -91,7 +91,7 @@ impl EventManager {
 
     /// Gets an iterator to the glfw events already collected.
     #[inline]
-    pub fn iter<'a>(&'a mut self) -> Events<'a> {
+    pub fn iter(&mut self) -> Events {
         Events::new(glfw::flush_messages(&*self.events), &*self.inhibitor)
     }
 }

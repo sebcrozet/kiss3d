@@ -31,7 +31,7 @@ pub type Words<'a> = Filter<Split<'a, fn(char) -> bool>, fn(&&str) -> bool>;
 
 // FIXME: replace by split_whitespaces from rust 1.1
 /// Returns an iterator through all the words of a string.
-pub fn split_words<'a>(s: &'a str) -> Words<'a> {
+pub fn split_words(s: &str) -> Words {
     fn is_not_empty(s: &&str) -> bool { !s.is_empty() }
     let is_not_empty: fn(&&str) -> bool = is_not_empty; // coerce to fn pointer
 
@@ -191,7 +191,7 @@ fn parse_mtllib<'a>(l:            usize,
     }
 }
 
-fn parse_v_or_vn<'a>(l: usize, mut ws: Words<'a>) -> Vector3<f32> {
+fn parse_v_or_vn(l: usize, mut ws: Words) -> Vector3<f32> {
     let sx = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 0."));
     let sy = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 1."));
     let sz = ws.next().unwrap_or_else(|| error(l, "3 components were expected, found 2."));
@@ -288,7 +288,7 @@ fn parse_f<'a>(l:              usize,
     }
 }
 
-fn parse_vt<'a>(l: usize, mut ws: Words<'a>) -> UV {
+fn parse_vt(l: usize, mut ws: Words) -> UV {
     let _0 = "0.0";
     let sx  = ws.next().unwrap_or_else(|| error(l, "at least 2 components were expected, found 0."));
     let sy  = ws.next().unwrap_or_else(|| error(l, "at least 2 components were expected, found 1."));

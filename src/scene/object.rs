@@ -28,13 +28,13 @@ pub struct ObjectData {
 impl ObjectData {
     /// The texture of this object.
     #[inline]
-    pub fn texture<'a>(&'a self) -> &'a Rc<Texture> {
+    pub fn texture(&self) -> &Rc<Texture> {
         &self.texture
     }
 
     /// The color of this object.
     #[inline]
-    pub fn color<'a>(&'a self) -> &'a Point3<f32> {
+    pub fn color(&self) -> &Point3<f32> {
         &self.color
     }
 
@@ -66,7 +66,7 @@ impl ObjectData {
     ///
     /// Use dynamic typing capabilities of the `Any` type to recover the actual data.
     #[inline]
-    pub fn user_data<'a>(&'a self) -> &'a Any {
+    pub fn user_data(&self) -> &Any {
         &*self.user_data
     }
 }
@@ -126,13 +126,13 @@ impl Object {
 
     /// Gets the data of this object.
     #[inline]
-    pub fn data<'a>(&'a self) -> &'a ObjectData {
+    pub fn data(&self) -> &ObjectData {
         &self.data
     }
 
     /// Gets the data of this object.
     #[inline]
-    pub fn data_mut<'a>(&'a mut self) -> &'a mut ObjectData {
+    pub fn data_mut(&mut self) -> &mut ObjectData {
         &mut self.data
     }
 
@@ -198,7 +198,7 @@ impl Object {
 
     /// This object's mesh.
     #[inline]
-    pub fn mesh<'a>(&'a self) -> &'a Rc<RefCell<Mesh>> {
+    pub fn mesh(&self) -> &Rc<RefCell<Mesh>> {
         &self.mesh
     }
 
