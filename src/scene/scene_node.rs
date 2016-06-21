@@ -578,7 +578,8 @@ impl SceneNode {
     /// Removes this node from its parent.
     pub fn unlink(&mut self) {
         let self_self = self.clone();
-        self.data_mut().remove_from_parent(&self_self)
+        self.data_mut().remove_from_parent(&self_self);
+        self.data_mut().parent = None
     }
 
     /// The data of this scene node.
