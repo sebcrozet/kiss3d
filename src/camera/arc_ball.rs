@@ -1,6 +1,6 @@
 use std::f32;
 use num::Float;
-use glfw::{Key, Action};
+use glfw::{Key, Action, MouseButton};
 use glfw;
 use glfw::WindowEvent;
 use na::{Point3, Vector2, Vector3, Matrix4, Isometry3, PerspectiveMatrix3};
@@ -34,6 +34,8 @@ pub struct ArcBall {
     pitch_step: f32,
     /// Increment of the distance per unit scrolling. The default value is 40.0.
     dist_step:  f32,
+    rotate_button: Option<MouseButton>,
+    drag_button:   Option<MouseButton>,
 
     projection:      PerspectiveMatrix3<f32>,
     proj_view:       Matrix4<f32>,
@@ -61,6 +63,8 @@ impl ArcBall {
             yaw_step:        0.005,
             pitch_step:      0.005,
             dist_step:       40.0,
+            rotate_button:      Some(glfw::MouseButtonLeft),
+            drag_button:        Some(glfw::MouseButtonRight),
             projection:      PerspectiveMatrix3::new(800.0 / 600.0, fov, znear, zfar),
             proj_view:       na::zero(),
             inverse_proj_view:   na::zero(),
@@ -151,6 +155,28 @@ impl ArcBall {
         }
     }
 
+    /// The button used to rotate the ArcBall camera.
+    pub fn rotate_button(&self) -> Option<MouseButton> {
+        self.rotate_button
+    }
+
+    /// Set the button used to rotate the ArcBall camera.
+    /// Use None to disable rotation.
+    pub fn rebind_rotate_button(&mut self, new_button : Option<MouseButton>) {
+        self.rotate_button = new_button;
+    }
+
+    /// The button used to drag the ArcBall camera.
+    pub fn drag_button(&self) -> Option<MouseButton> {
+        self.drag_button
+    }
+
+    /// Set the button used to drag the ArcBall camera.
+    /// Use None to disable dragging.
+    pub fn rebind_drag_button(&mut self, new_button : Option<MouseButton>) {
+        self.drag_button = new_button;
+    }
+
     fn handle_left_button_displacement(&mut self, dpos: &Vector2<f32>) {
         self.yaw   = self.yaw   + dpos.x * self.yaw_step;
         self.pitch = self.pitch - dpos.y * self.pitch_step;
@@ -204,14 +230,18 @@ impl Camera for ArcBall {
             WindowEvent::CursorPos(x, y) => {
                 let curr_pos = Vector2::new(x as f32, y as f32);
 
-                if window.get_mouse_button(glfw::MouseButtonLeft) == Action::Press {
-                    let dpos = curr_pos - self.last_cursor_pos;
-                    self.handle_left_button_displacement(&dpos)
+                if let Some(rotate_button) = self.rotate_button {
+                    if window.get_mouse_button(rotate_button) == Action::Press {
+                        let dpos = curr_pos - self.last_cursor_pos;
+                        self.handle_left_button_displacement(&dpos)
+                    }
                 }
 
-                if window.get_mouse_button(glfw::MouseButtonRight) == Action::Press {
-                    let dpos = curr_pos - self.last_cursor_pos;
-                    self.handle_right_button_displacement(&dpos)
+                if let Some(drag_button) = self.drag_button {
+                    if window.get_mouse_button(drag_button) == Action::Press {
+                        let dpos = curr_pos - self.last_cursor_pos;
+                        self.handle_right_button_displacement(&dpos)
+                    }
                 }
 
                 self.last_cursor_pos = curr_pos;
