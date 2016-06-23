@@ -1,7 +1,7 @@
 use std::f32;
 use num::Float;
 use glfw;
-use glfw::{Key, Action, WindowEvent};
+use glfw::{Key, MouseButton, Action, WindowEvent};
 use na::{Translation, Point3, Vector2, Vector3, Matrix4, Isometry3, PerspectiveMatrix3};
 use na;
 use camera::Camera;
@@ -21,6 +21,8 @@ pub struct FirstPerson {
     yaw_step:        f32,
     pitch_step:      f32,
     move_step:       f32,
+    rotate_button: Option<MouseButton>,
+    drag_button:   Option<MouseButton>,
 
     projection:      PerspectiveMatrix3<f32>,
     proj_view:       Matrix4<f32>,
@@ -47,6 +49,8 @@ impl FirstPerson {
             yaw_step:        0.005,
             pitch_step:      0.005,
             move_step:       0.5,
+            rotate_button:   Some(glfw::MouseButtonLeft),
+            drag_button:     Some(glfw::MouseButtonRight),
             projection:      PerspectiveMatrix3::new(800.0 / 600.0, fov, znear, zfar),
             proj_view:       na::zero(),
             inverse_proj_view:   na::zero(),
@@ -132,6 +136,28 @@ impl FirstPerson {
         if self.pitch > _pi - 0.01 {
             self.pitch = _pi - 0.01
         }
+    }
+
+    /// The button used to rotate the FirstPerson camera.
+    pub fn rotate_button(&self) -> Option<MouseButton> {
+        self.rotate_button
+    }
+
+    /// Set the button used to rotate the FirstPerson camera.
+    /// Use None to disable rotation.
+    pub fn rebind_rotate_button(&mut self, new_button : Option<MouseButton>) {
+        self.rotate_button = new_button;
+    }
+
+    /// The button used to drag the FirstPerson camera.
+    pub fn drag_button(&self) -> Option<MouseButton> {
+        self.drag_button
+    }
+
+    /// Set the button used to drag the FirstPerson camera.
+    /// Use None to disable dragging.
+    pub fn rebind_drag_button(&mut self, new_button : Option<MouseButton>) {
+        self.drag_button = new_button;
     }
 
     #[doc(hidden)]
@@ -224,14 +250,18 @@ impl Camera for FirstPerson {
             WindowEvent::CursorPos(x, y) => {
                 let curr_pos = Vector2::new(x as f32, y as f32);
 
-                if window.get_mouse_button(glfw::MouseButtonLeft) == Action::Press {
-                    let dpos = curr_pos - self.last_cursor_pos;
-                    self.handle_left_button_displacement(&dpos)
+                if let Some(rotate_button) = self.rotate_button {
+                    if window.get_mouse_button(rotate_button) == Action::Press {
+                        let dpos = curr_pos - self.last_cursor_pos;
+                        self.handle_left_button_displacement(&dpos)
+                    }
                 }
 
-                if window.get_mouse_button(glfw::MouseButtonRight) == Action::Press {
-                    let dpos = curr_pos - self.last_cursor_pos;
-                    self.handle_right_button_displacement(&dpos)
+                if let Some(drag_button) = self.drag_button {
+                    if window.get_mouse_button(drag_button) == Action::Press {
+                        let dpos = curr_pos - self.last_cursor_pos;
+                        self.handle_right_button_displacement(&dpos)
+                    }
                 }
 
                 self.last_cursor_pos = curr_pos;
