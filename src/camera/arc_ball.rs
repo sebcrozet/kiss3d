@@ -36,6 +36,7 @@ pub struct ArcBall {
     dist_step:  f32,
     rotate_button: Option<MouseButton>,
     drag_button:   Option<MouseButton>,
+    reset_key:     Option<Key>,
 
     projection:      PerspectiveMatrix3<f32>,
     proj_view:       Matrix4<f32>,
@@ -63,8 +64,9 @@ impl ArcBall {
             yaw_step:        0.005,
             pitch_step:      0.005,
             dist_step:       40.0,
-            rotate_button:      Some(glfw::MouseButtonLeft),
-            drag_button:        Some(glfw::MouseButtonRight),
+            rotate_button:   Some(glfw::MouseButtonLeft),
+            drag_button:     Some(glfw::MouseButtonRight),
+            reset_key:       Some(Key::Enter),
             projection:      PerspectiveMatrix3::new(800.0 / 600.0, fov, znear, zfar),
             proj_view:       na::zero(),
             inverse_proj_view:   na::zero(),
@@ -162,7 +164,7 @@ impl ArcBall {
 
     /// Set the button used to rotate the ArcBall camera.
     /// Use None to disable rotation.
-    pub fn rebind_rotate_button(&mut self, new_button : Option<MouseButton>) {
+    pub fn rebind_rotate_button(&mut self, new_button: Option<MouseButton>) {
         self.rotate_button = new_button;
     }
 
@@ -173,8 +175,19 @@ impl ArcBall {
 
     /// Set the button used to drag the ArcBall camera.
     /// Use None to disable dragging.
-    pub fn rebind_drag_button(&mut self, new_button : Option<MouseButton>) {
+    pub fn rebind_drag_button(&mut self, new_button: Option<MouseButton>) {
         self.drag_button = new_button;
+    }
+
+    /// The key used to reset the ArcBall camera.
+    pub fn reset_key(&self) -> Option<Key> {
+        self.reset_key
+    }
+
+    /// Set the key used to reset the ArcBall camera.
+    /// Use None to disable reset.
+    pub fn rebind_reset_key(&mut self, new_key : Option<Key>) {
+        self.reset_key = new_key;
     }
 
     fn handle_left_button_displacement(&mut self, dpos: &Vector2<f32>) {
@@ -246,7 +259,7 @@ impl Camera for ArcBall {
 
                 self.last_cursor_pos = curr_pos;
             },
-            WindowEvent::Key(Key::Enter, _, Action::Press, _) => {
+            WindowEvent::Key(key, _, Action::Press, _) if Some(key) == self.reset_key => {
                 self.at = na::origin();
                 self.update_projviews();
             },
