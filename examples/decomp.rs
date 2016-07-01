@@ -1,5 +1,4 @@
 extern crate rand;
-extern crate time;
 extern crate ncollide_transformation;
 extern crate kiss3d;
 extern crate nalgebra as na;
@@ -10,6 +9,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::sync::{Arc, RwLock};
 use std::path::Path;
+use std::time::Instant;
 use rand::random;
 use na::{Vector3, Translation};
 use kiss3d::window::Window;
@@ -74,9 +74,10 @@ fn main() {
         match mesh.to_trimesh() {
             Some(mut trimesh) => {
                 trimesh.split_index_buffer(true);
-                let begin = time::precise_time_ns();
+                let begin = Instant();
                 let (decomp, partitioning) = ncollide_transformation::hacd(trimesh, concavity, clusters);
-                total_time = total_time + ((time::precise_time_ns() - begin) as f64) / 1000000000.0;
+                let elapsed = begin.elapsed();
+                total_time = elapsed.as_secs() as f64 + elapsed.subsec_nanos() as f64 / 1000000000.0;
 
                 println!("num comps: {}", decomp.len());
 

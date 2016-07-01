@@ -5,7 +5,7 @@
 
 use std::mem;
 use std::thread;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use glfw;
 use glfw::{Context, Key, Action, WindowMode, WindowEvent};
 use std::cell::RefCell;
@@ -13,7 +13,6 @@ use std::rc::Rc;
 use std::sync::mpsc::Receiver;
 use std::path::Path;
 use std::iter::repeat;
-use time;
 use gl;
 use gl::types::*;
 use image::{ImageBuffer,Rgb};
@@ -44,7 +43,7 @@ pub struct Window {
     unhandled_events:           Rc<RefCell<Vec<WindowEvent>>>,
     glfw:                       glfw::Glfw,
     window:                     glfw::Window,
-    max_ms_per_frame:           Option<u64>,
+    max_dur_per_frame:          Option<Duration>,
     scene:                      SceneNode,
     light_mode:                 Light, // FIXME: move that to the scene graph
     background:                 Vector3<GLfloat>,
@@ -53,7 +52,7 @@ pub struct Window {
     text_renderer:              TextRenderer,
     framebuffer_manager:        FramebufferManager,
     post_process_render_target: RenderTarget,
-    curr_time:                  u64,
+    curr_time:                  Instant,
     camera:                     Rc<RefCell<ArcBall>>
 }
 
@@ -109,7 +108,7 @@ impl Window {
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
     #[inline]
     pub fn set_framerate_limit(&mut self, fps: Option<u64>) {
-        self.max_ms_per_frame = fps.map(|f| { assert!(f != 0); 1000 / f })
+        self.max_dur_per_frame = fps.map(|f| { assert!(f != 0); Duration::from_millis(1000 / f) })
     }
     
     /// Set window title
@@ -329,7 +328,7 @@ impl Window {
         init_gl();
 
         let mut usr_window = Window {
-            max_ms_per_frame:      None,
+            max_dur_per_frame:      None,
             glfw:                  glfw,
             window:                window,
             events:                Rc::new(events),
@@ -342,7 +341,7 @@ impl Window {
             text_renderer:         TextRenderer::new(),
             post_process_render_target: FramebufferManager::new_render_target(width as usize, height as usize),
             framebuffer_manager:   FramebufferManager::new(),
-            curr_time:             time::precise_time_ns(),
+            curr_time:             Instant::now(),
             camera:                Rc::new(RefCell::new(ArcBall::new(Point3::new(0.0f32, 0.0, -1.0), na::origin())))
         };
 
@@ -571,17 +570,17 @@ impl Window {
         self.window.swap_buffers();
 
         // Limit the fps if needed.
-        match self.max_ms_per_frame {
+        match self.max_dur_per_frame {
             None     => { },
-            Some(ms) => {
-                let elapsed = (time::precise_time_ns() - self.curr_time) / 1000000;
-                if elapsed < ms {
-                    thread::sleep(Duration::from_millis(ms - elapsed));
+            Some(dur) => {
+                let elapsed = self.curr_time.elapsed();
+                if elapsed < dur {
+                    thread::sleep(dur - elapsed);
                 }
             }
         }
 
-        self.curr_time = time::precise_time_ns();
+        self.curr_time = Instant::now();
 
         // self.transparent_objects.clear();
         // self.opaque_objects.clear();

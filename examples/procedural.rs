@@ -1,4 +1,3 @@
-extern crate time;
 extern crate rand;
 extern crate ncollide_procedural;
 extern crate ncollide_transformation;
