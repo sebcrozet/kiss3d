@@ -77,7 +77,7 @@ impl<T: GLPrimitive> GPUVec<T> {
     ///
     /// This method will mark this vector as `trash`.
     #[inline]
-    pub fn data_mut<'a>(&'a mut self) -> &'a mut Option<Vec<T>> {
+    pub fn data_mut(&mut self) -> &mut Option<Vec<T>> {
         self.trash = true;
 
         &mut self.data
@@ -85,7 +85,7 @@ impl<T: GLPrimitive> GPUVec<T> {
 
     /// Immutably accesses the vector if it is available on RAM.
     #[inline]
-    pub fn data<'a>(&'a self) -> &'a Option<Vec<T>> {
+    pub fn data(&self) -> &Option<Vec<T>> {
         &self.data
     }
 

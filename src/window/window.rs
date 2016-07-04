@@ -65,7 +65,7 @@ impl Window {
 
     /// Access the glfw context.
     #[inline]
-    pub fn context<'r>(&'r self) -> &'r glfw::Glfw {
+    pub fn context(&self) -> &glfw::Glfw {
         &self.glfw
     }
 
@@ -365,13 +365,13 @@ impl Window {
 
     /// Reference to the scene associated with this window.
     #[inline]
-    pub fn scene<'a>(&'a self) -> &'a SceneNode {
+    pub fn scene(&self) -> &SceneNode {
         &self.scene
     }
 
     /// Mutable reference to the scene associated with this window.
     #[inline]
-    pub fn scene_mut<'a>(&'a mut self) -> &'a mut SceneNode {
+    pub fn scene_mut(&mut self) -> &mut SceneNode {
         &mut self.scene
     }
 

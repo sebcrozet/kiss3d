@@ -116,13 +116,13 @@ impl SceneNodeData {
 
     /// A reference to the object possibly contained by this node.
     #[inline]
-    pub fn object<'a>(&'a self) -> Option<&'a Object> {
+    pub fn object(&self) -> Option<&Object> {
         self.object.as_ref()
     }
 
     /// A mutable reference to the object possibly contained by this node.
     #[inline]
-    pub fn object_mut<'a>(&'a mut self) -> Option<&'a mut Object> {
+    pub fn object_mut(&mut self) -> Option<&mut Object> {
         self.object.as_mut()
     }
 
@@ -131,7 +131,7 @@ impl SceneNodeData {
     /// # Failure
     /// Fails of this node does not contains an object.
     #[inline]
-    pub fn get_object<'a>(&'a self) -> &'a Object {
+    pub fn get_object(&self) -> &Object {
         self.object().expect("This scene node does not contain an Object.")
     }
 
@@ -140,7 +140,7 @@ impl SceneNodeData {
     /// # Failure
     /// Fails of this node does not contains an object.
     #[inline]
-    pub fn get_object_mut<'a>(&'a mut self) -> &'a mut Object {
+    pub fn get_object_mut(&mut self) -> &mut Object {
         self.object_mut().expect("This scene node does not contain an Object.")
     }
 
@@ -202,7 +202,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_vertices<F: FnMut(&mut Vec<Point3<f32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_vertices<F: FnMut(&mut Vec<Point3<f32>>)>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_vertices(f))
     }
 
@@ -210,7 +210,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_vertices<F: FnMut(&[Point3<f32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_vertices<F: FnMut(&[Point3<f32>])>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_vertices(f))
     }
 
@@ -225,7 +225,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_normals<F: FnMut(&mut Vec<Vector3<f32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_normals<F: FnMut(&mut Vec<Vector3<f32>>)>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_normals(f))
     }
 
@@ -233,7 +233,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_normals<F: FnMut(&[Vector3<f32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_normals<F: FnMut(&[Vector3<f32>])>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_normals(f))
     }
 
@@ -241,7 +241,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u32>>)>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_faces(f))
     }
 
@@ -249,7 +249,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_faces<F: FnMut(&[Point3<u32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_faces<F: FnMut(&[Point3<u32>])>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_faces(f))
     }
 
@@ -258,7 +258,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_uvs<F: FnMut(&mut Vec<Point2<f32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_uvs<F: FnMut(&mut Vec<Point2<f32>>)>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_uvs(f))
     }
 
@@ -266,7 +266,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_uvs<F: FnMut(&[Point2<f32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_uvs<F: FnMut(&[Point2<f32>])>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_uvs(f))
     }
 
@@ -323,7 +323,7 @@ impl SceneNodeData {
 
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
-    pub fn apply_to_objects_mut<F: FnMut(&mut Object) -> ()>(&mut self, f: &mut F) {
+    pub fn apply_to_objects_mut<F: FnMut(&mut Object)>(&mut self, f: &mut F) {
         match self.object {
             Some(ref mut o) => f(o),
             None            => { }
@@ -336,7 +336,7 @@ impl SceneNodeData {
 
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
-    pub fn apply_to_objects<F: FnMut(&Object) -> ()>(&self, f: &mut F) {
+    pub fn apply_to_objects<F: FnMut(&Object)>(&self, f: &mut F) {
         match self.object {
             Some(ref o) => f(o),
             None        => { }
@@ -583,12 +583,12 @@ impl SceneNode {
     }
 
     /// The data of this scene node.
-    pub fn data<'a>(&'a self) -> Ref<'a, SceneNodeData> {
+    pub fn data(&self) -> Ref<SceneNodeData> {
         self.data.borrow()
     }
 
     /// The data of this scene node.
-    pub fn data_mut<'a>(&'a mut self) -> RefMut<'a, SceneNodeData> {
+    pub fn data_mut(&mut self) -> RefMut<SceneNodeData> {
         self.data.borrow_mut()
     }
 
@@ -797,7 +797,7 @@ impl SceneNode {
 
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
-    pub fn apply_to_scene_nodes_mut<F: FnMut(&mut SceneNode) -> ()>(&mut self, f: &mut F) {
+    pub fn apply_to_scene_nodes_mut<F: FnMut(&mut SceneNode)>(&mut self, f: &mut F) {
         f(self);
 
         for c in self.data_mut().children.iter_mut() {
@@ -807,7 +807,7 @@ impl SceneNode {
 
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
-    pub fn apply_to_scene_nodes<F: FnMut(&SceneNode) -> ()>(&self, f: &mut F) {
+    pub fn apply_to_scene_nodes<F: FnMut(&SceneNode)>(&self, f: &mut F) {
         f(self);
 
         for c in self.data().children.iter() {
@@ -868,7 +868,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_vertices<F: FnMut(&mut Vec<Point3<f32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_vertices<F: FnMut(&mut Vec<Point3<f32>>)>(&mut self, f: &mut F) {
         self.data_mut().modify_vertices(f)
     }
 
@@ -876,7 +876,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_vertices<F: FnMut(&[Point3<f32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_vertices<F: FnMut(&[Point3<f32>])>(&self, f: &mut F) {
         self.data().read_vertices(f)
     }
 
@@ -891,7 +891,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_normals<F: FnMut(&mut Vec<Vector3<f32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_normals<F: FnMut(&mut Vec<Vector3<f32>>)>(&mut self, f: &mut F) {
         self.data_mut().modify_normals(f)
     }
 
@@ -899,7 +899,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_normals<F: FnMut(&[Vector3<f32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_normals<F: FnMut(&[Vector3<f32>])>(&self, f: &mut F) {
         self.data().read_normals(f)
     }
 
@@ -907,7 +907,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u32>>)>(&mut self, f: &mut F) {
         self.data_mut().modify_faces(f)
     }
 
@@ -915,7 +915,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_faces<F: FnMut(&[Point3<u32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_faces<F: FnMut(&[Point3<u32>])>(&self, f: &mut F) {
         self.data().read_faces(f)
     }
 
@@ -924,7 +924,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_uvs<F: FnMut(&mut Vec<Point2<f32>>) -> ()>(&mut self, f: &mut F) {
+    pub fn modify_uvs<F: FnMut(&mut Vec<Point2<f32>>)>(&mut self, f: &mut F) {
         self.data_mut().modify_uvs(f)
     }
 
@@ -932,7 +932,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_uvs<F: FnMut(&[Point2<f32>]) -> ()>(&self, f: &mut F) {
+    pub fn read_uvs<F: FnMut(&[Point2<f32>])>(&self, f: &mut F) {
         self.data().read_uvs(f)
     }
 
