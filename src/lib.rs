@@ -85,7 +85,6 @@ I’d love to see people improving this library for their own needs. However, ke
 #![doc(html_root_url = "http://kiss3d.org/doc")]
 
 extern crate libc;
-extern crate time;
 extern crate gl;
 extern crate num;
 extern crate nalgebra as na;
