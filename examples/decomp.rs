@@ -74,7 +74,7 @@ fn main() {
         match mesh.to_trimesh() {
             Some(mut trimesh) => {
                 trimesh.split_index_buffer(true);
-                let begin = Instant();
+                let begin = Instant::now();
                 let (decomp, partitioning) = ncollide_transformation::hacd(trimesh, concavity, clusters);
                 let elapsed = begin.elapsed();
                 total_time = elapsed.as_secs() as f64 + elapsed.subsec_nanos() as f64 / 1000000000.0;
