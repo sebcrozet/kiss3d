@@ -1,7 +1,7 @@
 use std::f32;
 use num::Float;
 use glfw;
-use glfw::{Key, Action, WindowEvent};
+use glfw::{Key, MouseButton, Action, WindowEvent};
 use na::{Translation, Point3, Vector2, Vector3, Matrix4, Isometry3, PerspectiveMatrix3};
 use na;
 use camera::Camera;
@@ -21,6 +21,12 @@ pub struct FirstPerson {
     yaw_step:        f32,
     pitch_step:      f32,
     move_step:       f32,
+    rotate_button:   Option<MouseButton>,
+    drag_button:     Option<MouseButton>,
+    up_key:          Option<Key>,
+    down_key:        Option<Key>,
+    left_key:        Option<Key>,
+    right_key:       Option<Key>,
 
     projection:      PerspectiveMatrix3<f32>,
     proj_view:       Matrix4<f32>,
@@ -47,6 +53,12 @@ impl FirstPerson {
             yaw_step:        0.005,
             pitch_step:      0.005,
             move_step:       0.5,
+            rotate_button:   Some(glfw::MouseButtonLeft),
+            drag_button:     Some(glfw::MouseButtonRight),
+            up_key:          Some(Key::Up),
+            down_key:        Some(Key::Down),
+            left_key:        Some(Key::Left),
+            right_key:       Some(Key::Right),
             projection:      PerspectiveMatrix3::new(800.0 / 600.0, fov, znear, zfar),
             proj_view:       na::zero(),
             inverse_proj_view:   na::zero(),
@@ -132,6 +144,80 @@ impl FirstPerson {
         if self.pitch > _pi - 0.01 {
             self.pitch = _pi - 0.01
         }
+    }
+
+    /// The button used to rotate the FirstPerson camera.
+    pub fn rotate_button(&self) -> Option<MouseButton> {
+        self.rotate_button
+    }
+
+    /// Set the button used to rotate the FirstPerson camera.
+    /// Use None to disable rotation.
+    pub fn rebind_rotate_button(&mut self, new_button: Option<MouseButton>) {
+        self.rotate_button = new_button;
+    }
+
+    /// The button used to drag the FirstPerson camera.
+    pub fn drag_button(&self) -> Option<MouseButton> {
+        self.drag_button
+    }
+
+    /// Set the button used to drag the FirstPerson camera.
+    /// Use None to disable dragging.
+    pub fn rebind_drag_button(&mut self, new_button: Option<MouseButton>) {
+        self.drag_button = new_button;
+    }
+
+    // The movement button for up.
+    pub fn up_key(&self) -> Option<Key> {
+        self.up_key
+    }
+
+    // The movement button for down.
+    pub fn down_key(&self) -> Option<Key> {
+        self.down_key
+    }
+
+    // The movement button for left.
+    pub fn left_key(&self) -> Option<Key> {
+        self.left_key
+    }
+
+    // The movement button for right.
+    pub fn right_key(&self) -> Option<Key> {
+        self.right_key
+    }
+
+    /// Set the movement button for up.
+    /// Use None to disable movement in this direction.
+    pub fn rebind_up_key(&mut self, new_key: Option<Key>) {
+        self.up_key = new_key;
+    }
+
+    /// Set the movement button for down.
+    /// Use None to disable movement in this direction.
+    pub fn rebind_down_key(&mut self, new_key: Option<Key>) {
+        self.down_key = new_key;
+    }
+
+    /// Set the movement button for left.
+    /// Use None to disable movement in this direction.
+    pub fn rebind_left_key(&mut self, new_key: Option<Key>) {
+        self.left_key = new_key;
+    }
+
+    /// Set the movement button for right.
+    /// Use None to disable movement in this direction.
+    pub fn rebind_right_key(&mut self, new_key: Option<Key>) {
+        self.right_key = new_key;
+    }
+
+    /// Disable the movement buttons for up, down, left and right.
+    pub fn unbind_movement_keys(&mut self) {
+        self.up_key    = None;
+        self.down_key  = None;
+        self.left_key  = None;
+        self.right_key = None;
     }
 
     #[doc(hidden)]
@@ -224,14 +310,18 @@ impl Camera for FirstPerson {
             WindowEvent::CursorPos(x, y) => {
                 let curr_pos = Vector2::new(x as f32, y as f32);
 
-                if window.get_mouse_button(glfw::MouseButtonLeft) == Action::Press {
-                    let dpos = curr_pos - self.last_cursor_pos;
-                    self.handle_left_button_displacement(&dpos)
+                if let Some(rotate_button) = self.rotate_button {
+                    if window.get_mouse_button(rotate_button) == Action::Press {
+                        let dpos = curr_pos - self.last_cursor_pos;
+                        self.handle_left_button_displacement(&dpos)
+                    }
                 }
 
-                if window.get_mouse_button(glfw::MouseButtonRight) == Action::Press {
-                    let dpos = curr_pos - self.last_cursor_pos;
-                    self.handle_right_button_displacement(&dpos)
+                if let Some(drag_button) = self.drag_button {
+                    if window.get_mouse_button(drag_button) == Action::Press {
+                        let dpos = curr_pos - self.last_cursor_pos;
+                        self.handle_right_button_displacement(&dpos)
+                    }
                 }
 
                 self.last_cursor_pos = curr_pos;
@@ -258,14 +348,22 @@ impl Camera for FirstPerson {
     }
 
     fn update(&mut self, window: &glfw::Window) {
-        let up    = window.get_key(Key::Up)    == Action::Press;
-        let down  = window.get_key(Key::Down)  == Action::Press;
-        let right = window.get_key(Key::Right) == Action::Press;
-        let left  = window.get_key(Key::Left)  == Action::Press;
+        let up    = check_optional_key_state(window, self.up_key,    Action::Press);
+        let down  = check_optional_key_state(window, self.down_key,  Action::Press);
+        let right = check_optional_key_state(window, self.right_key, Action::Press);
+        let left  = check_optional_key_state(window, self.left_key,  Action::Press);
         let dir   = self.move_dir(up, down, right, left);
 
         let move_amount  = dir * self.move_step;
         self.append_translation_mut(&move_amount);
+    }
+}
+
+fn check_optional_key_state(window: &glfw::Window, key: Option<Key>, key_state: Action) -> bool {
+    if let Some(actual_key) = key {
+        window.get_key(actual_key) == key_state
+    } else {
+        false
     }
 }
 
