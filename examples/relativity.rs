@@ -20,7 +20,7 @@ use kiss3d::text::Font;
 use kiss3d::scene::ObjectData;
 use kiss3d::camera::{Camera, FirstPerson};
 use kiss3d::light::Light;
-use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Matrixerial, Mesh};
+use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
 
 fn main() {
     let mut window = Window::new("Kiss3d: relativity");
@@ -30,7 +30,7 @@ fn main() {
     let fov      = f32::consts::PI / 4.0;
     let font     = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
     let context  = Arc::new(RwLock::new(Context::new(1000.0, na::zero(), eye)));
-    let material = Rc::new(RefCell::new(Box::new(RelativisticMatrixerial::new(context.clone())) as Box<Matrixerial + 'static>));
+    let material = Rc::new(RefCell::new(Box::new(RelativisticMaterial::new(context.clone())) as Box<Material + 'static>));
     let mut observer = InertialCamera::new(fov, 0.1, 100000.0, eye, at);
 
     window.set_framerate_limit(Some(60));
@@ -190,7 +190,7 @@ impl Context {
 }
 
 /// The default material used to draw objects.
-struct RelativisticMatrixerial {
+struct RelativisticMaterial {
     context:         Arc<RwLock<Context>>,
     shader:          Shader,
     pos:             ShaderAttribute<Point3<f32>>,
@@ -208,16 +208,16 @@ struct RelativisticMatrixerial {
     player_position: ShaderUniform<Point3<f32>>
 }
 
-impl RelativisticMatrixerial {
-    /// Creates a new `RelativisticMatrixerial`.
-    fn new(context: Arc<RwLock<Context>>) -> RelativisticMatrixerial {
+impl RelativisticMaterial {
+    /// Creates a new `RelativisticMaterial`.
+    fn new(context: Arc<RwLock<Context>>) -> RelativisticMaterial {
         // load the shader
         let mut shader = Shader::new_from_str(RELATIVISTIC_VERTEX_SRC, RELATIVISTIC_FRAGMENT_SRC);
 
         shader.use_program();
 
         // get the variables locations
-        RelativisticMatrixerial {
+        RelativisticMaterial {
             context:         context,
             pos:             shader.get_attrib("position").unwrap(),
             normal:          shader.get_attrib("normal").unwrap(),
@@ -250,7 +250,7 @@ impl RelativisticMatrixerial {
     }
 }
 
-impl Matrixerial for RelativisticMatrixerial {
+impl Material for RelativisticMaterial {
     fn render(&mut self,
               pass:      usize,
               transform: &Isometry3<f32>, 

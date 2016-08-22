@@ -3,7 +3,7 @@ use gl;
 use gl::types::*;
 use na::{Point3, Point2, Vector3, Matrix3, Matrix4, Isometry3};
 use na;
-use resource::Matrixerial;
+use resource::Material;
 use scene::ObjectData;
 use light::Light;
 use camera::Camera;
@@ -14,7 +14,7 @@ mod error;
 
 
 /// A material that draws normals of an object.
-pub struct UvsMatrixerial {
+pub struct UvsMaterial {
     shader:    Shader,
     position:  ShaderAttribute<Point3<f32>>,
     uvs:       ShaderAttribute<Point2<f32>>,
@@ -23,14 +23,14 @@ pub struct UvsMatrixerial {
     scale:     ShaderUniform<Matrix3<f32>>
 }
 
-impl UvsMatrixerial {
-    /// Creates a new UvsMatrixerial.
-    pub fn new() -> UvsMatrixerial {
+impl UvsMaterial {
+    /// Creates a new UvsMaterial.
+    pub fn new() -> UvsMaterial {
         let mut shader = Shader::new_from_str(UVS_VERTEX_SRC, UVS_FRAGMENT_SRC);
 
         shader.use_program();
 
-        UvsMatrixerial {
+        UvsMaterial {
             position:  shader.get_attrib("position").unwrap(),
             uvs:       shader.get_attrib("uvs").unwrap(),
             transform: shader.get_uniform("transform").unwrap(),
@@ -41,7 +41,7 @@ impl UvsMatrixerial {
     }
 }
 
-impl Matrixerial for UvsMatrixerial {
+impl Material for UvsMaterial {
     fn render(&mut self,
               pass:      usize,
               transform: &Isometry3<f32>,

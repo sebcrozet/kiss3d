@@ -25,7 +25,7 @@ use scene::SceneNode;
 use line_renderer::LineRenderer;
 use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
-use resource::{FramebufferManager, RenderTarget, Texture, TextureManager, Mesh, Matrixerial};
+use resource::{FramebufferManager, RenderTarget, Texture, TextureManager, Mesh, Material};
 use light::Light;
 use text::{TextRenderer, Font};
 use window::EventManager;

@@ -7,7 +7,7 @@ use scene::ObjectData;
 use resource::Mesh;
 
 /// Trait implemented by materials.
-pub trait Matrixerial {
+pub trait Material {
     // FIXME: add the number of the current pass?
     /// Renders an object using this material.
     fn render(&mut self,

@@ -3,7 +3,7 @@ use gl;
 use gl::types::*;
 use na::{Point3, Vector3, Matrix3, Matrix4, Isometry3};
 use na;
-use resource::Matrixerial;
+use resource::Material;
 use scene::ObjectData;
 use light::Light;
 use camera::Camera;
@@ -14,7 +14,7 @@ mod error;
 
 
 /// A material that draws normals of an object.
-pub struct NormalsMatrixerial {
+pub struct NormalsMaterial {
     shader:    Shader,
     position:  ShaderAttribute<Point3<f32>>,
     normal:    ShaderAttribute<Vector3<f32>>,
@@ -23,14 +23,14 @@ pub struct NormalsMatrixerial {
     scale:     ShaderUniform<Matrix3<f32>>
 }
 
-impl NormalsMatrixerial {
-    /// Creates a new NormalsMatrixerial.
-    pub fn new() -> NormalsMatrixerial {
+impl NormalsMaterial {
+    /// Creates a new NormalsMaterial.
+    pub fn new() -> NormalsMaterial {
         let mut shader = Shader::new_from_str(NORMAL_VERTEX_SRC, NORMAL_FRAGMENT_SRC);
 
         shader.use_program();
 
-        NormalsMatrixerial {
+        NormalsMaterial {
             position:  shader.get_attrib("position").unwrap(),
             normal:    shader.get_attrib("normal").unwrap(),
             transform: shader.get_uniform("transform").unwrap(),
@@ -41,7 +41,7 @@ impl NormalsMatrixerial {
     }
 }
 
-impl Matrixerial for NormalsMatrixerial {
+impl Material for NormalsMaterial {
     fn render(&mut self,
               pass:      usize,
               transform: &Isometry3<f32>,
@@ -132,4 +132,3 @@ void main() {
     gl_FragColor = vec4((ls_normal + 1.0) / 2.0, 1.0);
 }
 ";
-

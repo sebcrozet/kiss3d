@@ -9,7 +9,7 @@ use ncollide_procedural::TriMesh3;
 use ncollide_procedural as procedural;
 use resource::Mesh;
 use loader::obj;
-use loader::mtl::MtlMatrixerial;
+use loader::mtl::MtlMaterial;
 
 thread_local!(static KEY_MESH_MANAGER: RefCell<MeshManager> = RefCell::new(MeshManager::new()));
 
@@ -71,7 +71,7 @@ impl MeshManager {
     // FIXME: is this the right place to put this?
     /// Loads the meshes described by an obj file.
     pub fn load_obj(path: &Path, mtl_dir: &Path, geometry_name: &str)
-                    -> IoResult<Vec<(String, Rc<RefCell<Mesh>>, Option<MtlMatrixerial>)>> {
+                    -> IoResult<Vec<(String, Rc<RefCell<Mesh>>, Option<MtlMaterial>)>> {
         obj::parse_file(path, mtl_dir, geometry_name).map(|ms| {
             let mut res = Vec::new();
 

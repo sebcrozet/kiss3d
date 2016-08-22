@@ -3,7 +3,7 @@ use gl;
 use gl::types::*;
 use na::{Point2, Point3, Vector3, Matrix3, Matrix4, Isometry3};
 use na;
-use resource::Matrixerial;
+use resource::Material;
 use scene::ObjectData;
 use light::Light;
 use camera::Camera;
@@ -13,7 +13,7 @@ use resource::{Mesh, Shader, ShaderAttribute, ShaderUniform};
 mod error;
 
 /// The default material used to draw objects.
-pub struct ObjectMatrixerial {
+pub struct ObjectMaterial {
     shader:     Shader,
     pos:        ShaderAttribute<Point3<f32>>,
     normal:     ShaderAttribute<Vector3<f32>>,
@@ -26,16 +26,16 @@ pub struct ObjectMatrixerial {
     view:       ShaderUniform<Matrix4<f32>>
 }
 
-impl ObjectMatrixerial {
-    /// Creates a new `ObjectMatrixerial`.
-    pub fn new() -> ObjectMatrixerial {
+impl ObjectMaterial {
+    /// Creates a new `ObjectMaterial`.
+    pub fn new() -> ObjectMaterial {
         // load the shader
         let mut shader = Shader::new_from_str(OBJECT_VERTEX_SRC, OBJECT_FRAGMENT_SRC);
 
         shader.use_program();
 
         // get the variables locations
-        ObjectMatrixerial {
+        ObjectMaterial {
             pos:        shader.get_attrib("position").unwrap(),
             normal:     shader.get_attrib("normal").unwrap(),
             tex_coord:  shader.get_attrib("tex_coord_v").unwrap(),
@@ -63,7 +63,7 @@ impl ObjectMatrixerial {
     }
 }
 
-impl Matrixerial for ObjectMatrixerial {
+impl Material for ObjectMaterial {
     fn render(&mut self,
               pass:      usize,
               transform: &Isometry3<f32>,

@@ -15,7 +15,7 @@ use gl::types::GLfloat;
 use na::{Vector3, Point2, Point3, Bounded};
 use na;
 use resource::{BufferType, AllocationType, Mesh};
-use loader::mtl::MtlMatrixerial;
+use loader::mtl::MtlMaterial;
 use loader::mtl;
 use resource::GPUVec;
 
@@ -50,7 +50,7 @@ fn warn(line: usize, err: &str) {
 }
 
 /// Parses an obj file.
-pub fn parse_file(path: &Path, mtl_base_dir: &Path, basename: &str) -> IoResult<Vec<(String, Mesh, Option<MtlMatrixerial>)>> {
+pub fn parse_file(path: &Path, mtl_base_dir: &Path, basename: &str) -> IoResult<Vec<(String, Mesh, Option<MtlMaterial>)>> {
     match File::open(path) {
         Ok(mut file) => {
             let mut sfile = String::new();
@@ -61,7 +61,7 @@ pub fn parse_file(path: &Path, mtl_base_dir: &Path, basename: &str) -> IoResult<
 }
 
 /// Parses a string representing an obj file.
-pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, Mesh, Option<MtlMatrixerial>)> {
+pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, Mesh, Option<MtlMaterial>)> {
     let mut coords:     Vec<Coord>             = Vec::new();
     let mut normals:    Vec<Normal>            = Vec::new();
     let mut uvs:        Vec<UV>                = Vec::new();
@@ -72,7 +72,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
     let mut ignore_uvs                         = false;
     let mut mtllib                             = HashMap::new();
     let mut group2mtl                          = HashMap::new();
-    let mut curr_mtl                           = None::<MtlMatrixerial>;
+    let mut curr_mtl                           = None::<MtlMaterial>;
 
     groups_ids.push(Vec::new());
     let _ = groups.insert(basename.to_string(), 0);
@@ -124,11 +124,11 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
 fn parse_usemtl<'a>(l:          usize,
                     ws:         Words<'a>,
                     curr_group: usize,
-                    mtllib:     &HashMap<String, MtlMatrixerial>,
-                    group2mtl:  &mut HashMap<usize, MtlMatrixerial>,
+                    mtllib:     &HashMap<String, MtlMaterial>,
+                    group2mtl:  &mut HashMap<usize, MtlMaterial>,
                     groups:     &mut HashMap<String, usize>,
                     groups_ids: &mut Vec<Vec<Point3<u32>>>,
-                    curr_mtl:   &mut Option<MtlMatrixerial>)
+                    curr_mtl:   &mut Option<MtlMaterial>)
                     -> usize {
     let mname: Vec<&'a str> = ws.collect();
     let mname = mname.join(" ");
@@ -172,7 +172,7 @@ fn parse_usemtl<'a>(l:          usize,
 fn parse_mtllib<'a>(l:            usize,
                     ws:           Words<'a>,
                     mtl_base_dir: &Path,
-                    mtllib:       &mut HashMap<String, MtlMatrixerial>) {
+                    mtllib:       &mut HashMap<String, MtlMaterial>) {
     let filename: Vec<&'a str> = ws.collect();
     let filename = filename.join(" ");
 
@@ -331,8 +331,8 @@ fn reformat(coords:     Vec<Coord>,
             uvs:        Option<Vec<UV>>,
             groups_ids: Vec<Vec<Point3<u32>>>,
             groups:     HashMap<String, usize>,
-            group2mtl:  HashMap<usize, MtlMatrixerial>)
-            -> Vec<(String, Mesh, Option<MtlMatrixerial>)> {
+            group2mtl:  HashMap<usize, MtlMaterial>)
+            -> Vec<(String, Mesh, Option<MtlMaterial>)> {
     let mut vt2id:  HashMap<Point3<u32>, u32> = HashMap::new();
     let mut vertex_ids: Vec<u32>            = Vec::new();
     let mut resc: Vec<Coord>                = Vec::new();
@@ -341,7 +341,7 @@ fn reformat(coords:     Vec<Coord>,
     let mut resfs: Vec<Vec<Point3<u32>>>      = Vec::new();
     let mut allfs: Vec<Point3<u32>>           = Vec::new();
     let mut names: Vec<String>              = Vec::new();
-    let mut mtls:  Vec<Option<MtlMatrixerial>> = Vec::new();
+    let mut mtls:  Vec<Option<MtlMaterial>> = Vec::new();
 
     for (name, i) in groups.into_iter() {
         names.push(name);
