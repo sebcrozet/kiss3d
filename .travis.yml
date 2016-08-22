@@ -4,8 +4,8 @@ rust:
     - beta
     - nightly
 before_install:
-  # This ppa provides cmake 2.8.11, which travis doesn't have yet
-  - sudo add-apt-repository --yes ppa:kalakris/cmake
+  # This ppa provides cmake 2.8.12, which travis doesn't have yet
+  - sudo add-apt-repository --yes ppa:kubuntu-ppa/backports
   - sudo apt-get update -qq
 install:
   - sudo apt-get install cmake
