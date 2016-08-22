@@ -4,7 +4,7 @@ use std::mem;
 use std::path::{Path, PathBuf};
 use na;
 use na::{Isometry3, Point2, Vector3, Point3, Transformation, Rotation, Translation, RotationWithTranslation};
-use resource::{Mesh, MeshManager, Texture, TextureManager, Matrixerial, MatrixerialManager};
+use resource::{Mesh, MeshManager, Texture, TextureManager, Material, MaterialManager};
 use ncollide_procedural::TriMesh3;
 use ncollide_procedural as procedural;
 use scene::Object;
@@ -157,7 +157,7 @@ impl SceneNodeData {
     // we are on a leaf? (to avoid the call to a closure required by the apply_to_*).
     /// Sets the material of the objects contained by this node and its children.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Matrixerial + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material + 'static>>>) {
         self.apply_to_objects_mut(&mut |o| o.set_material(material.clone()))
     }
 
@@ -166,7 +166,7 @@ impl SceneNodeData {
     /// The material must already have been registered as `name`.
     #[inline]
     pub fn set_material_with_name(&mut self, name: &str) {
-        let material = MatrixerialManager::get_global_manager(|tm| tm.get(name).unwrap_or_else(
+        let material = MaterialManager::get_global_manager(|tm| tm.get(name).unwrap_or_else(
             || panic!("Invalid attempt to use the unregistered material: {}", name)));
 
         self.set_material(material)
@@ -721,7 +721,7 @@ impl SceneNode {
     /// Creates and adds a new object to this node children using a mesh.
     pub fn add_mesh(&mut self, mesh: Rc<RefCell<Mesh>>, scale: Vector3<f32>) -> SceneNode {
         let tex    = TextureManager::get_global_manager(|tm| tm.get_default());
-        let mat    = MatrixerialManager::get_global_manager(|mm| mm.get_default());
+        let mat    = MaterialManager::get_global_manager(|mm| mm.get_default());
         let object = Object::new(mesh, 1.0, 1.0, 1.0, tex, mat);
 
         self.add_object(scale, na::one(), object)
@@ -738,7 +738,7 @@ impl SceneNode {
     /// newly created node is added to this node's children.
     pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: Vector3<f32>) -> SceneNode {
         let tex = TextureManager::get_global_manager(|tm| tm.get_default());
-        let mat = MatrixerialManager::get_global_manager(|mm| mm.get_default());
+        let mat = MaterialManager::get_global_manager(|mm| mm.get_default());
 
         // FIXME: is there some error-handling stuff to do here instead of the `let _`.
         let result = MeshManager::load_obj(path, mtl_dir, path.to_str().unwrap()).map(|objs| {
@@ -828,7 +828,7 @@ impl SceneNode {
 
     /// Sets the material of the objects contained by this node and its children.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Matrixerial + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material + 'static>>>) {
         self.data_mut().set_material(material)
     }
 

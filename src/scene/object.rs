@@ -6,7 +6,7 @@ use std::rc::Rc;
 use std::path::Path;
 use gl::types::*;
 use na::{Point3, Point2, Vector3, Isometry3};
-use resource::{Texture, TextureManager, Matrixerial, Mesh};
+use resource::{Texture, TextureManager, Material, Mesh};
 use camera::Camera;
 use light::Light;
 
@@ -15,7 +15,7 @@ mod error;
 
 /// Set of data identifying a scene node.
 pub struct ObjectData {
-    material:     Rc<RefCell<Box<Matrixerial + 'static>>>,
+    material:     Rc<RefCell<Box<Material + 'static>>>,
     texture:      Rc<Texture>,
     color:        Point3<f32>,
     wlines:       f32,
@@ -88,7 +88,7 @@ impl Object {
                g:            f32,
                b:            f32,
                texture:      Rc<Texture>,
-               material:     Rc<RefCell<Box<Matrixerial + 'static>>>) -> Object {
+               material:     Rc<RefCell<Box<Material + 'static>>>) -> Object {
         let user_data = ();
         let data = ObjectData {
             color:        Point3::new(r, g, b),
@@ -150,13 +150,13 @@ impl Object {
 
     /// Gets the material of this object.
     #[inline]
-    pub fn material(&self) -> Rc<RefCell<Box<Matrixerial + 'static>>> {
+    pub fn material(&self) -> Rc<RefCell<Box<Material + 'static>>> {
         self.data.material.clone()
     }
 
     /// Sets the material of this object.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Matrixerial + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material + 'static>>>) {
         self.data.material = material;
     }
 

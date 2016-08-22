@@ -11,12 +11,12 @@ use kiss3d::window::Window;
 use kiss3d::scene::ObjectData;
 use kiss3d::camera::Camera;
 use kiss3d::light::Light;
-use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Matrixerial, Mesh};
+use kiss3d::resource::{Shader, ShaderAttribute, ShaderUniform, Material, Mesh};
 
 fn main() {
     let mut window = Window::new("Kiss3d: custom_material");
     let mut c      = window.add_sphere(1.0);
-    let material   = Rc::new(RefCell::new(Box::new(NormalMatrixerial::new()) as Box<Matrixerial + 'static>));
+    let material   = Rc::new(RefCell::new(Box::new(NormalMaterial::new()) as Box<Material + 'static>));
 
     c.set_material(material);
 
@@ -26,7 +26,7 @@ fn main() {
 }
 
 // A material that draws normals
-pub struct NormalMatrixerial {
+pub struct NormalMaterial {
     shader:    Shader,
     position:  ShaderAttribute<Point3<f32>>,
     normal:    ShaderAttribute<Vector3<f32>>,
@@ -35,13 +35,13 @@ pub struct NormalMatrixerial {
     scale:     ShaderUniform<Matrix3<f32>>
 }
 
-impl NormalMatrixerial {
-    pub fn new() -> NormalMatrixerial {
+impl NormalMaterial {
+    pub fn new() -> NormalMaterial {
         let mut shader = Shader::new_from_str(NORMAL_VERTEX_SRC, NORMAL_FRAGMENT_SRC);
 
         shader.use_program();
 
-        NormalMatrixerial {
+        NormalMaterial {
             position:  shader.get_attrib("position").unwrap(),
             normal:    shader.get_attrib("normal").unwrap(),
             transform: shader.get_uniform("transform").unwrap(),
@@ -52,7 +52,7 @@ impl NormalMatrixerial {
     }
 }
 
-impl Matrixerial for NormalMatrixerial {
+impl Material for NormalMaterial {
     fn render(&mut self,
               pass:      usize,
               transform: &Isometry3<f32>,

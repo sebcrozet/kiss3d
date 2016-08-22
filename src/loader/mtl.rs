@@ -15,7 +15,7 @@ fn error(line: usize, err: &str) -> ! {
 }
 
 /// Parses a mtl file.
-pub fn parse_file(path: &Path) -> IoResult<Vec<MtlMatrixerial>> {
+pub fn parse_file(path: &Path) -> IoResult<Vec<MtlMaterial>> {
     match File::open(path) {
         Ok(mut file) => {
             let mut sfile = String::new();
@@ -26,9 +26,9 @@ pub fn parse_file(path: &Path) -> IoResult<Vec<MtlMatrixerial>> {
 }
 
 /// Parses a string representing a mtl file.
-pub fn parse(string: &str) -> Vec<MtlMatrixerial> {
+pub fn parse(string: &str) -> Vec<MtlMaterial> {
     let mut res           = Vec::new();
-    let mut curr_material = MtlMatrixerial::new_default("".to_string());
+    let mut curr_material = MtlMaterial::new_default("".to_string());
 
     for (l, line) in string.lines().enumerate() {
         let mut words = obj::split_words(line);
@@ -48,7 +48,7 @@ pub fn parse(string: &str) -> Vec<MtlMatrixerial> {
                     match w {
                         // texture name
                         "newmtl"      => {
-                            let old = mem::replace(&mut curr_material, MtlMatrixerial::new_default(parse_name(l, words)));
+                            let old = mem::replace(&mut curr_material, MtlMaterial::new_default(parse_name(l, words)));
 
                             if old.name.len() != 0 {
                                 res.push(old);
@@ -119,9 +119,9 @@ fn parse_scalar(l: usize, mut ws: Words) -> f32 {
     x
 }
 
-/// Matrixerial informations read from a `.mtl` file.
+/// Material informations read from a `.mtl` file.
 #[derive(Clone)]
-pub struct MtlMatrixerial {
+pub struct MtlMaterial {
     /// Name of the material.
     pub name:             String,
     /// Path to the ambiant texture.
@@ -144,10 +144,10 @@ pub struct MtlMatrixerial {
     pub alpha:            f32,
 }
 
-impl MtlMatrixerial {
+impl MtlMaterial {
     /// Creates a new mtl material with a name and default values.
-    pub fn new_default(name: String) -> MtlMatrixerial {
-        MtlMatrixerial {
+    pub fn new_default(name: String) -> MtlMaterial {
+        MtlMaterial {
             name:             name,
             shininess:        60.0,
             alpha:            1.0,
@@ -172,8 +172,8 @@ impl MtlMatrixerial {
                diffuse_texture:  Option<String>,
                specular_texture: Option<String>,
                opacity_map:      Option<String>)
-               -> MtlMatrixerial {
-        MtlMatrixerial {
+               -> MtlMaterial {
+        MtlMaterial {
             name:             name,
             ambiant:          ambiant,
             diffuse:          diffuse,
