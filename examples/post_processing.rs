@@ -3,7 +3,7 @@ extern crate kiss3d;
 extern crate nalgebra as na;
 
 use rand::random;
-use na::{Vector3, Translation};
+use na::Vector3;
 use kiss3d::window::Window;
 use kiss3d::light::Light;
 use kiss3d::post_processing::{Waves, Grayscales, SobelEdgeHighlight};

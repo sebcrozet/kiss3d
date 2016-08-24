@@ -7,7 +7,6 @@ use gl;
 use gl::types::*;
 use na::{Vector2, Point2, Point3};
 use text::Font;
-use camera::Camera;
 use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, GPUVec};
 
 #[path = "../error.rs"]

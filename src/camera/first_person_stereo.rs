@@ -1,10 +1,7 @@
 use std::f32;
-use num::Float;
-use glfw;
-use glfw::{Key, Action, WindowEvent};
+use glfw::{self, Key, Action, WindowEvent};
 use gl;
-use na::{Point3, Point2, Vector2, Vector3, Matrix4, Isometry3, PerspectiveMatrix3, Rotate};
-use na;
+use na::{self, Point3, Point2, Vector2, Vector3, Matrix4, Isometry3, PerspectiveMatrix3, Rotate};
 use resource::ShaderUniform;
 use camera::Camera;
 

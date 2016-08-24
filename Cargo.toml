@@ -29,10 +29,10 @@ gl = "0.6.*"
 glfw = "0.8.*"
 image = "0.6.*"
 libc = "0.2.*"
-nalgebra = "0.8.*"
-ncollide_procedural = "0.4.*"
+nalgebra = "0.9.*"
+ncollide_procedural = "0.5.*"
 num = "0.1.*"
 
 [dev-dependencies]
 rand = "0.3.*"
-ncollide_transformation = "0.4.*"
+ncollide_transformation = "0.5.*"

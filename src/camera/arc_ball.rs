@@ -1,5 +1,4 @@
 use std::f32;
-use num::Float;
 use glfw::{Key, Action, MouseButton};
 use glfw;
 use glfw::WindowEvent;

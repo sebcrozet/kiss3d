@@ -5,7 +5,7 @@ extern crate kiss3d;
 extern crate nalgebra as na;
 
 use std::path::Path;
-use na::{Point2, Point3, Vector2, Vector3, Translation};
+use na::{Point2, Point3, Vector2, Vector3};
 use ncollide_procedural::{Polyline, TriMesh};
 use ncollide_procedural::path::{PolylinePath, PolylinePattern, StrokePattern, ArrowheadCap};
 use kiss3d::window::Window;

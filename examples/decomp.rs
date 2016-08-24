@@ -11,7 +11,7 @@ use std::sync::{Arc, RwLock};
 use std::path::Path;
 use std::time::Instant;
 use rand::random;
-use na::{Vector3, Translation};
+use na::Vector3;
 use kiss3d::window::Window;
 use kiss3d::light::Light;
 use kiss3d::loader::obj;

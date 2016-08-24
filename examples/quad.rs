@@ -3,7 +3,6 @@ extern crate num;
 extern crate kiss3d;
 extern crate nalgebra as na;
 
-use num::Float;
 use rand::random;
 use kiss3d::window::Window;
 use kiss3d::light::Light;

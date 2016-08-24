@@ -9,7 +9,6 @@ use std::io::Read;
 use std::path::Path;
 use gl;
 use gl::types::*;
-use camera::Camera;
 use resource::{GLPrimitive, GPUVec};
 
 #[path = "../error.rs"]
