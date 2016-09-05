@@ -11,6 +11,7 @@ use glfw::{Context, Key, Action, WindowMode, WindowEvent};
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::mpsc::Receiver;
+use std::sync::{Once, ONCE_INIT};
 use std::path::Path;
 use std::iter::repeat;
 use gl;
@@ -318,7 +319,16 @@ impl Window {
     fn do_new(title: &str, hide: bool, width: u32, height: u32) -> Window {
         // FIXME: glfw::set_error_callback(~ErrorCallback);
 
-        let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
+        static mut GLFW_SINGLETON: Option<glfw::Glfw> = None;
+        static INIT: Once = ONCE_INIT;
+
+        let glfw = unsafe {
+            INIT.call_once(|| {
+                GLFW_SINGLETON = Some(glfw::init(glfw::FAIL_ON_ERRORS).unwrap());
+            });
+            GLFW_SINGLETON.unwrap().clone()
+        };
+
 
         let (mut window, events) = glfw.create_window(width, height, title, WindowMode::Windowed).expect("Unable to open a glfw window.");
 
