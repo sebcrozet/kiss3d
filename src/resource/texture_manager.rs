@@ -100,15 +100,10 @@ impl TextureManager {
         }
     }
 
-    /// Allocates a new texture read from a file. If a texture with same name exists, nothing is
-    /// created and the old texture is returned.
-    pub fn add(&mut self, path: &Path, name: &str) -> Rc<Texture> {
-        let tex = match self.textures.entry(name.to_string()) {
-            Entry::Occupied(entry) => entry.into_mut(),
-            Entry::Vacant(entry)   => entry.insert(Texture::new())
-        };
+    /// Allocates a new texture read from a file.
+    fn load_texture(path: &Path) -> Rc<Texture> {
+        let tex = Texture::new();
 
-        // FIXME: dont re-load the texture if it already exists!
         unsafe {
             verify!(gl::ActiveTexture(gl::TEXTURE0));
             verify!(gl::BindTexture(gl::TEXTURE_2D, tex.id()));
@@ -143,6 +138,12 @@ impl TextureManager {
             verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
         }
 
-        tex.clone()
+        tex
+    }
+
+    /// Allocates a new texture read from a file. If a texture with same name exists, nothing is
+    /// created and the old texture is returned.
+    pub fn add(&mut self, path: &Path, name: &str) -> Rc<Texture> {
+        self.textures.entry(name.to_string()).or_insert_with(|| TextureManager::load_texture(path)).clone()
     }
 }
