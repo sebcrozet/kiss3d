@@ -2,6 +2,7 @@
 
 use std::sync::{Arc, RwLock};
 use gl::types::*;
+use num::Zero;
 use na::{Point2, Vector3, Point3};
 use na;
 use ncollide_procedural::{TriMesh, TriMesh3, IndexBuffer};
@@ -39,7 +40,7 @@ impl Mesh {
 
         let uvs = match uvs {
             Some(us) => us,
-            None     => iter::repeat(na::origin()).take(coords.len()).collect()
+            None     => iter::repeat(Point2::origin()).take(coords.len()).collect()
         };
 
         let location = if dynamic_draw { AllocationType::DynamicDraw } else { AllocationType::StaticDraw };
@@ -203,16 +204,16 @@ impl Mesh {
         let mut divisor:Vec<f32> = iter::repeat(0f32).take(coordinates.len()).collect();
     
         normals.clear();
-        normals.extend(iter::repeat(na::zero::<Vector3<GLfloat>>()).take(coordinates.len()));
+        normals.extend(iter::repeat(Vector3::<GLfloat>::zero()).take(coordinates.len()));
     
         // Accumulate normals ...
         for f in faces.iter() {
             let edge1  = coordinates[f.y as usize] - coordinates[f.x as usize];
             let edge2  = coordinates[f.z as usize] - coordinates[f.x as usize];
-            let cross  = na::cross(&edge1, &edge2);
+            let cross  = edge1.cross(&edge2);
             let normal;
     
-            if !na::is_zero(&cross) {
+            if !cross.is_zero() {
                 normal = na::normalize(&cross)
             }
             else {

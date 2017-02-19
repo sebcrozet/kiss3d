@@ -1,7 +1,7 @@
 use std::f32;
 use glfw::{self, Key, Action, WindowEvent};
 use gl;
-use na::{self, Point3, Point2, Vector2, Vector3, Matrix4, Isometry3, PerspectiveMatrix3, Rotate};
+use na::{self, Point3, Point2, Vector2, Vector3, Matrix4, Isometry3, Perspective3};
 use resource::ShaderUniform;
 use camera::Camera;
 
@@ -37,7 +37,7 @@ pub struct FirstPersonStereo {
     move_step:  f32,
 
     /// Low level datas
-    projection:      PerspectiveMatrix3<f32>,
+    projection:      Perspective3<f32>,
     proj_view:       Matrix4<f32>,
     proj_view_left:  Matrix4<f32>,
     proj_view_right: Matrix4<f32>,
@@ -69,10 +69,10 @@ impl FirstPersonStereo {
             yaw_step:      0.005,
             pitch_step:    0.005,
             move_step:     0.5,
-            projection: PerspectiveMatrix3::new(800.0 / 600.0, fov, znear, zfar),
+            projection: Perspective3::new(800.0 / 600.0, fov, znear, zfar),
             proj_view:  na::zero(),
             inverse_proj_view:   na::zero(),
-            last_cursor_pos: na::origin(),
+            last_cursor_pos: Point2::origin(),
             proj_view_left:  na::zero(),
             proj_view_right: na::zero(),
         };
@@ -129,7 +129,7 @@ impl FirstPersonStereo {
         // left and right are on a line perpendicular to both up and the target
         // up is always y
         let dir       = na::normalize(&(self.at() - self.eye));
-        let tangent   = na::normalize(&na::cross(&Vector3::y(), &dir));
+        let tangent   = na::normalize(&Vector3::y().cross(&dir));
         self.eye_left = self.eye - tangent * (self.ipd / 2.0);
         self.eye_right = self.eye + tangent * (self.ipd / 2.0);
         //println(fmt!("eye_left = %f,%f,%f", self.eye_left.x as float, self.eye_left.y as float, self.eye_left.z as float));
@@ -141,8 +141,8 @@ impl FirstPersonStereo {
     pub fn handle_right_button_displacement(&mut self, dpos: &Vector2<f32>) {
         let at        = self.at();
         let dir       = na::normalize(&(at - self.eye));
-        let tangent   = na::normalize(&na::cross(&Vector3::y(), &dir));
-        let bitangent = na::cross(&dir, &tangent);
+        let tangent   = na::normalize(&Vector3::y().cross(&dir));
+        let bitangent = dir.cross(&tangent);
 
         self.eye = self.eye + tangent * (0.01 * dpos.x / 10.0) + bitangent * (0.01 * dpos.y / 10.0);
         // TODO: ugly - should move eye update to where eye_left & eye_right are updated
@@ -153,7 +153,7 @@ impl FirstPersonStereo {
 
     #[doc(hidden)]
     pub fn handle_scroll(&mut self, yoff: f32) {
-        let front: Vector3<f32> = self.view_transform().inverse_rotate(&Vector3::z());
+        let front: Vector3<f32> = self.view_transform() * Vector3::z();
 
         self.eye = self.eye + front * (self.move_step * yoff);
 
@@ -163,10 +163,10 @@ impl FirstPersonStereo {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view = *self.projection.as_matrix() * na::to_homogeneous(&self.view_transform());
-        self.inverse_proj_view = na::inverse(&self.proj_view).unwrap();
-        self.proj_view_left = *self.projection.as_matrix() * na::to_homogeneous(&self.view_transform_left());
-        self.proj_view_right = *self.projection.as_matrix() * na::to_homogeneous(&self.view_transform_right());
+        self.proj_view = *self.projection.as_matrix() * self.view_transform().to_homogeneous();
+        self.inverse_proj_view = self.proj_view.try_inverse().unwrap();
+        self.proj_view_left = *self.projection.as_matrix() * self.view_transform_left().to_homogeneous();
+        self.proj_view_right = *self.projection.as_matrix() * self.view_transform_right().to_homogeneous();
     }
 
     fn transformation_eye(&self, eye: usize) -> Matrix4<f32> {
@@ -252,9 +252,9 @@ impl Camera for FirstPersonStereo {
     }
 
     fn update(&mut self, window: &glfw::Window) {
-        let t                = self.view_transform();
-        let front: Vector3<f32> = t.inverse_rotate(&Vector3::z());
-        let right: Vector3<f32> = t.inverse_rotate(&Vector3::x());
+        let t     = self.view_transform();
+        let front = t * Vector3::z();
+        let right = t * Vector3::x();
 
         if window.get_key(Key::Up) == Action::Press {
             self.eye = self.eye + front * self.move_step

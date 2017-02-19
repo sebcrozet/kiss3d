@@ -2,7 +2,7 @@ use std::f32;
 use glfw::{Key, Action, MouseButton};
 use glfw;
 use glfw::WindowEvent;
-use na::{Point3, Vector2, Vector3, Matrix4, Isometry3, PerspectiveMatrix3};
+use na::{Point3, Vector2, Vector3, Matrix4, Isometry3, Perspective3};
 use na;
 use camera::Camera;
 
@@ -37,10 +37,10 @@ pub struct ArcBall {
     drag_button:   Option<MouseButton>,
     reset_key:     Option<Key>,
 
-    projection:      PerspectiveMatrix3<f32>,
-    proj_view:       Matrix4<f32>,
-    inverse_proj_view:   Matrix4<f32>,
-    last_cursor_pos: Vector2<f32>
+    projection:        Perspective3<f32>,
+    proj_view:         Matrix4<f32>,
+    inverse_proj_view: Matrix4<f32>,
+    last_cursor_pos:   Vector2<f32>
 }
 
 impl ArcBall {
@@ -66,7 +66,7 @@ impl ArcBall {
             rotate_button:   Some(glfw::MouseButtonLeft),
             drag_button:     Some(glfw::MouseButtonRight),
             reset_key:       Some(Key::Enter),
-            projection:      PerspectiveMatrix3::new(800.0 / 600.0, fov, znear, zfar),
+            projection:      Perspective3::new(800.0 / 600.0, fov, znear, zfar),
             proj_view:       na::zero(),
             inverse_proj_view:   na::zero(),
             last_cursor_pos: na::zero()
@@ -137,6 +137,8 @@ impl ArcBall {
         self.dist  = dist;
         self.yaw   = yaw;
         self.pitch = pitch;
+
+        self.update_restrictions();
         self.update_projviews();
     }
 
@@ -200,8 +202,8 @@ impl ArcBall {
     fn handle_right_button_displacement(&mut self, dpos: &Vector2<f32>) {
         let eye       = self.eye();
         let dir       = na::normalize(&(self.at - eye));
-        let tangent   = na::normalize(&na::cross(&Vector3::y(), &dir));
-        let bitangent = na::cross(&dir, &tangent);
+        let tangent   = na::normalize(&Vector3::y().cross(&dir));
+        let bitangent = dir.cross(&tangent);
         let mult      = self.dist / 1000.0;
 
         self.at = self.at + tangent * (dpos.x * mult) + bitangent * (dpos.y * mult);
@@ -215,8 +217,8 @@ impl ArcBall {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view     = *self.projection.as_matrix() * na::to_homogeneous(&self.view_transform());
-        self.inverse_proj_view = na::inverse(&self.proj_view).unwrap();
+        self.proj_view         = *self.projection.as_matrix() * self.view_transform().to_homogeneous();
+        self.inverse_proj_view = self.proj_view.try_inverse().unwrap();
     }
 }
 
@@ -259,7 +261,7 @@ impl Camera for ArcBall {
                 self.last_cursor_pos = curr_pos;
             },
             WindowEvent::Key(key, _, Action::Press, _) if Some(key) == self.reset_key => {
-                self.at = na::origin();
+                self.at = Point3::origin();
                 self.update_projviews();
             },
             WindowEvent::Scroll(_, off) => self.handle_scroll(off as f32),

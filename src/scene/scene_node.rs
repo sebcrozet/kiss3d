@@ -3,7 +3,7 @@ use std::cell::{Ref, RefMut, RefCell};
 use std::mem;
 use std::path::{Path, PathBuf};
 use na;
-use na::{Isometry3, Point2, Vector3, Point3, Transformation, Rotation, Translation, RotationWithTranslation};
+use na::{Isometry3, Translation3, UnitQuaternion, Point2, Vector3, Point3};
 use resource::{Mesh, MeshManager, Texture, TextureManager, Material, MaterialManager};
 use ncollide_procedural::TriMesh3;
 use ncollide_procedural as procedural;
@@ -85,7 +85,7 @@ impl SceneNodeData {
     /// Render the scene graph rooted by this node.
     pub fn render(&mut self, pass: usize, camera: &mut Camera, light: &Light) {
         if self.visible {
-            self.do_render(&na::one(), &na::one(), pass, camera, light)
+            self.do_render(&na::one(), &Vector3::from_element(1.0), pass, camera, light)
         }
     }
 
@@ -98,7 +98,7 @@ impl SceneNodeData {
         if !self.up_to_date {
             self.up_to_date      = true;
             self.world_transform = *transform * self.local_transform;
-            self.world_scale     = *scale * self.local_scale;
+            self.world_scale     = scale.component_mul(&self.local_scale);
         }
 
         match self.object {
@@ -380,7 +380,7 @@ impl SceneNodeData {
     /// Inverse of this node local transformation.
     #[inline]
     pub fn inverse_local_transformation(&self) -> Isometry3<f32> {
-        self.local_transform.inverse_transformation()
+        self.local_transform.inverse()
     }
 
     /// This node world transformation.
@@ -410,101 +410,101 @@ impl SceneNodeData {
             let mself: &mut SceneNodeData = mem::transmute(self);
             mself.update();
         }
-        self.local_transform.inverse_transformation()
+        self.local_transform.inverse()
     }
 
     /// Appends a transformation to this node local transformation.
     #[inline]
     pub fn append_transformation(&mut self, t: &Isometry3<f32>) {
         self.invalidate();
-        self.local_transform.append_transformation_mut(t)
+        self.local_transform = t * self.local_transform
     }
 
     /// Prepends a transformation to this node local transformation.
     #[inline]
     pub fn prepend_to_local_transformation(&mut self, t: &Isometry3<f32>) {
         self.invalidate();
-        self.local_transform.prepend_transformation_mut(t)
+        self.local_transform *= t;
     }
 
     /// Set this node local transformation.
     #[inline]
     pub fn set_local_transformation(&mut self, t: Isometry3<f32>) {
         self.invalidate();
-        self.local_transform.set_transformation(t)
+        self.local_transform = t
     }
 
     /// This node local translation.
     #[inline]
-    pub fn local_translation(&self) -> Vector3<f32> {
-        self.local_transform.translation()
+    pub fn local_translation(&self) -> Translation3<f32> {
+        self.local_transform.translation
     }
 
     /// The inverse of this node local translation.
     #[inline]
-    pub fn inverse_local_translation(&self) -> Vector3<f32> {
-        self.local_transform.inverse_translation()
+    pub fn inverse_local_translation(&self) -> Translation3<f32> {
+        self.local_transform.translation.inverse()
     }
 
     /// Appends a translation to this node local transformation.
     #[inline]
-    pub fn append_translation(&mut self, t: &Vector3<f32>) {
+    pub fn append_translation(&mut self, t: &Translation3<f32>) {
         self.invalidate();
-        self.local_transform.append_translation_mut(t)
+        self.local_transform = t * self.local_transform
     }
 
     /// Prepends a translation to this node local transformation.
     #[inline]
-    pub fn prepend_to_local_translation(&mut self, t: &Vector3<f32>) {
+    pub fn prepend_to_local_translation(&mut self, t: &Translation3<f32>) {
         self.invalidate();
-        self.local_transform.prepend_translation_mut(t)
+        self.local_transform *= t
     }
 
     /// Sets the local translation of this node.
     #[inline]
-    pub fn set_local_translation(&mut self, t: Vector3<f32>) {
+    pub fn set_local_translation(&mut self, t: Translation3<f32>) {
         self.invalidate();
-        self.local_transform.set_translation(t)
+        self.local_transform.translation = t
     }
 
     /// This node local rotation.
     #[inline]
-    pub fn local_rotation(&self) -> Vector3<f32> {
-        self.local_transform.rotation()
+    pub fn local_rotation(&self) -> UnitQuaternion<f32> {
+        self.local_transform.rotation
     }
 
     /// The inverse of this node local rotation.
     #[inline]
-    pub fn inverse_local_rotation(&self) -> Vector3<f32> {
-        self.local_transform.inverse_rotation()
+    pub fn inverse_local_rotation(&self) -> UnitQuaternion<f32> {
+        self.local_transform.rotation.inverse()
     }
 
     /// Appends a rotation to this node local transformation.
     #[inline]
-    pub fn append_rotation(&mut self, r: &Vector3<f32>) {
+    pub fn append_rotation(&mut self, r: &UnitQuaternion<f32>) {
         self.invalidate();
-        self.local_transform.append_rotation_mut(r)
+        self.local_transform = r * self.local_transform
     }
 
     /// Appends a rotation to this node local transformation.
     #[inline]
-    pub fn append_rotation_wrt_center(&mut self, r: &Vector3<f32>) {
+    pub fn append_rotation_wrt_center(&mut self, r: &UnitQuaternion<f32>) {
         self.invalidate();
         self.local_transform.append_rotation_wrt_center_mut(r)
     }
 
     /// Prepends a rotation to this node local transformation.
     #[inline]
-    pub fn prepend_to_local_rotation(&mut self, r: &Vector3<f32>) {
+    pub fn prepend_to_local_rotation(&mut self, r: &UnitQuaternion<f32>) {
         self.invalidate();
-        self.local_transform.prepend_rotation_mut(r)
+        self.local_transform *= r
     }
 
     /// Sets the local rotation of this node.
     #[inline]
-    pub fn set_local_rotation(&mut self, r: Vector3<f32>) {
+    pub fn set_local_rotation(&mut self, r: UnitQuaternion<f32>) {
         self.invalidate();
-        self.local_transform.set_rotation(r)
+        self.local_transform.rotation = r
     }
 
     fn invalidate(&mut self) {
@@ -530,7 +530,7 @@ impl SceneNodeData {
 
                         dp.update();
                         self.world_transform = self.local_transform * dp.world_transform;
-                        self.world_scale     = self.local_scale     * dp.local_scale;
+                        self.world_scale     = self.local_scale.component_mul(&dp.local_scale);
                         self.up_to_date      = true;
                         return;
                     }
@@ -572,7 +572,7 @@ impl SceneNode {
 
     /// Creates a new empty, not rooted, node with identity transformations.
     pub fn new_empty() -> SceneNode {
-        SceneNode::new(na::one(), na::one(), None)
+        SceneNode::new(Vector3::from_element(1.0), na::one(), None)
     }
 
     /// Removes this node from its parent.
@@ -681,7 +681,7 @@ impl SceneNode {
     /// * `h` - the capsule height
     /// * `r` - the capsule caps radius
     pub fn add_capsule(&mut self, r: f32, h: f32) -> SceneNode {
-        self.add_trimesh(procedural::capsule(&(r * 2.0), &h, 50, 50), na::one())
+        self.add_trimesh(procedural::capsule(&(r * 2.0), &h, 50, 50), Vector3::from_element(1.0))
     }
 
     /// Adds a double-sided quad to this node children. The quad is initially centered at (0, 0,
@@ -697,7 +697,7 @@ impl SceneNode {
     /// which will be placed vertically on each line. Must not be `0`.
     /// update.
     pub fn add_quad(&mut self, w: f32, h: f32, usubdivs: usize, vsubdivs: usize) -> SceneNode {
-        let mut node = self.add_trimesh(procedural::quad(w, h, usubdivs, vsubdivs), na::one());
+        let mut node = self.add_trimesh(procedural::quad(w, h, usubdivs, vsubdivs), Vector3::from_element(1.0));
         node.enable_backface_culling(false);
 
         node
@@ -707,7 +707,7 @@ impl SceneNode {
     pub fn add_quad_with_vertices(&mut self, vertices: &[Point3<f32>], nhpoints: usize, nvpoints: usize) -> SceneNode {
         let geom = procedural::quad_with_vertices(vertices, nhpoints, nvpoints);
 
-        let mut node = self.add_trimesh(geom, na::one());
+        let mut node = self.add_trimesh(geom, Vector3::from_element(1.0));
         node.enable_backface_culling(false);
 
         node
@@ -754,7 +754,7 @@ impl SceneNode {
             else {
                 root = SceneNode::new(scale, na::one(), None);
                 self.add_child(root.clone());
-                child_scale = na::one();
+                child_scale = Vector3::from_element(1.0);
             }
 
             for (_, mesh, mtl) in objs.into_iter() {
@@ -1015,43 +1015,43 @@ impl SceneNode {
 
     /// Appends a translation to this node local transformation.
     #[inline]
-    pub fn append_translation(&mut self, t: &Vector3<f32>) {
+    pub fn append_translation(&mut self, t: &Translation3<f32>) {
         self.data_mut().append_translation(t)
     }
 
     /// Prepends a translation to this node local transformation.
     #[inline]
-    pub fn prepend_to_local_translation(&mut self, t: &Vector3<f32>) {
+    pub fn prepend_to_local_translation(&mut self, t: &Translation3<f32>) {
         self.data_mut().prepend_to_local_translation(t)
     }
 
     /// Sets the local translation of this node.
     #[inline]
-    pub fn set_local_translation(&mut self, t: Vector3<f32>) {
+    pub fn set_local_translation(&mut self, t: Translation3<f32>) {
         self.data_mut().set_local_translation(t)
     }
 
     /// Appends a rotation to this node local transformation.
     #[inline]
-    pub fn append_rotation(&mut self, r: &Vector3<f32>) {
+    pub fn append_rotation(&mut self, r: &UnitQuaternion<f32>) {
         self.data_mut().append_rotation(r)
     }
 
     /// Appends a rotation to this node local transformation.
     #[inline]
-    pub fn append_rotation_wrt_center(&mut self, r: &Vector3<f32>) {
+    pub fn append_rotation_wrt_center(&mut self, r: &UnitQuaternion<f32>) {
         (*self.data_mut()).append_rotation_wrt_center(r)
     }
 
     /// Prepends a rotation to this node local transformation.
     #[inline]
-    pub fn prepend_to_local_rotation(&mut self, r: &Vector3<f32>) {
+    pub fn prepend_to_local_rotation(&mut self, r: &UnitQuaternion<f32>) {
         self.data_mut().prepend_to_local_rotation(r)
     }
 
     /// Sets the local rotation of this node.
     #[inline]
-    pub fn set_local_rotation(&mut self, r: Vector3<f32>) {
+    pub fn set_local_rotation(&mut self, r: UnitQuaternion<f32>) {
         self.data_mut().set_local_rotation(r)
     }
 }

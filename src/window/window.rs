@@ -19,7 +19,6 @@ use gl::types::*;
 use image::{ImageBuffer,Rgb};
 use image::imageops;
 use na::{Point2, Vector2, Vector3, Point3};
-use na;
 use ncollide_procedural::TriMesh3;
 use camera::Camera;
 use scene::SceneNode;
@@ -352,7 +351,7 @@ impl Window {
             post_process_render_target: FramebufferManager::new_render_target(width as usize, height as usize),
             framebuffer_manager:   FramebufferManager::new(),
             curr_time:             Instant::now(),
-            camera:                Rc::new(RefCell::new(ArcBall::new(Point3::new(0.0f32, 0.0, -1.0), na::origin())))
+            camera:                Rc::new(RefCell::new(ArcBall::new(Point3::new(0.0f32, 0.0, -1.0), Point3::origin())))
         };
 
         // setup callbacks

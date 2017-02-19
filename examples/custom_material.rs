@@ -6,7 +6,7 @@ use std::ptr;
 use std::rc::Rc;
 use std::cell::RefCell;
 use gl::types::GLint;
-use na::{Point3, Vector3, Matrix3, Matrix4, Isometry3};
+use na::{Point3, Vector3, Matrix3, Matrix4, Isometry3, UnitQuaternion};
 use kiss3d::window::Window;
 use kiss3d::scene::ObjectData;
 use kiss3d::camera::Camera;
@@ -20,8 +20,10 @@ fn main() {
 
     c.set_material(material);
 
+    let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
+
     while window.render() {
-        c.prepend_to_local_rotation(&Vector3::new(0.0f32, 0.014, 0.0));
+        c.prepend_to_local_rotation(&rot);
     }
 }
 
@@ -77,9 +79,8 @@ impl Material for NormalMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform: Matrix4<f32> = na::to_homogeneous(transform);
-        // FIXME: add a function `na::diagonal(scale)` to nalgebra.
-        let formated_scale:     Matrix3<f32> = Matrix3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
+        let formated_transform = transform.to_homogeneous();
+        let formated_scale     = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
 
         self.transform.upload(&formated_transform);
         self.scale.upload(&formated_scale);
@@ -89,10 +90,7 @@ impl Material for NormalMaterial {
         mesh.bind_faces();
 
         unsafe {
-            gl::DrawElements(gl::TRIANGLES,
-                             mesh.num_pts() as GLint,
-                             gl::UNSIGNED_INT,
-                             ptr::null());
+            gl::DrawElements(gl::TRIANGLES, mesh.num_pts() as GLint, gl::UNSIGNED_INT, ptr::null());
         }
 
         mesh.unbind();

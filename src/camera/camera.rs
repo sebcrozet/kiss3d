@@ -55,10 +55,10 @@ pub trait Camera {
 
     /// Converts a 3d point to 2d screen coordinates, assuming the screen has the size `size`.
     fn project(&self, world_coord: &Point3<f32>, size: &Vector2<f32>) -> Vector2<f32> {
-        let h_world_coord      = na::to_homogeneous(world_coord);
+        let h_world_coord      = world_coord.to_homogeneous();
         let h_normalized_coord = self.transformation() * h_world_coord;
 
-        let normalized_coord: Point3<f32> = na::from_homogeneous(&h_normalized_coord);
+        let normalized_coord = Point3::from_homogeneous(h_normalized_coord).unwrap();
 
         Vector2::new(
             (1.0 + normalized_coord.x) * size.x / 2.0,
@@ -81,8 +81,8 @@ pub trait Camera {
         let h_unprojected_begin = cam * normalized_begin;
         let h_unprojected_end   = cam * normalized_end;
 
-        let unprojected_begin: Point3<f32> = na::from_homogeneous(&h_unprojected_begin);
-        let unprojected_end:   Point3<f32> = na::from_homogeneous(&h_unprojected_end);
+        let unprojected_begin = Point3::from_homogeneous(h_unprojected_begin.coords).unwrap();
+        let unprojected_end   = Point3::from_homogeneous(h_unprojected_end.coords).unwrap();
 
         (unprojected_begin, na::normalize(&(unprojected_end - unprojected_begin)))
     }

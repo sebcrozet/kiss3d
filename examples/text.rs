@@ -13,7 +13,7 @@ fn main() {
     let smallfont = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
 
     while window.render() {
-        window.draw_text("Hello birds!", &na::origin(), &bigfont, &Point3::new(0.0, 1.0, 1.0));
+        window.draw_text("Hello birds!", &Point2::origin(), &bigfont, &Point3::new(0.0, 1.0, 1.0));
 
         let ascii = " !\"#$%&'`()*+,-_./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^abcdefghijklmnopqrstuvwxyz{|}~";
 
