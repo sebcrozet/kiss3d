@@ -11,9 +11,9 @@ use std::sync::{Arc, RwLock};
 use std::path::{Path, PathBuf};
 use std::iter::Filter;
 use std::str::Split;
+use num::Bounded;
 use gl::types::GLfloat;
-use na::{Vector3, Point2, Point3, Bounded};
-use na;
+use na::{Vector3, Point2, Point3};
 use resource::{BufferType, AllocationType, Mesh};
 use loader::mtl::MtlMaterial;
 use loader::mtl;
@@ -85,7 +85,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
             Some(w) => {
                 if w.len() != 0 && w.as_bytes()[0] != ('#' as u8) {
                     match w {
-                        "v"      => coords.push(na::origin::<Point3<f32>>() + parse_v_or_vn(l, words)),
+                        "v"      => coords.push(Point3::from_coordinates(parse_v_or_vn(l, words))),
                         "vn"     => if !ignore_normals { normals.push(parse_v_or_vn(l, words)) },
                         "f"      => parse_f(l, words, &coords[..], &uvs[..], &normals[..], &mut ignore_uvs, &mut ignore_normals, &mut groups_ids, curr_group),
                         "vt"     => if !ignore_uvs { uvs.push(parse_vt(l, words)) },
@@ -382,7 +382,7 @@ fn reformat(coords:     Vec<Coord>,
 
     let resn = resn.unwrap_or_else(|| Mesh::compute_normals_array(&resc[..], &allfs[..]));
     let resn = Arc::new(RwLock::new(GPUVec::new(resn, BufferType::Array, AllocationType::StaticDraw)));
-    let resu = resu.unwrap_or_else(|| repeat(na::origin()).take(resc.len()).collect());
+    let resu = resu.unwrap_or_else(|| repeat(Point2::origin()).take(resc.len()).collect());
     let resu = Arc::new(RwLock::new(GPUVec::new(resu, BufferType::Array, AllocationType::StaticDraw)));
     let resc = Arc::new(RwLock::new(GPUVec::new(resc, BufferType::Array, AllocationType::StaticDraw)));
 

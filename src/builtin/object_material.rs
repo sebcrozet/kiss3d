@@ -2,7 +2,6 @@ use std::ptr;
 use gl;
 use gl::types::*;
 use na::{Point2, Point3, Vector3, Matrix3, Matrix4, Isometry3};
-use na;
 use resource::Material;
 use scene::ObjectData;
 use light::Light;
@@ -94,9 +93,9 @@ impl Material for ObjectMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform:  Matrix4<f32> = na::to_homogeneous(transform);
-        let formated_ntransform: Matrix3<f32> = *transform.rotation.submatrix();
-        let formated_scale:      Matrix3<f32> = Matrix3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
+        let formated_transform  = transform.to_homogeneous();
+        let formated_ntransform = transform.rotation.to_rotation_matrix().unwrap();
+        let formated_scale      = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
 
         unsafe {
             self.transform.upload(&formated_transform);

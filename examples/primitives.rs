@@ -3,7 +3,7 @@ extern crate kiss3d;
 extern crate nalgebra as na;
 
 use rand::random;
-use na::Vector3;
+use na::{Vector3, Translation3, UnitQuaternion};
 use kiss3d::window::Window;
 use kiss3d::light::Light;
 
@@ -22,19 +22,21 @@ fn main() {
     y.set_color(random(), random(), random());
     a.set_color(random(), random(), random());
 
-    c.append_translation(&Vector3::new(2.0, 0.0, 0.0));
-    s.append_translation(&Vector3::new(4.0, 0.0, 0.0));
-    p.append_translation(&Vector3::new(-2.0, 0.0, 0.0));
-    y.append_translation(&Vector3::new(-4.0, 0.0, 0.0));
-    a.append_translation(&Vector3::new(0.0, 0.0, 0.0));
+    c.append_translation(&Translation3::new(2.0, 0.0, 0.0));
+    s.append_translation(&Translation3::new(4.0, 0.0, 0.0));
+    p.append_translation(&Translation3::new(-2.0, 0.0, 0.0));
+    y.append_translation(&Translation3::new(-4.0, 0.0, 0.0));
+    a.append_translation(&Translation3::new(0.0, 0.0, 0.0));
 
     window.set_light(Light::StickToCamera);
 
+    let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
+
     while window.render() {
-        c.append_rotation_wrt_center(&Vector3::new(0.0f32, 0.014, 0.0));
-        s.append_rotation_wrt_center(&Vector3::new(0.0f32, 0.014, 0.0));
-        p.append_rotation_wrt_center(&Vector3::new(0.0f32, 0.014, 0.0));
-        y.append_rotation_wrt_center(&Vector3::new(0.0f32, 0.014, 0.0));
-        a.append_rotation_wrt_center(&Vector3::new(0.0f32, 0.014, 0.0));
+        c.append_rotation_wrt_center(&rot);
+        s.append_rotation_wrt_center(&rot);
+        p.append_rotation_wrt_center(&rot);
+        y.append_rotation_wrt_center(&rot);
+        a.append_rotation_wrt_center(&rot);
     }
 }

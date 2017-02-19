@@ -11,7 +11,7 @@ use kiss3d::light::Light;
 
 fn main() {
     let eye              = Point3::new(10.0f32, 10.0, 10.0);
-    let at               = na::origin();
+    let at               = Point3::origin();
     let mut first_person = FirstPerson::new(eye, at);
     let mut arc_ball     = ArcBall::new(eye, at);
     let mut use_arc_ball = true;
@@ -39,9 +39,9 @@ fn main() {
             }
         }
 
-        window.draw_line(&na::origin(), &Point3::new(1.0, 0.0, 0.0), &Point3::new(1.0, 0.0, 0.0));
-        window.draw_line(&na::origin(), &Point3::new(0.0, 1.0, 0.0), &Point3::new(0.0, 1.0, 0.0));
-        window.draw_line(&na::origin(), &Point3::new(0.0, 0.0, 1.0), &Point3::new(0.0, 0.0, 1.0));
+        window.draw_line(&Point3::origin(), &Point3::new(1.0, 0.0, 0.0), &Point3::new(1.0, 0.0, 0.0));
+        window.draw_line(&Point3::origin(), &Point3::new(0.0, 1.0, 0.0), &Point3::new(0.0, 1.0, 0.0));
+        window.draw_line(&Point3::origin(), &Point3::new(0.0, 0.0, 1.0), &Point3::new(0.0, 0.0, 1.0));
 
         if use_arc_ball {
             window.render_with_camera(&mut arc_ball);

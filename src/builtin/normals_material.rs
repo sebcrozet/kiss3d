@@ -2,7 +2,6 @@ use std::ptr;
 use gl;
 use gl::types::*;
 use na::{Point3, Vector3, Matrix3, Matrix4, Isometry3};
-use na;
 use resource::Material;
 use scene::ObjectData;
 use light::Light;
@@ -78,9 +77,8 @@ impl Material for NormalsMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform: Matrix4<f32> = na::to_homogeneous(transform);
-        // FIXME: add a function `na::diagonal(scale)` to nalgebra.
-        let formated_scale:     Matrix3<f32> = Matrix3::new(scale.x, 0.0, 0.0, 0.0, scale.y, 0.0, 0.0, 0.0, scale.z);
+        let formated_transform = transform.to_homogeneous();
+        let formated_scale     = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
 
         self.transform.upload(&formated_transform);
         self.scale.upload(&formated_scale);
@@ -90,10 +88,7 @@ impl Material for NormalsMaterial {
         mesh.bind_faces();
 
         unsafe {
-            gl::DrawElements(gl::TRIANGLES,
-                             mesh.num_pts() as GLint,
-                             gl::UNSIGNED_INT,
-                             ptr::null());
+            gl::DrawElements(gl::TRIANGLES, mesh.num_pts() as GLint, gl::UNSIGNED_INT, ptr::null());
         }
 
         mesh.unbind();
