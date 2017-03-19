@@ -1,0 +1,8 @@
+title: Kiss3d
+description: Keep it simple, stupid 3d graphics engine for Rust.
+google_analytics: UA-51756333-1
+show_downloads: true
+theme: jekyll-theme-dinky
+
+gems:
+  - jekyll-mentions
