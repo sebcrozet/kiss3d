@@ -5,18 +5,12 @@
 ## Red rotating cube example
 
 ```rust
-extern crate native;
 extern crate kiss3d;
-extern crate nalgebra;
+extern crate nalgebra as na;
 
-use nalgebra::na::Vec3;
+use na::{Vector3, UnitQuaternion};
 use kiss3d::window::Window;
-use kiss3d::light;
-
-#[start]
-fn start(argc: int, argv: **u8) -> int {
-    native::start(argc, argv, main)
-}
+use kiss3d::light::Light;
 
 fn main() {
     let mut window = Window::new("Kiss3d: cube");
@@ -24,10 +18,12 @@ fn main() {
 
     c.set_color(1.0, 0.0, 0.0);
 
-    window.set_light(light::StickToCamera);
+    window.set_light(Light::StickToCamera);
 
-    for _ in window.iter() {
-        c.prepend_to_local_rotation(&Vec3::new(0.0f32, 0.014, 0.0));
+    let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
+
+    while window.render() {
+        c.prepend_to_local_rotation(&rot);
     }
 } 
 ```
