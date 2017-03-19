@@ -34,7 +34,7 @@ As an example, having a red, rotating cube with the light attached to the camera
 extern crate kiss3d;
 extern crate nalgebra as na;
 
-use na::Vector3;
+use na::{Vector3, UnitQuaternion};
 use kiss3d::window::Window;
 use kiss3d::light::Light;
 
@@ -46,8 +46,10 @@ fn main() {
 
     window.set_light(Light::StickToCamera);
 
+    let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
+
     while window.render() {
-        c.prepend_to_local_rotation(&Vector3::new(0.0f32, 0.014, 0.0));
+        c.prepend_to_local_rotation(&rot);
     }
 }
 ```
