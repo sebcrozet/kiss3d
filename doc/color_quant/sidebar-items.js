@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["NeuQuant","Neural network based color quantizer."]]});

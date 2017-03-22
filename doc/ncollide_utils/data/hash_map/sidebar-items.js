@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Entry","Entry of an `HashMap`."],["HashMap","Alternative implementation of `HashMap`."]]});

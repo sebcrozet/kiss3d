@@ -1,1 +1,0 @@
-initSidebarItems({"static":[["NORMAL_FRAGMENT_SRC","A fragment shader for coloring each point of an object depending on its normal."],["NORMAL_VERTEX_SRC","A vertex shader for coloring each point of an object depending on its normal."]],"struct":[["NormalsMaterial","A material that draws normals of an object."]]});

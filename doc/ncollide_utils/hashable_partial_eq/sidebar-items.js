@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["HashablePartialEq","A structure that implements `Eq` and is hashable even if the wrapped data implements only `PartialEq`."]]});

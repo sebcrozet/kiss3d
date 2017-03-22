@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Waves","An useless post-processing effect mainly to test that everything works correctly."]]});

@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -440,7 +441,7 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>::<span class='ident'>types</span>::<span class='op'>*</span>;
-<span class='kw'>use</span> <span class='ident'>na</span>::{<span class='ident'>Pnt2</span>, <span class='ident'>Pnt3</span>, <span class='ident'>Vec2</span>, <span class='ident'>Vec3</span>, <span class='ident'>Mat2</span>, <span class='ident'>Mat3</span>, <span class='ident'>Mat4</span>, <span class='ident'>Rot2</span>, <span class='ident'>Rot3</span>};
+<span class='kw'>use</span> <span class='ident'>na</span>::{<span class='ident'>Point2</span>, <span class='ident'>Point3</span>, <span class='ident'>Vector2</span>, <span class='ident'>Vector3</span>, <span class='ident'>Matrix2</span>, <span class='ident'>Matrix3</span>, <span class='ident'>Matrix4</span>, <span class='ident'>Rotation2</span>, <span class='ident'>Rotation3</span>};
 
 <span class='attribute'>#[<span class='ident'>path</span> <span class='op'>=</span> <span class='string'>&quot;../error.rs&quot;</span>]</span>
 <span class='kw'>mod</span> <span class='ident'>error</span>;
@@ -448,9 +449,9 @@
 <span class='doccomment'>/// Trait implemented by structures that can be uploaded to a uniform or contained by a gpu array.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>GLPrimitive</span>: <span class='ident'>Copy</span> {
     <span class='doccomment'>/// The opengl primitive type of this structure content.</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(<span class='ident'>_type</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span>;
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(<span class='ident'>_type</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span>;
     <span class='doccomment'>/// The number of elements of type `self.gl_type()` this structure stores.</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(<span class='ident'>_type</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span>;
+    <span class='kw'>fn</span> <span class='ident'>size</span>(<span class='ident'>_type</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span>;
     <span class='doccomment'>/// Uploads the element to a gpu location.</span>
     <span class='kw'>fn</span> <span class='ident'>upload</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>location</span>: <span class='ident'>GLuint</span>);
 }
@@ -516,14 +517,14 @@
  * Impl for matrices
  *
  */</span>
-<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Mat2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Matrix2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Mat2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Matrix2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='ident'>gl</span>::<span class='ident'>FLOAT</span>
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Mat2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Matrix2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='number'>4</span>
     }
 
@@ -535,14 +536,14 @@
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Rot2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Rotation2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Rot2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Rotation2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='ident'>gl</span>::<span class='ident'>FLOAT</span>
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Rot2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Rotation2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='number'>4</span>
     }
 
@@ -554,14 +555,14 @@
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Mat3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Matrix3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Mat3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Matrix3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='ident'>gl</span>::<span class='ident'>FLOAT</span>
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Mat3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Matrix3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='number'>9</span>
     }
 
@@ -573,14 +574,14 @@
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Rot3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Rotation3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Rot3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Rotation3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='ident'>gl</span>::<span class='ident'>FLOAT</span>
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Rot3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Rotation3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='number'>9</span>
     }
 
@@ -592,14 +593,14 @@
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Mat4</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Matrix4</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Mat4</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Matrix4</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='ident'>gl</span>::<span class='ident'>FLOAT</span>
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Mat4</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Matrix4</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='number'>16</span>
     }
 
@@ -615,14 +616,14 @@
  * Impl for vectors
  *
  */</span>
-<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='ident'>gl</span>::<span class='ident'>FLOAT</span>
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='number'>3</span>
     }
 
@@ -632,14 +633,14 @@
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='ident'>gl</span>::<span class='ident'>FLOAT</span>
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='number'>2</span>
     }
 
@@ -649,14 +650,14 @@
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='ident'>gl</span>::<span class='ident'>UNSIGNED_INT</span>
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='number'>2</span>
     }
 
@@ -666,14 +667,14 @@
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='ident'>gl</span>::<span class='ident'>UNSIGNED_INT</span>
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='number'>3</span>
     }
 
@@ -688,14 +689,14 @@
  * Impl for points
  *
  */</span>
-<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='ident'>gl</span>::<span class='ident'>FLOAT</span>
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='number'>3</span>
     }
 
@@ -705,14 +706,14 @@
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Pnt2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Point2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Pnt2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Point2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='ident'>gl</span>::<span class='ident'>FLOAT</span>
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Pnt2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Point2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='number'>2</span>
     }
 
@@ -722,14 +723,14 @@
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Pnt2</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Point2</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Pnt2</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Point2</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='ident'>gl</span>::<span class='ident'>UNSIGNED_INT</span>
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Pnt2</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Point2</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='number'>2</span>
     }
 
@@ -739,14 +740,14 @@
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>GLPrimitive</span> <span class='kw'>for</span> <span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>gl_type</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='ident'>gl</span>::<span class='ident'>UNSIGNED_INT</span>
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
+    <span class='kw'>fn</span> <span class='ident'>size</span>(_: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>GLuint</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>GLuint</span> {
         <span class='number'>3</span>
     }
 
@@ -852,6 +853,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -872,7 +875,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -883,11 +886,9 @@
     <script>
         window.rootPath = "../../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
-    
     <script defer src="../../../search-index.js"></script>
 </body>
 </html>

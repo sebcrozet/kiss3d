@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -256,7 +257,7 @@
 <span class='kw'>use</span> <span class='ident'>gl</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>::<span class='ident'>types</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>freetype</span>::<span class='ident'>ffi</span>;
-<span class='kw'>use</span> <span class='ident'>na</span>::<span class='ident'>Vec2</span>;
+<span class='kw'>use</span> <span class='ident'>na</span>::<span class='ident'>Vector2</span>;
 <span class='kw'>use</span> <span class='ident'>na</span>;
 <span class='kw'>use</span> <span class='ident'>text</span>::<span class='ident'>Glyph</span>;
 
@@ -268,7 +269,7 @@
     <span class='ident'>library</span>:          <span class='ident'>ffi</span>::<span class='ident'>FT_Library</span>,
     <span class='ident'>face</span>:             <span class='ident'>ffi</span>::<span class='ident'>FT_Face</span>,
     <span class='ident'>texture_atlas</span>:    <span class='ident'>GLuint</span>,
-    <span class='ident'>atlas_dimensions</span>: <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>,
+    <span class='ident'>atlas_dimensions</span>: <span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>,
     <span class='ident'>glyphs</span>:           <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Glyph</span><span class='op'>&gt;&gt;</span>,
     <span class='ident'>height</span>:           <span class='ident'>i32</span>,
 }
@@ -333,9 +334,9 @@
                     <span class='ident'>row_width</span> <span class='op'>=</span> <span class='number'>0</span>; <span class='ident'>row_height</span> <span class='op'>=</span> <span class='number'>0</span>;
                 }
 
-                <span class='kw'>let</span> <span class='ident'>advance</span>    <span class='op'>=</span> <span class='ident'>Vec2</span>::<span class='ident'>new</span>(((<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>advance</span>.<span class='ident'>x</span> <span class='op'>&gt;&gt;</span> <span class='number'>6</span>) <span class='kw'>as</span> <span class='ident'>f32</span>, ((<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>advance</span>.<span class='ident'>y</span> <span class='op'>&gt;&gt;</span> <span class='number'>6</span>) <span class='kw'>as</span> <span class='ident'>f32</span>);
-                <span class='kw'>let</span> <span class='ident'>dimensions</span> <span class='op'>=</span> <span class='ident'>Vec2</span>::<span class='ident'>new</span>((<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap</span>.<span class='ident'>width</span> <span class='kw'>as</span> <span class='ident'>f32</span>, (<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap</span>.<span class='ident'>rows</span> <span class='kw'>as</span> <span class='ident'>f32</span>);
-                <span class='kw'>let</span> <span class='ident'>offset</span>     <span class='op'>=</span> <span class='ident'>Vec2</span>::<span class='ident'>new</span>((<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap_left</span> <span class='kw'>as</span> <span class='ident'>f32</span>, (<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap_top</span> <span class='kw'>as</span> <span class='ident'>f32</span>);
+                <span class='kw'>let</span> <span class='ident'>advance</span>    <span class='op'>=</span> <span class='ident'>Vector2</span>::<span class='ident'>new</span>(((<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>advance</span>.<span class='ident'>x</span> <span class='op'>&gt;&gt;</span> <span class='number'>6</span>) <span class='kw'>as</span> <span class='ident'>f32</span>, ((<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>advance</span>.<span class='ident'>y</span> <span class='op'>&gt;&gt;</span> <span class='number'>6</span>) <span class='kw'>as</span> <span class='ident'>f32</span>);
+                <span class='kw'>let</span> <span class='ident'>dimensions</span> <span class='op'>=</span> <span class='ident'>Vector2</span>::<span class='ident'>new</span>((<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap</span>.<span class='ident'>width</span> <span class='kw'>as</span> <span class='ident'>f32</span>, (<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap</span>.<span class='ident'>rows</span> <span class='kw'>as</span> <span class='ident'>f32</span>);
+                <span class='kw'>let</span> <span class='ident'>offset</span>     <span class='op'>=</span> <span class='ident'>Vector2</span>::<span class='ident'>new</span>((<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap_left</span> <span class='kw'>as</span> <span class='ident'>f32</span>, (<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap_top</span> <span class='kw'>as</span> <span class='ident'>f32</span>);
                 <span class='kw'>let</span> <span class='ident'>buf_len</span>    <span class='op'>=</span> (<span class='ident'>dimensions</span>.<span class='ident'>x</span> <span class='op'>*</span> <span class='ident'>dimensions</span>.<span class='ident'>y</span>) <span class='kw'>as</span> <span class='ident'>usize</span>;
                 <span class='kw'>let</span> <span class='ident'>buffer</span>     <span class='op'>=</span> <span class='ident'>slice</span>::<span class='ident'>from_raw_parts</span>(<span class='kw-2'>&amp;</span><span class='op'>*</span>(<span class='op'>*</span><span class='ident'>ft_glyph</span>).<span class='ident'>bitmap</span>.<span class='ident'>buffer</span>, <span class='ident'>buf_len</span>).<span class='ident'>to_vec</span>();
                 <span class='kw'>let</span> <span class='ident'>glyph</span>      <span class='op'>=</span> <span class='ident'>Glyph</span>::<span class='ident'>new</span>(<span class='ident'>na</span>::<span class='ident'>zero</span>(), <span class='ident'>advance</span>, <span class='ident'>dimensions</span>, <span class='ident'>offset</span>, <span class='ident'>buffer</span>);
@@ -369,7 +370,7 @@
             <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>TexParameteri</span>(<span class='ident'>gl</span>::<span class='ident'>TEXTURE_2D</span>, <span class='ident'>gl</span>::<span class='ident'>TEXTURE_MAG_FILTER</span>, <span class='ident'>gl</span>::<span class='ident'>LINEAR</span> <span class='kw'>as</span> <span class='ident'>i32</span>));
 
             <span class='comment'>/* Copy all glyphs into the texture atlas. */</span>
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>offset</span>: <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>na</span>::<span class='ident'>zero</span>();
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>offset</span>: <span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>na</span>::<span class='ident'>zero</span>();
             <span class='ident'>row_height</span> <span class='op'>=</span> <span class='number'>0</span>;
             <span class='kw'>for</span> <span class='ident'>curr</span> <span class='kw'>in</span> <span class='number'>0usize</span> .. <span class='number'>128</span> {
                 <span class='kw'>let</span> <span class='ident'>glyph</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='op'>*</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>font</span>.<span class='ident'>glyphs</span>[<span class='ident'>curr</span>] {
@@ -415,7 +416,7 @@
 
     <span class='doccomment'>/// The dimensions of the texture atlas of this font.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>atlas_dimensions</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>atlas_dimensions</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>atlas_dimensions</span>
     }
 
@@ -464,6 +465,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -484,7 +487,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -495,11 +498,9 @@
     <script>
         window.rootPath = "../../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
-    
     <script defer src="../../../search-index.js"></script>
 </body>
 </html>

@@ -34,7 +34,8 @@
                      "primitive",
                      "associatedtype",
                      "constant",
-                     "associatedconstant"];
+                     "associatedconstant",
+                     "union"];
 
     // used for special search precedence
     var TY_PRIMITIVE = itemTypes.indexOf("primitive");
@@ -122,6 +123,11 @@
         case "S":
             ev.preventDefault();
             focusSearchBar();
+            break;
+
+        case "+":
+            ev.preventDefault();
+            toggleAllDocs();
             break;
 
         case "?":
@@ -280,7 +286,7 @@
                 var parts = val.split("->").map(trimmer);
                 var input = parts[0];
                 // sort inputs so that order does not matter
-                var inputs = input.split(",").map(trimmer).sort();
+                var inputs = input.split(",").map(trimmer).sort().toString();
                 var output = parts[1];
 
                 for (var i = 0; i < nSearchWords; ++i) {
@@ -296,8 +302,8 @@
 
                     // allow searching for void (no output) functions as well
                     var typeOutput = type.output ? type.output.name : "";
-                    if (inputs.toString() === typeInputs.toString() &&
-                        output == typeOutput) {
+                    if ((inputs === "*" || inputs === typeInputs.toString()) &&
+                        (output === "*" || output == typeOutput)) {
                         results.push({id: i, index: -1, dontValidate: true});
                     }
                 }
@@ -572,20 +578,24 @@
                         displayPath = item.path + '::';
                         href = rootPath + item.path.replace(/::/g, '/') + '/' +
                                name + '/index.html';
-                    } else if (type === 'static' || type === 'reexport') {
-                        displayPath = item.path + '::';
-                        href = rootPath + item.path.replace(/::/g, '/') +
-                               '/index.html';
                     } else if (type === "primitive") {
                         displayPath = "";
                         href = rootPath + item.path.replace(/::/g, '/') +
                                '/' + type + '.' + name + '.html';
+                    } else if (type === "externcrate") {
+                        displayPath = "";
+                        href = rootPath + name + '/index.html';
                     } else if (item.parent !== undefined) {
                         var myparent = item.parent;
                         var anchor = '#' + type + '.' + name;
-                        displayPath = item.path + '::' + myparent.name + '::';
+                        var parentType = itemTypes[myparent.ty];
+                        if (parentType === "primitive") {
+                            displayPath = myparent.name + '::';
+                        } else {
+                            displayPath = item.path + '::' + myparent.name + '::';
+                        }
                         href = rootPath + item.path.replace(/::/g, '/') +
-                               '/' + itemTypes[myparent.ty] +
+                               '/' + parentType +
                                '.' + myparent.name +
                                '.html' + anchor;
                     } else {
@@ -678,6 +688,16 @@
             for (var crate in rawSearchIndex) {
                 if (!rawSearchIndex.hasOwnProperty(crate)) { continue; }
 
+                searchWords.push(crate);
+                searchIndex.push({
+                    crate: crate,
+                    ty: 1, // == ExternCrate
+                    name: crate,
+                    path: "",
+                    desc: rawSearchIndex[crate].doc,
+                    type: null,
+                });
+
                 // an array of [(Number) item type,
                 //              (String) name,
                 //              (String) full path or empty string for previous path,
@@ -727,7 +747,9 @@
             $(".search-input").on("keyup input",function() {
                 clearTimeout(searchTimeout);
                 if ($(this).val().length === 0) {
-                    window.history.replaceState("", "std - Rust", "?search=");
+                    if (browserSupportsHistoryApi()) {
+                        history.replaceState("", "std - Rust", "?search=");
+                    }
                     $('#main.content').removeClass('hidden');
                     $('#search.content').addClass('hidden');
                 } else {
@@ -864,12 +886,16 @@
             sidebar.append(div);
         }
 
+        block("primitive", "Primitive Types");
         block("mod", "Modules");
+        block("macro", "Macros");
         block("struct", "Structs");
         block("enum", "Enums");
+        block("constant", "Constants");
+        block("static", "Statics");
         block("trait", "Traits");
         block("fn", "Functions");
-        block("macro", "Macros");
+        block("type", "Type Definitions");
     }
 
     window.initSidebarItems = initSidebarItems;
@@ -897,15 +923,6 @@
         window.register_implementors(window.pending_implementors);
     }
 
-    // See documentation in html/render.rs for what this is doing.
-    var query = getQueryStringParams();
-    if (query['gotosrc']) {
-        window.location = $('#src-' + query['gotosrc']).attr('href');
-    }
-    if (query['gotomacrosrc']) {
-        window.location = $('.srclink').attr('href');
-    }
-
     function labelForToggleButton(sectionIsCollapsed) {
         if (sectionIsCollapsed) {
             // button will expand the section
@@ -916,7 +933,7 @@
         return "\u2212"; // "\u2212" is '−' minus sign
     }
 
-    $("#toggle-all-docs").on("click", function() {
+    function toggleAllDocs() {
         var toggle = $("#toggle-all-docs");
         if (toggle.hasClass("will-expand")) {
             toggle.removeClass("will-expand");
@@ -935,20 +952,24 @@
             $(".toggle-wrapper").addClass("collapsed");
             $(".collapse-toggle").children(".inner").text(labelForToggleButton(true));
         }
-    });
+    }
 
-    $(document).on("click", ".collapse-toggle", function() {
-        var toggle = $(this);
+    function collapseDocs(toggle, animate) {
         var relatedDoc = toggle.parent().next();
         if (relatedDoc.is(".stability")) {
             relatedDoc = relatedDoc.next();
         }
         if (relatedDoc.is(".docblock")) {
             if (relatedDoc.is(":visible")) {
-                relatedDoc.slideUp({duration: 'fast', easing: 'linear'});
+                if (animate === true) {
+                    relatedDoc.slideUp({duration: 'fast', easing: 'linear'});
+                    toggle.children(".toggle-label").fadeIn();
+                } else {
+                    relatedDoc.hide();
+                    toggle.children(".toggle-label").show();
+                }
                 toggle.parent(".toggle-wrapper").addClass("collapsed");
                 toggle.children(".inner").text(labelForToggleButton(true));
-                toggle.children(".toggle-label").fadeIn();
             } else {
                 relatedDoc.slideDown({duration: 'fast', easing: 'linear'});
                 toggle.parent(".toggle-wrapper").removeClass("collapsed");
@@ -956,6 +977,12 @@
                 toggle.children(".toggle-label").hide();
             }
         }
+    }
+
+    $("#toggle-all-docs").on("click", toggleAllDocs);
+
+    $(document).on("click", ".collapse-toggle", function() {
+        collapseDocs($(this), true)
     });
 
     $(function() {
@@ -966,7 +993,30 @@
         $(".method").each(function() {
             if ($(this).next().is(".docblock") ||
                 ($(this).next().is(".stability") && $(this).next().next().is(".docblock"))) {
-                    $(this).children().first().after(toggle.clone());
+                    $(this).children().last().after(toggle.clone());
+            }
+        });
+
+        var mainToggle =
+            $(toggle.clone()).append(
+                $('<span/>', {'class': 'toggle-label'})
+                    .css('display', 'none')
+                    .html('&nbsp;Expand&nbsp;description'));
+        var wrapper = $("<div class='toggle-wrapper'>").append(mainToggle);
+        $("#main > .docblock").before(wrapper);
+
+        $(".docblock.autohide").each(function() {
+            var wrap = $(this).prev();
+            if (wrap.is(".toggle-wrapper")) {
+                var toggle = wrap.children().first();
+                if ($(this).children().first().is("h3")) {
+                    toggle.children(".toggle-label")
+                          .text(" Show " + $(this).children().first().text());
+                }
+                $(this).hide();
+                wrap.addClass("collapsed");
+                toggle.children(".inner").text(labelForToggleButton(true));
+                toggle.children(".toggle-label").show();
             }
         });
 
@@ -974,16 +1024,19 @@
             $(toggle).append(
                 $('<span/>', {'class': 'toggle-label'})
                     .css('display', 'none')
-                    .html('&nbsp;Expand&nbsp;description'));
-        var wrapper = $("<div class='toggle-wrapper'>").append(mainToggle);
-        $("#main > .docblock").before(wrapper);
+                    .html('&nbsp;Expand&nbsp;attributes'));
+        var wrapper = $("<div class='toggle-wrapper toggle-attributes'>").append(mainToggle);
+        $("#main > pre > .attributes").each(function() {
+            $(this).before(wrapper);
+            collapseDocs($($(this).prev().children()[0]), false);
+        });
     });
 
     $('pre.line-numbers').on('click', 'span', function() {
         var prev_id = 0;
 
         function set_fragment(name) {
-            if (history.replaceState) {
+            if (browserSupportsHistoryApi()) {
                 history.replaceState(null, null, '#' + name);
                 $(window).trigger('hashchange');
             } else {

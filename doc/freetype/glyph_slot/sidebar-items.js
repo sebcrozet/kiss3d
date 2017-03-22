@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["GlyphSlot",""],["SubGlyphInfo","A description of a given subglyph returned by `GlyphSlot::get_subglyph_info` function."]]});

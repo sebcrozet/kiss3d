@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,28 +44,27 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>resource</a>::<wbr><a class='struct' href=''>TextureManager</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-3121' class='srclink' href='../../src/kiss3d/resource/texture_manager.rs.html#48-51' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct TextureManager {
-    // some fields omitted
-}</pre><div class='docblock'><p>The texture manager.</p>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/resource/texture_manager.rs.html#48-51' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct TextureManager { /* fields omitted */ }</pre><div class='docblock'><p>The texture manager.</p>
 
 <p>It keeps a cache of already-loaded textures, and can load new textures.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/resource/struct.TextureManager.html' title='kiss3d::resource::TextureManager'>TextureManager</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/resource/struct.TextureManager.html' title='kiss3d::resource::TextureManager'>TextureManager</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../kiss3d/resource/struct.TextureManager.html' title='kiss3d::resource::TextureManager'>TextureManager</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/resource/texture_manager.rs.html#53-149' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/resource/struct.TextureManager.html' title='kiss3d::resource::TextureManager'>TextureManager</a></code></span></h4>
 <div class='docblock'><p>Creates a new texture manager.</p>
-</div><h4 id='method.get_global_manager' class='method'><code>fn <a href='#method.get_global_manager' class='fnname'>get_global_manager</a>&lt;T, F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(&amp;mut <a class='struct' href='../../kiss3d/resource/struct.TextureManager.html' title='kiss3d::resource::TextureManager'>TextureManager</a>) -&gt; T&gt;(f: F) -&gt; T</code></h4>
+</div><h4 id='method.get_global_manager' class='method'><span id='get_global_manager.v' class='invisible'><code>fn <a href='#method.get_global_manager' class='fnname'>get_global_manager</a>&lt;T, F:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(&amp;mut <a class='struct' href='../../kiss3d/resource/struct.TextureManager.html' title='kiss3d::resource::TextureManager'>TextureManager</a>) -&gt; T&gt;(f: F) -&gt; T</code></span></h4>
 <div class='docblock'><p>Mutably applies a function to the texture manager.</p>
-</div><h4 id='method.get_default' class='method'><code>fn <a href='#method.get_default' class='fnname'>get_default</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a>&gt;</code></h4>
+</div><h4 id='method.get_default' class='method'><span id='get_default.v' class='invisible'><code>fn <a href='#method.get_default' class='fnname'>get_default</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a>&gt;</code></span></h4>
 <div class='docblock'><p>Gets the default, completely white, texture.</p>
-</div><h4 id='method.get' class='method'><code>fn <a href='#method.get' class='fnname'>get</a>(&amp;mut self, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a>&gt;&gt;</code></h4>
+</div><h4 id='method.get' class='method'><span id='get.v' class='invisible'><code>fn <a href='#method.get' class='fnname'>get</a>(&amp;mut self, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a>&gt;&gt;</code></span></h4>
 <div class='docblock'><p>Get a texture with the specified name. Returns <code>None</code> if the texture is not registered.</p>
-</div><h4 id='method.add_empty' class='method'><code>fn <a href='#method.add_empty' class='fnname'>add_empty</a>(&amp;mut self, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a>&gt;</code></h4>
+</div><h4 id='method.add_empty' class='method'><span id='add_empty.v' class='invisible'><code>fn <a href='#method.add_empty' class='fnname'>add_empty</a>(&amp;mut self, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a>&gt;</code></span></h4>
 <div class='docblock'><p>Allocates a new texture that is not yet configured.</p>
 
 <p>If a texture with same name exists, nothing is created and the old texture is returned.</p>
-</div><h4 id='method.add' class='method'><code>fn <a href='#method.add' class='fnname'>add</a>(&amp;mut self, path: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a>&gt;</code></h4>
+</div><h4 id='method.add' class='method'><span id='add.v' class='invisible'><code>fn <a href='#method.add' class='fnname'>add</a>(&amp;mut self, path: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Texture.html' title='kiss3d::resource::Texture'>Texture</a>&gt;</code></span></h4>
 <div class='docblock'><p>Allocates a new texture read from a file. If a texture with same name exists, nothing is
 created and the old texture is returned.</p>
 </div></div></section>
@@ -90,6 +90,8 @@ created and the old texture is returned.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -110,7 +112,7 @@ created and the old texture is returned.</p>
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -121,11 +123,9 @@ created and the old texture is returned.</p>
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

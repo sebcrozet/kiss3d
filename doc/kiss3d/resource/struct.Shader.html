@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,25 +44,26 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>resource</a>::<wbr><a class='struct' href=''>Shader</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-3996' class='srclink' href='../../src/kiss3d/resource/shader.rs.html#19-23' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct Shader {
-    // some fields omitted
-}</pre><div class='docblock'><p>Structure encapsulating a shader program.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(vshader_path: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>, fshader_path: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a>&gt;</code></h4>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/resource/shader.rs.html#18-22' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Shader { /* fields omitted */ }</pre><div class='docblock'><p>Structure encapsulating a shader program.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/resource/shader.rs.html#24-82' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(vshader_path: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>, fshader_path: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a>&gt;</code></span></h4>
 <div class='docblock'><p>Creates a new shader program from two files containing the vertex and fragment shader.</p>
-</div><h4 id='method.new_from_str' class='method'><code>fn <a href='#method.new_from_str' class='fnname'>new_from_str</a>(vshader: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, fshader: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a></code></h4>
+</div><h4 id='method.new_from_str' class='method'><span id='new_from_str.v' class='invisible'><code>fn <a href='#method.new_from_str' class='fnname'>new_from_str</a>(vshader: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, fshader: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a></code></span></h4>
 <div class='docblock'><p>Creates a new shader program from strings of the vertex and fragment shader.</p>
-</div><h4 id='method.get_uniform' class='method'><code>fn <a href='#method.get_uniform' class='fnname'>get_uniform</a>&lt;T: <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt;(&amp;self, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.ShaderUniform.html' title='kiss3d::resource::ShaderUniform'>ShaderUniform</a>&lt;T&gt;&gt;</code></h4>
+</div><h4 id='method.get_uniform' class='method'><span id='get_uniform.v' class='invisible'><code>fn <a href='#method.get_uniform' class='fnname'>get_uniform</a>&lt;T:&nbsp;<a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt;(&amp;self, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.ShaderUniform.html' title='kiss3d::resource::ShaderUniform'>ShaderUniform</a>&lt;T&gt;&gt;</code></span></h4>
 <div class='docblock'><p>Gets a uniform variable from the shader program.</p>
-</div><h4 id='method.get_attrib' class='method'><code>fn <a href='#method.get_attrib' class='fnname'>get_attrib</a>&lt;T: <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt;(&amp;self, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;T&gt;&gt;</code></h4>
+</div><h4 id='method.get_attrib' class='method'><span id='get_attrib.v' class='invisible'><code>fn <a href='#method.get_attrib' class='fnname'>get_attrib</a>&lt;T:&nbsp;<a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt;(&amp;self, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;T&gt;&gt;</code></span></h4>
 <div class='docblock'><p>Gets an attribute from the shader program.</p>
-</div><h4 id='method.use_program' class='method'><code>fn <a href='#method.use_program' class='fnname'>use_program</a>(&amp;mut self)</code></h4>
+</div><h4 id='method.use_program' class='method'><span id='use_program.v' class='invisible'><code>fn <a href='#method.use_program' class='fnname'>use_program</a>(&amp;mut self)</code></span></h4>
 <div class='docblock'><p>Make this program active.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a></code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
-</div></section>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/resource/struct.Shader.html' title='kiss3d::resource::Shader'>Shader</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/resource/shader.rs.html#84-90' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.drop' class='method'><span id='drop.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>A method called when the value goes out of scope. <a href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop">Read more</a></p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -84,6 +86,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -104,7 +108,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -115,11 +119,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

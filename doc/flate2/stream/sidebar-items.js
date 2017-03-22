@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["Flush","Values which indicate the form of flushing to be used when compressing or decompressing in-memory data."]]});

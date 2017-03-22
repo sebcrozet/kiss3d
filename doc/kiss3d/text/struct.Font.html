@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,29 +44,30 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>text</a>::<wbr><a class='struct' href=''>Font</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-4246' class='srclink' href='../../src/kiss3d/text/font.rs.html#24-31' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct Font {
-    // some fields omitted
-}</pre><div class='docblock'><p>A ttf font.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a></code></h3><div class='impl-items'><h4 id='method.from_memory' class='method'><code>fn <a href='#method.from_memory' class='fnname'>from_memory</a>(font: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a>&gt;</code></h4>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/text/font.rs.html#24-31' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Font { /* fields omitted */ }</pre><div class='docblock'><p>A ttf font.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/text/font.rs.html#33-190' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from_memory' class='method'><span id='from_memory.v' class='invisible'><code>fn <a href='#method.from_memory' class='fnname'>from_memory</a>(font: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a>&gt;</code></span></h4>
 <div class='docblock'><p>Loads a new ttf font from the memory.</p>
-</div><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(path: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>, size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a>&gt;</code></h4>
+</div><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(path: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>, size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a>&gt;</code></span></h4>
 <div class='docblock'><p>Loads a new ttf font from a file.</p>
-</div><h4 id='method.do_new' class='method'><code>fn <a href='#method.do_new' class='fnname'>do_new</a>(path: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>&gt;, memory: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a>&gt;</code></h4>
+</div><h4 id='method.do_new' class='method'><span id='do_new.v' class='invisible'><code>fn <a href='#method.do_new' class='fnname'>do_new</a>(path: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>&gt;, memory: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a>&gt;</code></span></h4>
 <div class='docblock'><p>Loads a new ttf font from a file.</p>
-</div><h4 id='method.texture_atlas' class='method'><code>fn <a href='#method.texture_atlas' class='fnname'>texture_atlas</a>(&amp;self) -&gt; <a class='type' href='../../gl/types/type.GLuint.html' title='gl::types::GLuint'>GLuint</a></code></h4>
+</div><h4 id='method.texture_atlas' class='method'><span id='texture_atlas.v' class='invisible'><code>fn <a href='#method.texture_atlas' class='fnname'>texture_atlas</a>(&amp;self) -&gt; GLuint</code></span></h4>
 <div class='docblock'><p>The opengl id to the texture atlas of this font.</p>
-</div><h4 id='method.atlas_dimensions' class='method'><code>fn <a href='#method.atlas_dimensions' class='fnname'>atlas_dimensions</a>(&amp;self) -&gt; <a class='struct' href='../../nalgebra/structs/vec/struct.Vec2.html' title='nalgebra::structs::vec::Vec2'>Vec2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt;</code></h4>
+</div><h4 id='method.atlas_dimensions' class='method'><span id='atlas_dimensions.v' class='invisible'><code>fn <a href='#method.atlas_dimensions' class='fnname'>atlas_dimensions</a>(&amp;self) -&gt; <a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Vector2.html' title='nalgebra::core::alias::Vector2'>Vector2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt;</code></span></h4>
 <div class='docblock'><p>The dimensions of the texture atlas of this font.</p>
-</div><h4 id='method.glyphs' class='method'><code>fn <a href='#method.glyphs' class='fnname'>glyphs</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Glyph.html' title='kiss3d::text::Glyph'>Glyph</a>&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></h4>
+</div><h4 id='method.glyphs' class='method'><span id='glyphs.v' class='invisible'><code>fn <a href='#method.glyphs' class='fnname'>glyphs</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../kiss3d/text/struct.Glyph.html' title='kiss3d::text::Glyph'>Glyph</a>&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></span></h4>
 <div class='docblock'><p>The glyphs of the this font.</p>
-</div><h4 id='method.height' class='method'><code>fn <a href='#method.height' class='fnname'>height</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></h4>
+</div><h4 id='method.height' class='method'><span id='height.v' class='invisible'><code>fn <a href='#method.height' class='fnname'>height</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></span></h4>
 <div class='docblock'><p>The height of this font.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a></code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
-</div></section>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/text/struct.Font.html' title='kiss3d::text::Font'>Font</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/text/font.rs.html#192-199' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.drop' class='method'><span id='drop.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>A method called when the value goes out of scope. <a href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop">Read more</a></p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -88,6 +90,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -108,7 +112,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -119,11 +123,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

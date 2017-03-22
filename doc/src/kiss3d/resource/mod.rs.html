@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -71,7 +72,7 @@
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>resource</span>::<span class='ident'>material_manager</span>::<span class='ident'>MaterialManager</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>resource</span>::<span class='ident'>mesh_manager</span>::<span class='ident'>MeshManager</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>resource</span>::<span class='ident'>shader</span>::{<span class='ident'>Shader</span>, <span class='ident'>ShaderAttribute</span>, <span class='ident'>ShaderUniform</span>};
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>resource</span>::<span class='ident'>gpu_vector</span>::{<span class='ident'>GPUVector</span>, <span class='ident'>BufferType</span>, <span class='ident'>AllocationType</span>};
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>resource</span>::<span class='ident'>gpu_vector</span>::{<span class='ident'>GPUVec</span>, <span class='ident'>BufferType</span>, <span class='ident'>AllocationType</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>resource</span>::<span class='ident'>gl_primitive</span>::<span class='ident'>GLPrimitive</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>resource</span>::<span class='ident'>mesh</span>::<span class='ident'>Mesh</span>;
 
@@ -108,6 +109,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -128,7 +131,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -139,11 +142,9 @@
     <script>
         window.rootPath = "../../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
-    
     <script defer src="../../../search-index.js"></script>
 </body>
 </html>

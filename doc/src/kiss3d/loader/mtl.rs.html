@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -239,7 +240,7 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Read</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::<span class='ident'>FromStr</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::<span class='ident'>Path</span>;
-<span class='kw'>use</span> <span class='ident'>na</span>::<span class='ident'>Vec3</span>;
+<span class='kw'>use</span> <span class='ident'>na</span>::<span class='ident'>Vector3</span>;
 <span class='kw'>use</span> <span class='ident'>loader</span>::<span class='ident'>obj</span>::<span class='ident'>Words</span>;
 <span class='kw'>use</span> <span class='ident'>loader</span>::<span class='ident'>obj</span>;
 
@@ -326,7 +327,7 @@
     <span class='ident'>res</span>.<span class='ident'>join</span>(<span class='string'>&quot; &quot;</span>)
 }
 
-<span class='kw'>fn</span> <span class='ident'>parse_color</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='ident'>l</span>: <span class='ident'>usize</span>, <span class='kw-2'>mut</span> <span class='ident'>ws</span>: <span class='ident'>Words</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
+<span class='kw'>fn</span> <span class='ident'>parse_color</span>(<span class='ident'>l</span>: <span class='ident'>usize</span>, <span class='kw-2'>mut</span> <span class='ident'>ws</span>: <span class='ident'>Words</span>) <span class='op'>-&gt;</span> <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>sx</span> <span class='op'>=</span> <span class='ident'>ws</span>.<span class='ident'>next</span>().<span class='ident'>unwrap_or_else</span>(<span class='op'>||</span> <span class='ident'>error</span>(<span class='ident'>l</span>, <span class='string'>&quot;3 components were expected, found 0.&quot;</span>));
     <span class='kw'>let</span> <span class='ident'>sy</span> <span class='op'>=</span> <span class='ident'>ws</span>.<span class='ident'>next</span>().<span class='ident'>unwrap_or_else</span>(<span class='op'>||</span> <span class='ident'>error</span>(<span class='ident'>l</span>, <span class='string'>&quot;3 components were expected, found 1.&quot;</span>));
     <span class='kw'>let</span> <span class='ident'>sz</span> <span class='op'>=</span> <span class='ident'>ws</span>.<span class='ident'>next</span>().<span class='ident'>unwrap_or_else</span>(<span class='op'>||</span> <span class='ident'>error</span>(<span class='ident'>l</span>, <span class='string'>&quot;3 components were expected, found 2.&quot;</span>));
@@ -339,10 +340,10 @@
     <span class='kw'>let</span> <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>y</span>.<span class='ident'>unwrap_or_else</span>(<span class='op'>|</span><span class='ident'>e</span><span class='op'>|</span> <span class='ident'>error</span>(<span class='ident'>l</span>, <span class='kw-2'>&amp;</span><span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;failed to parse `{}&#39; as a f32: {}&quot;</span>, <span class='ident'>sy</span>, <span class='ident'>e</span>)[..]));
     <span class='kw'>let</span> <span class='ident'>z</span> <span class='op'>=</span> <span class='ident'>z</span>.<span class='ident'>unwrap_or_else</span>(<span class='op'>|</span><span class='ident'>e</span><span class='op'>|</span> <span class='ident'>error</span>(<span class='ident'>l</span>, <span class='kw-2'>&amp;</span><span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;failed to parse `{}&#39; as a f32: {}&quot;</span>, <span class='ident'>sz</span>, <span class='ident'>e</span>)[..]));
 
-    <span class='ident'>Vec3</span>::<span class='ident'>new</span>(<span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>z</span>)
+    <span class='ident'>Vector3</span>::<span class='ident'>new</span>(<span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>z</span>)
 }
 
-<span class='kw'>fn</span> <span class='ident'>parse_scalar</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='ident'>l</span>: <span class='ident'>usize</span>, <span class='kw-2'>mut</span> <span class='ident'>ws</span>: <span class='ident'>Words</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span> {
+<span class='kw'>fn</span> <span class='ident'>parse_scalar</span>(<span class='ident'>l</span>: <span class='ident'>usize</span>, <span class='kw-2'>mut</span> <span class='ident'>ws</span>: <span class='ident'>Words</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span> {
     <span class='kw'>let</span> <span class='ident'>sx</span> <span class='op'>=</span> <span class='ident'>ws</span>.<span class='ident'>next</span>().<span class='ident'>unwrap_or_else</span>(<span class='op'>||</span> <span class='ident'>error</span>(<span class='ident'>l</span>, <span class='string'>&quot;1 component was expected, found 0.&quot;</span>));
 
     <span class='kw'>let</span> <span class='ident'>x</span>: <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>f32</span>, _<span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='ident'>sx</span>);
@@ -366,11 +367,11 @@
     <span class='doccomment'>/// Path to the opacity map.</span>
     <span class='kw'>pub</span> <span class='ident'>opacity_map</span>:      <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>,
     <span class='doccomment'>/// The ambiant color.</span>
-    <span class='kw'>pub</span> <span class='ident'>ambiant</span>:          <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>ambiant</span>:          <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
     <span class='doccomment'>/// The diffuse color.</span>
-    <span class='kw'>pub</span> <span class='ident'>diffuse</span>:          <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>diffuse</span>:          <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
     <span class='doccomment'>/// The specular color.</span>
-    <span class='kw'>pub</span> <span class='ident'>specular</span>:         <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>specular</span>:         <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
     <span class='doccomment'>/// The shininess.</span>
     <span class='kw'>pub</span> <span class='ident'>shininess</span>:        <span class='ident'>f32</span>,
     <span class='doccomment'>/// Alpha blending.</span>
@@ -388,9 +389,9 @@
             <span class='ident'>diffuse_texture</span>:  <span class='prelude-val'>None</span>,
             <span class='ident'>specular_texture</span>: <span class='prelude-val'>None</span>,
             <span class='ident'>opacity_map</span>:      <span class='prelude-val'>None</span>,
-            <span class='ident'>ambiant</span>:          <span class='ident'>Vec3</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>, <span class='number'>1.0</span>, <span class='number'>1.0</span>),
-            <span class='ident'>diffuse</span>:          <span class='ident'>Vec3</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>, <span class='number'>1.0</span>, <span class='number'>1.0</span>),
-            <span class='ident'>specular</span>:         <span class='ident'>Vec3</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>, <span class='number'>1.0</span>, <span class='number'>1.0</span>),
+            <span class='ident'>ambiant</span>:          <span class='ident'>Vector3</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>, <span class='number'>1.0</span>, <span class='number'>1.0</span>),
+            <span class='ident'>diffuse</span>:          <span class='ident'>Vector3</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>, <span class='number'>1.0</span>, <span class='number'>1.0</span>),
+            <span class='ident'>specular</span>:         <span class='ident'>Vector3</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>, <span class='number'>1.0</span>, <span class='number'>1.0</span>),
         }
     }
 
@@ -398,9 +399,9 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>name</span>:             <span class='ident'>String</span>,
                <span class='ident'>shininess</span>:        <span class='ident'>f32</span>,
                <span class='ident'>alpha</span>:            <span class='ident'>f32</span>,
-               <span class='ident'>ambiant</span>:          <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
-               <span class='ident'>diffuse</span>:          <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
-               <span class='ident'>specular</span>:         <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+               <span class='ident'>ambiant</span>:          <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+               <span class='ident'>diffuse</span>:          <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+               <span class='ident'>specular</span>:         <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
                <span class='ident'>ambiant_texture</span>:  <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>,
                <span class='ident'>diffuse_texture</span>:  <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>,
                <span class='ident'>specular_texture</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>,
@@ -444,6 +445,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -464,7 +467,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -475,11 +478,9 @@
     <script>
         window.rootPath = "../../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
-    
     <script defer src="../../../search-index.js"></script>
 </body>
 </html>

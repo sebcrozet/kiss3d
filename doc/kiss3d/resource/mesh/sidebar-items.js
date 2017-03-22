@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Mesh","Aggregation of vertices, indices, normals and texture coordinates."]]});

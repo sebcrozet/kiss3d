@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["DecoderReader","A DEFLATE decoder, or decompressor."],["DecoderWriter","A DEFLATE decoder, or decompressor."],["EncoderReader","A DEFLATE encoder, or compressor."],["EncoderWriter","A DEFLATE encoder, or compressor."]]});

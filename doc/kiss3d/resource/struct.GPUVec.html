@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `GPUVec` struct in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, GPUVec">
+
+    <title>kiss3d::resource::GPUVec - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>resource</a></p><script>window.sidebarCurrent = {name: 'GPUVec', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>resource</a>::<wbr><a class='struct' href=''>GPUVec</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/resource/gpu_vector.rs.html#37-44' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct GPUVec&lt;T&gt; { /* fields omitted */ }</pre><div class='docblock'><p>A vector of elements that can be loaded to the GPU, on the RAM, or both.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;T:&nbsp;<a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt; <a class='struct' href='../../kiss3d/resource/struct.GPUVec.html' title='kiss3d::resource::GPUVec'>GPUVec</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/resource/gpu_vector.rs.html#48-201' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(data: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buf_type: <a class='enum' href='../../kiss3d/resource/enum.BufferType.html' title='kiss3d::resource::BufferType'>BufferType</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; alloc_type: <a class='enum' href='../../kiss3d/resource/enum.AllocationType.html' title='kiss3d::resource::AllocationType'>AllocationType</a>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='struct' href='../../kiss3d/resource/struct.GPUVec.html' title='kiss3d::resource::GPUVec'>GPUVec</a>&lt;T&gt;</code></span></h4>
+<div class='docblock'><p>Creates a new <code>GPUVec</code> that is not yet uploaded to the GPU.</p>
+</div><h4 id='method.len' class='method'><span id='len.v' class='invisible'><code>fn <a href='#method.len' class='fnname'>len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></span></h4>
+<div class='docblock'><p>The length of this vector.</p>
+</div><h4 id='method.data_mut' class='method'><span id='data_mut.v' class='invisible'><code>fn <a href='#method.data_mut' class='fnname'>data_mut</a>(&amp;mut self) -&gt; &amp;mut <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;T&gt;&gt;</code></span></h4>
+<div class='docblock'><p>Mutably accesses the vector if it is available on RAM.</p>
+
+<p>This method will mark this vector as <code>trash</code>.</p>
+</div><h4 id='method.data' class='method'><span id='data.v' class='invisible'><code>fn <a href='#method.data' class='fnname'>data</a>(&amp;self) -&gt; &amp;<a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;T&gt;&gt;</code></span></h4>
+<div class='docblock'><p>Immutably accesses the vector if it is available on RAM.</p>
+</div><h4 id='method.is_on_gpu' class='method'><span id='is_on_gpu.v' class='invisible'><code>fn <a href='#method.is_on_gpu' class='fnname'>is_on_gpu</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></span></h4>
+<div class='docblock'><p>Returns <code>true</code> if this vector is already uploaded to the GPU.</p>
+</div><h4 id='method.trash' class='method'><span id='trash.v' class='invisible'><code>fn <a href='#method.trash' class='fnname'>trash</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></span></h4>
+<div class='docblock'><p>Returns <code>true</code> if the cpu data and gpu data are out of sync.</p>
+</div><h4 id='method.is_on_ram' class='method'><span id='is_on_ram.v' class='invisible'><code>fn <a href='#method.is_on_ram' class='fnname'>is_on_ram</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></span></h4>
+<div class='docblock'><p>Returns <code>true</code> if this vector is available on RAM.</p>
+
+<p>Note that a <code>GPUVec</code> may be both on RAM and on the GPU.</p>
+</div><h4 id='method.load_to_gpu' class='method'><span id='load_to_gpu.v' class='invisible'><code>fn <a href='#method.load_to_gpu' class='fnname'>load_to_gpu</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Loads the vector from the RAM to the GPU.</p>
+
+<p>If the vector is not available on RAM or already loaded to the GPU, nothing will happen.</p>
+</div><h4 id='method.bind' class='method'><span id='bind.v' class='invisible'><code>fn <a href='#method.bind' class='fnname'>bind</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Binds this vector to the appropriate gpu array.</p>
+
+<p>This does not associate this buffer with any shader attribute.</p>
+</div><h4 id='method.unbind' class='method'><span id='unbind.v' class='invisible'><code>fn <a href='#method.unbind' class='fnname'>unbind</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Unbind this vector to the corresponding gpu buffer.</p>
+</div><h4 id='method.load_to_ram' class='method'><span id='load_to_ram.v' class='invisible'><code>fn <a href='#method.load_to_ram' class='fnname'>load_to_ram</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Loads the vector from the GPU to the RAM.</p>
+
+<p>If the vector is not available on the GPU or already loaded to the RAM, nothing will
+happen.</p>
+</div><h4 id='method.unload_from_gpu' class='method'><span id='unload_from_gpu.v' class='invisible'><code>fn <a href='#method.unload_from_gpu' class='fnname'>unload_from_gpu</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Unloads this resource from the GPU.</p>
+</div><h4 id='method.unload_from_ram' class='method'><span id='unload_from_ram.v' class='invisible'><code>fn <a href='#method.unload_from_ram' class='fnname'>unload_from_ram</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Removes this resource from the RAM.</p>
+
+<p>This is useful to save memory for vectors required on the GPU only.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T:&nbsp;<a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt; <a class='struct' href='../../kiss3d/resource/struct.GPUVec.html' title='kiss3d::resource::GPUVec'>GPUVec</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/resource/gpu_vector.rs.html#203-212' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.to_owned' class='method'><span id='to_owned.v' class='invisible'><code>fn <a href='#method.to_owned' class='fnname'>to_owned</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;T&gt;&gt;</code></span></h4>
+<div class='docblock'><p>Returns this vector as an owned vector if it is available on RAM.</p>
+
+<p>If it has been uploaded to the GPU, and unloaded from the RAM, call <code>load_to_ram</code> first to
+make the data accessible.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "kiss3d";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

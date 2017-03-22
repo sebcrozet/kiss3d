@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,18 +44,17 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>window</a>::<wbr><a class='struct' href=''>EventManager</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-430' class='srclink' href='../../src/kiss3d/window/event.rs.html#75-78' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct EventManager {
-    // some fields omitted
-}</pre><div class='docblock'><p>A stand-alone object that provides an iterator though glfw events.</p>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/window/event.rs.html#75-78' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct EventManager { /* fields omitted */ }</pre><div class='docblock'><p>A stand-alone object that provides an iterator though glfw events.</p>
 
 <p>It is not lifetime-bound to the main window.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/window/struct.EventManager.html' title='kiss3d::window::EventManager'>EventManager</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(events: <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/sync/mpsc/struct.Receiver.html' title='std::sync::mpsc::Receiver'>Receiver</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>, <a class='enum' href='../../glfw/enum.WindowEvent.html' title='glfw::WindowEvent'>WindowEvent</a>)</a>&gt;&gt;, inhibitor: <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../../glfw/enum.WindowEvent.html' title='glfw::WindowEvent'>WindowEvent</a>&gt;&gt;&gt;) -&gt; <a class='struct' href='../../kiss3d/window/struct.EventManager.html' title='kiss3d::window::EventManager'>EventManager</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../kiss3d/window/struct.EventManager.html' title='kiss3d::window::EventManager'>EventManager</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/window/event.rs.html#80-97' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(events: <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/sync/mpsc/struct.Receiver.html' title='std::sync::mpsc::Receiver'>Receiver</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>, WindowEvent<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; inhibitor: <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html' title='alloc::rc::Rc'>Rc</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/core/cell/struct.RefCell.html' title='core::cell::RefCell'>RefCell</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;WindowEvent&gt;&gt;&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='struct' href='../../kiss3d/window/struct.EventManager.html' title='kiss3d::window::EventManager'>EventManager</a></code></span></h4>
 <div class='docblock'><p>Creates a new event manager.</p>
-</div><h4 id='method.iter' class='method'><code>fn <a href='#method.iter' class='fnname'>iter</a>&lt;'a&gt;(&amp;'a mut self) -&gt; <a class='struct' href='../../kiss3d/window/struct.Events.html' title='kiss3d::window::Events'>Events</a>&lt;'a&gt;</code></h4>
+</div><h4 id='method.iter' class='method'><span id='iter.v' class='invisible'><code>fn <a href='#method.iter' class='fnname'>iter</a>(&amp;mut self) -&gt; <a class='struct' href='../../kiss3d/window/struct.Events.html' title='kiss3d::window::Events'>Events</a></code></span></h4>
 <div class='docblock'><p>Gets an iterator to the glfw events already collected.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -79,6 +79,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -99,7 +101,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -110,11 +112,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

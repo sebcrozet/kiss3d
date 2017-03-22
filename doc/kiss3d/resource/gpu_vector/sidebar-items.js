@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["AllocationType","Allocation type of gpu buffers."],["BufferType","Type of gpu buffer."]],"struct":[["GPUVector","A vector of elements that can be loaded to the GPU, on the RAM, or both."]]});

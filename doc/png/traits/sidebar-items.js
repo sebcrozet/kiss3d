@@ -1,1 +1,0 @@
-initSidebarItems({"trait":[["HasParameters","Object has parameters"],["Parameter","Configuration parameter trait"]]});

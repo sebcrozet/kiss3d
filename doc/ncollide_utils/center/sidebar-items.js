@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["center","Computes the center of a set of point."]]});

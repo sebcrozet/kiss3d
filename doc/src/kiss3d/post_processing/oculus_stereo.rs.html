@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -217,9 +218,9 @@
 
 <span class='kw'>use</span> <span class='ident'>gl</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>::<span class='ident'>types</span>::<span class='op'>*</span>;
-<span class='kw'>use</span> <span class='ident'>na</span>::<span class='ident'>Vec2</span>;
+<span class='kw'>use</span> <span class='ident'>na</span>::<span class='ident'>Vector2</span>;
 <span class='kw'>use</span> <span class='ident'>resource</span>::{<span class='ident'>BufferType</span>, <span class='ident'>AllocationType</span>, <span class='ident'>Shader</span>, <span class='ident'>ShaderUniform</span>, <span class='ident'>ShaderAttribute</span>, <span class='ident'>RenderTarget</span>,
-               <span class='ident'>GPUVector</span>};
+               <span class='ident'>GPUVec</span>};
 <span class='kw'>use</span> <span class='ident'>post_processing</span>::<span class='ident'>post_processing_effect</span>::<span class='ident'>PostProcessingEffect</span>;
 
 <span class='attribute'>#[<span class='ident'>path</span> <span class='op'>=</span> <span class='string'>&quot;../error.rs&quot;</span>]</span>
@@ -228,15 +229,15 @@
 <span class='doccomment'>/// An post-processing effect to support the oculus rift.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>OculusStereo</span> {
     <span class='ident'>shader</span>:       <span class='ident'>Shader</span>,
-    <span class='ident'>fbo_vertices</span>: <span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
+    <span class='ident'>fbo_vertices</span>: <span class='ident'>GPUVec</span><span class='op'>&lt;</span><span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
     <span class='ident'>fbo_texture</span>:  <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>GLint</span><span class='op'>&gt;</span>,
-    <span class='ident'>v_coord</span>:      <span class='ident'>ShaderAttribute</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>,
+    <span class='ident'>v_coord</span>:      <span class='ident'>ShaderAttribute</span><span class='op'>&lt;</span><span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>,
     <span class='ident'>kappa_0</span>:      <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span>,
     <span class='ident'>kappa_1</span>:      <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span>,
     <span class='ident'>kappa_2</span>:      <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span>,
     <span class='ident'>kappa_3</span>:      <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span>,
-    <span class='ident'>scale</span>:        <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>,
-    <span class='ident'>scale_in</span>:     <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>,
+    <span class='ident'>scale</span>:        <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>,
+    <span class='ident'>scale_in</span>:     <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>,
     <span class='ident'>w</span>:            <span class='ident'>f32</span>,
     <span class='ident'>h</span>:            <span class='ident'>f32</span>
 }
@@ -244,13 +245,13 @@
 <span class='kw'>impl</span> <span class='ident'>OculusStereo</span> {
     <span class='doccomment'>/// Creates a new OculusStereo post processing effect.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>OculusStereo</span> {
-        <span class='kw'>let</span> <span class='ident'>fbo_vertices</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>  <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(
-            <span class='ident'>Vec2</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='number'>1.0</span>, <span class='op'>-</span><span class='number'>1.0</span>),
-            <span class='ident'>Vec2</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>, <span class='op'>-</span><span class='number'>1.0</span>),
-            <span class='ident'>Vec2</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='number'>1.0</span>,  <span class='number'>1.0</span>),
-            <span class='ident'>Vec2</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>,  <span class='number'>1.0</span>));
+        <span class='kw'>let</span> <span class='ident'>fbo_vertices</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>  <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(
+            <span class='ident'>Vector2</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='number'>1.0</span>, <span class='op'>-</span><span class='number'>1.0</span>),
+            <span class='ident'>Vector2</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>, <span class='op'>-</span><span class='number'>1.0</span>),
+            <span class='ident'>Vector2</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='number'>1.0</span>,  <span class='number'>1.0</span>),
+            <span class='ident'>Vector2</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>,  <span class='number'>1.0</span>));
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fbo_vertices</span> <span class='op'>=</span> <span class='ident'>GPUVector</span>::<span class='ident'>new</span>(<span class='ident'>fbo_vertices</span>, <span class='ident'>BufferType</span>::<span class='ident'>Array</span>, <span class='ident'>AllocationType</span>::<span class='ident'>StaticDraw</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fbo_vertices</span> <span class='op'>=</span> <span class='ident'>GPUVec</span>::<span class='ident'>new</span>(<span class='ident'>fbo_vertices</span>, <span class='ident'>BufferType</span>::<span class='ident'>Array</span>, <span class='ident'>AllocationType</span>::<span class='ident'>StaticDraw</span>);
         <span class='ident'>fbo_vertices</span>.<span class='ident'>load_to_gpu</span>();
         <span class='ident'>fbo_vertices</span>.<span class='ident'>unload_from_ram</span>();
 
@@ -297,8 +298,8 @@
         <span class='self'>self</span>.<span class='ident'>kappa_1</span>.<span class='ident'>upload</span>(<span class='kw-2'>&amp;</span><span class='ident'>kappa</span>[<span class='number'>1</span>]);
         <span class='self'>self</span>.<span class='ident'>kappa_2</span>.<span class='ident'>upload</span>(<span class='kw-2'>&amp;</span><span class='ident'>kappa</span>[<span class='number'>2</span>]);
         <span class='self'>self</span>.<span class='ident'>kappa_3</span>.<span class='ident'>upload</span>(<span class='kw-2'>&amp;</span><span class='ident'>kappa</span>[<span class='number'>3</span>]);
-        <span class='self'>self</span>.<span class='ident'>scale</span>.<span class='ident'>upload</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vec2</span>::<span class='ident'>new</span>(<span class='number'>0.5f32</span>, <span class='ident'>aspect</span>));
-        <span class='self'>self</span>.<span class='ident'>scale_in</span>.<span class='ident'>upload</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vec2</span>::<span class='ident'>new</span>(<span class='number'>2.0f32</span> <span class='op'>*</span> <span class='ident'>scale_factor</span>, <span class='number'>1.0f32</span> <span class='op'>/</span> <span class='ident'>aspect</span> <span class='op'>*</span> <span class='ident'>scale_factor</span>));
+        <span class='self'>self</span>.<span class='ident'>scale</span>.<span class='ident'>upload</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vector2</span>::<span class='ident'>new</span>(<span class='number'>0.5f32</span>, <span class='ident'>aspect</span>));
+        <span class='self'>self</span>.<span class='ident'>scale_in</span>.<span class='ident'>upload</span>(<span class='kw-2'>&amp;</span><span class='ident'>Vector2</span>::<span class='ident'>new</span>(<span class='number'>2.0f32</span> <span class='op'>*</span> <span class='ident'>scale_factor</span>, <span class='number'>1.0f32</span> <span class='op'>/</span> <span class='ident'>aspect</span> <span class='op'>*</span> <span class='ident'>scale_factor</span>));
 
         <span class='comment'>/*
          * Finalize draw
@@ -408,6 +409,8 @@ void main()
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -428,7 +431,7 @@ void main()
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -439,11 +442,9 @@ void main()
     <script>
         window.rootPath = "../../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
-    
     <script defer src="../../../search-index.js"></script>
 </body>
 </html>

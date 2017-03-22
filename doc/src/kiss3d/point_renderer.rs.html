@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -142,8 +143,8 @@
 
 <span class='kw'>use</span> <span class='ident'>gl</span>;
 <span class='kw'>use</span> <span class='ident'>gl</span>::<span class='ident'>types</span>::<span class='op'>*</span>;
-<span class='kw'>use</span> <span class='ident'>na</span>::{<span class='ident'>Pnt3</span>, <span class='ident'>Mat4</span>};
-<span class='kw'>use</span> <span class='ident'>resource</span>::{<span class='ident'>BufferType</span>, <span class='ident'>AllocationType</span>, <span class='ident'>GPUVector</span>, <span class='ident'>Shader</span>, <span class='ident'>ShaderAttribute</span>, <span class='ident'>ShaderUniform</span>};
+<span class='kw'>use</span> <span class='ident'>na</span>::{<span class='ident'>Point3</span>, <span class='ident'>Matrix4</span>};
+<span class='kw'>use</span> <span class='ident'>resource</span>::{<span class='ident'>BufferType</span>, <span class='ident'>AllocationType</span>, <span class='ident'>GPUVec</span>, <span class='ident'>Shader</span>, <span class='ident'>ShaderAttribute</span>, <span class='ident'>ShaderUniform</span>};
 <span class='kw'>use</span> <span class='ident'>camera</span>::<span class='ident'>Camera</span>;
 
 <span class='attribute'>#[<span class='ident'>path</span> <span class='op'>=</span> <span class='string'>&quot;error.rs&quot;</span>]</span>
@@ -152,10 +153,10 @@
 <span class='doccomment'>/// Structure which manages the display of short-living points.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>PointRenderer</span> {
     <span class='ident'>shader</span>:     <span class='ident'>Shader</span>,
-    <span class='ident'>pos</span>:        <span class='ident'>ShaderAttribute</span><span class='op'>&lt;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
-    <span class='ident'>color</span>:      <span class='ident'>ShaderAttribute</span><span class='op'>&lt;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
-    <span class='ident'>view</span>:       <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>Mat4</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
-    <span class='ident'>points</span>:     <span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>
+    <span class='ident'>pos</span>:        <span class='ident'>ShaderAttribute</span><span class='op'>&lt;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
+    <span class='ident'>color</span>:      <span class='ident'>ShaderAttribute</span><span class='op'>&lt;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
+    <span class='ident'>view</span>:       <span class='ident'>ShaderUniform</span><span class='op'>&lt;</span><span class='ident'>Matrix4</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>,
+    <span class='ident'>points</span>:     <span class='ident'>GPUVec</span><span class='op'>&lt;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;&gt;</span>
 }
 
 <span class='kw'>impl</span> <span class='ident'>PointRenderer</span> {
@@ -166,10 +167,10 @@
         <span class='ident'>shader</span>.<span class='ident'>use_program</span>();
 
         <span class='ident'>PointRenderer</span> {
-            <span class='ident'>points</span>:      <span class='ident'>GPUVector</span>::<span class='ident'>new</span>(<span class='ident'>Vec</span>::<span class='ident'>new</span>(), <span class='ident'>BufferType</span>::<span class='ident'>Array</span>, <span class='ident'>AllocationType</span>::<span class='ident'>StreamDraw</span>),
-            <span class='ident'>pos</span>:        <span class='ident'>shader</span>.<span class='ident'>get_attrib</span>::<span class='op'>&lt;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>(<span class='string'>&quot;position&quot;</span>).<span class='ident'>unwrap</span>(),
-            <span class='ident'>color</span>:      <span class='ident'>shader</span>.<span class='ident'>get_attrib</span>::<span class='op'>&lt;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>(<span class='string'>&quot;color&quot;</span>).<span class='ident'>unwrap</span>(),
-            <span class='ident'>view</span>:       <span class='ident'>shader</span>.<span class='ident'>get_uniform</span>::<span class='op'>&lt;</span><span class='ident'>Mat4</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>(<span class='string'>&quot;view&quot;</span>).<span class='ident'>unwrap</span>(),
+            <span class='ident'>points</span>:     <span class='ident'>GPUVec</span>::<span class='ident'>new</span>(<span class='ident'>Vec</span>::<span class='ident'>new</span>(), <span class='ident'>BufferType</span>::<span class='ident'>Array</span>, <span class='ident'>AllocationType</span>::<span class='ident'>StreamDraw</span>),
+            <span class='ident'>pos</span>:        <span class='ident'>shader</span>.<span class='ident'>get_attrib</span>::<span class='op'>&lt;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>(<span class='string'>&quot;position&quot;</span>).<span class='ident'>unwrap</span>(),
+            <span class='ident'>color</span>:      <span class='ident'>shader</span>.<span class='ident'>get_attrib</span>::<span class='op'>&lt;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>(<span class='string'>&quot;color&quot;</span>).<span class='ident'>unwrap</span>(),
+            <span class='ident'>view</span>:       <span class='ident'>shader</span>.<span class='ident'>get_uniform</span>::<span class='op'>&lt;</span><span class='ident'>Matrix4</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>(<span class='string'>&quot;view&quot;</span>).<span class='ident'>unwrap</span>(),
             <span class='ident'>shader</span>:     <span class='ident'>shader</span>
         }
     }
@@ -181,7 +182,7 @@
 
     <span class='doccomment'>/// Adds a line to be drawn during the next frame. Lines are not persistent between frames.</span>
     <span class='doccomment'>/// This method must be called for each line to draw, and at each update loop iteration.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>draw_point</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>pt</span>: <span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span>, <span class='ident'>color</span>: <span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>draw_point</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>pt</span>: <span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span>, <span class='ident'>color</span>: <span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>GLfloat</span><span class='op'>&gt;</span>) {
         <span class='kw'>for</span> <span class='ident'>points</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>points</span>.<span class='ident'>data_mut</span>().<span class='ident'>iter_mut</span>() {
             <span class='ident'>points</span>.<span class='ident'>push</span>(<span class='ident'>pt</span>);
             <span class='ident'>points</span>.<span class='ident'>push</span>(<span class='ident'>color</span>);
@@ -258,6 +259,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -278,7 +281,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -289,11 +292,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

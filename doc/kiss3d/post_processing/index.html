@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,60 +44,50 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>kiss3d</a>::<wbr><a class='mod' href=''>post_processing</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-2496' class='srclink' href='../../src/kiss3d/post_processing/mod.rs.html#1-13' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/post_processing/mod.rs.html#1-13' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Post-processing effects.</p>
 </div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
 <table><tr><td><code>pub use post_processing::post_processing_effect::<a class='trait' href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='mod' href='post_processing_effect/index.html'
-                               title='kiss3d::post_processing::post_processing_effect'>post_processing_effect</a></td>
-                        <td class='docblock short'>
-                             <p>Trait implemented by every post-processing effect.</p>
-
-                        </td>
-                    </tr>
-                </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='post_processing_effect/index.html'
+                                  title='kiss3d::post_processing::post_processing_effect'>post_processing_effect</a></td>
+                           <td class='docblock-short'>
+                                <p>Trait implemented by every post-processing effect.</p>
+                           </td>
+                       </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.Grayscales.html'
-                               title='kiss3d::post_processing::Grayscales'>Grayscales</a></td>
-                        <td class='docblock short'>
-                             <p>Post processing effect which turns everything in gray scales.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.OculusStereo.html'
-                               title='kiss3d::post_processing::OculusStereo'>OculusStereo</a></td>
-                        <td class='docblock short'>
-                             <p>An post-processing effect to support the oculus rift.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.SobelEdgeHighlight.html'
-                               title='kiss3d::post_processing::SobelEdgeHighlight'>SobelEdgeHighlight</a></td>
-                        <td class='docblock short'>
-                             <p>Post processing effect which turns everything in grayscales.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.Waves.html'
-                               title='kiss3d::post_processing::Waves'>Waves</a></td>
-                        <td class='docblock short'>
-                             <p>An useless post-processing effect mainly to test that everything works correctly.</p>
-
-                        </td>
-                    </tr>
-                </table></section>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.Grayscales.html'
+                                  title='kiss3d::post_processing::Grayscales'>Grayscales</a></td>
+                           <td class='docblock-short'>
+                                <p>Post processing effect which turns everything in gray scales.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.OculusStereo.html'
+                                  title='kiss3d::post_processing::OculusStereo'>OculusStereo</a></td>
+                           <td class='docblock-short'>
+                                <p>An post-processing effect to support the oculus rift.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.SobelEdgeHighlight.html'
+                                  title='kiss3d::post_processing::SobelEdgeHighlight'>SobelEdgeHighlight</a></td>
+                           <td class='docblock-short'>
+                                <p>Post processing effect which turns everything in grayscales.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.Waves.html'
+                                  title='kiss3d::post_processing::Waves'>Waves</a></td>
+                           <td class='docblock-short'>
+                                <p>An useless post-processing effect mainly to test that everything works correctly.</p>
+                           </td>
+                       </tr></table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -119,6 +110,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -139,7 +132,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -150,11 +143,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

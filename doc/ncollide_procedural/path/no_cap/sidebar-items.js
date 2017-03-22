@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["NoCap","A cap that renders nothing."]]});

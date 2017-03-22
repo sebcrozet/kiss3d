@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["FirstPersonStereo","First-person camera mode."]]});

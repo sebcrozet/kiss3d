@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["SceneNode","A node of the scene graph."],["SceneNodeData","The datas contained by a `SceneNode`."]]});

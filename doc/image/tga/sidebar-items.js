@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["TGADecoder","The representation of a TGA decoder"]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["clamp","Cut value to be inside given range"]]});

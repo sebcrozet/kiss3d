@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,21 +44,20 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>point_renderer</a>::<wbr><a class='struct' href=''>PointRenderer</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-2214' class='srclink' href='../../src/kiss3d/point_renderer.rs.html#13-19' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct PointRenderer {
-    // some fields omitted
-}</pre><div class='docblock'><p>Structure which manages the display of short-living points.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/point_renderer/struct.PointRenderer.html' title='kiss3d::point_renderer::PointRenderer'>PointRenderer</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/point_renderer/struct.PointRenderer.html' title='kiss3d::point_renderer::PointRenderer'>PointRenderer</a></code></h4>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/point_renderer.rs.html#13-19' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct PointRenderer { /* fields omitted */ }</pre><div class='docblock'><p>Structure which manages the display of short-living points.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../kiss3d/point_renderer/struct.PointRenderer.html' title='kiss3d::point_renderer::PointRenderer'>PointRenderer</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/point_renderer.rs.html#21-73' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/point_renderer/struct.PointRenderer.html' title='kiss3d::point_renderer::PointRenderer'>PointRenderer</a></code></span></h4>
 <div class='docblock'><p>Creates a new points manager.</p>
-</div><h4 id='method.needs_rendering' class='method'><code>fn <a href='#method.needs_rendering' class='fnname'>needs_rendering</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div><h4 id='method.needs_rendering' class='method'><span id='needs_rendering.v' class='invisible'><code>fn <a href='#method.needs_rendering' class='fnname'>needs_rendering</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></span></h4>
 <div class='docblock'><p>Indicates whether some points have to be drawn.</p>
-</div><h4 id='method.draw_point' class='method'><code>fn <a href='#method.draw_point' class='fnname'>draw_point</a>(&amp;mut self, pt: <a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>&gt;, color: <a class='struct' href='../../nalgebra/structs/pnt/struct.Pnt3.html' title='nalgebra::structs::pnt::Pnt3'>Pnt3</a>&lt;<a class='type' href='../../gl/types/type.GLfloat.html' title='gl::types::GLfloat'>GLfloat</a>&gt;)</code></h4>
+</div><h4 id='method.draw_point' class='method'><span id='draw_point.v' class='invisible'><code>fn <a href='#method.draw_point' class='fnname'>draw_point</a>(&amp;mut self, pt: <a class='type' href='http://nalgebra.org/doc/nalgebra/geometry/point_alias/type.Point3.html' title='nalgebra::geometry::point_alias::Point3'>Point3</a>&lt;GLfloat&gt;, color: <a class='type' href='http://nalgebra.org/doc/nalgebra/geometry/point_alias/type.Point3.html' title='nalgebra::geometry::point_alias::Point3'>Point3</a>&lt;GLfloat&gt;)</code></span></h4>
 <div class='docblock'><p>Adds a line to be drawn during the next frame. Lines are not persistent between frames.
 This method must be called for each line to draw, and at each update loop iteration.</p>
-</div><h4 id='method.render' class='method'><code>fn <a href='#method.render' class='fnname'>render</a>(&amp;mut self, pass: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, camera: &amp;mut Camera)</code></h4>
+</div><h4 id='method.render' class='method'><span id='render.v' class='invisible'><code>fn <a href='#method.render' class='fnname'>render</a>(&amp;mut self, pass: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, camera: &amp;mut <a class='trait' href='../../kiss3d/camera/trait.Camera.html' title='kiss3d::camera::Camera'>Camera</a>)</code></span></h4>
 <div class='docblock'><p>Actually draws the points.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -82,6 +82,8 @@ This method must be called for each line to draw, and at each update loop iterat
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -102,7 +104,7 @@ This method must be called for each line to draw, and at each update loop iterat
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -113,11 +115,9 @@ This method must be called for each line to draw, and at each update loop iterat
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

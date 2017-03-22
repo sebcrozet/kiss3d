@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["cross3","A 3d cross product that do not require the `Cross<Self, Self>` trait impl."]]});

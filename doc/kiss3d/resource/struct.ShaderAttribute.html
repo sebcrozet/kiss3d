@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,20 +44,19 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>resource</a>::<wbr><a class='struct' href=''>ShaderAttribute</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-4070' class='srclink' href='../../src/kiss3d/resource/shader.rs.html#107-110' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct ShaderAttribute&lt;T&gt; {
-    // some fields omitted
-}</pre><div class='docblock'><p>Structure encapsulating an attribute.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;T: <a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt; <a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;T&gt;</code></h3><div class='impl-items'><h4 id='method.disable' class='method'><code>fn <a href='#method.disable' class='fnname'>disable</a>(&amp;mut self)</code></h4>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/resource/shader.rs.html#106-109' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct ShaderAttribute&lt;T&gt; { /* fields omitted */ }</pre><div class='docblock'><p>Structure encapsulating an attribute.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;T:&nbsp;<a class='trait' href='../../kiss3d/resource/trait.GLPrimitive.html' title='kiss3d::resource::GLPrimitive'>GLPrimitive</a>&gt; <a class='struct' href='../../kiss3d/resource/struct.ShaderAttribute.html' title='kiss3d::resource::ShaderAttribute'>ShaderAttribute</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/resource/shader.rs.html#111-151' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.disable' class='method'><span id='disable.v' class='invisible'><code>fn <a href='#method.disable' class='fnname'>disable</a>(&amp;mut self)</code></span></h4>
 <div class='docblock'><p>Disable this attribute.</p>
-</div><h4 id='method.enable' class='method'><code>fn <a href='#method.enable' class='fnname'>enable</a>(&amp;mut self)</code></h4>
+</div><h4 id='method.enable' class='method'><span id='enable.v' class='invisible'><code>fn <a href='#method.enable' class='fnname'>enable</a>(&amp;mut self)</code></span></h4>
 <div class='docblock'><p>Enable this attribute.</p>
-</div><h4 id='method.bind' class='method'><code>fn <a href='#method.bind' class='fnname'>bind</a>(&amp;mut self, vector: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;T&gt;)</code></h4>
+</div><h4 id='method.bind' class='method'><span id='bind.v' class='invisible'><code>fn <a href='#method.bind' class='fnname'>bind</a>(&amp;mut self, vector: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.GPUVec.html' title='kiss3d::resource::GPUVec'>GPUVec</a>&lt;T&gt;)</code></span></h4>
 <div class='docblock'><p>Binds this attribute to a gpu vector.</p>
-</div><h4 id='method.bind_sub_buffer' class='method'><code>fn <a href='#method.bind_sub_buffer' class='fnname'>bind_sub_buffer</a>(&amp;mut self, vector: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.GPUVector.html' title='kiss3d::resource::GPUVector'>GPUVector</a>&lt;T&gt;, strides: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, start_index: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>)</code></h4>
+</div><h4 id='method.bind_sub_buffer' class='method'><span id='bind_sub_buffer.v' class='invisible'><code>fn <a href='#method.bind_sub_buffer' class='fnname'>bind_sub_buffer</a>(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vector: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.GPUVec.html' title='kiss3d::resource::GPUVec'>GPUVec</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strides: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; start_index: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>)</code></span></h4>
 <div class='docblock'><p>Binds this attribute to non contiguous parts of a gpu vector.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -81,6 +81,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -101,7 +103,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -112,11 +114,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

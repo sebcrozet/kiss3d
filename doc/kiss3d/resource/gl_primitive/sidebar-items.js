@@ -1,1 +1,0 @@
-initSidebarItems({"trait":[["GLPrimitive","Trait implemented by structures that can be uploaded to a uniform or contained by a gpu array."]]});

@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,25 +44,26 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>resource</a>::<wbr><a class='struct' href=''>FramebufferManager</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-2870' class='srclink' href='../../src/kiss3d/resource/framebuffer_manager.rs.html#69-74' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct FramebufferManager {
-    // some fields omitted
-}</pre><div class='docblock'><p>A framebuffer manager. It is a simple to to switch between an off-screen framebuffer and the
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/resource/framebuffer_manager.rs.html#69-74' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct FramebufferManager { /* fields omitted */ }</pre><div class='docblock'><p>A framebuffer manager. It is a simple to to switch between an off-screen framebuffer and the
 default (window) framebuffer.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/resource/struct.FramebufferManager.html' title='kiss3d::resource::FramebufferManager'>FramebufferManager</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/resource/struct.FramebufferManager.html' title='kiss3d::resource::FramebufferManager'>FramebufferManager</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../kiss3d/resource/struct.FramebufferManager.html' title='kiss3d::resource::FramebufferManager'>FramebufferManager</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/resource/framebuffer_manager.rs.html#76-178' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/resource/struct.FramebufferManager.html' title='kiss3d::resource::FramebufferManager'>FramebufferManager</a></code></span></h4>
 <div class='docblock'><p>Creates a new framebuffer manager.</p>
-</div><h4 id='method.new_render_target' class='method'><code>fn <a href='#method.new_render_target' class='fnname'>new_render_target</a>(width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='../../kiss3d/resource/enum.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a></code></h4>
+</div><h4 id='method.new_render_target' class='method'><span id='new_render_target.v' class='invisible'><code>fn <a href='#method.new_render_target' class='fnname'>new_render_target</a>(width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='../../kiss3d/resource/enum.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a></code></span></h4>
 <div class='docblock'><p>Creates a new render target. A render target is the combination of a color buffer and a
 depth buffer.</p>
-</div><h4 id='method.screen' class='method'><code>fn <a href='#method.screen' class='fnname'>screen</a>() -&gt; <a class='enum' href='../../kiss3d/resource/enum.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a></code></h4>
+</div><h4 id='method.screen' class='method'><span id='screen.v' class='invisible'><code>fn <a href='#method.screen' class='fnname'>screen</a>() -&gt; <a class='enum' href='../../kiss3d/resource/enum.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a></code></span></h4>
 <div class='docblock'><p>Returns the render target associated with the screen.</p>
-</div><h4 id='method.select' class='method'><code>fn <a href='#method.select' class='fnname'>select</a>(&amp;mut self, target: &amp;<a class='enum' href='../../kiss3d/resource/enum.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a>)</code></h4>
+</div><h4 id='method.select' class='method'><span id='select.v' class='invisible'><code>fn <a href='#method.select' class='fnname'>select</a>(&amp;mut self, target: &amp;<a class='enum' href='../../kiss3d/resource/enum.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a>)</code></span></h4>
 <div class='docblock'><p>Selects a specific render target</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/resource/struct.FramebufferManager.html' title='kiss3d::resource::FramebufferManager'>FramebufferManager</a></code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
-</div></section>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/resource/struct.FramebufferManager.html' title='kiss3d::resource::FramebufferManager'>FramebufferManager</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/resource/framebuffer_manager.rs.html#180-185' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.drop' class='method'><span id='drop.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>A method called when the value goes out of scope. <a href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop">Read more</a></p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -84,6 +86,8 @@ depth buffer.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -104,7 +108,7 @@ depth buffer.</p>
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -115,11 +119,9 @@ depth buffer.</p>
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

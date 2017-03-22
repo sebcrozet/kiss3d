@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,17 +44,18 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>builtin</a>::<wbr><a class='struct' href=''>NormalsMaterial</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-2404' class='srclink' href='../../src/kiss3d/builtin/normals_material.rs.html#17-24' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct NormalsMaterial {
-    // some fields omitted
-}</pre><div class='docblock'><p>A material that draws normals of an object.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/builtin/struct.NormalsMaterial.html' title='kiss3d::builtin::NormalsMaterial'>NormalsMaterial</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/builtin/struct.NormalsMaterial.html' title='kiss3d::builtin::NormalsMaterial'>NormalsMaterial</a></code></h4>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/builtin/normals_material.rs.html#16-23' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct NormalsMaterial { /* fields omitted */ }</pre><div class='docblock'><p>A material that draws normals of an object.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../kiss3d/builtin/struct.NormalsMaterial.html' title='kiss3d::builtin::NormalsMaterial'>NormalsMaterial</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/builtin/normals_material.rs.html#25-41' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/builtin/struct.NormalsMaterial.html' title='kiss3d::builtin::NormalsMaterial'>NormalsMaterial</a></code></span></h4>
 <div class='docblock'><p>Creates a new NormalsMaterial.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> for <a class='struct' href='../../kiss3d/builtin/struct.NormalsMaterial.html' title='kiss3d::builtin::NormalsMaterial'>NormalsMaterial</a></code></h3><div class='impl-items'><h4 id='method.render' class='method'><code>fn <a href='../../kiss3d/resource/material/trait.Material.html#method.render' class='fnname'>render</a>(&amp;mut self, pass: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, transform: &amp;<a class='struct' href='../../nalgebra/structs/iso/struct.Iso3.html' title='nalgebra::structs::iso::Iso3'>Iso3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, scale: &amp;<a class='struct' href='../../nalgebra/structs/vec/struct.Vec3.html' title='nalgebra::structs::vec::Vec3'>Vec3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, camera: &amp;mut Camera, _: &amp;<a class='enum' href='../../kiss3d/light/enum.Light.html' title='kiss3d::light::Light'>Light</a>, data: &amp;<a class='struct' href='../../kiss3d/scene/struct.ObjectData.html' title='kiss3d::scene::ObjectData'>ObjectData</a>, mesh: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>)</code></h4>
-</div></section>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='../../kiss3d/resource/material/trait.Material.html' title='kiss3d::resource::material::Material'>Material</a> for <a class='struct' href='../../kiss3d/builtin/struct.NormalsMaterial.html' title='kiss3d::builtin::NormalsMaterial'>NormalsMaterial</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/builtin/normals_material.rs.html#43-99' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.render' class='method'><span id='render.v' class='invisible'><code>fn <a href='../../kiss3d/resource/material/trait.Material.html#tymethod.render' class='fnname'>render</a>(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pass: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; transform: &amp;<a class='type' href='http://nalgebra.org/doc/nalgebra/geometry/isometry_alias/type.Isometry3.html' title='nalgebra::geometry::isometry_alias::Isometry3'>Isometry3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; scale: &amp;<a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Vector3.html' title='nalgebra::core::alias::Vector3'>Vector3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; camera: &amp;mut <a class='trait' href='../../kiss3d/camera/trait.Camera.html' title='kiss3d::camera::Camera'>Camera</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _: &amp;<a class='enum' href='../../kiss3d/light/enum.Light.html' title='kiss3d::light::Light'>Light</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; data: &amp;<a class='struct' href='../../kiss3d/scene/struct.ObjectData.html' title='kiss3d::scene::ObjectData'>ObjectData</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mesh: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.Mesh.html' title='kiss3d::resource::Mesh'>Mesh</a>)</code></span></h4>
+<div class='docblock'><p>Renders an object using this material.</p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -76,6 +78,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -96,7 +100,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -107,11 +111,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

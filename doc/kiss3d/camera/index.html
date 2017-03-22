@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,41 +44,42 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>kiss3d</a>::<wbr><a class='mod' href=''>camera</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-1167' class='srclink' href='../../src/kiss3d/camera/mod.rs.html#1-12' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/camera/mod.rs.html#1-12' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Camera trait with some common implementations.</p>
-</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
-<table><tr><td><code>pub use camera::camera::Camera;</code></td></tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.ArcBall.html'
-                               title='kiss3d::camera::ArcBall'>ArcBall</a></td>
-                        <td class='docblock short'>
-                             <p>Arc-ball camera mode.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.FirstPerson.html'
-                               title='kiss3d::camera::FirstPerson'>FirstPerson</a></td>
-                        <td class='docblock short'>
-                             <p>First-person camera mode.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.FirstPersonStereo.html'
-                               title='kiss3d::camera::FirstPersonStereo'>FirstPersonStereo</a></td>
-                        <td class='docblock short'>
-                             <p>First-person camera mode.</p>
-
-                        </td>
-                    </tr>
-                </table></section>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.ArcBall.html'
+                                  title='kiss3d::camera::ArcBall'>ArcBall</a></td>
+                           <td class='docblock-short'>
+                                <p>Arc-ball camera mode.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.FirstPerson.html'
+                                  title='kiss3d::camera::FirstPerson'>FirstPerson</a></td>
+                           <td class='docblock-short'>
+                                <p>First-person camera mode.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.FirstPersonStereo.html'
+                                  title='kiss3d::camera::FirstPersonStereo'>FirstPersonStereo</a></td>
+                           <td class='docblock-short'>
+                                <p>First-person camera mode.</p>
+                           </td>
+                       </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.Camera.html'
+                                  title='kiss3d::camera::Camera'>Camera</a></td>
+                           <td class='docblock-short'>
+                                <p>Trait every camera must implement.</p>
+                           </td>
+                       </tr></table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -100,6 +102,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -120,7 +124,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -131,11 +135,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

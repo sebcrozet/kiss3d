@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,25 +44,32 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>window</a>::<wbr><a class='struct' href=''>Event</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-397' class='srclink' href='../../src/kiss3d/window/event.rs.html#7-15' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/window/event.rs.html#7-15' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Event&lt;'a&gt; {
     pub timestamp: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>,
-    pub value: <a class='enum' href='../../glfw/enum.WindowEvent.html' title='glfw::WindowEvent'>WindowEvent</a>,
+    pub value: WindowEvent,
     pub inhibited: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
     // some fields omitted
 }</pre><div class='docblock'><p>An event.</p>
-</div><h2 class='fields'>Fields</h2>
-<table><tr class='stab '>
-                                  <td id='structfield.timestamp'><code>timestamp</code></td><td><div class='docblock'><p>The event timestamp.</p>
-</div></td></tr><tr class='stab '>
-                                  <td id='structfield.value'><code>value</code></td><td><div class='docblock'><p>The exact glfw event value. This can be modified to fool the other event handlers.</p>
-</div></td></tr><tr class='stab '>
-                                  <td id='structfield.inhibited'><code>inhibited</code></td><td><div class='docblock'><p>Set this to <code>true</code> to prevent the window or the camera from handling the event.</p>
-</div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/window/struct.Event.html' title='kiss3d::window::Event'>Event</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
-</div></section>
+</div><h2 class='fields'>Fields</h2><span id='structfield.timestamp' class='structfield'>
+                           <span id='timestamp.v' class='invisible'>
+                           <code>timestamp: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a></code>
+                           </span></span><span class='stab '></span><div class='docblock'><p>The event timestamp.</p>
+</div><span id='structfield.value' class='structfield'>
+                           <span id='value.v' class='invisible'>
+                           <code>value: WindowEvent</code>
+                           </span></span><span class='stab '></span><div class='docblock'><p>The exact glfw event value. This can be modified to fool the other event handlers.</p>
+</div><span id='structfield.inhibited' class='structfield'>
+                           <span id='inhibited.v' class='invisible'>
+                           <code>inhibited: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code>
+                           </span></span><span class='stab '></span><div class='docblock'><p>Set this to <code>true</code> to prevent the window or the camera from handling the event.</p>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../kiss3d/window/struct.Event.html' title='kiss3d::window::Event'>Event</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/window/event.rs.html#17-24' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.drop' class='method'><span id='drop.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>A method called when the value goes out of scope. <a href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop">Read more</a></p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -84,6 +92,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -104,7 +114,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -115,11 +125,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

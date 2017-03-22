@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -149,6 +150,7 @@
 <span id="106">106</span>
 <span id="107">107</span>
 <span id="108">108</span>
+<span id="109">109</span>
 </pre><pre class='rust '>
 <span class='doccomment'>/*!
 # Kiss3d
@@ -185,7 +187,7 @@ As an example, having a red, rotating cube with the light attached to the camera
 extern crate kiss3d;
 extern crate nalgebra as na;
 
-use na::Vec3;
+use na::{Vector3, UnitQuaternion};
 use kiss3d::window::Window;
 use kiss3d::light::Light;
 
@@ -197,8 +199,10 @@ fn main() {
 
     window.set_light(Light::StickToCamera);
 
+    let rot = UnitQuaternion::from_axis_angle(&amp;Vector3::y_axis(), 0.014);
+
     while window.render() {
-        c.prepend_to_local_rotation(&amp;Vec3::new(0.0f32, 0.014, 0.0));
+        c.prepend_to_local_rotation(&amp;rot);
     }
 }
 ```
@@ -211,14 +215,14 @@ Some controls are handled by default by the engine (they can be overridden by th
 * `enter`: look at the origin (0.0, 0.0, 0.0).
 
 ## Compilation
-You will need the last nightly build of the [rust compiler](http://www.rust-lang.org)
+You will need the last stable build of the [rust compiler](http://www.rust-lang.org)
 and the official package manager: [cargo](https://github.com/rust-lang/cargo).
 
 Simply add the following to your `Cargo.toml` file:
 
 ```text
-[dependencies.kiss3d]
-git = &quot;https://github.com/sebcrozet/kiss3d&quot;
+[dependencies]
+kiss3d = &quot;0.8&quot;
 ```
 
 ## Contributions
@@ -237,9 +241,8 @@ I’d love to see people improving this library for their own needs. However, ke
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>doc</span>(<span class='ident'>html_root_url</span> <span class='op'>=</span> <span class='string'>&quot;http://kiss3d.org/doc&quot;</span>)]</span>
 
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>libc</span>;
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>time</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>gl</span>;
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>num</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>num_traits</span> <span class='kw'>as</span> <span class='ident'>num</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>nalgebra</span> <span class='kw'>as</span> <span class='ident'>na</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>ncollide_procedural</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>image</span>;
@@ -282,6 +285,8 @@ I’d love to see people improving this library for their own needs. However, ke
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -302,7 +307,7 @@ I’d love to see people improving this library for their own needs. However, ke
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -313,11 +318,9 @@ I’d love to see people improving this library for their own needs. However, ke
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

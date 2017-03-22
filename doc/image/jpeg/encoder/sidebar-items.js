@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["JPEGEncoder","The representation of a JPEG encoder"]]});

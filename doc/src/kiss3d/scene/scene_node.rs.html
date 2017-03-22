@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -1085,13 +1086,26 @@
 <span id="1042">1042</span>
 <span id="1043">1043</span>
 <span id="1044">1044</span>
+<span id="1045">1045</span>
+<span id="1046">1046</span>
+<span id="1047">1047</span>
+<span id="1048">1048</span>
+<span id="1049">1049</span>
+<span id="1050">1050</span>
+<span id="1051">1051</span>
+<span id="1052">1052</span>
+<span id="1053">1053</span>
+<span id="1054">1054</span>
+<span id="1055">1055</span>
+<span id="1056">1056</span>
+<span id="1057">1057</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Rc</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cell</span>::{<span class='ident'>Ref</span>, <span class='ident'>RefMut</span>, <span class='ident'>RefCell</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::{<span class='ident'>Path</span>, <span class='ident'>PathBuf</span>};
 <span class='kw'>use</span> <span class='ident'>na</span>;
-<span class='kw'>use</span> <span class='ident'>na</span>::{<span class='ident'>Iso3</span>, <span class='ident'>Pnt2</span>, <span class='ident'>Vec3</span>, <span class='ident'>Pnt3</span>, <span class='ident'>Transformation</span>, <span class='ident'>Rotation</span>, <span class='ident'>Translation</span>, <span class='ident'>RotationWithTranslation</span>};
+<span class='kw'>use</span> <span class='ident'>na</span>::{<span class='ident'>Isometry3</span>, <span class='ident'>Translation3</span>, <span class='ident'>UnitQuaternion</span>, <span class='ident'>Point2</span>, <span class='ident'>Vector3</span>, <span class='ident'>Point3</span>};
 <span class='kw'>use</span> <span class='ident'>resource</span>::{<span class='ident'>Mesh</span>, <span class='ident'>MeshManager</span>, <span class='ident'>Texture</span>, <span class='ident'>TextureManager</span>, <span class='ident'>Material</span>, <span class='ident'>MaterialManager</span>};
 <span class='kw'>use</span> <span class='ident'>ncollide_procedural</span>::<span class='ident'>TriMesh3</span>;
 <span class='kw'>use</span> <span class='ident'>ncollide_procedural</span> <span class='kw'>as</span> <span class='ident'>procedural</span>;
@@ -1103,10 +1117,10 @@
 <span class='comment'>// will not be needed any more.</span>
 <span class='doccomment'>/// The datas contained by a `SceneNode`.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>SceneNodeData</span> {
-    <span class='ident'>local_scale</span>:     <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
-    <span class='ident'>local_transform</span>: <span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
-    <span class='ident'>world_scale</span>:     <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
-    <span class='ident'>world_transform</span>: <span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+    <span class='ident'>local_scale</span>:     <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+    <span class='ident'>local_transform</span>: <span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+    <span class='ident'>world_scale</span>:     <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+    <span class='ident'>world_transform</span>: <span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
     <span class='ident'>visible</span>:         <span class='ident'>bool</span>,
     <span class='ident'>up_to_date</span>:      <span class='ident'>bool</span>,
     <span class='ident'>children</span>:        <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>SceneNode</span><span class='op'>&gt;</span>,
@@ -1173,20 +1187,20 @@
     <span class='doccomment'>/// Render the scene graph rooted by this node.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>render</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>pass</span>: <span class='ident'>usize</span>, <span class='ident'>camera</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Camera</span>, <span class='ident'>light</span>: <span class='kw-2'>&amp;</span><span class='ident'>Light</span>) {
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>visible</span> {
-            <span class='self'>self</span>.<span class='ident'>do_render</span>(<span class='kw-2'>&amp;</span><span class='ident'>na</span>::<span class='ident'>one</span>(), <span class='kw-2'>&amp;</span><span class='ident'>na</span>::<span class='ident'>one</span>(), <span class='ident'>pass</span>, <span class='ident'>camera</span>, <span class='ident'>light</span>)
+            <span class='self'>self</span>.<span class='ident'>do_render</span>(<span class='kw-2'>&amp;</span><span class='ident'>na</span>::<span class='ident'>one</span>(), <span class='kw-2'>&amp;</span><span class='ident'>Vector3</span>::<span class='ident'>from_element</span>(<span class='number'>1.0</span>), <span class='ident'>pass</span>, <span class='ident'>camera</span>, <span class='ident'>light</span>)
         }
     }
 
     <span class='kw'>fn</span> <span class='ident'>do_render</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>,
-                 <span class='ident'>transform</span>:    <span class='kw-2'>&amp;</span><span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
-                 <span class='ident'>scale</span>:        <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+                 <span class='ident'>transform</span>:    <span class='kw-2'>&amp;</span><span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+                 <span class='ident'>scale</span>:        <span class='kw-2'>&amp;</span><span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
                  <span class='ident'>pass</span>:         <span class='ident'>usize</span>,
                  <span class='ident'>camera</span>:       <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Camera</span>,
                  <span class='ident'>light</span>:        <span class='kw-2'>&amp;</span><span class='ident'>Light</span>) {
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>up_to_date</span> {
-            <span class='self'>self</span>.<span class='ident'>up_to_date</span>      <span class='op'>=</span> <span class='boolval'>true</span>;
+            <span class='self'>self</span>.<span class='ident'>up_to_date</span>      <span class='op'>=</span> <span class='bool-val'>true</span>;
             <span class='self'>self</span>.<span class='ident'>world_transform</span> <span class='op'>=</span> <span class='op'>*</span><span class='ident'>transform</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>local_transform</span>;
-            <span class='self'>self</span>.<span class='ident'>world_scale</span>     <span class='op'>=</span> <span class='op'>*</span><span class='ident'>scale</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>local_scale</span>;
+            <span class='self'>self</span>.<span class='ident'>world_scale</span>     <span class='op'>=</span> <span class='ident'>scale</span>.<span class='ident'>component_mul</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>local_scale</span>);
         }
 
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>object</span> {
@@ -1204,13 +1218,13 @@
 
     <span class='doccomment'>/// A reference to the object possibly contained by this node.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>object</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Object</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>object</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>Object</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>object</span>.<span class='ident'>as_ref</span>()
     }
 
     <span class='doccomment'>/// A mutable reference to the object possibly contained by this node.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>object_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Object</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>object_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Object</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>object</span>.<span class='ident'>as_mut</span>()
     }
 
@@ -1219,7 +1233,7 @@
     <span class='doccomment'>/// # Failure</span>
     <span class='doccomment'>/// Fails of this node does not contains an object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_object</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Object</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_object</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Object</span> {
         <span class='self'>self</span>.<span class='ident'>object</span>().<span class='ident'>expect</span>(<span class='string'>&quot;This scene node does not contain an Object.&quot;</span>)
     }
 
@@ -1228,7 +1242,7 @@
     <span class='doccomment'>/// # Failure</span>
     <span class='doccomment'>/// Fails of this node does not contains an object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_object_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Object</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_object_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Object</span> {
         <span class='self'>self</span>.<span class='ident'>object_mut</span>().<span class='ident'>expect</span>(<span class='string'>&quot;This scene node does not contain an Object.&quot;</span>)
     }
 
@@ -1290,7 +1304,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_vertices</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_vertices</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>)<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>apply_to_objects_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>|</span><span class='ident'>o</span><span class='op'>|</span> <span class='ident'>o</span>.<span class='ident'>modify_vertices</span>(<span class='ident'>f</span>))
     }
 
@@ -1298,7 +1312,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_vertices</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_vertices</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>])<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>apply_to_objects</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>|</span><span class='ident'>o</span><span class='op'>|</span> <span class='ident'>o</span>.<span class='ident'>read_vertices</span>(<span class='ident'>f</span>))
     }
 
@@ -1313,7 +1327,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_normals</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_normals</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>)<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>apply_to_objects_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>|</span><span class='ident'>o</span><span class='op'>|</span> <span class='ident'>o</span>.<span class='ident'>modify_normals</span>(<span class='ident'>f</span>))
     }
 
@@ -1321,7 +1335,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_normals</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_normals</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>])<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>apply_to_objects</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>|</span><span class='ident'>o</span><span class='op'>|</span> <span class='ident'>o</span>.<span class='ident'>read_normals</span>(<span class='ident'>f</span>))
     }
 
@@ -1329,7 +1343,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_faces</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_faces</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;&gt;</span>)<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>apply_to_objects_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>|</span><span class='ident'>o</span><span class='op'>|</span> <span class='ident'>o</span>.<span class='ident'>modify_faces</span>(<span class='ident'>f</span>))
     }
 
@@ -1337,7 +1351,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_faces</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_faces</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;</span>])<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>apply_to_objects</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>|</span><span class='ident'>o</span><span class='op'>|</span> <span class='ident'>o</span>.<span class='ident'>read_faces</span>(<span class='ident'>f</span>))
     }
 
@@ -1346,7 +1360,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_uvs</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Pnt2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_uvs</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Point2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>)<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>apply_to_objects_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>|</span><span class='ident'>o</span><span class='op'>|</span> <span class='ident'>o</span>.<span class='ident'>modify_uvs</span>(<span class='ident'>f</span>))
     }
 
@@ -1354,8 +1368,22 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_uvs</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Pnt2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_uvs</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Point2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>])<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>apply_to_objects</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>|</span><span class='ident'>o</span><span class='op'>|</span> <span class='ident'>o</span>.<span class='ident'>read_uvs</span>(<span class='ident'>f</span>))
+    }
+
+    <span class='doccomment'>/// Get the visibility status of node.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_visible</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>visible</span>
+    }
+
+    <span class='doccomment'>/// Sets the visibility of this node.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The node and its children are not rendered if it is not visible.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_visible</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>visible</span>: <span class='ident'>bool</span>) {
+        <span class='self'>self</span>.<span class='ident'>visible</span> <span class='op'>=</span> <span class='ident'>visible</span>;
     }
 
     <span class='doccomment'>/// Sets the color of the objects contained by this node and its children.</span>
@@ -1397,7 +1425,7 @@
 
     <span class='doccomment'>/// Applies a closure to each object contained by this node and its children.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>apply_to_objects_mut</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Object</span>) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>apply_to_objects_mut</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Object</span>)<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>object</span> {
             <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>o</span>) <span class='op'>=&gt;</span> <span class='ident'>f</span>(<span class='ident'>o</span>),
             <span class='prelude-val'>None</span>            <span class='op'>=&gt;</span> { }
@@ -1410,7 +1438,7 @@
 
     <span class='doccomment'>/// Applies a closure to each object contained by this node and its children.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>apply_to_objects</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='ident'>Object</span>) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>apply_to_objects</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='ident'>Object</span>)<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>object</span> {
             <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>o</span>) <span class='op'>=&gt;</span> <span class='ident'>f</span>(<span class='ident'>o</span>),
             <span class='prelude-val'>None</span>        <span class='op'>=&gt;</span> { }
@@ -1427,43 +1455,34 @@
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_local_scale</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>sx</span>: <span class='ident'>f32</span>, <span class='ident'>sy</span>: <span class='ident'>f32</span>, <span class='ident'>sz</span>: <span class='ident'>f32</span>) {
         <span class='self'>self</span>.<span class='ident'>invalidate</span>();
-        <span class='self'>self</span>.<span class='ident'>local_scale</span> <span class='op'>=</span> <span class='ident'>Vec3</span>::<span class='ident'>new</span>(<span class='ident'>sx</span>, <span class='ident'>sy</span>, <span class='ident'>sz</span>)
+        <span class='self'>self</span>.<span class='ident'>local_scale</span> <span class='op'>=</span> <span class='ident'>Vector3</span>::<span class='ident'>new</span>(<span class='ident'>sx</span>, <span class='ident'>sy</span>, <span class='ident'>sz</span>)
     }
 
     <span class='doccomment'>/// Returns the scaling factors of the object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>local_scale</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>local_scale</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>local_scale</span>
-    }
-
-    <span class='doccomment'>/// Move and orient the object such that it is placed at the point `eye` and have its `x` axis</span>
-    <span class='doccomment'>/// oriented toward `at`.</span>
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>look_at</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>eye</span>: <span class='kw-2'>&amp;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>at</span>: <span class='kw-2'>&amp;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>up</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
-        <span class='self'>self</span>.<span class='ident'>invalidate</span>();
-        <span class='comment'>// FIXME: multiply by the parent&#39;s world transform?</span>
-        <span class='self'>self</span>.<span class='ident'>local_transform</span> <span class='op'>=</span> <span class='ident'>Iso3</span>::<span class='ident'>look_at</span>(<span class='ident'>eye</span>, <span class='ident'>at</span>, <span class='ident'>up</span>)
     }
 
     <span class='doccomment'>/// Move and orient the object such that it is placed at the point `eye` and have its `z` axis</span>
     <span class='doccomment'>/// oriented toward `at`.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>look_at_z</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>eye</span>: <span class='kw-2'>&amp;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>at</span>: <span class='kw-2'>&amp;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>up</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>reorient</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>eye</span>: <span class='kw-2'>&amp;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>at</span>: <span class='kw-2'>&amp;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>up</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>invalidate</span>();
         <span class='comment'>// FIXME: multiply by the parent&#39;s world transform?</span>
-        <span class='self'>self</span>.<span class='ident'>local_transform</span> <span class='op'>=</span> <span class='ident'>Iso3</span>::<span class='ident'>look_at_z</span>(<span class='ident'>eye</span>, <span class='ident'>at</span>, <span class='ident'>up</span>)
+        <span class='self'>self</span>.<span class='ident'>local_transform</span> <span class='op'>=</span> <span class='ident'>Isometry3</span>::<span class='ident'>new_observer_frame</span>(<span class='ident'>eye</span>, <span class='ident'>at</span>, <span class='ident'>up</span>)
     }
 
     <span class='doccomment'>/// This node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>local_transformation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>local_transformation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>clone</span>()
     }
 
     <span class='doccomment'>/// Inverse of this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>inv_local_transformation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>inv_transformation</span>()
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>inverse_local_transformation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>inverse</span>()
     }
 
     <span class='doccomment'>/// This node world transformation.</span>
@@ -1472,7 +1491,7 @@
     <span class='doccomment'>/// invalidated.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>mutable_transmutes</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>world_transformation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>world_transformation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
         <span class='comment'>// NOTE: this is to have some kind of laziness without a `&amp;mut self`.</span>
         <span class='kw'>unsafe</span> {
             <span class='kw'>let</span> <span class='ident'>mself</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>SceneNodeData</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>);
@@ -1487,111 +1506,111 @@
     <span class='doccomment'>/// invalidated.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>mutable_transmutes</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>inv_world_transformation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>inverse_world_transformation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
         <span class='comment'>// NOTE: this is to have some kind of laziness without a `&amp;mut self`.</span>
         <span class='kw'>unsafe</span> {
             <span class='kw'>let</span> <span class='ident'>mself</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>SceneNodeData</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>);
             <span class='ident'>mself</span>.<span class='ident'>update</span>();
         }
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>inv_transformation</span>()
+        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>inverse</span>()
     }
 
     <span class='doccomment'>/// Appends a transformation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_transformation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_transformation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>invalidate</span>();
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>append_transformation_mut</span>(<span class='ident'>t</span>)
+        <span class='self'>self</span>.<span class='ident'>local_transform</span> <span class='op'>=</span> <span class='ident'>t</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>local_transform</span>
     }
 
     <span class='doccomment'>/// Prepends a transformation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>prepend_to_local_transformation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>prepend_to_local_transformation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>invalidate</span>();
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>prepend_transformation_mut</span>(<span class='ident'>t</span>)
+        <span class='self'>self</span>.<span class='ident'>local_transform</span> <span class='op'>*=</span> <span class='ident'>t</span>;
     }
 
     <span class='doccomment'>/// Set this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_local_transformation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_local_transformation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>invalidate</span>();
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>set_transformation</span>(<span class='ident'>t</span>)
+        <span class='self'>self</span>.<span class='ident'>local_transform</span> <span class='op'>=</span> <span class='ident'>t</span>
     }
 
     <span class='doccomment'>/// This node local translation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>local_translation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>translation</span>()
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>local_translation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Translation3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>translation</span>
     }
 
     <span class='doccomment'>/// The inverse of this node local translation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>inv_local_translation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>inv_translation</span>()
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>inverse_local_translation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Translation3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>translation</span>.<span class='ident'>inverse</span>()
     }
 
     <span class='doccomment'>/// Appends a translation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_translation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_translation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Translation3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>invalidate</span>();
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>append_translation_mut</span>(<span class='ident'>t</span>)
+        <span class='self'>self</span>.<span class='ident'>local_transform</span> <span class='op'>=</span> <span class='ident'>t</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>local_transform</span>
     }
 
     <span class='doccomment'>/// Prepends a translation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>prepend_to_local_translation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>prepend_to_local_translation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Translation3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>invalidate</span>();
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>prepend_translation_mut</span>(<span class='ident'>t</span>)
+        <span class='self'>self</span>.<span class='ident'>local_transform</span> <span class='op'>*=</span> <span class='ident'>t</span>
     }
 
     <span class='doccomment'>/// Sets the local translation of this node.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_local_translation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_local_translation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='ident'>Translation3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>invalidate</span>();
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>set_translation</span>(<span class='ident'>t</span>)
+        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>translation</span> <span class='op'>=</span> <span class='ident'>t</span>
     }
 
     <span class='doccomment'>/// This node local rotation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>local_rotation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>rotation</span>()
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>local_rotation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>UnitQuaternion</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>rotation</span>
     }
 
     <span class='doccomment'>/// The inverse of this node local rotation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>inv_local_rotation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>inv_rotation</span>()
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>inverse_local_rotation</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>UnitQuaternion</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>rotation</span>.<span class='ident'>inverse</span>()
     }
 
     <span class='doccomment'>/// Appends a rotation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_rotation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_rotation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='ident'>UnitQuaternion</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>invalidate</span>();
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>append_rotation_mut</span>(<span class='ident'>r</span>)
+        <span class='self'>self</span>.<span class='ident'>local_transform</span> <span class='op'>=</span> <span class='ident'>r</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>local_transform</span>
     }
 
     <span class='doccomment'>/// Appends a rotation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_rotation_wrt_center</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_rotation_wrt_center</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='ident'>UnitQuaternion</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>invalidate</span>();
         <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>append_rotation_wrt_center_mut</span>(<span class='ident'>r</span>)
     }
 
     <span class='doccomment'>/// Prepends a rotation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>prepend_to_local_rotation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>prepend_to_local_rotation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='ident'>UnitQuaternion</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>invalidate</span>();
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>prepend_rotation_mut</span>(<span class='ident'>r</span>)
+        <span class='self'>self</span>.<span class='ident'>local_transform</span> <span class='op'>*=</span> <span class='ident'>r</span>
     }
 
     <span class='doccomment'>/// Sets the local rotation of this node.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_local_rotation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_local_rotation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>UnitQuaternion</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>invalidate</span>();
-        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>set_rotation</span>(<span class='ident'>r</span>)
+        <span class='self'>self</span>.<span class='ident'>local_transform</span>.<span class='ident'>rotation</span> <span class='op'>=</span> <span class='ident'>r</span>
     }
 
     <span class='kw'>fn</span> <span class='ident'>invalidate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='self'>self</span>.<span class='ident'>up_to_date</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+        <span class='self'>self</span>.<span class='ident'>up_to_date</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
 
         <span class='kw'>for</span> <span class='ident'>c</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>children</span>.<span class='ident'>iter_mut</span>() {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dm</span> <span class='op'>=</span> <span class='ident'>c</span>.<span class='ident'>data_mut</span>();
@@ -1613,8 +1632,8 @@
 
                         <span class='ident'>dp</span>.<span class='ident'>update</span>();
                         <span class='self'>self</span>.<span class='ident'>world_transform</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>local_transform</span> <span class='op'>*</span> <span class='ident'>dp</span>.<span class='ident'>world_transform</span>;
-                        <span class='self'>self</span>.<span class='ident'>world_scale</span>     <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>local_scale</span>     <span class='op'>*</span> <span class='ident'>dp</span>.<span class='ident'>local_scale</span>;
-                        <span class='self'>self</span>.<span class='ident'>up_to_date</span>      <span class='op'>=</span> <span class='boolval'>true</span>;
+                        <span class='self'>self</span>.<span class='ident'>world_scale</span>     <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>local_scale</span>.<span class='ident'>component_mul</span>(<span class='kw-2'>&amp;</span><span class='ident'>dp</span>.<span class='ident'>local_scale</span>);
+                        <span class='self'>self</span>.<span class='ident'>up_to_date</span>      <span class='op'>=</span> <span class='bool-val'>true</span>;
                         <span class='kw'>return</span>;
                     }
                 },
@@ -1624,7 +1643,7 @@
             <span class='comment'>// no parent</span>
             <span class='self'>self</span>.<span class='ident'>world_transform</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>local_transform</span>;
             <span class='self'>self</span>.<span class='ident'>world_scale</span>     <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>local_scale</span>;
-            <span class='self'>self</span>.<span class='ident'>up_to_date</span>      <span class='op'>=</span> <span class='boolval'>true</span>;
+            <span class='self'>self</span>.<span class='ident'>up_to_date</span>      <span class='op'>=</span> <span class='bool-val'>true</span>;
         }
     }
 
@@ -1632,8 +1651,8 @@
 
 <span class='kw'>impl</span> <span class='ident'>SceneNode</span> {
     <span class='doccomment'>/// Creates a new scene node that is not rooted.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>local_scale</span>:     <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
-               <span class='ident'>local_transform</span>: <span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>local_scale</span>:     <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+               <span class='ident'>local_transform</span>: <span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
                <span class='ident'>object</span>:          <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Object</span><span class='op'>&gt;</span>)
                <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>SceneNodeData</span> {
@@ -1641,8 +1660,8 @@
             <span class='ident'>local_transform</span>: <span class='ident'>local_transform</span>,
             <span class='ident'>world_transform</span>: <span class='ident'>local_transform</span>,
             <span class='ident'>world_scale</span>:     <span class='ident'>local_scale</span>,
-            <span class='ident'>visible</span>:         <span class='boolval'>true</span>,
-            <span class='ident'>up_to_date</span>:      <span class='boolval'>false</span>,
+            <span class='ident'>visible</span>:         <span class='bool-val'>true</span>,
+            <span class='ident'>up_to_date</span>:      <span class='bool-val'>false</span>,
             <span class='ident'>children</span>:        <span class='ident'>Vec</span>::<span class='ident'>new</span>(),
             <span class='ident'>object</span>:          <span class='ident'>object</span>,
             <span class='ident'>parent</span>:          <span class='prelude-val'>None</span>
@@ -1655,22 +1674,23 @@
 
     <span class='doccomment'>/// Creates a new empty, not rooted, node with identity transformations.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_empty</span>() <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
-        <span class='ident'>SceneNode</span>::<span class='ident'>new</span>(<span class='ident'>na</span>::<span class='ident'>one</span>(), <span class='ident'>na</span>::<span class='ident'>one</span>(), <span class='prelude-val'>None</span>)
+        <span class='ident'>SceneNode</span>::<span class='ident'>new</span>(<span class='ident'>Vector3</span>::<span class='ident'>from_element</span>(<span class='number'>1.0</span>), <span class='ident'>na</span>::<span class='ident'>one</span>(), <span class='prelude-val'>None</span>)
     }
 
     <span class='doccomment'>/// Removes this node from its parent.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unlink</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='kw'>let</span> <span class='ident'>self_self</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>clone</span>();
-        <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>remove_from_parent</span>(<span class='kw-2'>&amp;</span><span class='ident'>self_self</span>)
+        <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>remove_from_parent</span>(<span class='kw-2'>&amp;</span><span class='ident'>self_self</span>);
+        <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>parent</span> <span class='op'>=</span> <span class='prelude-val'>None</span>
     }
 
     <span class='doccomment'>/// The data of this scene node.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Ref</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>SceneNodeData</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Ref</span><span class='op'>&lt;</span><span class='ident'>SceneNodeData</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>borrow</span>()
     }
 
     <span class='doccomment'>/// The data of this scene node.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>RefMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>SceneNodeData</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>RefMut</span><span class='op'>&lt;</span><span class='ident'>SceneNodeData</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>borrow_mut</span>()
     }
 
@@ -1701,7 +1721,7 @@
     }
 
     <span class='doccomment'>/// Adds a node containing an object to this node children.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_object</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>local_scale</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>local_transform</span>: <span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>object</span>: <span class='ident'>Object</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_object</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>local_scale</span>: <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>local_transform</span>: <span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>object</span>: <span class='ident'>Object</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='kw'>let</span> <span class='ident'>node</span> <span class='op'>=</span> <span class='ident'>SceneNode</span>::<span class='ident'>new</span>(<span class='ident'>local_scale</span>, <span class='ident'>local_transform</span>, <span class='prelude-val'>Some</span>(<span class='ident'>object</span>));
 
         <span class='self'>self</span>.<span class='ident'>add_child</span>(<span class='ident'>node</span>.<span class='ident'>clone</span>());
@@ -1717,7 +1737,7 @@
     <span class='doccomment'>/// * `wy` - the cube extent along the y axis</span>
     <span class='doccomment'>/// * `wz` - the cube extent along the z axis</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_cube</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>wx</span>: <span class='ident'>f32</span>, <span class='ident'>wy</span>: <span class='ident'>f32</span>, <span class='ident'>wz</span>: <span class='ident'>f32</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
-        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>add_geom_with_name</span>(<span class='string'>&quot;cube&quot;</span>, <span class='ident'>Vec3</span>::<span class='ident'>new</span>(<span class='ident'>wx</span>, <span class='ident'>wy</span>, <span class='ident'>wz</span>));
+        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>add_geom_with_name</span>(<span class='string'>&quot;cube&quot;</span>, <span class='ident'>Vector3</span>::<span class='ident'>new</span>(<span class='ident'>wx</span>, <span class='ident'>wy</span>, <span class='ident'>wz</span>));
 
         <span class='ident'>res</span>.<span class='ident'>expect</span>(<span class='string'>&quot;Unable to load the default cube geometry.&quot;</span>)
     }
@@ -1727,7 +1747,7 @@
     <span class='doccomment'>/// # Arguments</span>
     <span class='doccomment'>/// * `r` - the sphere radius</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_sphere</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>f32</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
-        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>add_geom_with_name</span>(<span class='string'>&quot;sphere&quot;</span>, <span class='ident'>Vec3</span>::<span class='ident'>new</span>(<span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>, <span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>, <span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>));
+        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>add_geom_with_name</span>(<span class='string'>&quot;sphere&quot;</span>, <span class='ident'>Vector3</span>::<span class='ident'>new</span>(<span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>, <span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>, <span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>));
 
         <span class='ident'>res</span>.<span class='ident'>expect</span>(<span class='string'>&quot;Unable to load the default sphere geometry.&quot;</span>)
     }
@@ -1739,7 +1759,7 @@
     <span class='doccomment'>/// * `h` - the cone height</span>
     <span class='doccomment'>/// * `r` - the cone base radius</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_cone</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>f32</span>, <span class='ident'>h</span>: <span class='ident'>f32</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
-        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>add_geom_with_name</span>(<span class='string'>&quot;cone&quot;</span>, <span class='ident'>Vec3</span>::<span class='ident'>new</span>(<span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>, <span class='ident'>h</span>, <span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>));
+        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>add_geom_with_name</span>(<span class='string'>&quot;cone&quot;</span>, <span class='ident'>Vector3</span>::<span class='ident'>new</span>(<span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>, <span class='ident'>h</span>, <span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>));
 
         <span class='ident'>res</span>.<span class='ident'>expect</span>(<span class='string'>&quot;Unable to load the default cone geometry.&quot;</span>)
     }
@@ -1751,7 +1771,7 @@
     <span class='doccomment'>/// * `h` - the cylinder height</span>
     <span class='doccomment'>/// * `r` - the cylinder base radius</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_cylinder</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>f32</span>, <span class='ident'>h</span>: <span class='ident'>f32</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
-        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>add_geom_with_name</span>(<span class='string'>&quot;cylinder&quot;</span>, <span class='ident'>Vec3</span>::<span class='ident'>new</span>(<span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>, <span class='ident'>h</span>, <span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>));
+        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>add_geom_with_name</span>(<span class='string'>&quot;cylinder&quot;</span>, <span class='ident'>Vector3</span>::<span class='ident'>new</span>(<span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>, <span class='ident'>h</span>, <span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>));
 
         <span class='ident'>res</span>.<span class='ident'>expect</span>(<span class='string'>&quot;Unable to load the default cylinder geometry.&quot;</span>)
     }
@@ -1763,7 +1783,7 @@
     <span class='doccomment'>/// * `h` - the capsule height</span>
     <span class='doccomment'>/// * `r` - the capsule caps radius</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_capsule</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>f32</span>, <span class='ident'>h</span>: <span class='ident'>f32</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
-        <span class='self'>self</span>.<span class='ident'>add_trimesh</span>(<span class='ident'>procedural</span>::<span class='ident'>capsule</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>), <span class='kw-2'>&amp;</span><span class='ident'>h</span>, <span class='number'>50</span>, <span class='number'>50</span>), <span class='ident'>na</span>::<span class='ident'>one</span>())
+        <span class='self'>self</span>.<span class='ident'>add_trimesh</span>(<span class='ident'>procedural</span>::<span class='ident'>capsule</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>r</span> <span class='op'>*</span> <span class='number'>2.0</span>), <span class='kw-2'>&amp;</span><span class='ident'>h</span>, <span class='number'>50</span>, <span class='number'>50</span>), <span class='ident'>Vector3</span>::<span class='ident'>from_element</span>(<span class='number'>1.0</span>))
     }
 
     <span class='doccomment'>/// Adds a double-sided quad to this node children. The quad is initially centered at (0, 0,</span>
@@ -1779,29 +1799,29 @@
     <span class='doccomment'>/// which will be placed vertically on each line. Must not be `0`.</span>
     <span class='doccomment'>/// update.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_quad</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>w</span>: <span class='ident'>f32</span>, <span class='ident'>h</span>: <span class='ident'>f32</span>, <span class='ident'>usubdivs</span>: <span class='ident'>usize</span>, <span class='ident'>vsubdivs</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>node</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>add_trimesh</span>(<span class='ident'>procedural</span>::<span class='ident'>quad</span>(<span class='ident'>w</span>, <span class='ident'>h</span>, <span class='ident'>usubdivs</span>, <span class='ident'>vsubdivs</span>), <span class='ident'>na</span>::<span class='ident'>one</span>());
-        <span class='ident'>node</span>.<span class='ident'>enable_backface_culling</span>(<span class='boolval'>false</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>node</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>add_trimesh</span>(<span class='ident'>procedural</span>::<span class='ident'>quad</span>(<span class='ident'>w</span>, <span class='ident'>h</span>, <span class='ident'>usubdivs</span>, <span class='ident'>vsubdivs</span>), <span class='ident'>Vector3</span>::<span class='ident'>from_element</span>(<span class='number'>1.0</span>));
+        <span class='ident'>node</span>.<span class='ident'>enable_backface_culling</span>(<span class='bool-val'>false</span>);
 
         <span class='ident'>node</span>
     }
 
     <span class='doccomment'>/// Adds a double-sided quad with the specified vertices.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_quad_with_vertices</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>vertices</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>], <span class='ident'>nhpoints</span>: <span class='ident'>usize</span>, <span class='ident'>nvpoints</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_quad_with_vertices</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>vertices</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>], <span class='ident'>nhpoints</span>: <span class='ident'>usize</span>, <span class='ident'>nvpoints</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='kw'>let</span> <span class='ident'>geom</span> <span class='op'>=</span> <span class='ident'>procedural</span>::<span class='ident'>quad_with_vertices</span>(<span class='ident'>vertices</span>, <span class='ident'>nhpoints</span>, <span class='ident'>nvpoints</span>);
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>node</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>add_trimesh</span>(<span class='ident'>geom</span>, <span class='ident'>na</span>::<span class='ident'>one</span>());
-        <span class='ident'>node</span>.<span class='ident'>enable_backface_culling</span>(<span class='boolval'>false</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>node</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>add_trimesh</span>(<span class='ident'>geom</span>, <span class='ident'>Vector3</span>::<span class='ident'>from_element</span>(<span class='number'>1.0</span>));
+        <span class='ident'>node</span>.<span class='ident'>enable_backface_culling</span>(<span class='bool-val'>false</span>);
 
         <span class='ident'>node</span>
     }
 
     <span class='doccomment'>/// Creates and adds a new object using the geometry registered as `geometry_name`.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_geom_with_name</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>geometry_name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scale</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>SceneNode</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_geom_with_name</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>geometry_name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>scale</span>: <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>SceneNode</span><span class='op'>&gt;</span> {
         <span class='ident'>MeshManager</span>::<span class='ident'>get_global_manager</span>(<span class='op'>|</span><span class='ident'>mm</span><span class='op'>|</span> <span class='ident'>mm</span>.<span class='ident'>get</span>(<span class='ident'>geometry_name</span>)).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>g</span><span class='op'>|</span> <span class='self'>self</span>.<span class='ident'>add_mesh</span>(<span class='ident'>g</span>, <span class='ident'>scale</span>))
     }
 
     <span class='doccomment'>/// Creates and adds a new object to this node children using a mesh.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_mesh</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>mesh</span>: <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>Mesh</span><span class='op'>&gt;&gt;</span>, <span class='ident'>scale</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_mesh</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>mesh</span>: <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>Mesh</span><span class='op'>&gt;&gt;</span>, <span class='ident'>scale</span>: <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='kw'>let</span> <span class='ident'>tex</span>    <span class='op'>=</span> <span class='ident'>TextureManager</span>::<span class='ident'>get_global_manager</span>(<span class='op'>|</span><span class='ident'>tm</span><span class='op'>|</span> <span class='ident'>tm</span>.<span class='ident'>get_default</span>());
         <span class='kw'>let</span> <span class='ident'>mat</span>    <span class='op'>=</span> <span class='ident'>MaterialManager</span>::<span class='ident'>get_global_manager</span>(<span class='op'>|</span><span class='ident'>mm</span><span class='op'>|</span> <span class='ident'>mm</span>.<span class='ident'>get_default</span>());
         <span class='kw'>let</span> <span class='ident'>object</span> <span class='op'>=</span> <span class='ident'>Object</span>::<span class='ident'>new</span>(<span class='ident'>mesh</span>, <span class='number'>1.0</span>, <span class='number'>1.0</span>, <span class='number'>1.0</span>, <span class='ident'>tex</span>, <span class='ident'>mat</span>);
@@ -1810,15 +1830,15 @@
     }
 
     <span class='doccomment'>/// Creates and adds a new object using a mesh descriptor.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_trimesh</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>descr</span>: <span class='ident'>TriMesh3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>scale</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
-        <span class='self'>self</span>.<span class='ident'>add_mesh</span>(<span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='ident'>RefCell</span>::<span class='ident'>new</span>(<span class='ident'>Mesh</span>::<span class='ident'>from_trimesh</span>(<span class='ident'>descr</span>, <span class='boolval'>false</span>))), <span class='ident'>scale</span>)
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_trimesh</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>descr</span>: <span class='ident'>TriMesh3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>scale</span>: <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+        <span class='self'>self</span>.<span class='ident'>add_mesh</span>(<span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='ident'>RefCell</span>::<span class='ident'>new</span>(<span class='ident'>Mesh</span>::<span class='ident'>from_trimesh</span>(<span class='ident'>descr</span>, <span class='bool-val'>false</span>))), <span class='ident'>scale</span>)
     }
 
     <span class='doccomment'>/// Creates and adds multiple nodes created from an obj file.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// This will create a new node serving as a root of the scene described by the obj file. This</span>
     <span class='doccomment'>/// newly created node is added to this node&#39;s children.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_obj</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>, <span class='ident'>mtl_dir</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>, <span class='ident'>scale</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_obj</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>, <span class='ident'>mtl_dir</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>, <span class='ident'>scale</span>: <span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>SceneNode</span> {
         <span class='kw'>let</span> <span class='ident'>tex</span> <span class='op'>=</span> <span class='ident'>TextureManager</span>::<span class='ident'>get_global_manager</span>(<span class='op'>|</span><span class='ident'>tm</span><span class='op'>|</span> <span class='ident'>tm</span>.<span class='ident'>get_default</span>());
         <span class='kw'>let</span> <span class='ident'>mat</span> <span class='op'>=</span> <span class='ident'>MaterialManager</span>::<span class='ident'>get_global_manager</span>(<span class='op'>|</span><span class='ident'>mm</span><span class='op'>|</span> <span class='ident'>mm</span>.<span class='ident'>get_default</span>());
 
@@ -1836,7 +1856,7 @@
             <span class='kw'>else</span> {
                 <span class='ident'>root</span> <span class='op'>=</span> <span class='ident'>SceneNode</span>::<span class='ident'>new</span>(<span class='ident'>scale</span>, <span class='ident'>na</span>::<span class='ident'>one</span>(), <span class='prelude-val'>None</span>);
                 <span class='self'>self</span>.<span class='ident'>add_child</span>(<span class='ident'>root</span>.<span class='ident'>clone</span>());
-                <span class='ident'>child_scale</span> <span class='op'>=</span> <span class='ident'>na</span>::<span class='ident'>one</span>();
+                <span class='ident'>child_scale</span> <span class='op'>=</span> <span class='ident'>Vector3</span>::<span class='ident'>from_element</span>(<span class='number'>1.0</span>);
             }
 
             <span class='kw'>for</span> (_, <span class='ident'>mesh</span>, <span class='ident'>mtl</span>) <span class='kw'>in</span> <span class='ident'>objs</span>.<span class='ident'>into_iter</span>() {
@@ -1879,7 +1899,7 @@
 
     <span class='doccomment'>/// Applies a closure to each object contained by this node and its children.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>apply_to_scene_nodes_mut</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>SceneNode</span>) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>apply_to_scene_nodes_mut</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>SceneNode</span>)<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='ident'>f</span>(<span class='self'>self</span>);
 
         <span class='kw'>for</span> <span class='ident'>c</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>children</span>.<span class='ident'>iter_mut</span>() {
@@ -1889,7 +1909,7 @@
 
     <span class='doccomment'>/// Applies a closure to each object contained by this node and its children.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>apply_to_scene_nodes</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='ident'>SceneNode</span>) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>apply_to_scene_nodes</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='ident'>SceneNode</span>)<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='ident'>f</span>(<span class='self'>self</span>);
 
         <span class='kw'>for</span> <span class='ident'>c</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>data</span>().<span class='ident'>children</span>.<span class='ident'>iter</span>() {
@@ -1950,7 +1970,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_vertices</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_vertices</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>)<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>modify_vertices</span>(<span class='ident'>f</span>)
     }
 
@@ -1958,7 +1978,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_vertices</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_vertices</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>])<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>data</span>().<span class='ident'>read_vertices</span>(<span class='ident'>f</span>)
     }
 
@@ -1973,7 +1993,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_normals</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_normals</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>)<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>modify_normals</span>(<span class='ident'>f</span>)
     }
 
@@ -1981,7 +2001,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_normals</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_normals</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>])<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>data</span>().<span class='ident'>read_normals</span>(<span class='ident'>f</span>)
     }
 
@@ -1989,7 +2009,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_faces</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_faces</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;&gt;</span>)<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>modify_faces</span>(<span class='ident'>f</span>)
     }
 
@@ -1997,7 +2017,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_faces</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_faces</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;</span>])<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>data</span>().<span class='ident'>read_faces</span>(<span class='ident'>f</span>)
     }
 
@@ -2006,7 +2026,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_uvs</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Pnt2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>modify_uvs</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Point2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>)<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>modify_uvs</span>(<span class='ident'>f</span>)
     }
 
@@ -2014,8 +2034,22 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The provided closure is called once per object.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_uvs</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Pnt2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> ()<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_uvs</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>Point2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>])<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>F</span>) {
         <span class='self'>self</span>.<span class='ident'>data</span>().<span class='ident'>read_uvs</span>(<span class='ident'>f</span>)
+    }
+
+    <span class='doccomment'>/// Get the visibility status of node.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_visible</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>data</span>().<span class='ident'>is_visible</span>()
+    }
+
+    <span class='doccomment'>/// Sets the visibility of this node.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The node and its children are not rendered if it is not visible.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_visible</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>visible</span>: <span class='ident'>bool</span>) {
+        <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>set_visible</span>(<span class='ident'>visible</span>)
     }
 
     <span class='doccomment'>/// Sets the color of the objects contained by this node and its children.</span>
@@ -2059,74 +2093,67 @@
     <span class='doccomment'>/// Move and orient the object such that it is placed at the point `eye` and have its `x` axis</span>
     <span class='doccomment'>/// oriented toward `at`.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>look_at</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>eye</span>: <span class='kw-2'>&amp;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>at</span>: <span class='kw-2'>&amp;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>up</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
-        <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>look_at</span>(<span class='ident'>eye</span>, <span class='ident'>at</span>, <span class='ident'>up</span>)
-    }
-
-    <span class='doccomment'>/// Move and orient the object such that it is placed at the point `eye` and have its `z` axis</span>
-    <span class='doccomment'>/// oriented toward `at`.</span>
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>look_at_z</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>eye</span>: <span class='kw-2'>&amp;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>at</span>: <span class='kw-2'>&amp;</span><span class='ident'>Pnt3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>up</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
-        <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>look_at_z</span>(<span class='ident'>eye</span>, <span class='ident'>at</span>, <span class='ident'>up</span>)
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>reorient</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>eye</span>: <span class='kw-2'>&amp;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>at</span>: <span class='kw-2'>&amp;</span><span class='ident'>Point3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>up</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vector3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+        <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>reorient</span>(<span class='ident'>eye</span>, <span class='ident'>at</span>, <span class='ident'>up</span>)
     }
 
     <span class='doccomment'>/// Appends a transformation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_transformation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_transformation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>append_transformation</span>(<span class='ident'>t</span>)
     }
 
     <span class='doccomment'>/// Prepends a transformation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>prepend_to_local_transformation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>prepend_to_local_transformation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>prepend_to_local_transformation</span>(<span class='ident'>t</span>)
     }
 
     <span class='doccomment'>/// Set this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_local_transformation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='ident'>Iso3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_local_transformation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='ident'>Isometry3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>set_local_transformation</span>(<span class='ident'>t</span>)
     }
 
     <span class='doccomment'>/// Appends a translation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_translation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_translation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Translation3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>append_translation</span>(<span class='ident'>t</span>)
     }
 
     <span class='doccomment'>/// Prepends a translation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>prepend_to_local_translation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>prepend_to_local_translation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='ident'>Translation3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>prepend_to_local_translation</span>(<span class='ident'>t</span>)
     }
 
     <span class='doccomment'>/// Sets the local translation of this node.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_local_translation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_local_translation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='ident'>Translation3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>set_local_translation</span>(<span class='ident'>t</span>)
     }
 
     <span class='doccomment'>/// Appends a rotation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_rotation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_rotation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='ident'>UnitQuaternion</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>append_rotation</span>(<span class='ident'>r</span>)
     }
 
     <span class='doccomment'>/// Appends a rotation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_rotation_wrt_center</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>append_rotation_wrt_center</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='ident'>UnitQuaternion</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         (<span class='op'>*</span><span class='self'>self</span>.<span class='ident'>data_mut</span>()).<span class='ident'>append_rotation_wrt_center</span>(<span class='ident'>r</span>)
     }
 
     <span class='doccomment'>/// Prepends a rotation to this node local transformation.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>prepend_to_local_rotation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>prepend_to_local_rotation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='ident'>UnitQuaternion</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>prepend_to_local_rotation</span>(<span class='ident'>r</span>)
     }
 
     <span class='doccomment'>/// Sets the local rotation of this node.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_local_rotation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>Vec3</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_local_rotation</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>r</span>: <span class='ident'>UnitQuaternion</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>data_mut</span>().<span class='ident'>set_local_rotation</span>(<span class='ident'>r</span>)
     }
 }
@@ -2154,6 +2181,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -2174,7 +2203,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -2185,11 +2214,9 @@
     <script>
         window.rootPath = "../../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
-    
     <script defer src="../../../search-index.js"></script>
 </body>
 </html>

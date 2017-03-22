@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Camera` trait in crate `kiss3d`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Camera">
+
+    <title>kiss3d::camera::Camera - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>camera</a></p><script>window.sidebarCurrent = {name: 'Camera', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>camera</a>::<wbr><a class='trait' href=''>Camera</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/camera/camera.rs.html#7-89' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait Camera {
+    fn <a href='#tymethod.handle_event' class='fnname'>handle_event</a>(&amp;mut self, _window: &amp;Window, _event: &amp;WindowEvent);
+    fn <a href='#tymethod.eye' class='fnname'>eye</a>(&amp;self) -&gt; <a class='type' href='http://nalgebra.org/doc/nalgebra/geometry/point_alias/type.Point3.html' title='nalgebra::geometry::point_alias::Point3'>Point3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;;
+    fn <a href='#tymethod.view_transform' class='fnname'>view_transform</a>(&amp;self) -&gt; <a class='type' href='http://nalgebra.org/doc/nalgebra/geometry/isometry_alias/type.Isometry3.html' title='nalgebra::geometry::isometry_alias::Isometry3'>Isometry3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;;
+    fn <a href='#tymethod.transformation' class='fnname'>transformation</a>(&amp;self) -&gt; <a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Matrix4.html' title='nalgebra::core::alias::Matrix4'>Matrix4</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;;
+    fn <a href='#tymethod.inverse_transformation' class='fnname'>inverse_transformation</a>(&amp;self) -&gt; <a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Matrix4.html' title='nalgebra::core::alias::Matrix4'>Matrix4</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;;
+    fn <a href='#tymethod.clip_planes' class='fnname'>clip_planes</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>;
+    fn <a href='#tymethod.update' class='fnname'>update</a>(&amp;mut self, window: &amp;Window);
+
+    fn <a href='#method.upload' class='fnname'>upload</a>(&amp;self, _pass: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, uniform: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.ShaderUniform.html' title='kiss3d::resource::ShaderUniform'>ShaderUniform</a>&lt;<a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Matrix4.html' title='nalgebra::core::alias::Matrix4'>Matrix4</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;&gt;) { ... }
+    fn <a href='#method.num_passes' class='fnname'>num_passes</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a> { ... }
+    fn <a href='#method.start_pass' class='fnname'>start_pass</a>(&amp;self, _pass: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, _window: &amp;Window) { ... }
+    fn <a href='#method.render_complete' class='fnname'>render_complete</a>(&amp;self, _window: &amp;Window) { ... }
+    fn <a href='#method.project' class='fnname'>project</a>(&amp;self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; world_coord: &amp;<a class='type' href='http://nalgebra.org/doc/nalgebra/geometry/point_alias/type.Point3.html' title='nalgebra::geometry::point_alias::Point3'>Point3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; size: &amp;<a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Vector2.html' title='nalgebra::core::alias::Vector2'>Vector2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Vector2.html' title='nalgebra::core::alias::Vector2'>Vector2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; { ... }
+    fn <a href='#method.unproject' class='fnname'>unproject</a>(&amp;self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; window_coord: &amp;<a class='type' href='http://nalgebra.org/doc/nalgebra/geometry/point_alias/type.Point2.html' title='nalgebra::geometry::point_alias::Point2'>Point2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; size: &amp;<a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Vector2.html' title='nalgebra::core::alias::Vector2'>Vector2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='type' href='http://nalgebra.org/doc/nalgebra/geometry/point_alias/type.Point3.html' title='nalgebra::geometry::point_alias::Point3'>Point3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, <a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Vector3.html' title='nalgebra::core::alias::Vector3'>Vector3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a> { ... }
+}</pre><div class='docblock'><p>Trait every camera must implement.</p>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.handle_event' class='method stab '><span id='handle_event.v' class='invisible'><code>fn <a href='#tymethod.handle_event' class='fnname'>handle_event</a>(&amp;mut self, _window: &amp;Window, _event: &amp;WindowEvent)</code></span></h3><div class='docblock'><p>Handle a mouse event.</p>
+</div><h3 id='tymethod.eye' class='method stab '><span id='eye.v' class='invisible'><code>fn <a href='#tymethod.eye' class='fnname'>eye</a>(&amp;self) -&gt; <a class='type' href='http://nalgebra.org/doc/nalgebra/geometry/point_alias/type.Point3.html' title='nalgebra::geometry::point_alias::Point3'>Point3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></span></h3><div class='docblock'><p>The camera position.</p>
+</div><h3 id='tymethod.view_transform' class='method stab '><span id='view_transform.v' class='invisible'><code>fn <a href='#tymethod.view_transform' class='fnname'>view_transform</a>(&amp;self) -&gt; <a class='type' href='http://nalgebra.org/doc/nalgebra/geometry/isometry_alias/type.Isometry3.html' title='nalgebra::geometry::isometry_alias::Isometry3'>Isometry3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></span></h3><div class='docblock'><p>The camera view transform.</p>
+</div><h3 id='tymethod.transformation' class='method stab '><span id='transformation.v' class='invisible'><code>fn <a href='#tymethod.transformation' class='fnname'>transformation</a>(&amp;self) -&gt; <a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Matrix4.html' title='nalgebra::core::alias::Matrix4'>Matrix4</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></span></h3><div class='docblock'><p>The transformation applied by the camera to transform a point in world coordinates to
+a point in device coordinates.</p>
+</div><h3 id='tymethod.inverse_transformation' class='method stab '><span id='inverse_transformation.v' class='invisible'><code>fn <a href='#tymethod.inverse_transformation' class='fnname'>inverse_transformation</a>(&amp;self) -&gt; <a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Matrix4.html' title='nalgebra::core::alias::Matrix4'>Matrix4</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></span></h3><div class='docblock'><p>The transformation applied by the camera to transform point in device coordinates to a
+point in world coordinate.</p>
+</div><h3 id='tymethod.clip_planes' class='method stab '><span id='clip_planes.v' class='invisible'><code>fn <a href='#tymethod.clip_planes' class='fnname'>clip_planes</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a></code></span></h3><div class='docblock'><p>The clipping planes, aka. (<code>znear</code>, <code>zfar</code>).</p>
+</div><h3 id='tymethod.update' class='method stab '><span id='update.v' class='invisible'><code>fn <a href='#tymethod.update' class='fnname'>update</a>(&amp;mut self, window: &amp;Window)</code></span></h3><div class='docblock'><p>Update the camera. This is called once at the beginning of the render loop.</p>
+</div></div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.upload' class='method stab '><span id='upload.v' class='invisible'><code>fn <a href='#method.upload' class='fnname'>upload</a>(&amp;self, _pass: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, uniform: &amp;mut <a class='struct' href='../../kiss3d/resource/struct.ShaderUniform.html' title='kiss3d::resource::ShaderUniform'>ShaderUniform</a>&lt;<a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Matrix4.html' title='nalgebra::core::alias::Matrix4'>Matrix4</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;&gt;)</code></span></h3><div class='docblock'><p>Upload the camera transformation to the gpu. This can be called multiple times on the
+render loop.</p>
+</div><h3 id='method.num_passes' class='method stab '><span id='num_passes.v' class='invisible'><code>fn <a href='#method.num_passes' class='fnname'>num_passes</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></span></h3><div class='docblock'><p>The number of passes required by this camera.</p>
+</div><h3 id='method.start_pass' class='method stab '><span id='start_pass.v' class='invisible'><code>fn <a href='#method.start_pass' class='fnname'>start_pass</a>(&amp;self, _pass: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, _window: &amp;Window)</code></span></h3><div class='docblock'><p>Indicates that a pass will begin.</p>
+</div><h3 id='method.render_complete' class='method stab '><span id='render_complete.v' class='invisible'><code>fn <a href='#method.render_complete' class='fnname'>render_complete</a>(&amp;self, _window: &amp;Window)</code></span></h3><div class='docblock'><p>Indicates that the scene has been rendered and the post-processing is being run.</p>
+</div><h3 id='method.project' class='method stab '><span id='project.v' class='invisible'><code>fn <a href='#method.project' class='fnname'>project</a>(&amp;self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; world_coord: &amp;<a class='type' href='http://nalgebra.org/doc/nalgebra/geometry/point_alias/type.Point3.html' title='nalgebra::geometry::point_alias::Point3'>Point3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; size: &amp;<a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Vector2.html' title='nalgebra::core::alias::Vector2'>Vector2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Vector2.html' title='nalgebra::core::alias::Vector2'>Vector2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></span></h3><div class='docblock'><p>Converts a 3d point to 2d screen coordinates, assuming the screen has the size <code>size</code>.</p>
+</div><h3 id='method.unproject' class='method stab '><span id='unproject.v' class='invisible'><code>fn <a href='#method.unproject' class='fnname'>unproject</a>(&amp;self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; window_coord: &amp;<a class='type' href='http://nalgebra.org/doc/nalgebra/geometry/point_alias/type.Point2.html' title='nalgebra::geometry::point_alias::Point2'>Point2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; size: &amp;<a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Vector2.html' title='nalgebra::core::alias::Vector2'>Vector2</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='type' href='http://nalgebra.org/doc/nalgebra/geometry/point_alias/type.Point3.html' title='nalgebra::geometry::point_alias::Point3'>Point3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;, <a class='type' href='http://nalgebra.org/doc/nalgebra/core/alias/type.Vector3.html' title='nalgebra::core::alias::Vector3'>Vector3</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a></code></span></h3><div class='docblock'><p>Converts a point in 2d screen coordinates to a ray (a 3d position and a direction).</p>
+
+<p>The screen is assumed to have a size given by <code>size</code>.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl Camera for <a class='struct' href='../../kiss3d/camera/struct.ArcBall.html' title='kiss3d::camera::ArcBall'>ArcBall</a></code></li>
+<li><code>impl Camera for <a class='struct' href='../../kiss3d/camera/struct.FirstPerson.html' title='kiss3d::camera::FirstPerson'>FirstPerson</a></code></li>
+<li><code>impl Camera for <a class='struct' href='../../kiss3d/camera/struct.FirstPersonStereo.html' title='kiss3d::camera::FirstPersonStereo'>FirstPersonStereo</a></code></li>
+</ul><script type="text/javascript" async
+                         src="../../implementors/kiss3d/camera/trait.Camera.js">
+                 </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "kiss3d";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

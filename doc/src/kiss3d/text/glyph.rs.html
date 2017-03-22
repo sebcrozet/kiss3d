@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -83,28 +84,28 @@
 <span class='comment'>// available under the BSD-3 licence.</span>
 <span class='comment'>// It has been modified to work with gl-rs, nalgebra, and rust-freetype</span>
 
-<span class='kw'>use</span> <span class='ident'>na</span>::<span class='ident'>Vec2</span>;
+<span class='kw'>use</span> <span class='ident'>na</span>::<span class='ident'>Vector2</span>;
 
 <span class='doccomment'>/// A ttf glyph.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Glyph</span> {
     <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
-    <span class='kw'>pub</span> <span class='ident'>tex</span>:        <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>tex</span>:        <span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
     <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
-    <span class='kw'>pub</span> <span class='ident'>advance</span>:    <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>advance</span>:    <span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
     <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
-    <span class='kw'>pub</span> <span class='ident'>dimensions</span>: <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>dimensions</span>: <span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
     <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
-    <span class='kw'>pub</span> <span class='ident'>offset</span>:     <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>offset</span>:     <span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
     <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
     <span class='kw'>pub</span> <span class='ident'>buffer</span>:     <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>
 }
 
 <span class='kw'>impl</span> <span class='ident'>Glyph</span> {
     <span class='doccomment'>/// Creates a new empty glyph.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>tex</span>:        <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
-               <span class='ident'>advance</span>:    <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
-               <span class='ident'>dimensions</span>: <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
-               <span class='ident'>offset</span>:     <span class='ident'>Vec2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>tex</span>:        <span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+               <span class='ident'>advance</span>:    <span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+               <span class='ident'>dimensions</span>: <span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
+               <span class='ident'>offset</span>:     <span class='ident'>Vector2</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>,
                <span class='ident'>buffer</span>:     <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>)
                <span class='op'>-&gt;</span> <span class='ident'>Glyph</span> {
         <span class='ident'>Glyph</span> {
@@ -140,6 +141,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -160,7 +163,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -171,11 +174,9 @@
     <script>
         window.rootPath = "../../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
-    
     <script defer src="../../../search-index.js"></script>
 </body>
 </html>

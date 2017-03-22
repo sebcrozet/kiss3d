@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,18 +44,20 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>kiss3d</a>::<wbr><a href='index.html'>post_processing</a>::<wbr><a class='struct' href=''>OculusStereo</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-2725' class='srclink' href='../../src/kiss3d/post_processing/oculus_stereo.rs.html#14-27' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct OculusStereo {
-    // some fields omitted
-}</pre><div class='docblock'><p>An post-processing effect to support the oculus rift.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../kiss3d/post_processing/struct.OculusStereo.html' title='kiss3d::post_processing::OculusStereo'>OculusStereo</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/post_processing/struct.OculusStereo.html' title='kiss3d::post_processing::OculusStereo'>OculusStereo</a></code></h4>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/kiss3d/post_processing/oculus_stereo.rs.html#14-27' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct OculusStereo { /* fields omitted */ }</pre><div class='docblock'><p>An post-processing effect to support the oculus rift.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../kiss3d/post_processing/struct.OculusStereo.html' title='kiss3d::post_processing::OculusStereo'>OculusStereo</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/post_processing/oculus_stereo.rs.html#29-61' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../kiss3d/post_processing/struct.OculusStereo.html' title='kiss3d::post_processing::OculusStereo'>OculusStereo</a></code></span></h4>
 <div class='docblock'><p>Creates a new OculusStereo post processing effect.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../kiss3d/post_processing/struct.OculusStereo.html' title='kiss3d::post_processing::OculusStereo'>OculusStereo</a></code></h3><div class='impl-items'><h4 id='method.update' class='method'><code>fn <a href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html#method.update' class='fnname'>update</a>(&amp;mut self, _: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, w: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, h: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, _: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, _: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</code></h4>
-<h4 id='method.draw' class='method'><code>fn <a href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html#method.draw' class='fnname'>draw</a>(&amp;mut self, target: &amp;<a class='enum' href='../../kiss3d/resource/enum.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a>)</code></h4>
-</div></section>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html' title='kiss3d::post_processing::post_processing_effect::PostProcessingEffect'>PostProcessingEffect</a> for <a class='struct' href='../../kiss3d/post_processing/struct.OculusStereo.html' title='kiss3d::post_processing::OculusStereo'>OculusStereo</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/kiss3d/post_processing/oculus_stereo.rs.html#63-104' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.update' class='method'><span id='update.v' class='invisible'><code>fn <a href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html#tymethod.update' class='fnname'>update</a>(&amp;mut self, _: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, w: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, h: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, _: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>, _: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>)</code></span></h4>
+<div class='docblock'><p>Updates the post processing effect.</p>
+</div><h4 id='method.draw' class='method'><span id='draw.v' class='invisible'><code>fn <a href='../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html#tymethod.draw' class='fnname'>draw</a>(&amp;mut self, target: &amp;<a class='enum' href='../../kiss3d/resource/enum.RenderTarget.html' title='kiss3d::resource::RenderTarget'>RenderTarget</a>)</code></span></h4>
+<div class='docblock'><p>Render the effect. <a href="../../kiss3d/post_processing/post_processing_effect/trait.PostProcessingEffect.html#tymethod.draw">Read more</a></p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -77,6 +80,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -97,7 +102,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -108,11 +113,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

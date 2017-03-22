@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -397,7 +398,7 @@
 
 <span class='comment'>// FIXME: generalize this for any resource: GPUResource</span>
 <span class='doccomment'>/// A vector of elements that can be loaded to the GPU, on the RAM, or both.</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>GPUVec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='ident'>trash</span>:      <span class='ident'>bool</span>,
     <span class='ident'>len</span>:        <span class='ident'>usize</span>,
     <span class='ident'>buf_type</span>:   <span class='ident'>BufferType</span>,
@@ -408,11 +409,11 @@
 
 <span class='comment'>// FIXME: implement Clone</span>
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>GLPrimitive</span><span class='op'>&gt;</span> <span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Creates a new `GPUVector` that is not yet uploaded to the GPU.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>, <span class='ident'>buf_type</span>: <span class='ident'>BufferType</span>, <span class='ident'>alloc_type</span>: <span class='ident'>AllocationType</span>) <span class='op'>-&gt;</span> <span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='ident'>GPUVector</span> {
-            <span class='ident'>trash</span>:      <span class='boolval'>true</span>,
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>GLPrimitive</span><span class='op'>&gt;</span> <span class='ident'>GPUVec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+    <span class='doccomment'>/// Creates a new `GPUVec` that is not yet uploaded to the GPU.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>, <span class='ident'>buf_type</span>: <span class='ident'>BufferType</span>, <span class='ident'>alloc_type</span>: <span class='ident'>AllocationType</span>) <span class='op'>-&gt;</span> <span class='ident'>GPUVec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+        <span class='ident'>GPUVec</span> {
+            <span class='ident'>trash</span>:      <span class='bool-val'>true</span>,
             <span class='ident'>len</span>:        <span class='ident'>data</span>.<span class='ident'>len</span>(),
             <span class='ident'>buf_type</span>:   <span class='ident'>buf_type</span>,
             <span class='ident'>alloc_type</span>: <span class='ident'>alloc_type</span>,
@@ -440,15 +441,15 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// This method will mark this vector as `trash`.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data_mut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>trash</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>trash</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
 
         <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>
     }
 
     <span class='doccomment'>/// Immutably accesses the vector if it is available on RAM.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>data</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> {
         <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>
     }
 
@@ -466,7 +467,7 @@
 
     <span class='doccomment'>/// Returns `true` if this vector is available on RAM.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Note that a `GPUVector` may be both on RAM and on the GPU.</span>
+    <span class='doccomment'>/// Note that a `GPUVec` may be both on RAM and on the GPU.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_on_ram</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>is_some</span>()
@@ -502,7 +503,7 @@
             }
         }
 
-        <span class='self'>self</span>.<span class='ident'>trash</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+        <span class='self'>self</span>.<span class='ident'>trash</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
     }
 
     <span class='doccomment'>/// Binds this vector to the appropriate gpu array.</span>
@@ -547,7 +548,7 @@
         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>handle</span>.<span class='ident'>as_ref</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span>(_, <span class='kw-2'>ref</span> <span class='ident'>h</span>)<span class='op'>|</span> <span class='kw'>unsafe</span> { <span class='macro'>verify</span><span class='macro'>!</span>(<span class='ident'>gl</span>::<span class='ident'>DeleteBuffers</span>(<span class='number'>1</span>, <span class='kw-2'>&amp;</span><span class='ident'>h</span>.<span class='ident'>handle</span>())) });
         <span class='self'>self</span>.<span class='ident'>len</span>    <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>len</span>();
         <span class='self'>self</span>.<span class='ident'>handle</span> <span class='op'>=</span> <span class='prelude-val'>None</span>;
-        <span class='self'>self</span>.<span class='ident'>trash</span>  <span class='op'>=</span> <span class='boolval'>false</span>;
+        <span class='self'>self</span>.<span class='ident'>trash</span>  <span class='op'>=</span> <span class='bool-val'>false</span>;
     }
 
     <span class='doccomment'>/// Removes this resource from the RAM.</span>
@@ -563,7 +564,7 @@
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>GLPrimitive</span><span class='op'>&gt;</span> <span class='ident'>GPUVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>GLPrimitive</span><span class='op'>&gt;</span> <span class='ident'>GPUVec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// Returns this vector as an owned vector if it is available on RAM.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// If it has been uploaded to the GPU, and unloaded from the RAM, call `load_to_ram` first to</span>
@@ -704,6 +705,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
@@ -724,7 +727,7 @@
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -735,11 +738,9 @@
     <script>
         window.rootPath = "../../../";
         window.currentCrate = "kiss3d";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
-    
     <script defer src="../../../search-index.js"></script>
 </body>
 </html>
