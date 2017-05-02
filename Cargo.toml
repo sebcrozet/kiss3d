@@ -1,6 +1,6 @@
 [package]
 name    = "kiss3d"
-version = "0.8.0"
+version = "0.9.0"
 authors = [ "Sébastien Crozet <developer@crozet.re>" ]
 
 description = "3D graphics engine for Rust."
@@ -29,10 +29,10 @@ gl          = "0.6"
 glfw        = "0.8"
 image       = "0.6"
 libc        = "0.2"
-nalgebra    = "0.11"
-ncollide_procedural = "0.6"
+nalgebra    = "0.12"
+ncollide_procedural = "0.7"
 num-traits = "0.1"
 
 [dev-dependencies]
 rand = "0.3"
-ncollide_transformation = "0.6"
+ncollide_transformation = "0.7"
