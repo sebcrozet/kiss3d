@@ -86,6 +86,17 @@ impl FirstPerson {
         self.pitch_step = step;
     }
 
+    /// Sets the 3D projection.
+    ///
+    /// The default value is 1.3333334.
+    #[inline]
+    pub fn set_projection(&mut self, aspect: f32, fov: f32, znear: f32, zfar: f32) {
+        self.projection = PerspMat3::new(aspect, fov, znear, zfar);
+    }
+
+    pub fn get_projection(&mut self) -> PerspMat3<f32> {
+        self.projection
+    }
 
     /// Sets the yaw increment per mouse movement.
     ///
