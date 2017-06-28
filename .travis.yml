@@ -3,6 +3,12 @@ rust:
     - stable
     - beta
     - nightly
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - cmake
 install:
   - sudo apt-get install cmake
   - sudo apt-get install libXxf86vm-dev
