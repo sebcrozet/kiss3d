@@ -9,6 +9,7 @@ addons:
     packages:
     - cmake
 install:
+  - sudo apt-get update
   - sudo apt-get install cmake
   - sudo apt-get install libXxf86vm-dev
   - git clone https://github.com/glfw/glfw.git
