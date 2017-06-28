@@ -1,6 +1,6 @@
 [package]
 name    = "kiss3d"
-version = "0.9.0"
+version = "0.9.1"
 authors = [ "Sébastien Crozet <developer@crozet.re>" ]
 
 description = "3D graphics engine for Rust."
@@ -24,10 +24,10 @@ name = "kiss3d"
 path = "src/lib.rs"
 
 [dependencies]
-freetype-rs = "0.9"
+freetype-rs = "0.13"
 gl          = "0.6"
-glfw        = "0.8"
-image       = "0.6"
+glfw        = "0.15"
+image       = "0.14"
 libc        = "0.2"
 nalgebra    = "0.12"
 ncollide_procedural = "0.7"
