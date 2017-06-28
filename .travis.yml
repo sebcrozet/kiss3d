@@ -3,10 +3,9 @@ rust:
     - stable
     - beta
     - nightly
+dist: zesty
 addons:
   apt:
-    sources:
-    - ubuntu-toolchain-r-test
     packages:
     - cmake
 install:
