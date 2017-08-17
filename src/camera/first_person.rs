@@ -243,7 +243,7 @@ impl FirstPerson {
 
     #[doc(hidden)]
     pub fn handle_scroll(&mut self, yoff: f32) {
-        let front = self.view_transform() * Vector3::z();
+        let front = self.observer_frame() * Vector3::z();
 
         self.eye = self.eye + front * (self.move_step * yoff);
 
@@ -263,7 +263,7 @@ impl FirstPerson {
 
     /// The direction this camera is being moved by the keyboard keys for a given set of key states.
     pub fn move_dir(&self, up: bool, down: bool, right: bool, left: bool) -> Vector3<f32> {
-        let t      = self.view_transform();
+        let t      = self.observer_frame();
         let frontv = t * Vector3::z();
         let rightv = t * Vector3::x();
 
@@ -315,6 +315,11 @@ impl FirstPerson {
         self.eye = eye;
         self.update_restrictions();
         self.update_projviews();
+    }
+
+    /// The camera observer local frame.
+    fn observer_frame(&self) -> Isometry3<f32> {
+        Isometry3::new_observer_frame(&self.eye, &self.at(), &Vector3::y())
     }
 }
 
