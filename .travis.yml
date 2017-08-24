@@ -3,11 +3,13 @@ rust:
     - stable
     - beta
     - nightly
-before_install:
-  # This ppa provides cmake 2.8.12, which travis doesn't have yet
-  - sudo add-apt-repository --yes ppa:kubuntu-ppa/backports
-  - sudo apt-get update -qq
+dist: zesty
+addons:
+  apt:
+    packages:
+    - cmake
 install:
+  - sudo apt-get update
   - sudo apt-get install cmake
   - sudo apt-get install libXxf86vm-dev
   - git clone https://github.com/glfw/glfw.git
