@@ -65,8 +65,18 @@ impl Window {
 
     /// Access the glfw context.
     #[inline]
-    pub fn context(&self) -> &glfw::Glfw {
-        &self.glfw
+    pub fn context() -> glfw::Glfw {
+        // FIXME: glfw::set_error_callback(~ErrorCallback);
+
+        static mut GLFW_SINGLETON: Option<glfw::Glfw> = None;
+        static INIT: Once = ONCE_INIT;
+
+        unsafe {
+            INIT.call_once(|| {
+                GLFW_SINGLETON = Some(glfw::init(glfw::FAIL_ON_ERRORS).unwrap());
+            });
+            GLFW_SINGLETON.unwrap().clone()
+        }
     }
 
     /// Access the glfw window.
@@ -316,19 +326,7 @@ impl Window {
 
     // FIXME: make this pub?
     fn do_new(title: &str, hide: bool, width: u32, height: u32) -> Window {
-        // FIXME: glfw::set_error_callback(~ErrorCallback);
-
-        static mut GLFW_SINGLETON: Option<glfw::Glfw> = None;
-        static INIT: Once = ONCE_INIT;
-
-        let glfw = unsafe {
-            INIT.call_once(|| {
-                GLFW_SINGLETON = Some(glfw::init(glfw::FAIL_ON_ERRORS).unwrap());
-            });
-            GLFW_SINGLETON.unwrap().clone()
-        };
-
-
+        let glfw = Self::context();
         let (mut window, events) = glfw.create_window(width, height, title, WindowMode::Windowed).expect("Unable to open a glfw window.");
 
         window.make_current();
