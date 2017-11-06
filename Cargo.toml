@@ -24,10 +24,10 @@ name = "kiss3d"
 path = "src/lib.rs"
 
 [dependencies]
-freetype-rs = "0.13"
+freetype-rs = "0.16"
 gl          = "0.6"
-glfw        = "0.15"
-image       = "0.14"
+glfw        = "0.19"
+image       = "0.17"
 libc        = "0.2"
 nalgebra    = "0.13"
 ncollide_procedural = "0.8"
