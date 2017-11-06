@@ -1,23 +1,8 @@
-language: rust
-rust:
-    - stable
-    - beta
-    - nightly
-dist: zesty
-addons:
-  apt:
-    packages:
-    - cmake
+sudo: required
+services:
+  - docker
+language: native
 install:
-  - sudo apt-get update
-  - sudo apt-get install cmake
-  - sudo apt-get install libXxf86vm-dev
-  - git clone https://github.com/glfw/glfw.git
-  - cd glfw
-  - git checkout 3.0.3
-  - cmake -DBUILD_SHARED_LIBS=ON
-  - make
-  - sudo make install
+  - lsb_release -a
 script:
-  - cargo build
-  - cargo test
+  - docker run --rm -it -v "$(pwd)":/usr/src/myapp -w /usr/src/myapp rust:stretch ./ci.sh
