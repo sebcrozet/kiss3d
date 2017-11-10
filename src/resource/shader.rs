@@ -83,9 +83,17 @@ impl Shader {
 
 impl Drop for Shader {
     fn drop(&mut self) {
-        verify!(gl::DeleteProgram(self.program));
-        verify!(gl::DeleteShader(self.fshader));
-        verify!(gl::DeleteShader(self.vshader));
+        unsafe {
+            if gl::IsProgram(self.program) != 0 {
+                verify!(gl::DeleteProgram(self.program));
+            }
+            if gl::IsShader(self.fshader) != 0 {
+                verify!(gl::DeleteShader(self.fshader));
+            }
+            if gl::IsShader(self.vshader) != 0 {     
+                verify!(gl::DeleteShader(self.vshader));
+            }
+        }
     }
 }
 
