@@ -179,14 +179,24 @@ impl FramebufferManager {
 
 impl Drop for FramebufferManager {
     fn drop(&mut self) {
-        verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
-        unsafe { verify!(gl::DeleteFramebuffers(1, &self.fbo)); }
+        unsafe { 
+            if gl::IsFramebuffer(gl::FRAMEBUFFER) != 0 {
+                verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
+                verify!(gl::DeleteFramebuffers(1, &self.fbo));
+            }
+        }
     }
 }
 
 impl Drop for OffscreenBuffers {
     fn drop(&mut self) {
-        unsafe { verify!(gl::DeleteBuffers(1, &self.texture)); }
-        unsafe { verify!(gl::DeleteBuffers(1, &self.depth)); }
+        unsafe {
+            if gl::IsBuffer(self.texture) != 0 {
+                verify!(gl::DeleteBuffers(1, &self.texture));
+            }
+            if gl::IsBuffer(self.depth) != 0 {
+                verify!(gl::DeleteBuffers(1, &self.depth));
+            }
+        }
     }
 }
