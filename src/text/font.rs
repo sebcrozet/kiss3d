@@ -12,7 +12,7 @@ use std::path::Path;
 use libc::c_uint;
 use gl;
 use gl::types::*;
-use freetype::ffi;
+use freetype::freetype;
 use na::Vector2;
 use na;
 use text::Glyph;
@@ -22,8 +22,8 @@ mod error;
 
 /// A ttf font.
 pub struct Font {
-    library:          ffi::FT_Library,
-    face:             ffi::FT_Face,
+    library:          freetype::FT_Library,
+    face:             freetype::FT_Face,
     texture_atlas:    GLuint,
     atlas_dimensions: Vector2<usize>,
     glyphs:           Vec<Option<Glyph>>,
@@ -53,24 +53,24 @@ impl Font {
         };
 
         unsafe {
-            let _ = ffi::FT_Init_FreeType(&mut font.library);
+            let _ = freetype::FT_Init_FreeType(&mut font.library);
 
             match path {
                 Some(path) => {
                     let path = path.to_str().expect("Invalid path.");
                     let c_str = CString::new(path.as_bytes()).unwrap();
-                    if ffi::FT_New_Face(font.library, c_str.as_ptr(), 0, &mut font.face) != 0 {
+                    if !freetype::FT_New_Face(font.library, c_str.as_ptr(), 0, &mut font.face).succeeded() {
                         panic!("Failed to create TTF face.");
                     }
                 },
                 None => {
-                    if ffi::FT_New_Memory_Face(font.library, &memory[0], memory.len() as ffi::FT_Long, 0, &mut font.face) != 0 {
+                    if !freetype::FT_New_Memory_Face(font.library, &memory[0], memory.len() as freetype::FT_Long, 0, &mut font.face).succeeded() {
                         panic!("Failed to create TTF face.");
                     }
                 }
             }
 
-            let _ = ffi::FT_Set_Pixel_Sizes(font.face, 0, size as c_uint);
+            let _ = freetype::FT_Set_Pixel_Sizes(font.face, 0, size as c_uint);
             verify!(gl::ActiveTexture(gl::TEXTURE0));
 
             let     ft_glyph   = (*font.face).glyph;
@@ -79,7 +79,7 @@ impl Font {
             let mut row_height = 0;
 
             for curr in 0usize .. 128 {
-                if ffi::FT_Load_Char(font.face, curr as ffi::FT_ULong, ffi::FT_LOAD_RENDER) != 0 {
+                if !freetype::FT_Load_Char(font.face, curr as freetype::FT_ULong, freetype::FT_LOAD_RENDER as i32).succeeded() {
                     continue;
                 }
 
@@ -98,7 +98,7 @@ impl Font {
                 let glyph      = Glyph::new(na::zero(), advance, dimensions, offset, buffer);
                     
 
-                row_width   = row_width + (dimensions.x + 1.0) as i32;
+                row_width   = row_width + (dimensions.x + 1.0) as u32;
                 row_height  = cmp::max(row_height, (*ft_glyph).bitmap.rows as usize);
                 font.height = cmp::max(font.height, row_height as i32);
 
@@ -126,7 +126,7 @@ impl Font {
             verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32));
 
             /* Copy all glyphs into the texture atlas. */
-            let mut offset: Vector2<i32> = na::zero();
+            let mut offset: Vector2<u32> = na::zero();
             row_height = 0;
             for curr in 0usize .. 128 {
                 let glyph = match *&mut font.glyphs[curr] {
@@ -134,15 +134,15 @@ impl Font {
                     None            => continue
                 };
 
-                if offset.x + (glyph.dimensions.x as i32) + 1 >= max_width {
-                    offset.y   = offset.y + row_height as i32;
+                if offset.x + (glyph.dimensions.x as u32) + 1 >= max_width {
+                    offset.y   = offset.y + row_height as u32;
                     row_height = 0;
                     offset.x   = 0;
                 }
 
                 if !glyph.buffer.is_empty() {
                     verify!(gl::TexSubImage2D(
-                                gl::TEXTURE_2D, 0, offset.x, offset.y,
+                                gl::TEXTURE_2D, 0, offset.x as i32, offset.y as i32,
                                 glyph.dimensions.x as i32, glyph.dimensions.y as i32,
                                 gl::RED, gl::UNSIGNED_BYTE, mem::transmute(&glyph.buffer[0])));
                 }
@@ -151,7 +151,7 @@ impl Font {
                 glyph.tex.x = offset.x as f32 / (font.atlas_dimensions.x as f32);
                 glyph.tex.y = offset.y as f32 / (font.atlas_dimensions.y as f32);
 
-                offset.x   = offset.x + glyph.dimensions.x as i32;
+                offset.x   = offset.x + glyph.dimensions.x as u32;
                 row_height = cmp::max(row_height, glyph.dimensions.y as usize);
             }
         }
@@ -192,7 +192,7 @@ impl Font {
 impl Drop for Font {
     fn drop(&mut self) {
         unsafe {
-            let _ = ffi::FT_Done_FreeType(self.library);
+            let _ = freetype::FT_Done_FreeType(self.library);
             verify!(gl::DeleteTextures(1, &self.texture_atlas));
         }
     }
