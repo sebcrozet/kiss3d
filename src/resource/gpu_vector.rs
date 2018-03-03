@@ -27,7 +27,9 @@ impl GLHandle {
 impl Drop for GLHandle {
     fn drop(&mut self) {
         unsafe {
-            verify!(gl::DeleteBuffers(1, &self.handle))
+            if gl::IsBuffer(self.handle) != 0 {
+                verify!(gl::DeleteBuffers(1, &self.handle))
+            }
         }
     }
 }
