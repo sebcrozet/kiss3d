@@ -1,5 +1,15 @@
 # kiss3d
 
+[![Build Status][a1]][bs] [![Crates.io][a2]][cr] [![BSD][a3]][li]
+
+[a1]: https://travis-ci.org/sebcrozet/kiss3d.svg?branch=master
+[a2]: https://img.shields.io/crates/v/kiss3d.svg
+[a3]: https://img.shields.io/pypi/l/Django.svg
+
+[bs]: https://travis-ci.org/sebcrozet/kiss3d
+[cr]: https://crates.io/crates/kiss3d
+[li]: https://github.com/sebcrozet/kiss3d/blob/master/LICENSE
+
 Keep It Simple, Stupid 3d graphics engine.
 
 This library is born from the frustration in front of the fact that today’s 3D
@@ -61,15 +71,26 @@ Some controls are handled by default by the engine (they can be overridden by th
 * `right click + drag`: translate the view point.
 * `enter`: look at the origin (0.0, 0.0, 0.0).
 
+## Examples
+
+See the `examples/` directory in the source.
+
+To see the examples, just check out the source and run locally with `cargo run --example`
+in the root directory:
+
+```text
+cargo run --example cube
+```
+
 ## Compilation
 You will need the last stable build of the [rust compiler](http://www.rust-lang.org)
 and the official package manager: [cargo](https://github.com/rust-lang/cargo).
 
 Simply add the following to your `Cargo.toml` file:
 
-```
+```text
 [dependencies]
-kiss3d = "0.12"
+kiss3d = "0.13"
 ```
 
 
