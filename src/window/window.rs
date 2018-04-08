@@ -222,7 +222,7 @@ impl Window {
     /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
     ///
     /// # Arguments
-    /// * `wx` - the cube extent along the z axis
+    /// * `wx` - the cube extent along the x axis
     /// * `wy` - the cube extent along the y axis
     /// * `wz` - the cube extent along the z axis
     pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> SceneNode {
