@@ -1,7 +1,6 @@
 //! A batched line renderer.
 
-use gl;
-use gl::types::*;
+use gl::{self, types::*};
 use na::{Point3, Matrix4};
 use resource::{BufferType, AllocationType, GPUVec, Shader, ShaderAttribute, ShaderUniform};
 use camera::Camera;
@@ -30,7 +29,7 @@ impl LineRenderer {
             pos:       shader.get_attrib::<Point3<f32>>("position").unwrap(),
             color:     shader.get_attrib::<Point3<f32>>("color").unwrap(),
             view:      shader.get_uniform::<Matrix4<f32>>("view").unwrap(),
-            shader:    shader
+            shader
         }
     }
  
@@ -74,12 +73,18 @@ impl LineRenderer {
     }
 }
 
+impl Default for LineRenderer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// Vertex shader used by the material to display line.
 pub static LINES_VERTEX_SRC:   &'static str = A_VERY_LONG_STRING;
 /// Fragment shader used by the material to display line.
 pub static LINES_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str =
+const A_VERY_LONG_STRING: &str =
    "#version 120
     attribute vec3 position;
     attribute vec3 color;
@@ -90,7 +95,7 @@ const A_VERY_LONG_STRING: &'static str =
         Color = color;
     }";
 
-const ANOTHER_VERY_LONG_STRING: &'static str =
+const ANOTHER_VERY_LONG_STRING: &str =
    "#version 120
     varying vec3 Color;
     void main() {

@@ -83,7 +83,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
         match tag {
             None    => { },
             Some(w) => {
-                if w.len() != 0 && w.as_bytes()[0] != ('#' as u8) {
+                if !w.is_empty() && w.as_bytes()[0] != b'#' {
                     match w {
                         "v"      => coords.push(Point3::from_coordinates(parse_v_or_vn(l, words))),
                         "vn"     => if !ignore_normals { normals.push(parse_v_or_vn(l, words)) },
@@ -113,7 +113,7 @@ pub fn parse(string: &str, mtl_base_dir: &Path, basename: &str) -> Vec<(String, 
     }
 
     reformat(
-        coords,
+        &coords,
         if ignore_normals { None } else { Some(normals) },
         if ignore_uvs { None } else { Some(uvs) },
         groups_ids,
@@ -184,7 +184,7 @@ fn parse_mtllib<'a>(l:            usize,
 
     match ms {
         Ok(ms) =>
-            for m in ms.into_iter() {
+            for m in ms {
                 let _ = mtllib.insert(m.name.to_string(), m);
             },
         Err(err) => warn(l, &format!("{}", err)[..])
@@ -222,7 +222,7 @@ fn parse_f<'a>(l:              usize,
         let mut curr_ids: Vector3<i32> = Bounded::max_value();
 
         for (i, w) in word.split('/').enumerate() {
-            if i == 0 || w.len() != 0 {
+            if i == 0 || !w.is_empty() {
                 let idx: Result<i32, _> = FromStr::from_str(w);
                 match idx {
                     Ok(id) => curr_ids[i] = id - 1,
@@ -276,13 +276,13 @@ fn parse_f<'a>(l:              usize,
 
         groups_ids[curr_group].push(Point3::new(x, y, z));
 
-        i = i + 1;
+        i += 1;
     }
 
     // there is not enough vertex to form a triangle. Complete it.
     if i < 2 {
         for _ in 0usize .. 3 - i {
-            let last = (*groups_ids)[curr_group].last().unwrap().clone();
+            let last = *(*groups_ids)[curr_group].last().unwrap();
             groups_ids[curr_group].push(last);
         }
     }
@@ -313,7 +313,7 @@ fn parse_g<'a>(_:          usize,
                -> usize {
     let suffix: Vec<&'a str> = ws.collect();
     let suffix = suffix.join(" ");
-    let name   = if suffix.len() == 0 { prefix.to_string() } else { format!("{}/{}", prefix, suffix) };
+    let name   = if suffix.is_empty() { prefix.to_string() } else { format!("{}/{}", prefix, suffix) };
 
     match groups.entry(name) {
         Entry::Occupied(entry) => *entry.into_mut(),
@@ -326,7 +326,7 @@ fn parse_g<'a>(_:          usize,
     }
 }
 
-fn reformat(coords:     Vec<Coord>,
+fn reformat(coords:     &[Coord],
             normals:    Option<Vec<Normal>>,
             uvs:        Option<Vec<UV>>,
             groups_ids: Vec<Vec<Point3<u32>>>,
@@ -343,11 +343,11 @@ fn reformat(coords:     Vec<Coord>,
     let mut names: Vec<String>              = Vec::new();
     let mut mtls:  Vec<Option<MtlMaterial>> = Vec::new();
 
-    for (name, i) in groups.into_iter() {
+    for (name, i) in groups {
         names.push(name);
-        mtls.push(group2mtl.get(&i).map(|m| m.clone()));
+        mtls.push(group2mtl.get(&i).cloned());
 
-        for point in groups_ids[i].iter() {
+        for point in &groups_ids[i] {
             let idx = match vt2id.get(point) {
                 Some(i) => { vertex_ids.push(*i); None },
                 None    => {
@@ -388,7 +388,7 @@ fn reformat(coords:     Vec<Coord>,
 
     let mut meshes = Vec::new();
     for ((fs, name), mtl) in resfs.into_iter().zip(names.into_iter()).zip(mtls.into_iter()) {
-        if fs.len() != 0 {
+        if !fs.is_empty() {
             let fs   = Arc::new(RwLock::new(GPUVec::new(fs, BufferType::ElementArray, AllocationType::StaticDraw)));
             let mesh = Mesh::new_with_gpu_vectors(resc.clone(), fs, resn.clone(), resu.clone());
             meshes.push((name, mesh, mtl))

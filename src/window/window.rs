@@ -3,57 +3,52 @@
  * FIXME: this file is too big. Some heavy refactoring need to be done here.
  */
 
-use std::mem;
-use std::thread;
-use std::time::{Duration, Instant};
-use glfw;
-use glfw::{Context, Key, Action, WindowMode, WindowEvent};
+use camera::{ArcBall, Camera};
+use gl::{self, types::*};
+use glfw::{self, Action, Context, Key, WindowEvent, WindowMode};
+use image::imageops;
+use image::{ImageBuffer, Rgb};
+use light::Light;
+use line_renderer::LineRenderer;
+use na::{Point2, Point3, Vector2, Vector3};
+use ncollide_procedural::TriMesh3;
+use point_renderer::PointRenderer;
+use post_processing::PostProcessingEffect;
+use resource::{FramebufferManager, Mesh, RenderTarget, Texture, TextureManager};
+use scene::SceneNode;
 use std::cell::RefCell;
+use std::iter::repeat;
+use std::path::Path;
 use std::rc::Rc;
 use std::sync::mpsc::Receiver;
 use std::sync::{Once, ONCE_INIT};
-use std::path::Path;
-use std::iter::repeat;
-use gl;
-use gl::types::*;
-use image::{ImageBuffer,Rgb};
-use image::imageops;
-use na::{Point2, Vector2, Vector3, Point3};
-use ncollide_procedural::TriMesh3;
-use camera::Camera;
-use scene::SceneNode;
-use line_renderer::LineRenderer;
-use point_renderer::PointRenderer;
-use post_processing::PostProcessingEffect;
-use resource::{FramebufferManager, RenderTarget, Texture, TextureManager, Mesh};
-use light::Light;
-use text::{TextRenderer, Font};
+use std::time::{Duration, Instant};
+use std::{mem, thread};
+use text::{Font, TextRenderer};
 use window::EventManager;
-use camera::ArcBall;
 
-
-static DEFAULT_WIDTH:  u32 = 800u32;
+static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
 
 /// Structure representing a window and a 3D scene.
 ///
 /// This is the main interface with the 3d engine.
 pub struct Window {
-    events:                     Rc<Receiver<(f64, WindowEvent)>>,
-    unhandled_events:           Rc<RefCell<Vec<WindowEvent>>>,
-    glfw:                       glfw::Glfw,
-    window:                     glfw::Window,
-    max_dur_per_frame:          Option<Duration>,
-    scene:                      SceneNode,
-    light_mode:                 Light, // FIXME: move that to the scene graph
-    background:                 Vector3<GLfloat>,
-    line_renderer:              LineRenderer,
-    point_renderer:             PointRenderer,
-    text_renderer:              TextRenderer,
-    framebuffer_manager:        FramebufferManager,
+    events: Rc<Receiver<(f64, WindowEvent)>>,
+    unhandled_events: Rc<RefCell<Vec<WindowEvent>>>,
+    glfw: glfw::Glfw,
+    window: glfw::Window,
+    max_dur_per_frame: Option<Duration>,
+    scene: SceneNode,
+    light_mode: Light, // FIXME: move that to the scene graph
+    background: Vector3<GLfloat>,
+    line_renderer: LineRenderer,
+    point_renderer: PointRenderer,
+    text_renderer: TextRenderer,
+    framebuffer_manager: FramebufferManager,
     post_process_render_target: RenderTarget,
-    curr_time:                  Instant,
-    camera:                     Rc<RefCell<ArcBall>>
+    curr_time: Instant,
+    camera: Rc<RefCell<ArcBall>>,
 }
 
 impl Window {
@@ -75,7 +70,7 @@ impl Window {
             INIT.call_once(|| {
                 GLFW_SINGLETON = Some(glfw::init(glfw::FAIL_ON_ERRORS).unwrap());
             });
-            GLFW_SINGLETON.unwrap().clone()
+            GLFW_SINGLETON.unwrap()
         }
     }
 
@@ -118,9 +113,12 @@ impl Window {
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
     #[inline]
     pub fn set_framerate_limit(&mut self, fps: Option<u64>) {
-        self.max_dur_per_frame = fps.map(|f| { assert!(f != 0); Duration::from_millis(1000 / f) })
+        self.max_dur_per_frame = fps.map(|f| {
+            assert!(f != 0);
+            Duration::from_millis(1000 / f)
+        })
     }
-    
+
     /// Set window title
     pub fn set_title(&mut self, title: &str) {
         self.window.set_title(title)
@@ -156,7 +154,8 @@ impl Window {
     /// Adds a line to be drawn during the next frame.
     #[inline]
     pub fn draw_line(&mut self, a: &Point3<f32>, b: &Point3<f32>, color: &Point3<f32>) {
-        self.line_renderer.draw_line(a.clone(), b.clone(), color.clone());
+        self.line_renderer
+            .draw_line(a.clone(), b.clone(), color.clone());
     }
 
     // XXX: remove this (moved to the render_frame).
@@ -169,7 +168,13 @@ impl Window {
     // XXX: remove this (moved to the render_frame).
     /// Adds a string to be drawn during the next frame.
     #[inline]
-    pub fn draw_text(&mut self, text: &str, pos: &Point2<f32>, font: &Rc<Font>, color: &Point3<f32>) {
+    pub fn draw_text(
+        &mut self,
+        text: &str,
+        pos: &Point2<f32>,
+        font: &Rc<Font>,
+        color: &Point3<f32>,
+    ) {
         self.text_renderer.draw_text(text, pos, font, color);
     }
 
@@ -206,7 +211,11 @@ impl Window {
     }
 
     /// Creates and adds a new object using the geometry registered as `geometry_name`.
-    pub fn add_geom_with_name(&mut self, geometry_name: &str, scale: Vector3<f32>) -> Option<SceneNode> {
+    pub fn add_geom_with_name(
+        &mut self,
+        geometry_name: &str,
+        scale: Vector3<f32>,
+    ) -> Option<SceneNode> {
         self.scene.add_geom_with_name(geometry_name, scale)
     }
 
@@ -275,12 +284,14 @@ impl Window {
     }
 
     /// Adds a double-sided quad with the specified vertices.
-    pub fn add_quad_with_vertices(&mut self,
-                                  vertices: &[Point3<f32>],
-                                  nhpoints: usize,
-                                  nvpoints: usize)
-                                  -> SceneNode {
-        self.scene.add_quad_with_vertices(vertices, nhpoints, nvpoints)
+    pub fn add_quad_with_vertices(
+        &mut self,
+        vertices: &[Point3<f32>],
+        nhpoints: usize,
+        nvpoints: usize,
+    ) -> SceneNode {
+        self.scene
+            .add_quad_with_vertices(vertices, nhpoints, nvpoints)
     }
 
     #[doc(hidden)]
@@ -327,7 +338,8 @@ impl Window {
     // FIXME: make this pub?
     fn do_new(title: &str, hide: bool, width: u32, height: u32) -> Window {
         let glfw = Self::context();
-        let (mut window, events) = glfw.create_window(width, height, title, WindowMode::Windowed).expect("Unable to open a glfw window.");
+        let (mut window, events) = glfw.create_window(width, height, title, WindowMode::Windowed)
+            .expect("Unable to open a glfw window.");
 
         window.make_current();
 
@@ -335,21 +347,27 @@ impl Window {
         init_gl();
 
         let mut usr_window = Window {
-            max_dur_per_frame:      None,
-            glfw:                  glfw,
-            window:                window,
-            events:                Rc::new(events),
-            unhandled_events:      Rc::new(RefCell::new(Vec::new())),
-            scene:                 SceneNode::new_empty(),
-            light_mode:            Light::Absolute(Point3::new(0.0, 10.0, 0.0)),
-            background:            Vector3::new(0.0, 0.0, 0.0),
-            line_renderer:         LineRenderer::new(),
-            point_renderer:        PointRenderer::new(),
-            text_renderer:         TextRenderer::new(),
-            post_process_render_target: FramebufferManager::new_render_target(width as usize, height as usize),
-            framebuffer_manager:   FramebufferManager::new(),
-            curr_time:             Instant::now(),
-            camera:                Rc::new(RefCell::new(ArcBall::new(Point3::new(0.0f32, 0.0, -1.0), Point3::origin())))
+            glfw,
+            window,
+            max_dur_per_frame: None,
+            events: Rc::new(events),
+            unhandled_events: Rc::new(RefCell::new(Vec::new())),
+            scene: SceneNode::new_empty(),
+            light_mode: Light::Absolute(Point3::new(0.0, 10.0, 0.0)),
+            background: Vector3::new(0.0, 0.0, 0.0),
+            line_renderer: LineRenderer::new(),
+            point_renderer: PointRenderer::new(),
+            text_renderer: TextRenderer::new(),
+            post_process_render_target: FramebufferManager::new_render_target(
+                width as usize,
+                height as usize,
+            ),
+            framebuffer_manager: FramebufferManager::new(),
+            curr_time: Instant::now(),
+            camera: Rc::new(RefCell::new(ArcBall::new(
+                Point3::new(0.0f32, 0.0, -1.0),
+                Point3::origin(),
+            ))),
         };
 
         // setup callbacks
@@ -403,22 +421,25 @@ impl Window {
         if out.len() < size {
             let diff = size - out.len();
             out.extend(repeat(0).take(diff));
-        }
-        else {
+        } else {
             out.truncate(size)
         }
 
         // FIXME: this is _not_ the fastest way of doing this.
         unsafe {
             gl::PixelStorei(gl::PACK_ALIGNMENT, 1);
-            gl::ReadPixels(x as i32, y as i32,
-                           width as i32, height as i32,
-                           gl::RGB,
-                           gl::UNSIGNED_BYTE,
-                           mem::transmute(&mut out[0]));
+            gl::ReadPixels(
+                x as i32,
+                y as i32,
+                width as i32,
+                height as i32,
+                gl::RGB,
+                gl::UNSIGNED_BYTE,
+                mem::transmute(&mut out[0]),
+            );
         }
     }
-    
+
     /// Get the current screen as an image
     pub fn snap_image(&self) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
         let (width, height) = self.window.get_size();
@@ -459,16 +480,16 @@ impl Window {
         match *event {
             WindowEvent::Key(Key::Escape, _, Action::Release, _) => {
                 self.close();
-            },
+            }
             WindowEvent::FramebufferSize(w, h) => {
                 self.update_viewport(w as f32, h as f32);
-            },
-            _ => { }
+            }
+            _ => {}
         }
 
         match *camera {
             Some(ref mut cam) => cam.handle_event(&self.window, event),
-            None => self.camera.borrow_mut().handle_event(&self.window, event)
+            None => self.camera.borrow_mut().handle_event(&self.window, event),
         }
     }
 
@@ -496,56 +517,65 @@ impl Window {
     /// Render using a specific camera and post processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    pub fn render_with_camera_and_effect(&mut self, camera: &mut Camera, effect: &mut PostProcessingEffect) -> bool {
+    pub fn render_with_camera_and_effect(
+        &mut self,
+        camera: &mut Camera,
+        effect: &mut PostProcessingEffect,
+    ) -> bool {
         self.render_with(Some(camera), Some(effect))
     }
 
     /// Draws the scene with the given camera and post-processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    pub fn render_with(&mut self,
-                       camera:          Option<&mut Camera>,
-                       post_processing: Option<&mut PostProcessingEffect>)
-                       -> bool {
+    pub fn render_with(
+        &mut self,
+        camera: Option<&mut Camera>,
+        post_processing: Option<&mut PostProcessingEffect>,
+    ) -> bool {
         let mut camera = camera;
         self.handle_events(&mut camera);
 
         match camera {
             Some(cam) => self.do_render_with(cam, post_processing),
-            None      => {
-                let self_cam      = self.camera.clone(); // FIXME: this is ugly.
+            None => {
+                let self_cam = self.camera.clone(); // FIXME: this is ugly.
                 let mut bself_cam = self_cam.borrow_mut();
                 self.do_render_with(&mut *bself_cam, post_processing)
             }
         }
     }
 
-    fn do_render_with(&mut self,
-                      camera:          &mut Camera,
-                      post_processing: Option<&mut PostProcessingEffect>)
-                      -> bool {
+    fn do_render_with(
+        &mut self,
+        camera: &mut Camera,
+        post_processing: Option<&mut PostProcessingEffect>,
+    ) -> bool {
         // XXX: too bad we have to do this at each frame…
         let w = self.width();
         let h = self.height();
 
-        camera.handle_event(&self.window, &WindowEvent::FramebufferSize(w as i32, h as i32));
+        camera.handle_event(
+            &self.window,
+            &WindowEvent::FramebufferSize(w as i32, h as i32),
+        );
         camera.update(&self.window);
 
-        match self.light_mode {
-            Light::StickToCamera => self.set_light(Light::StickToCamera),
-            _ => { }
+        if let Light::StickToCamera = self.light_mode {
+            self.set_light(Light::StickToCamera)
         }
 
         let mut post_processing = post_processing;
         if post_processing.is_some() {
             // if we need post-processing, render to our own frame buffer
-            self.framebuffer_manager.select(&self.post_process_render_target);
-        }
-        else {
-            self.framebuffer_manager.select(&FramebufferManager::screen());
+            self.framebuffer_manager
+                .select(&self.post_process_render_target);
+        } else {
+            self.framebuffer_manager
+                .select(&FramebufferManager::screen());
         }
 
-        for pass in 0usize .. camera.num_passes() {
+        for pass in 0usize..camera.num_passes() {
             camera.start_pass(pass, &self.window);
             self.render_scene(camera, pass);
         }
@@ -559,16 +589,14 @@ impl Window {
         //     verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
         // }
 
-        match post_processing {
-            Some(ref mut p) => {
-                // switch back to the screen framebuffer …
-                self.framebuffer_manager.select(&FramebufferManager::screen());
-                // … and execute the post-process
-                // FIXME: use the real time value instead of 0.016!
-                p.update(0.016, w, h, znear, zfar);
-                p.draw(&self.post_process_render_target);
-            },
-            None => { }
+        if let Some(ref mut p) = post_processing {
+            // switch back to the screen framebuffer …
+            self.framebuffer_manager
+                .select(&FramebufferManager::screen());
+            // … and execute the post-process
+            // FIXME: use the real time value instead of 0.016!
+            p.update(0.016, w, h, znear, zfar);
+            p.draw(&self.post_process_render_target);
         }
 
         self.text_renderer.render(w, h);
@@ -578,7 +606,7 @@ impl Window {
 
         // Limit the fps if needed.
         match self.max_dur_per_frame {
-            None     => { },
+            None => {}
             Some(dur) => {
                 let elapsed = self.curr_time.elapsed();
                 if elapsed < dur {
@@ -599,7 +627,12 @@ impl Window {
         // Activate the default texture
         verify!(gl::ActiveTexture(gl::TEXTURE0));
         // Clear the screen to black
-        verify!(gl::ClearColor(self.background.x, self.background.y, self.background.z, 1.0));
+        verify!(gl::ClearColor(
+            self.background.x,
+            self.background.y,
+            self.background.z,
+            1.0
+        ));
         verify!(gl::Clear(gl::COLOR_BUFFER_BIT));
         verify!(gl::Clear(gl::DEPTH_BUFFER_BIT));
 
@@ -613,7 +646,6 @@ impl Window {
 
         self.scene.data_mut().render(pass, camera, &self.light_mode);
     }
-
 
     fn update_viewport(&mut self, w: f32, h: f32) {
         // Update the viewport

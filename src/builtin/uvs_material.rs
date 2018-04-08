@@ -1,12 +1,10 @@
 use std::ptr;
-use gl;
-use gl::types::*;
+use gl::{self, types::*};
 use na::{Point3, Point2, Vector3, Matrix3, Matrix4, Isometry3};
-use resource::Material;
 use scene::ObjectData;
 use light::Light;
 use camera::Camera;
-use resource::{Mesh, Shader, ShaderAttribute, ShaderUniform};
+use resource::{Material, Mesh, Shader, ShaderAttribute, ShaderUniform};
 
 #[path = "../error.rs"]
 mod error;
@@ -35,8 +33,14 @@ impl UvsMaterial {
             transform: shader.get_uniform("transform").unwrap(),
             scale:     shader.get_uniform("scale").unwrap(),
             view:      shader.get_uniform("view").unwrap(),
-            shader:    shader
+            shader
         }
+    }
+}
+
+impl Default for UvsMaterial {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -104,7 +108,7 @@ pub static UVS_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
 /// A fragment shader for coloring each point of an object depending on its texture coordinates.
 pub static UVS_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str =
+const A_VERY_LONG_STRING: &str =
 "#version 120
 attribute vec3 position;
 attribute vec3 uvs;
@@ -119,7 +123,7 @@ void main() {
 }
 ";
 
-const ANOTHER_VERY_LONG_STRING: &'static str =
+const ANOTHER_VERY_LONG_STRING: &str =
 "#version 120
 varying vec3 uv_as_a_color;
 

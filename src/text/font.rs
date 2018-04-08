@@ -2,19 +2,14 @@
 // available under the BSD-3 licence.
 // It has been modified to work with gl-rs, nalgebra, and rust-freetype
 
-use std::mem;
-use std::slice;
-use std::ffi::CString;
-use std::rc::Rc;
-use std::cmp;
-use std::ptr;
-use std::path::Path;
-use libc::c_uint;
-use gl;
-use gl::types::*;
 use freetype::freetype;
-use na::Vector2;
-use na;
+use gl::{self,types::*};
+use libc::c_uint;
+use na::{self, Vector2};
+use std::ffi::CString;
+use std::path::Path;
+use std::rc::Rc;
+use std::{cmp, mem, ptr, slice};
 use text::Glyph;
 
 #[path = "../error.rs"]
@@ -86,7 +81,7 @@ impl Font {
                 /* If we've exhausted the width for this row, add another. */
                 if row_width + (*ft_glyph).bitmap.width + 1 >= max_width {
                     font.atlas_dimensions.x = cmp::max(font.atlas_dimensions.x, row_width as usize);
-                    font.atlas_dimensions.y = font.atlas_dimensions.y + row_height;
+                    font.atlas_dimensions.y += row_height;
                     row_width = 0; row_height = 0;
                 }
 
@@ -98,7 +93,7 @@ impl Font {
                 let glyph      = Glyph::new(na::zero(), advance, dimensions, offset, buffer);
                     
 
-                row_width   = row_width + (dimensions.x + 1.0) as u32;
+                row_width  += (dimensions.x + 1.0) as u32;
                 row_height  = cmp::max(row_height, (*ft_glyph).bitmap.rows as usize);
                 font.height = cmp::max(font.height, row_height as i32);
 
@@ -129,13 +124,13 @@ impl Font {
             let mut offset: Vector2<u32> = na::zero();
             row_height = 0;
             for curr in 0usize .. 128 {
-                let glyph = match *&mut font.glyphs[curr] {
+                let glyph = match font.glyphs[curr] {
                     Some(ref mut g) => g,
                     None            => continue
                 };
 
                 if offset.x + (glyph.dimensions.x as u32) + 1 >= max_width {
-                    offset.y   = offset.y + row_height as u32;
+                    offset.y  += row_height as u32;
                     row_height = 0;
                     offset.x   = 0;
                 }
@@ -151,7 +146,7 @@ impl Font {
                 glyph.tex.x = offset.x as f32 / (font.atlas_dimensions.x as f32);
                 glyph.tex.y = offset.y as f32 / (font.atlas_dimensions.y as f32);
 
-                offset.x   = offset.x + glyph.dimensions.x as u32;
+                offset.x  += glyph.dimensions.x as u32;
                 row_height = cmp::max(row_height, glyph.dimensions.y as usize);
             }
         }

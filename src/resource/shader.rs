@@ -1,14 +1,11 @@
 use std::marker::PhantomData;
 use std::ffi::CString;
-use std::mem;
-use std::ptr;
-use std::str;
+use std::{mem, ptr,str};
 use std::iter::repeat;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
-use gl;
-use gl::types::*;
+use gl::{self, types::*};
 use resource::{GLPrimitive, GPUVec};
 
 #[path = "../error.rs"]
@@ -43,9 +40,9 @@ impl Shader {
         let (program, vshader, fshader) = load_shader_program(vshader, fshader);
 
         Shader {
-            program: program,
-            vshader: vshader,
-            fshader: fshader
+            program,
+            vshader,
+            fshader
         }
     }
 

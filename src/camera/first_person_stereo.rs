@@ -63,7 +63,7 @@ impl FirstPersonStereo {
             // left & right are initially wrong, don't take ipd into accound
             eye_left:      Point3::new(0.0, 0.0, 0.0),
             eye_right:     Point3::new(0.0, 0.0, 0.0),
-            ipd:           ipd,
+            ipd,
             yaw:           0.0,
             pitch:         0.0,
             yaw_step:      0.005,
@@ -118,8 +118,8 @@ impl FirstPersonStereo {
 
     #[doc(hidden)]
     pub fn handle_left_button_displacement(&mut self, dpos: &Vector2<f32>) {
-        self.yaw   = self.yaw   + dpos.x * self.yaw_step;
-        self.pitch = self.pitch + dpos.y * self.pitch_step;
+        self.yaw += dpos.x * self.yaw_step;
+        self.pitch += dpos.y * self.pitch_step;
 
         self.update_restrictions();
         self.update_projviews();
@@ -155,7 +155,7 @@ impl FirstPersonStereo {
     pub fn handle_scroll(&mut self, yoff: f32) {
         let front: Vector3<f32> = self.view_transform() * Vector3::z();
 
-        self.eye = self.eye + front * (self.move_step * yoff);
+        self.eye += front * (self.move_step * yoff);
 
         self.update_eyes_location();
         self.update_restrictions();
@@ -257,19 +257,19 @@ impl Camera for FirstPersonStereo {
         let right = t * Vector3::x();
 
         if window.get_key(Key::Up) == Action::Press {
-            self.eye = self.eye + front * self.move_step
+            self.eye += front * self.move_step
         }
 
         if window.get_key(Key::Down) == Action::Press {
-            self.eye = self.eye + front * (-self.move_step)
+            self.eye += front * (-self.move_step)
         }
 
         if window.get_key(Key::Right) == Action::Press {
-            self.eye = self.eye + right * (-self.move_step)
+            self.eye += right * (-self.move_step)
         }
 
         if window.get_key(Key::Left) == Action::Press {
-            self.eye = self.eye + right * self.move_step
+            self.eye += right * self.move_step
         }
 
         self.update_eyes_location();

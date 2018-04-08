@@ -34,8 +34,7 @@ use swscale::Struct_SwsContext;
 use avcodec::{AVCodec, AVCodecContext, AVPacket};
 use avformat::{AVFormatContext, AVStream};
 use avutil::{AVFrame, Struct_AVRational};
-use std::ptr;
-use std::mem;
+use std::{mem, ptr};
 use sync::one::{Once, ONCE_INIT};
 use kiss3d::window::Window;
 

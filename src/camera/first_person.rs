@@ -1,9 +1,7 @@
 use std::f32;
-use glfw;
-use glfw::{Key, MouseButton, Action, WindowEvent};
+use glfw::{self, Key, MouseButton, Action, WindowEvent};
 use num::Zero;
-use na::{Point3, Vector2, Vector3, Matrix4, Isometry3, Perspective3, Translation3};
-use na;
+use na::{self, Point3, Vector2, Vector3, Matrix4, Isometry3, Perspective3, Translation3};
 use camera::Camera;
 
 /// First-person camera mode.
@@ -222,8 +220,8 @@ impl FirstPerson {
 
     #[doc(hidden)]
     pub fn handle_left_button_displacement(&mut self, dpos: &Vector2<f32>) {
-        self.yaw   = self.yaw   + dpos.x * self.yaw_step;
-        self.pitch = self.pitch + dpos.y * self.pitch_step;
+        self.yaw += dpos.x * self.yaw_step;
+        self.pitch += dpos.y * self.pitch_step;
 
         self.update_restrictions();
         self.update_projviews();
@@ -245,7 +243,7 @@ impl FirstPerson {
     pub fn handle_scroll(&mut self, yoff: f32) {
         let front = self.observer_frame() * Vector3::z();
 
-        self.eye = self.eye + front * (self.move_step * yoff);
+        self.eye += front * (self.move_step * yoff);
 
         self.update_restrictions();
         self.update_projviews();
@@ -270,19 +268,19 @@ impl FirstPerson {
         let mut movement = na::zero::<Vector3<f32>>();
 
         if up {
-            movement = movement + frontv
+            movement += frontv
         }
 
         if down {
-            movement = movement - frontv
+            movement -= frontv
         }
 
         if right {
-            movement = movement - rightv
+            movement -= rightv
         }
 
         if left {
-            movement =  movement + rightv
+            movement += rightv
         }
 
         if movement.is_zero() {

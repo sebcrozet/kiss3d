@@ -1,7 +1,6 @@
 //! Post-processing effect to draw everything in grey-levels.
 
-use gl;
-use gl::types::*;
+use gl::{self, types::*};
 use na::Vector2;
 use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, RenderTarget, GPUVec};
 use post_processing::post_processing_effect::PostProcessingEffect;
@@ -37,9 +36,15 @@ impl Grayscales {
         Grayscales {
             fbo_texture:  shader.get_uniform("fbo_texture").unwrap(),
             v_coord:      shader.get_attrib("v_coord").unwrap(),
-            fbo_vertices: fbo_vertices,
-            shader:       shader
+            fbo_vertices,
+            shader
         }
+    }
+}
+
+impl Default for Grayscales {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

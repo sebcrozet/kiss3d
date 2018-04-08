@@ -6,8 +6,7 @@ use std::rc::Rc;
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use std::path::Path;
-use gl;
-use gl::types::*;
+use gl::{self, types::*};
 use image::{self, DynamicImage};
 
 #[path = "../error.rs"]
@@ -25,7 +24,7 @@ impl Texture {
 
         unsafe { verify!(gl::GenTextures(1, &mut id)); }
 
-        Rc::new(Texture { id: id })
+        Rc::new(Texture { id })
     }
 
     /// The opengl-provided texture id.
@@ -87,7 +86,7 @@ impl TextureManager {
 
     /// Get a texture with the specified name. Returns `None` if the texture is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<Texture>> {
-        self.textures.get(&name.to_string()).map(|t| t.clone())
+        self.textures.get(&name.to_string()).cloned()
     }
 
     /// Allocates a new texture that is not yet configured.
@@ -145,5 +144,11 @@ impl TextureManager {
     /// created and the old texture is returned.
     pub fn add(&mut self, path: &Path, name: &str) -> Rc<Texture> {
         self.textures.entry(name.to_string()).or_insert_with(|| TextureManager::load_texture(path)).clone()
+    }
+}
+
+impl Default for TextureManager {
+    fn default() -> Self {
+        Self::new()
     }
 }

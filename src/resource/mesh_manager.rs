@@ -8,8 +8,10 @@ use std::path::Path;
 use ncollide_procedural::TriMesh3;
 use ncollide_procedural as procedural;
 use resource::Mesh;
-use loader::obj;
-use loader::mtl::MtlMaterial;
+use loader::{obj, mtl::MtlMaterial};
+
+// Alias for IoResult
+type IoRes = IoResult<Vec<(String, Rc<RefCell<Mesh>>, Option<MtlMaterial>)>>;
 
 thread_local!(static KEY_MESH_MANAGER: RefCell<MeshManager> = RefCell::new(MeshManager::new()));
 
@@ -19,6 +21,7 @@ thread_local!(static KEY_MESH_MANAGER: RefCell<MeshManager> = RefCell::new(MeshM
 ///
 /// It keeps a cache of already-loaded meshes. Note that this is only a cache, nothing more.
 /// Thus, its usage is not required to load meshes.
+#[derive(Default)]
 pub struct MeshManager {
     meshes:       HashMap<String, Rc<RefCell<Mesh>>>
 }
@@ -45,7 +48,7 @@ impl MeshManager {
 
     /// Get a mesh with the specified name. Returns `None` if the mesh is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Mesh>>> {
-        self.meshes.get(&name.to_string()).map(|t| t.clone())
+        self.meshes.get(&name.to_string()).cloned()
     }
 
     /// Adds a mesh with the specified name to this cache.
@@ -70,12 +73,11 @@ impl MeshManager {
 
     // FIXME: is this the right place to put this?
     /// Loads the meshes described by an obj file.
-    pub fn load_obj(path: &Path, mtl_dir: &Path, geometry_name: &str)
-                    -> IoResult<Vec<(String, Rc<RefCell<Mesh>>, Option<MtlMaterial>)>> {
+    pub fn load_obj(path: &Path, mtl_dir: &Path, geometry_name: &str) -> IoRes {
         obj::parse_file(path, mtl_dir, geometry_name).map(|ms| {
             let mut res = Vec::new();
 
-            for (n, m, mat) in ms.into_iter() {
+            for (n, m, mat) in ms {
                 let m = Rc::new(RefCell::new(m));
 
                 res.push((n, m, mat));

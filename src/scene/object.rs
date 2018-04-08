@@ -89,21 +89,20 @@ impl Object {
                b:            f32,
                texture:      Rc<Texture>,
                material:     Rc<RefCell<Box<Material + 'static>>>) -> Object {
-        let user_data = ();
         let data = ObjectData {
             color:        Point3::new(r, g, b),
-            texture:      texture,
+            texture,
             wlines:       0.0,
             wpoints:      0.0,
             draw_surface: true,
             cull:         true,
-            material:     material,
-            user_data:    Box::new(user_data)
+            material,
+            user_data:    Box::new(())
         };
 
         Object {
-            data:     data,
-            mesh:     mesh
+            data,
+            mesh
         }
     }
 

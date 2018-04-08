@@ -1,9 +1,7 @@
 use std::f32;
-use glfw::{Key, Action, MouseButton};
-use glfw;
+use glfw::{self, Key, Action, MouseButton};
 use glfw::WindowEvent;
-use na::{Point3, Vector2, Vector3, Matrix4, Isometry3, Perspective3};
-use na;
+use na::{self, Point3, Vector2, Vector3, Matrix4, Isometry3, Perspective3};
 use camera::Camera;
 
 /// Arc-ball camera mode.
@@ -192,8 +190,8 @@ impl ArcBall {
     }
 
     fn handle_left_button_displacement(&mut self, dpos: &Vector2<f32>) {
-        self.yaw   = self.yaw   + dpos.x * self.yaw_step;
-        self.pitch = self.pitch - dpos.y * self.pitch_step;
+        self.yaw += dpos.x * self.yaw_step;
+        self.pitch -= dpos.y * self.pitch_step;
 
         self.update_restrictions();
         self.update_projviews();
@@ -211,7 +209,7 @@ impl ArcBall {
     }
 
     fn handle_scroll(&mut self, off: f32) {
-        self.dist = self.dist + self.dist_step * (off) / 120.0;
+        self.dist += self.dist_step * (off) / 120.0;
         self.update_restrictions();
         self.update_projviews();
     }

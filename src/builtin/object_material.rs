@@ -1,12 +1,10 @@
 use std::ptr;
-use gl;
-use gl::types::*;
+use gl::{self, types::*};
 use na::{Point2, Point3, Vector3, Matrix3, Matrix4, Isometry3};
-use resource::Material;
 use scene::ObjectData;
 use light::Light;
 use camera::Camera;
-use resource::{Mesh, Shader, ShaderAttribute, ShaderUniform};
+use resource::{Material, Mesh, Shader, ShaderAttribute, ShaderUniform};
 
 #[path = "../error.rs"]
 mod error;
@@ -44,7 +42,7 @@ impl ObjectMaterial {
             scale:      shader.get_uniform("scale").unwrap(),
             ntransform: shader.get_uniform("ntransform").unwrap(),
             view:       shader.get_uniform("view").unwrap(),
-            shader:     shader
+            shader
         }
     }
 
@@ -59,6 +57,12 @@ impl ObjectMaterial {
         self.pos.disable();
         self.normal.disable();
         self.tex_coord.disable();
+    }
+}
+
+impl Default for ObjectMaterial {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -82,7 +86,7 @@ impl Material for ObjectMaterial {
         camera.upload(pass, &mut self.view);
 
         let pos = match *light {
-            Light::Absolute(ref p) => p.clone(),
+            Light::Absolute(ref p) => *p,
             Light::StickToCamera   => camera.eye()
         };
 
@@ -159,7 +163,7 @@ pub static OBJECT_VERTEX_SRC:   &'static str = A_VERY_LONG_STRING;
 /// Fragment shader of the default object material.
 pub static OBJECT_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str =
+const A_VERY_LONG_STRING: &str =
    "#version 120
     attribute vec3 position;
     attribute vec3 normal;
@@ -183,7 +187,7 @@ const A_VERY_LONG_STRING: &'static str =
 
 // phong-like lighting (heavily) inspired
 // by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
-const ANOTHER_VERY_LONG_STRING: &'static str =
+const ANOTHER_VERY_LONG_STRING: &str =
    "#version 120
     uniform vec3      color;
     uniform vec3      light_position;

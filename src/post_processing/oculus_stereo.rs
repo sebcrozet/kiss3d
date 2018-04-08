@@ -1,7 +1,6 @@
 //! Post processing effect to support the Oculus Rift.
 
-use gl;
-use gl::types::*;
+use gl::{self, types::*};
 use na::Vector2;
 use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, RenderTarget,
                GPUVec};
@@ -45,7 +44,7 @@ impl OculusStereo {
 
         OculusStereo {
             fbo_texture:  shader.get_uniform("fbo_texture").unwrap(),
-            fbo_vertices: fbo_vertices,
+            fbo_vertices,
             v_coord:      shader.get_attrib("v_coord").unwrap(),
             kappa_0:      shader.get_uniform("kappa_0").unwrap(),
             kappa_1:      shader.get_uniform("kappa_1").unwrap(),
@@ -53,10 +52,16 @@ impl OculusStereo {
             kappa_3:      shader.get_uniform("kappa_3").unwrap(),
             scale:        shader.get_uniform("Scale").unwrap(),
             scale_in:     shader.get_uniform("ScaleIn").unwrap(),
-            shader:       shader,
+            shader,
             h:            1f32, // will be updated in the first update
             w:            1f32, // ditto
         }
+    }
+}
+
+impl Default for OculusStereo {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

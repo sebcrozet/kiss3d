@@ -2,8 +2,7 @@ use std::rc::Rc;
 use std::cell::{Ref, RefMut, RefCell};
 use std::mem;
 use std::path::{Path, PathBuf};
-use na;
-use na::{Isometry3, Translation3, UnitQuaternion, Point2, Vector3, Point3};
+use na::{self, Isometry3, Translation3, UnitQuaternion, Point2, Vector3, Point3};
 use resource::{Mesh, MeshManager, Texture, TextureManager, Material, MaterialManager};
 use ncollide_procedural::TriMesh3;
 use ncollide_procedural as procedural;
@@ -61,12 +60,9 @@ impl SceneNodeData {
     }
 
     fn remove(&mut self, o: &SceneNode) {
-        match self.children.iter().rposition(|e| &*o.data as *const RefCell<SceneNodeData> as usize ==
+        if let Some(i) = self.children.iter().rposition(|e| &*o.data as *const RefCell<SceneNodeData> as usize ==
                                                  &*e.data as *const RefCell<SceneNodeData> as usize ) {
-            Some(i) => {
-                let _ = self.children.swap_remove(i);
-            },
-            None => { }
+            let _ = self.children.swap_remove(i);
         }
     }
 
@@ -101,12 +97,11 @@ impl SceneNodeData {
             self.world_scale     = scale.component_mul(&self.local_scale);
         }
 
-        match self.object {
-            Some(ref o) => o.render(&self.world_transform, &self.world_scale, pass, camera, light),
-            None        => { }
+        if let Some(ref o) = self.object {
+            o.render(&self.world_transform, &self.world_scale, pass, camera, light)
         }
 
-        for c in self.children.iter_mut() {
+        for c in &mut self.children {
             let mut bc = c.data_mut();
             if bc.visible {
                 bc.do_render(&self.world_transform, &self.world_scale, pass, camera, light)
@@ -324,12 +319,9 @@ impl SceneNodeData {
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
     pub fn apply_to_objects_mut<F: FnMut(&mut Object)>(&mut self, f: &mut F) {
-        match self.object {
-            Some(ref mut o) => f(o),
-            None            => { }
-        }
+        if let Some(ref mut o) = self.object { f(o) }
 
-        for c in self.children.iter_mut() {
+        for c in &mut self.children {
             c.data_mut().apply_to_objects_mut(f)
         }
     }
@@ -337,12 +329,9 @@ impl SceneNodeData {
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
     pub fn apply_to_objects<F: FnMut(&Object)>(&self, f: &mut F) {
-        match self.object {
-            Some(ref o) => f(o),
-            None        => { }
-        }
+        if let Some(ref o) = self.object { f(o) }
 
-        for c in self.children.iter() {
+        for c in &self.children {
             c.data().apply_to_objects(f)
         }
     }
@@ -374,7 +363,7 @@ impl SceneNodeData {
     /// This node local transformation.
     #[inline]
     pub fn local_transformation(&self) -> Isometry3<f32> {
-        self.local_transform.clone()
+        self.local_transform
     }
 
     /// Inverse of this node local transformation.
@@ -395,7 +384,7 @@ impl SceneNodeData {
             let mself: &mut SceneNodeData = mem::transmute(self);
             mself.update();
         }
-        self.world_transform.clone()
+        self.world_transform
     }
 
     /// The inverse of this node world transformation.
@@ -417,7 +406,7 @@ impl SceneNodeData {
     #[inline]
     pub fn append_transformation(&mut self, t: &Isometry3<f32>) {
         self.invalidate();
-        self.local_transform = t * self.local_transform
+        self.local_transform *= t
     }
 
     /// Prepends a transformation to this node local transformation.
@@ -450,7 +439,7 @@ impl SceneNodeData {
     #[inline]
     pub fn append_translation(&mut self, t: &Translation3<f32>) {
         self.invalidate();
-        self.local_transform = t * self.local_transform
+        self.local_transform *= t
     }
 
     /// Prepends a translation to this node local transformation.
@@ -483,7 +472,7 @@ impl SceneNodeData {
     #[inline]
     pub fn append_rotation(&mut self, r: &UnitQuaternion<f32>) {
         self.invalidate();
-        self.local_transform = r * self.local_transform
+        self.local_transform *= r
     }
 
     /// Appends a rotation to this node local transformation.
@@ -510,7 +499,7 @@ impl SceneNodeData {
     fn invalidate(&mut self) {
         self.up_to_date = false;
 
-        for c in self.children.iter_mut() {
+        for c in &mut self.children {
             let mut dm = c.data_mut();
 
             if dm.up_to_date {
@@ -523,8 +512,7 @@ impl SceneNodeData {
     fn update(&mut self) {
         // NOTE: makin this test
         if !self.up_to_date {
-            match self.parent {
-                Some(ref mut p) => {
+            if let Some(ref mut p) = self.parent {
                     unsafe {
                         let mut dp = (**p).borrow_mut();
 
@@ -533,9 +521,7 @@ impl SceneNodeData {
                         self.world_scale     = self.local_scale.component_mul(&dp.local_scale);
                         self.up_to_date      = true;
                         return;
-                    }
-                },
-                None => { }
+                }
             }
 
             // no parent
@@ -554,14 +540,14 @@ impl SceneNode {
                object:          Option<Object>)
                -> SceneNode {
         let data = SceneNodeData {
-            local_scale:     local_scale,
-            local_transform: local_transform,
+            local_scale,
+            local_transform,
             world_transform: local_transform,
             world_scale:     local_scale,
             visible:         true,
             up_to_date:      false,
             children:        Vec::new(),
-            object:          object,
+            object,
             parent:          None
         };
 
@@ -757,7 +743,7 @@ impl SceneNode {
                 child_scale = Vector3::from_element(1.0);
             }
 
-            for (_, mesh, mtl) in objs.into_iter() {
+            for (_, mesh, mtl) in objs {
                 let mut object = Object::new(mesh, 1.0, 1.0, 1.0, tex.clone(), mat.clone());
 
                 match mtl {
@@ -800,7 +786,7 @@ impl SceneNode {
     pub fn apply_to_scene_nodes_mut<F: FnMut(&mut SceneNode)>(&mut self, f: &mut F) {
         f(self);
 
-        for c in self.data_mut().children.iter_mut() {
+        for c in &mut self.data_mut().children {
             c.apply_to_scene_nodes_mut(f)
         }
     }
@@ -810,7 +796,7 @@ impl SceneNode {
     pub fn apply_to_scene_nodes<F: FnMut(&SceneNode)>(&self, f: &mut F) {
         f(self);
 
-        for c in self.data().children.iter() {
+        for c in &self.data().children {
             c.apply_to_scene_nodes(f)
         }
     }

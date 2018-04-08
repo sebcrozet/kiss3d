@@ -3,8 +3,7 @@
 // It has been modified to work with gl-rs, nalgebra, and rust-freetype
 
 use std::rc::Rc;
-use gl;
-use gl::types::*;
+use gl::{self, types::*};
 use na::{Vector2, Point2, Point3};
 use text::Font;
 use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, GPUVec};
@@ -22,10 +21,10 @@ struct TextRenderContext {
 impl TextRenderContext {
     pub fn new(color: Point3<f32>, font: Rc<Font>, begin: usize, size: usize) -> TextRenderContext {
         TextRenderContext {
-            color:   color,
-            font:    font,
-            begin:   begin,
-            size:    size
+            color,
+            font,
+            begin,
+            size
         }
     }
 }
@@ -55,7 +54,7 @@ impl TextRenderer {
             color:    shader.get_uniform("color").expect("Could not find color"),
             pos:      shader.get_attrib("pos").expect("Could not find pos"),
             uvs:      shader.get_attrib("uvs").expect("Could not find uvs"),
-            shader:   shader,
+            shader,
             contexts: Vec::new(),
             coords:   GPUVec::new(Vec::new(), BufferType::Array, AllocationType::StreamDraw)
         }
@@ -69,8 +68,8 @@ impl TextRenderer {
             let begin = coords.len();
 
             for (line_count, line) in text.lines().enumerate() {
-                let mut temp_pos = pos.clone();
-                temp_pos.y       = temp_pos.y + (font.height() as usize * (line_count + 1)) as f32;
+                let mut temp_pos = *pos;
+                temp_pos.y      += (font.height() as usize * (line_count + 1)) as f32;
 
                 for curr in line.chars() {
                     // XXX: do _not_ use a hashmap!
@@ -84,8 +83,8 @@ impl TextRenderer {
                     let end_w = glyph.dimensions.x;
                     let end_h = glyph.dimensions.y;
 
-                    temp_pos.x = temp_pos.x + glyph.advance.x; 
-                    temp_pos.y = temp_pos.y + glyph.advance.y; 
+                    temp_pos.x += glyph.advance.x; 
+                    temp_pos.y += glyph.advance.y; 
 
                     // Skip empty glyphs.
                     if end_w <= 0.1 || end_h <= 0.1 {
@@ -118,7 +117,7 @@ impl TextRenderer {
             let size = coords.len() - begin;
 
             if size > 0 {
-                self.contexts.push(TextRenderContext::new(color.clone(), font.clone(), begin, size));
+                self.contexts.push(TextRenderContext::new(*color, font.clone(), begin, size));
             }
         }
     }
@@ -139,12 +138,12 @@ impl TextRenderer {
         self.tex.upload(&0);
         self.invsz.upload(&Vector2::new(1.0 / width, -1.0 / height));
 
-        for ctxt in self.contexts.iter() {
+        for ctxt in &self.contexts {
             verify!(gl::BindTexture(gl::TEXTURE_2D, ctxt.font.texture_atlas()));
             verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as i32));
             verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as i32));
 
-            self.pos.bind_sub_buffer(&mut self.coords, 1, ctxt.begin + 0);
+            self.pos.bind_sub_buffer(&mut self.coords, 1, ctxt.begin);
             self.uvs.bind_sub_buffer(&mut self.coords, 1, ctxt.begin + 1);
             self.color.upload(&ctxt.color);
 
@@ -165,12 +164,18 @@ impl TextRenderer {
     }
 }
 
+impl Default for TextRenderer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// Vertex shader used by the material to display line.
 pub static TEXT_VERTEX_SRC:   &'static str = A_VERY_LONG_STRING;
 /// Fragment shader used by the material to display line.
 pub static TEXT_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str =
+const A_VERY_LONG_STRING: &str =
 "
 #version 120
 
@@ -190,7 +195,7 @@ void main() {
 }
 ";
 
-const ANOTHER_VERY_LONG_STRING: &'static str =
+const ANOTHER_VERY_LONG_STRING: &str =
 "
 #version 120
 

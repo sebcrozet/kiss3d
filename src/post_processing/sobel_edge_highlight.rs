@@ -1,7 +1,6 @@
 //! A post-processing effect to highlight edges.
 
-use gl;
-use gl::types::*;
+use gl::{self, types::*};
 use na::Vector2;
 use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, RenderTarget,
                GPUVec};
@@ -51,7 +50,7 @@ impl SobelEdgeHighlight {
             shifty:          0.0,
             zn:              0.0,
             zf:              0.0,
-            threshold:       threshold,
+            threshold,
             gl_nx:           shader.get_uniform("nx").unwrap(),
             gl_ny:           shader.get_uniform("ny").unwrap(),
             gl_fbo_depth:    shader.get_uniform("fbo_depth").unwrap(),
@@ -61,7 +60,7 @@ impl SobelEdgeHighlight {
             gl_threshold:    shader.get_uniform("threshold").unwrap(),
             gl_v_coord:      shader.get_attrib("v_coord").unwrap(),
             gl_fbo_vertices: fbo_vertices,
-            shader:          shader,
+            shader,
         }
     }
 }

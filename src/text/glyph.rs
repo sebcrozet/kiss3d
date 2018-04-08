@@ -27,11 +27,11 @@ impl Glyph {
                buffer:     Vec<u8>)
                -> Glyph {
         Glyph {
-            tex:        tex,
-            advance:    advance,
-            dimensions: dimensions,
-            offset:     offset,
-            buffer:     buffer
+            tex,
+            advance,
+            dimensions,
+            offset,
+            buffer
         }
     }
 }

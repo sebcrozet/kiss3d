@@ -1,8 +1,7 @@
 //! Wrapper for an OpenGL buffer object.
 
 use std::mem;
-use gl;
-use gl::types::*;
+use gl::{self, types::*};
 use resource::gl_primitive::GLPrimitive;
 
 #[path = "../error.rs"]
@@ -15,7 +14,7 @@ struct GLHandle {
 impl GLHandle {
     pub fn new(handle: GLuint) -> GLHandle {
         GLHandle {
-            handle: handle
+            handle
         }
     }
 
@@ -53,8 +52,8 @@ impl<T: GLPrimitive> GPUVec<T> {
         GPUVec {
             trash:      true,
             len:        data.len(),
-            buf_type:   buf_type,
-            alloc_type: alloc_type,
+            buf_type,
+            alloc_type,
             handle:     None,
             data:       Some(data)
         }
@@ -209,7 +208,7 @@ impl<T: Clone + GLPrimitive> GPUVec<T> {
     /// make the data accessible.
     #[inline]
     pub fn to_owned(&self) -> Option<Vec<T>> {
-        self.data.as_ref().map(|d| d.clone())
+        self.data.as_ref().cloned()
     }
 }
 

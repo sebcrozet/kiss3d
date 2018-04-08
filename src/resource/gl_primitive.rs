@@ -1,8 +1,7 @@
 //! Structures that a gpu buffer may contain.
 
 use std::mem;
-use gl;
-use gl::types::*;
+use gl::{self, types::*};
 use na::{Point2, Point3, Vector2, Vector3, Matrix2, Matrix3, Matrix4, Rotation2, Rotation3};
 
 #[path = "../error.rs"]
@@ -36,7 +35,7 @@ impl GLPrimitive for GLfloat {
 
     #[inline]
     fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform1f(location as GLint, self.clone()));
+        verify!(gl::Uniform1f(location as GLint, *self));
     }
 }
 
@@ -53,7 +52,7 @@ impl GLPrimitive for GLint {
 
     #[inline]
     fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform1i(location as GLint, self.clone()));
+        verify!(gl::Uniform1i(location as GLint, *self));
     }
 }
 
@@ -70,7 +69,7 @@ impl GLPrimitive for GLuint {
 
     #[inline]
     fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform1ui(location as GLint, self.clone()));
+        verify!(gl::Uniform1ui(location as GLint, *self));
     }
 }
 

@@ -1,6 +1,5 @@
 use glfw;
-use na::{Point2, Point3, Point4, Vector2, Vector3, Matrix4, Isometry3};
-use na;
+use na::{self, Point2, Point3, Point4, Vector2, Vector3, Matrix4, Isometry3};
 use resource::ShaderUniform;
 
 /// Trait every camera must implement.

@@ -4,11 +4,11 @@
 // useless for anybody else.
 // This is inspired _a lot_ by: http://en.wikibooks.org/wiki/Opengl::Programming/Post-Processing
 
-use gl;
-use gl::types::*;
+use gl::{self, types::*};
 use na::Vector2;
 use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, RenderTarget, GPUVec};
 use post_processing::post_processing_effect::PostProcessingEffect;
+use std::f32::consts::PI;
 
 #[path = "../error.rs"]
 mod error;
@@ -47,15 +47,21 @@ impl Waves {
             offset:       shader.get_uniform("offset").unwrap(),
             fbo_texture:  shader.get_uniform("fbo_texture").unwrap(),
             v_coord:      shader.get_attrib("v_coord").unwrap(),
-            fbo_vertices: fbo_vertices,
-            shader:       shader
+            fbo_vertices,
+            shader
         }
+    }
+}
+
+impl Default for Waves {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
 impl PostProcessingEffect for Waves {
     fn update(&mut self, dt: f32, _: f32, _: f32, _: f32, _: f32) {
-        self.time = self.time + dt;
+        self.time += dt;
     }
 
     fn draw(&mut self, target: &RenderTarget) {
@@ -64,7 +70,7 @@ impl PostProcessingEffect for Waves {
          */
         self.shader.use_program();
 
-        let move_amount = self.time * 2.0 * 3.14159 * 0.75;  // 3/4 of a wave cycle per second
+        let move_amount = self.time * 2.0 * PI * 0.75;  // 3/4 of a wave cycle per second
 
         self.offset.upload(&move_amount);
 

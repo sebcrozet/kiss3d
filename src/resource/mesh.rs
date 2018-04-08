@@ -3,8 +3,7 @@
 use std::sync::{Arc, RwLock};
 use gl::types::*;
 use num::Zero;
-use na::{Point2, Vector3, Point3};
-use na;
+use na::{self, Point2, Vector3, Point3};
 use ncollide_procedural::{TriMesh, TriMesh3, IndexBuffer};
 use resource::ShaderAttribute;
 use resource::gpu_vector::{GPUVec, AllocationType, BufferType};
@@ -110,10 +109,10 @@ impl Mesh {
                                 uvs:     Arc<RwLock<GPUVec<Point2<GLfloat>>>>)
                                 -> Mesh {
         Mesh {
-            coords:  coords,
-            faces:   faces,
-            normals: normals,
-            uvs:     uvs
+            coords,
+            faces,
+            normals,
+            uvs
         }
     }
 
@@ -220,18 +219,18 @@ impl Mesh {
                 normal = cross
             }
     
-            normals[f.x as usize] = normals[f.x as usize] + normal;
-            normals[f.y as usize] = normals[f.y as usize] + normal;
-            normals[f.z as usize] = normals[f.z as usize] + normal;
+            normals[f.x as usize] += normal;
+            normals[f.y as usize] += normal;
+            normals[f.z as usize] += normal;
     
-            divisor[f.x as usize] = divisor[f.x as usize] + 1.0;
-            divisor[f.y as usize] = divisor[f.y as usize] + 1.0;
-            divisor[f.z as usize] = divisor[f.z as usize] + 1.0;
+            divisor[f.x as usize] += 1.0;
+            divisor[f.y as usize] += 1.0;
+            divisor[f.z as usize] += 1.0;
         }
     
         // ... and compute the mean
         for (n, divisor) in normals.iter_mut().zip(divisor.iter()) {
-            *n = *n / *divisor
+            *n /= *divisor
         }
     }
 }

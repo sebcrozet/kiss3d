@@ -1,8 +1,7 @@
 //! Resource manager to allocate and switch between framebuffers.
 
 use std::ptr;
-use gl;
-use gl::types::*;
+use gl::{self, types::*};
 
 #[path = "../error.rs"]
 mod error;
@@ -66,6 +65,7 @@ impl RenderTarget {
 
 /// A framebuffer manager. It is a simple to to switch between an off-screen framebuffer and the
 /// default (window) framebuffer.
+#[derive(Default)]
 pub struct FramebufferManager {
     curr_fbo:   GLuint,
     curr_color: GLuint,
@@ -88,7 +88,7 @@ impl FramebufferManager {
             curr_fbo:   0,
             curr_color: 0,
             curr_depth: 0,
-            fbo:        fbo
+            fbo
         }
     }
 
