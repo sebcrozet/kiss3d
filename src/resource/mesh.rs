@@ -3,11 +3,11 @@
 use std::sync::{Arc, RwLock};
 use gl::types::*;
 use num::Zero;
-use na::{Point2, Vector3, Point3};
+use na::{Point2, Point3, Vector3};
 use na;
-use ncollide_procedural::{TriMesh, TriMesh3, IndexBuffer};
+use ncollide3d::procedural::{IndexBuffer, TriMesh};
 use resource::ShaderAttribute;
-use resource::gpu_vector::{GPUVec, AllocationType, BufferType};
+use resource::gpu_vector::{AllocationType, BufferType, GPUVec};
 use std::iter;
 
 #[path = "../error.rs"]
@@ -17,36 +17,53 @@ mod error;
 ///
 /// It also contains the GPU location of those buffers.
 pub struct Mesh {
-    coords:  Arc<RwLock<GPUVec<Point3<GLfloat>>>>,
-    faces:   Arc<RwLock<GPUVec<Point3<GLuint>>>>,
+    coords: Arc<RwLock<GPUVec<Point3<GLfloat>>>>,
+    faces: Arc<RwLock<GPUVec<Point3<GLuint>>>>,
     normals: Arc<RwLock<GPUVec<Vector3<GLfloat>>>>,
-    uvs:     Arc<RwLock<GPUVec<Point2<GLfloat>>>>
+    uvs: Arc<RwLock<GPUVec<Point2<GLfloat>>>>,
 }
 
 impl Mesh {
     /// Creates a new mesh.
     ///
     /// If the normals and uvs are not given, they are automatically computed.
-    pub fn new(coords:       Vec<Point3<GLfloat>>,
-               faces:        Vec<Point3<GLuint>>,
-               normals:      Option<Vec<Vector3<GLfloat>>>,
-               uvs:          Option<Vec<Point2<GLfloat>>>,
-               dynamic_draw: bool)
-               -> Mesh {
+    pub fn new(
+        coords: Vec<Point3<GLfloat>>,
+        faces: Vec<Point3<GLuint>>,
+        normals: Option<Vec<Vector3<GLfloat>>>,
+        uvs: Option<Vec<Point2<GLfloat>>>,
+        dynamic_draw: bool,
+    ) -> Mesh {
         let normals = match normals {
             Some(ns) => ns,
-            None     => Mesh::compute_normals_array(&coords[..], &faces[..])
+            None => Mesh::compute_normals_array(&coords[..], &faces[..]),
         };
 
         let uvs = match uvs {
             Some(us) => us,
-            None     => iter::repeat(Point2::origin()).take(coords.len()).collect()
+            None => iter::repeat(Point2::origin()).take(coords.len()).collect(),
         };
 
-        let location = if dynamic_draw { AllocationType::DynamicDraw } else { AllocationType::StaticDraw };
-        let cs = Arc::new(RwLock::new(GPUVec::new(coords, BufferType::Array, location)));
-        let fs = Arc::new(RwLock::new(GPUVec::new(faces, BufferType::ElementArray, location)));
-        let ns = Arc::new(RwLock::new(GPUVec::new(normals, BufferType::Array, location)));
+        let location = if dynamic_draw {
+            AllocationType::DynamicDraw
+        } else {
+            AllocationType::StaticDraw
+        };
+        let cs = Arc::new(RwLock::new(GPUVec::new(
+            coords,
+            BufferType::Array,
+            location,
+        )));
+        let fs = Arc::new(RwLock::new(GPUVec::new(
+            faces,
+            BufferType::ElementArray,
+            location,
+        )));
+        let ns = Arc::new(RwLock::new(GPUVec::new(
+            normals,
+            BufferType::Array,
+            location,
+        )));
         let us = Arc::new(RwLock::new(GPUVec::new(uvs, BufferType::Array, location)));
 
         Mesh::new_with_gpu_vectors(cs, fs, ns, us)
@@ -55,32 +72,37 @@ impl Mesh {
     /// Creates a new mesh from a mesh descr.
     ///
     /// In the normals and uvs are not given, they are automatically computed.
-    pub fn from_trimesh(mesh: TriMesh3<GLfloat>, dynamic_draw: bool) -> Mesh {
+    pub fn from_trimesh(mesh: TriMesh<GLfloat>, dynamic_draw: bool) -> Mesh {
         let mut mesh = mesh;
 
         mesh.unify_index_buffer();
 
-        let TriMesh { coords, normals, uvs, indices } = mesh;
-        
+        let TriMesh {
+            coords,
+            normals,
+            uvs,
+            indices,
+        } = mesh;
+
         Mesh::new(coords, indices.unwrap_unified(), normals, uvs, dynamic_draw)
     }
 
     /// Creates a triangle mesh from this mesh.
-    pub fn to_trimesh(&self) -> Option<TriMesh3<GLfloat>> {
-        let unload_coords  = !self.coords.read().unwrap().is_on_ram();
-        let unload_faces   = !self.faces.read().unwrap().is_on_ram();
+    pub fn to_trimesh(&self) -> Option<TriMesh<GLfloat>> {
+        let unload_coords = !self.coords.read().unwrap().is_on_ram();
+        let unload_faces = !self.faces.read().unwrap().is_on_ram();
         let unload_normals = !self.normals.read().unwrap().is_on_ram();
-        let unload_uvs     = !self.uvs.read().unwrap().is_on_ram();
+        let unload_uvs = !self.uvs.read().unwrap().is_on_ram();
 
         self.coords.write().unwrap().load_to_ram();
         self.faces.write().unwrap().load_to_ram();
         self.normals.write().unwrap().load_to_ram();
         self.uvs.write().unwrap().load_to_ram();
 
-        let coords  = self.coords.read().unwrap().to_owned();
-        let faces   = self.faces.read().unwrap().to_owned();
+        let coords = self.coords.read().unwrap().to_owned();
+        let faces = self.faces.read().unwrap().to_owned();
         let normals = self.normals.read().unwrap().to_owned();
-        let uvs     = self.uvs.read().unwrap().to_owned();
+        let uvs = self.uvs.read().unwrap().to_owned();
 
         if unload_coords {
             self.coords.write().unwrap().unload_from_ram();
@@ -97,23 +119,28 @@ impl Mesh {
 
         if coords.is_none() || faces.is_none() {
             None
-        }
-        else {
-            Some(TriMesh::new(coords.unwrap(), normals, uvs, Some(IndexBuffer::Unified(faces.unwrap()))))
+        } else {
+            Some(TriMesh::new(
+                coords.unwrap(),
+                normals,
+                uvs,
+                Some(IndexBuffer::Unified(faces.unwrap())),
+            ))
         }
     }
 
     /// Creates a new mesh. Arguments set to `None` are automatically computed.
-    pub fn new_with_gpu_vectors(coords:  Arc<RwLock<GPUVec<Point3<GLfloat>>>>,
-                                faces:   Arc<RwLock<GPUVec<Point3<GLuint>>>>,
-                                normals: Arc<RwLock<GPUVec<Vector3<GLfloat>>>>,
-                                uvs:     Arc<RwLock<GPUVec<Point2<GLfloat>>>>)
-                                -> Mesh {
+    pub fn new_with_gpu_vectors(
+        coords: Arc<RwLock<GPUVec<Point3<GLfloat>>>>,
+        faces: Arc<RwLock<GPUVec<Point3<GLuint>>>>,
+        normals: Arc<RwLock<GPUVec<Vector3<GLfloat>>>>,
+        uvs: Arc<RwLock<GPUVec<Point2<GLfloat>>>>,
+    ) -> Mesh {
         Mesh {
-            coords:  coords,
-            faces:   faces,
+            coords: coords,
+            faces: faces,
             normals: normals,
-            uvs:     uvs
+            uvs: uvs,
         }
     }
 
@@ -138,10 +165,12 @@ impl Mesh {
     }
 
     /// Binds this mesh buffers to vertex attributes.
-    pub fn bind(&mut self,
-                coords:  &mut ShaderAttribute<Point3<GLfloat>>,
-                normals: &mut ShaderAttribute<Vector3<GLfloat>>,
-                uvs:     &mut ShaderAttribute<Point2<GLfloat>>) {
+    pub fn bind(
+        &mut self,
+        coords: &mut ShaderAttribute<Point3<GLfloat>>,
+        normals: &mut ShaderAttribute<Vector3<GLfloat>>,
+        uvs: &mut ShaderAttribute<Point2<GLfloat>>,
+    ) {
         self.bind_coords(coords);
         self.bind_normals(normals);
         self.bind_uvs(uvs);
@@ -163,9 +192,11 @@ impl Mesh {
 
     /// Recompute this mesh normals.
     pub fn recompute_normals(&mut self) {
-        Mesh::compute_normals(&self.coords.read().unwrap().data().as_ref().unwrap()[..],
-                              &self.faces.read().unwrap().data().as_ref().unwrap()[..],
-                              self.normals.write().unwrap().data_mut().as_mut().unwrap());
+        Mesh::compute_normals(
+            &self.coords.read().unwrap().data().as_ref().unwrap()[..],
+            &self.faces.read().unwrap().data().as_ref().unwrap()[..],
+            self.normals.write().unwrap().data_mut().as_mut().unwrap(),
+        );
     }
 
     /// This mesh faces.
@@ -189,46 +220,50 @@ impl Mesh {
     }
 
     /// Computes normals from a set of faces.
-    pub fn compute_normals_array(coordinates: &[Point3<GLfloat>], faces: &[Point3<GLuint>]) -> Vec<Vector3<GLfloat>> {
+    pub fn compute_normals_array(
+        coordinates: &[Point3<GLfloat>],
+        faces: &[Point3<GLuint>],
+    ) -> Vec<Vector3<GLfloat>> {
         let mut res = Vec::new();
-    
+
         Mesh::compute_normals(coordinates, faces, &mut res);
-    
+
         res
     }
-    
+
     /// Computes normals from a set of faces.
-    pub fn compute_normals(coordinates: &[Point3<GLfloat>],
-                           faces:       &[Point3<GLuint>],
-                           normals:     &mut Vec<Vector3<GLfloat>>) {
-        let mut divisor:Vec<f32> = iter::repeat(0f32).take(coordinates.len()).collect();
-    
+    pub fn compute_normals(
+        coordinates: &[Point3<GLfloat>],
+        faces: &[Point3<GLuint>],
+        normals: &mut Vec<Vector3<GLfloat>>,
+    ) {
+        let mut divisor: Vec<f32> = iter::repeat(0f32).take(coordinates.len()).collect();
+
         normals.clear();
         normals.extend(iter::repeat(Vector3::<GLfloat>::zero()).take(coordinates.len()));
-    
+
         // Accumulate normals ...
         for f in faces.iter() {
-            let edge1  = coordinates[f.y as usize] - coordinates[f.x as usize];
-            let edge2  = coordinates[f.z as usize] - coordinates[f.x as usize];
-            let cross  = edge1.cross(&edge2);
+            let edge1 = coordinates[f.y as usize] - coordinates[f.x as usize];
+            let edge2 = coordinates[f.z as usize] - coordinates[f.x as usize];
+            let cross = edge1.cross(&edge2);
             let normal;
-    
+
             if !cross.is_zero() {
                 normal = na::normalize(&cross)
-            }
-            else {
+            } else {
                 normal = cross
             }
-    
+
             normals[f.x as usize] = normals[f.x as usize] + normal;
             normals[f.y as usize] = normals[f.y as usize] + normal;
             normals[f.z as usize] = normals[f.z as usize] + normal;
-    
+
             divisor[f.x as usize] = divisor[f.x as usize] + 1.0;
             divisor[f.y as usize] = divisor[f.y as usize] + 1.0;
             divisor[f.z as usize] = divisor[f.z as usize] + 1.0;
         }
-    
+
         // ... and compute the mean
         for (n, divisor) in normals.iter_mut().zip(divisor.iter()) {
             *n = *n / *divisor

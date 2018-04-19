@@ -86,14 +86,14 @@ I’d love to see people improving this library for their own needs. However, ke
 #![allow(missing_copy_implementations)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
 
-extern crate libc;
-extern crate gl;
-extern crate num_traits as num;
-extern crate nalgebra as na;
-extern crate ncollide_procedural;
-extern crate image;
 extern crate freetype;
+extern crate gl;
 extern crate glfw;
+extern crate image;
+extern crate libc;
+extern crate nalgebra as na;
+extern crate ncollide3d;
+extern crate num_traits as num;
 
 mod error;
 pub mod window;
