@@ -1,12 +1,12 @@
 use std::rc::Rc;
-use std::cell::{Ref, RefMut, RefCell};
+use std::cell::{Ref, RefCell, RefMut};
 use std::mem;
 use std::path::{Path, PathBuf};
 use na;
-use na::{Isometry3, Translation3, UnitQuaternion, Point2, Vector3, Point3};
-use resource::{Mesh, MeshManager, Texture, TextureManager, Material, MaterialManager};
-use ncollide_procedural::TriMesh3;
-use ncollide_procedural as procedural;
+use na::{Isometry3, Point2, Point3, Translation3, UnitQuaternion, Vector3};
+use resource::{Material, MaterialManager, Mesh, MeshManager, Texture, TextureManager};
+use ncollide3d::procedural::TriMesh;
+use ncollide3d::procedural;
 use scene::Object;
 use camera::Camera;
 use light::Light;
@@ -15,16 +15,16 @@ use light::Light;
 // will not be needed any more.
 /// The datas contained by a `SceneNode`.
 pub struct SceneNodeData {
-    local_scale:     Vector3<f32>,
+    local_scale: Vector3<f32>,
     local_transform: Isometry3<f32>,
-    world_scale:     Vector3<f32>,
+    world_scale: Vector3<f32>,
     world_transform: Isometry3<f32>,
-    visible:         bool,
-    up_to_date:      bool,
-    children:        Vec<SceneNode>,
-    object:          Option<Object>,
+    visible: bool,
+    up_to_date: bool,
+    children: Vec<SceneNode>,
+    object: Option<Object>,
     // FIXME: use Weak pointers instead of the raw pointer.
-    parent:          Option<*const RefCell<SceneNodeData>>
+    parent: Option<*const RefCell<SceneNodeData>>,
 }
 
 /// A node of the scene graph.
@@ -32,9 +32,8 @@ pub struct SceneNodeData {
 /// This may represent a group of other nodes, and/or contain an object that can be rendered.
 #[derive(Clone)]
 pub struct SceneNode {
-    data:   Rc<RefCell<SceneNodeData>>,
+    data: Rc<RefCell<SceneNodeData>>,
 }
-
 
 impl SceneNodeData {
     // XXX: Because `node.borrow_mut().parent = Some(self.data.downgrade())`
@@ -52,21 +51,21 @@ impl SceneNodeData {
 
     // XXX: this exists because of a similar bug as `set_parent`.
     fn remove_from_parent(&mut self, to_remove: &SceneNode) {
-        let _ = self.parent.as_ref().map(|p| {
-            unsafe {
-                let mut bp = (**p).borrow_mut();
-                bp.remove(to_remove)
-            }
+        let _ = self.parent.as_ref().map(|p| unsafe {
+            let mut bp = (**p).borrow_mut();
+            bp.remove(to_remove)
         });
     }
 
     fn remove(&mut self, o: &SceneNode) {
-        match self.children.iter().rposition(|e| &*o.data as *const RefCell<SceneNodeData> as usize ==
-                                                 &*e.data as *const RefCell<SceneNodeData> as usize ) {
+        match self.children.iter().rposition(|e| {
+            &*o.data as *const RefCell<SceneNodeData> as usize
+                == &*e.data as *const RefCell<SceneNodeData> as usize
+        }) {
             Some(i) => {
                 let _ = self.children.swap_remove(i);
-            },
-            None => { }
+            }
+            None => {}
         }
     }
 
@@ -89,27 +88,41 @@ impl SceneNodeData {
         }
     }
 
-    fn do_render(&mut self,
-                 transform:    &Isometry3<f32>,
-                 scale:        &Vector3<f32>,
-                 pass:         usize,
-                 camera:       &mut Camera,
-                 light:        &Light) {
+    fn do_render(
+        &mut self,
+        transform: &Isometry3<f32>,
+        scale: &Vector3<f32>,
+        pass: usize,
+        camera: &mut Camera,
+        light: &Light,
+    ) {
         if !self.up_to_date {
-            self.up_to_date      = true;
+            self.up_to_date = true;
             self.world_transform = *transform * self.local_transform;
-            self.world_scale     = scale.component_mul(&self.local_scale);
+            self.world_scale = scale.component_mul(&self.local_scale);
         }
 
         match self.object {
-            Some(ref o) => o.render(&self.world_transform, &self.world_scale, pass, camera, light),
-            None        => { }
+            Some(ref o) => o.render(
+                &self.world_transform,
+                &self.world_scale,
+                pass,
+                camera,
+                light,
+            ),
+            None => {}
         }
 
         for c in self.children.iter_mut() {
             let mut bc = c.data_mut();
             if bc.visible {
-                bc.do_render(&self.world_transform, &self.world_scale, pass, camera, light)
+                bc.do_render(
+                    &self.world_transform,
+                    &self.world_scale,
+                    pass,
+                    camera,
+                    light,
+                )
             }
         }
     }
@@ -132,7 +145,8 @@ impl SceneNodeData {
     /// Fails of this node does not contains an object.
     #[inline]
     pub fn get_object(&self) -> &Object {
-        self.object().expect("This scene node does not contain an Object.")
+        self.object()
+            .expect("This scene node does not contain an Object.")
     }
 
     /// A mutable reference to the object possibly contained by this node.
@@ -141,7 +155,8 @@ impl SceneNodeData {
     /// Fails of this node does not contains an object.
     #[inline]
     pub fn get_object_mut(&mut self) -> &mut Object {
-        self.object_mut().expect("This scene node does not contain an Object.")
+        self.object_mut()
+            .expect("This scene node does not contain an Object.")
     }
 
     ///////////////////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HERE
@@ -166,8 +181,11 @@ impl SceneNodeData {
     /// The material must already have been registered as `name`.
     #[inline]
     pub fn set_material_with_name(&mut self, name: &str) {
-        let material = MaterialManager::get_global_manager(|tm| tm.get(name).unwrap_or_else(
-            || panic!("Invalid attempt to use the unregistered material: {}", name)));
+        let material = MaterialManager::get_global_manager(|tm| {
+            tm.get(name).unwrap_or_else(|| {
+                panic!("Invalid attempt to use the unregistered material: {}", name)
+            })
+        });
 
         self.set_material(material)
     }
@@ -310,8 +328,11 @@ impl SceneNodeData {
     /// The texture must already have been registered as `name`.
     #[inline]
     pub fn set_texture_with_name(&mut self, name: &str) {
-        let texture = TextureManager::get_global_manager(|tm| tm.get(name).unwrap_or_else(
-            || panic!("Invalid attempt to use the unregistered texture: {}", name)));
+        let texture = TextureManager::get_global_manager(|tm| {
+            tm.get(name).unwrap_or_else(|| {
+                panic!("Invalid attempt to use the unregistered texture: {}", name)
+            })
+        });
 
         self.set_texture(texture)
     }
@@ -326,7 +347,7 @@ impl SceneNodeData {
     pub fn apply_to_objects_mut<F: FnMut(&mut Object)>(&mut self, f: &mut F) {
         match self.object {
             Some(ref mut o) => f(o),
-            None            => { }
+            None => {}
         }
 
         for c in self.children.iter_mut() {
@@ -339,7 +360,7 @@ impl SceneNodeData {
     pub fn apply_to_objects<F: FnMut(&Object)>(&self, f: &mut F) {
         match self.object {
             Some(ref o) => f(o),
-            None        => { }
+            None => {}
         }
 
         for c in self.children.iter() {
@@ -524,49 +545,47 @@ impl SceneNodeData {
         // NOTE: makin this test
         if !self.up_to_date {
             match self.parent {
-                Some(ref mut p) => {
-                    unsafe {
-                        let mut dp = (**p).borrow_mut();
+                Some(ref mut p) => unsafe {
+                    let mut dp = (**p).borrow_mut();
 
-                        dp.update();
-                        self.world_transform = self.local_transform * dp.world_transform;
-                        self.world_scale     = self.local_scale.component_mul(&dp.local_scale);
-                        self.up_to_date      = true;
-                        return;
-                    }
+                    dp.update();
+                    self.world_transform = self.local_transform * dp.world_transform;
+                    self.world_scale = self.local_scale.component_mul(&dp.local_scale);
+                    self.up_to_date = true;
+                    return;
                 },
-                None => { }
+                None => {}
             }
 
             // no parent
             self.world_transform = self.local_transform;
-            self.world_scale     = self.local_scale;
-            self.up_to_date      = true;
+            self.world_scale = self.local_scale;
+            self.up_to_date = true;
         }
     }
-
 }
 
 impl SceneNode {
     /// Creates a new scene node that is not rooted.
-    pub fn new(local_scale:     Vector3<f32>,
-               local_transform: Isometry3<f32>,
-               object:          Option<Object>)
-               -> SceneNode {
+    pub fn new(
+        local_scale: Vector3<f32>,
+        local_transform: Isometry3<f32>,
+        object: Option<Object>,
+    ) -> SceneNode {
         let data = SceneNodeData {
-            local_scale:     local_scale,
+            local_scale: local_scale,
             local_transform: local_transform,
             world_transform: local_transform,
-            world_scale:     local_scale,
-            visible:         true,
-            up_to_date:      false,
-            children:        Vec::new(),
-            object:          object,
-            parent:          None
+            world_scale: local_scale,
+            visible: true,
+            up_to_date: false,
+            children: Vec::new(),
+            object: object,
+            parent: None,
         };
 
         SceneNode {
-            data:   Rc::new(RefCell::new(data)),
+            data: Rc::new(RefCell::new(data)),
         }
     }
 
@@ -611,7 +630,10 @@ impl SceneNode {
     /// # Failures:
     /// Fails if `node` already has a parent.
     pub fn add_child(&mut self, node: SceneNode) {
-        assert!(node.data().is_root(), "The added node must not have a parent yet.");
+        assert!(
+            node.data().is_root(),
+            "The added node must not have a parent yet."
+        );
 
         let mut node = node;
         node.data_mut().set_parent(&*self.data);
@@ -619,7 +641,12 @@ impl SceneNode {
     }
 
     /// Adds a node containing an object to this node children.
-    pub fn add_object(&mut self, local_scale: Vector3<f32>, local_transform: Isometry3<f32>, object: Object) -> SceneNode {
+    pub fn add_object(
+        &mut self,
+        local_scale: Vector3<f32>,
+        local_transform: Isometry3<f32>,
+        object: Object,
+    ) -> SceneNode {
         let node = SceneNode::new(local_scale, local_transform, Some(object));
 
         self.add_child(node.clone());
@@ -681,7 +708,10 @@ impl SceneNode {
     /// * `h` - the capsule height
     /// * `r` - the capsule caps radius
     pub fn add_capsule(&mut self, r: f32, h: f32) -> SceneNode {
-        self.add_trimesh(procedural::capsule(&(r * 2.0), &h, 50, 50), Vector3::from_element(1.0))
+        self.add_trimesh(
+            procedural::capsule(&(r * 2.0), &h, 50, 50),
+            Vector3::from_element(1.0),
+        )
     }
 
     /// Adds a double-sided quad to this node children. The quad is initially centered at (0, 0,
@@ -697,14 +727,22 @@ impl SceneNode {
     /// which will be placed vertically on each line. Must not be `0`.
     /// update.
     pub fn add_quad(&mut self, w: f32, h: f32, usubdivs: usize, vsubdivs: usize) -> SceneNode {
-        let mut node = self.add_trimesh(procedural::quad(w, h, usubdivs, vsubdivs), Vector3::from_element(1.0));
+        let mut node = self.add_trimesh(
+            procedural::quad(w, h, usubdivs, vsubdivs),
+            Vector3::from_element(1.0),
+        );
         node.enable_backface_culling(false);
 
         node
     }
 
     /// Adds a double-sided quad with the specified vertices.
-    pub fn add_quad_with_vertices(&mut self, vertices: &[Point3<f32>], nhpoints: usize, nvpoints: usize) -> SceneNode {
+    pub fn add_quad_with_vertices(
+        &mut self,
+        vertices: &[Point3<f32>],
+        nhpoints: usize,
+        nvpoints: usize,
+    ) -> SceneNode {
         let geom = procedural::quad_with_vertices(vertices, nhpoints, nvpoints);
 
         let mut node = self.add_trimesh(geom, Vector3::from_element(1.0));
@@ -714,22 +752,29 @@ impl SceneNode {
     }
 
     /// Creates and adds a new object using the geometry registered as `geometry_name`.
-    pub fn add_geom_with_name(&mut self, geometry_name: &str, scale: Vector3<f32>) -> Option<SceneNode> {
+    pub fn add_geom_with_name(
+        &mut self,
+        geometry_name: &str,
+        scale: Vector3<f32>,
+    ) -> Option<SceneNode> {
         MeshManager::get_global_manager(|mm| mm.get(geometry_name)).map(|g| self.add_mesh(g, scale))
     }
 
     /// Creates and adds a new object to this node children using a mesh.
     pub fn add_mesh(&mut self, mesh: Rc<RefCell<Mesh>>, scale: Vector3<f32>) -> SceneNode {
-        let tex    = TextureManager::get_global_manager(|tm| tm.get_default());
-        let mat    = MaterialManager::get_global_manager(|mm| mm.get_default());
+        let tex = TextureManager::get_global_manager(|tm| tm.get_default());
+        let mat = MaterialManager::get_global_manager(|mm| mm.get_default());
         let object = Object::new(mesh, 1.0, 1.0, 1.0, tex, mat);
 
         self.add_object(scale, na::one(), object)
     }
 
     /// Creates and adds a new object using a mesh descriptor.
-    pub fn add_trimesh(&mut self, descr: TriMesh3<f32>, scale: Vector3<f32>) -> SceneNode {
-        self.add_mesh(Rc::new(RefCell::new(Mesh::from_trimesh(descr, false))), scale)
+    pub fn add_trimesh(&mut self, descr: TriMesh<f32>, scale: Vector3<f32>) -> SceneNode {
+        self.add_mesh(
+            Rc::new(RefCell::new(Mesh::from_trimesh(descr, false))),
+            scale,
+        )
     }
 
     /// Creates and adds multiple nodes created from an obj file.
@@ -750,8 +795,7 @@ impl SceneNode {
             if self_root {
                 root = self.clone();
                 child_scale = scale;
-            }
-            else {
+            } else {
                 root = SceneNode::new(scale, na::one(), None);
                 self.add_child(root.clone());
                 child_scale = Vector3::from_element(1.0);
@@ -761,7 +805,7 @@ impl SceneNode {
                 let mut object = Object::new(mesh, 1.0, 1.0, 1.0, tex.clone(), mat.clone());
 
                 match mtl {
-                    None      => { },
+                    None => {}
                     Some(mtl) => {
                         object.set_color(mtl.diffuse.x, mtl.diffuse.y, mtl.diffuse.z);
 
@@ -785,9 +829,12 @@ impl SceneNode {
             }
 
             if self_root {
-                root.data().children.last().expect("There was nothing on this obj file.").clone()
-            }
-            else {
+                root.data()
+                    .children
+                    .last()
+                    .expect("There was nothing on this obj file.")
+                    .clone()
+            } else {
                 root
             }
         });

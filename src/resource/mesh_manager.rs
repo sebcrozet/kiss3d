@@ -5,8 +5,8 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::path::Path;
-use ncollide_procedural::TriMesh3;
-use ncollide_procedural as procedural;
+use ncollide3d::procedural::TriMesh;
+use ncollide3d::procedural;
 use resource::Mesh;
 use loader::obj;
 use loader::mtl::MtlMaterial;
@@ -20,14 +20,14 @@ thread_local!(static KEY_MESH_MANAGER: RefCell<MeshManager> = RefCell::new(MeshM
 /// It keeps a cache of already-loaded meshes. Note that this is only a cache, nothing more.
 /// Thus, its usage is not required to load meshes.
 pub struct MeshManager {
-    meshes:       HashMap<String, Rc<RefCell<Mesh>>>
+    meshes: HashMap<String, Rc<RefCell<Mesh>>>,
 }
 
 impl MeshManager {
     /// Creates a new mesh manager.
     pub fn new() -> MeshManager {
         let mut res = MeshManager {
-            meshes: HashMap::new()
+            meshes: HashMap::new(),
         };
 
         let _ = res.add_trimesh(procedural::unit_sphere(50, 50, true), false, "sphere");
@@ -54,7 +54,12 @@ impl MeshManager {
     }
 
     /// Adds a mesh with the specified mesh descriptor and name.
-    pub fn add_trimesh(&mut self, descr: TriMesh3<f32>, dynamic_draw: bool, name: &str) -> Rc<RefCell<Mesh>> {
+    pub fn add_trimesh(
+        &mut self,
+        descr: TriMesh<f32>,
+        dynamic_draw: bool,
+        name: &str,
+    ) -> Rc<RefCell<Mesh>> {
         let mesh = Mesh::from_trimesh(descr, dynamic_draw);
         let mesh = Rc::new(RefCell::new(mesh));
 
@@ -70,8 +75,11 @@ impl MeshManager {
 
     // FIXME: is this the right place to put this?
     /// Loads the meshes described by an obj file.
-    pub fn load_obj(path: &Path, mtl_dir: &Path, geometry_name: &str)
-                    -> IoResult<Vec<(String, Rc<RefCell<Mesh>>, Option<MtlMaterial>)>> {
+    pub fn load_obj(
+        path: &Path,
+        mtl_dir: &Path,
+        geometry_name: &str,
+    ) -> IoResult<Vec<(String, Rc<RefCell<Mesh>>, Option<MtlMaterial>)>> {
         obj::parse_file(path, mtl_dir, geometry_name).map(|ms| {
             let mut res = Vec::new();
 
