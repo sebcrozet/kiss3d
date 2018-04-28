@@ -120,7 +120,7 @@ impl Window {
     pub fn set_framerate_limit(&mut self, fps: Option<u64>) {
         self.max_dur_per_frame = fps.map(|f| { assert!(f != 0); Duration::from_millis(1000 / f) })
     }
-    
+
     /// Set window title
     pub fn set_title(&mut self, title: &str) {
         self.window.set_title(title)
@@ -150,6 +150,12 @@ impl Window {
         self.background.x = r;
         self.background.y = g;
         self.background.z = b;
+    }
+
+    /// Set the size of all subsequent points to be drawn until the next time this function is envoked.
+    #[inline]
+    pub fn set_point_size(&mut self, pt_size: f32) {
+        self.point_renderer.set_point_size(pt_size);
     }
 
     // XXX: remove this (moved to the render_frame).
@@ -418,7 +424,7 @@ impl Window {
                            mem::transmute(&mut out[0]));
         }
     }
-    
+
     /// Get the current screen as an image
     pub fn snap_image(&self) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
         let (width, height) = self.window.get_size();
@@ -630,6 +636,7 @@ fn init_gl() {
     verify!(gl::FrontFace(gl::CCW));
     verify!(gl::Enable(gl::DEPTH_TEST));
     verify!(gl::Enable(gl::SCISSOR_TEST));
+    verify!(gl::Enable(gl::PROGRAM_POINT_SIZE));
     verify!(gl::DepthFunc(gl::LEQUAL));
     verify!(gl::FrontFace(gl::CCW));
     verify!(gl::Enable(gl::CULL_FACE));
