@@ -33,10 +33,15 @@ impl PointRenderer {
             shader:     shader
         }
     }
- 
+
     /// Indicates whether some points have to be drawn.
     pub fn needs_rendering(&self) -> bool {
         self.points.len() != 0
+    }
+
+    /// Sets the point size for the rendered points.
+    pub fn set_point_size(&mut self, pt_size: f32) {
+        verify!(gl::PointSize(pt_size));
     }
 
     /// Adds a line to be drawn during the next frame. Lines are not persistent between frames.
