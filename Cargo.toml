@@ -30,9 +30,9 @@ glfw        = "0.19"
 image       = "0.17"
 libc        = "0.2"
 nalgebra    = "0.14"
-ncollide3d  = { path = "../ncollide-dev/build/ncollide3d"}
+ncollide3d  = "0.15"
 num-traits = "0.1"
 
 [dev-dependencies]
 rand = "0.4"
-ncollide2d  = { path = "../ncollide-dev/build/ncollide2d"}
+ncollide2d  = "0.15"
