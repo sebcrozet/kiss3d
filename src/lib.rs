@@ -68,7 +68,7 @@ Simply add the following to your `Cargo.toml` file:
 
 ```text
 [dependencies]
-kiss3d = "0.8"
+kiss3d = "0.15"
 ```
 
 ## Contributions
@@ -95,15 +95,15 @@ extern crate nalgebra as na;
 extern crate ncollide3d;
 extern crate num_traits as num;
 
-mod error;
-pub mod window;
-pub mod scene;
-pub mod camera;
-pub mod light;
-pub mod loader;
-pub mod line_renderer;
-pub mod point_renderer;
 pub mod builtin;
+pub mod camera;
+mod error;
+pub mod light;
+pub mod line_renderer;
+pub mod loader;
+pub mod point_renderer;
 pub mod post_processing;
 pub mod resource;
+pub mod scene;
 pub mod text;
+pub mod window;
