@@ -3,30 +3,34 @@
 use gl;
 use gl::types::*;
 use na::Vector2;
-use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, RenderTarget, GPUVec};
 use post_processing::post_processing_effect::PostProcessingEffect;
+use resource::{
+    AllocationType, BufferType, GPUVec, RenderTarget, Shader, ShaderAttribute, ShaderUniform,
+};
 
 #[path = "../error.rs"]
 mod error;
 
 /// Post processing effect which turns everything in gray scales.
 pub struct Grayscales {
-    shader:       Shader,
-    fbo_texture:  ShaderUniform<GLint>,
-    v_coord:      ShaderAttribute<Vector2<f32>>,
-    fbo_vertices: GPUVec<Vector2<GLfloat>>,
+    shader: Shader,
+    fbo_texture: ShaderUniform<i32>,
+    v_coord: ShaderAttribute<Vector2<f32>>,
+    fbo_vertices: GPUVec<Vector2<f32>>,
 }
 
 impl Grayscales {
     /// Creates a new `Grayscales` post processing effect.
     pub fn new() -> Grayscales {
-        let fbo_vertices: Vec<Vector2<GLfloat>>  = vec!(
+        let fbo_vertices: Vec<Vector2<f32>> = vec![
             Vector2::new(-1.0, -1.0),
             Vector2::new(1.0, -1.0),
-            Vector2::new(-1.0,  1.0),
-            Vector2::new(1.0,  1.0));
+            Vector2::new(-1.0, 1.0),
+            Vector2::new(1.0, 1.0),
+        ];
 
-        let mut fbo_vertices = GPUVec::new(fbo_vertices, BufferType::Array, AllocationType::StaticDraw);
+        let mut fbo_vertices =
+            GPUVec::new(fbo_vertices, BufferType::Array, AllocationType::StaticDraw);
         fbo_vertices.load_to_gpu();
         fbo_vertices.unload_from_ram();
 
@@ -35,17 +39,16 @@ impl Grayscales {
         shader.use_program();
 
         Grayscales {
-            fbo_texture:  shader.get_uniform("fbo_texture").unwrap(),
-            v_coord:      shader.get_attrib("v_coord").unwrap(),
+            fbo_texture: shader.get_uniform("fbo_texture").unwrap(),
+            v_coord: shader.get_attrib("v_coord").unwrap(),
             fbo_vertices: fbo_vertices,
-            shader:       shader
+            shader: shader,
         }
     }
 }
 
 impl PostProcessingEffect for Grayscales {
-    fn update(&mut self, _: f32, _: f32, _: f32, _: f32, _: f32) {
-    }
+    fn update(&mut self, _: f32, _: f32, _: f32, _: f32, _: f32) {}
 
     fn draw(&mut self, target: &RenderTarget) {
         self.v_coord.enable();
@@ -67,26 +70,23 @@ impl PostProcessingEffect for Grayscales {
     }
 }
 
-static VERTEX_SHADER: &'static str =
-    "#version 120
+static VERTEX_SHADER: &'static str = "#version 120
     attribute vec2    v_coord;
     uniform sampler2D fbo_texture;
     varying vec2      f_texcoord;
-     
+
     void main(void) {
       gl_Position = vec4(v_coord, 0.0, 1.0);
       f_texcoord  = (v_coord + 1.0) / 2.0;
     }";
 
-static FRAGMENT_SHADER: &'static str =
-    "#version 120
+static FRAGMENT_SHADER: &'static str = "#version 120
     uniform sampler2D fbo_texture;
     varying vec2      f_texcoord;
-    
+
     void main(void) {
       vec2 texcoord = f_texcoord;
       vec4 color    = texture2D(fbo_texture, texcoord);
       float gray    =  0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
       gl_FragColor  = vec4(gray, gray, gray, color.a);
     }";
-

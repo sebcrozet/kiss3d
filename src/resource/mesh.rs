@@ -1,14 +1,14 @@
 //! Data structure of a scene node geometry.
 
-use std::sync::{Arc, RwLock};
 use gl::types::*;
-use num::Zero;
-use na::{Point2, Point3, Vector3};
 use na;
+use na::{Point2, Point3, Vector3};
 use ncollide3d::procedural::{IndexBuffer, TriMesh};
-use resource::ShaderAttribute;
+use num::Zero;
 use resource::gpu_vector::{AllocationType, BufferType, GPUVec};
+use resource::ShaderAttribute;
 use std::iter;
+use std::sync::{Arc, RwLock};
 
 #[path = "../error.rs"]
 mod error;
@@ -17,10 +17,10 @@ mod error;
 ///
 /// It also contains the GPU location of those buffers.
 pub struct Mesh {
-    coords: Arc<RwLock<GPUVec<Point3<GLfloat>>>>,
-    faces: Arc<RwLock<GPUVec<Point3<GLuint>>>>,
-    normals: Arc<RwLock<GPUVec<Vector3<GLfloat>>>>,
-    uvs: Arc<RwLock<GPUVec<Point2<GLfloat>>>>,
+    coords: Arc<RwLock<GPUVec<Point3<f32>>>>,
+    faces: Arc<RwLock<GPUVec<Point3<u32>>>>,
+    normals: Arc<RwLock<GPUVec<Vector3<f32>>>>,
+    uvs: Arc<RwLock<GPUVec<Point2<f32>>>>,
 }
 
 impl Mesh {
@@ -28,10 +28,10 @@ impl Mesh {
     ///
     /// If the normals and uvs are not given, they are automatically computed.
     pub fn new(
-        coords: Vec<Point3<GLfloat>>,
-        faces: Vec<Point3<GLuint>>,
-        normals: Option<Vec<Vector3<GLfloat>>>,
-        uvs: Option<Vec<Point2<GLfloat>>>,
+        coords: Vec<Point3<f32>>,
+        faces: Vec<Point3<u32>>,
+        normals: Option<Vec<Vector3<f32>>>,
+        uvs: Option<Vec<Point2<f32>>>,
         dynamic_draw: bool,
     ) -> Mesh {
         let normals = match normals {
@@ -72,7 +72,7 @@ impl Mesh {
     /// Creates a new mesh from a mesh descr.
     ///
     /// In the normals and uvs are not given, they are automatically computed.
-    pub fn from_trimesh(mesh: TriMesh<GLfloat>, dynamic_draw: bool) -> Mesh {
+    pub fn from_trimesh(mesh: TriMesh<f32>, dynamic_draw: bool) -> Mesh {
         let mut mesh = mesh;
 
         mesh.unify_index_buffer();
@@ -88,7 +88,7 @@ impl Mesh {
     }
 
     /// Creates a triangle mesh from this mesh.
-    pub fn to_trimesh(&self) -> Option<TriMesh<GLfloat>> {
+    pub fn to_trimesh(&self) -> Option<TriMesh<f32>> {
         let unload_coords = !self.coords.read().unwrap().is_on_ram();
         let unload_faces = !self.faces.read().unwrap().is_on_ram();
         let unload_normals = !self.normals.read().unwrap().is_on_ram();
@@ -131,10 +131,10 @@ impl Mesh {
 
     /// Creates a new mesh. Arguments set to `None` are automatically computed.
     pub fn new_with_gpu_vectors(
-        coords: Arc<RwLock<GPUVec<Point3<GLfloat>>>>,
-        faces: Arc<RwLock<GPUVec<Point3<GLuint>>>>,
-        normals: Arc<RwLock<GPUVec<Vector3<GLfloat>>>>,
-        uvs: Arc<RwLock<GPUVec<Point2<GLfloat>>>>,
+        coords: Arc<RwLock<GPUVec<Point3<f32>>>>,
+        faces: Arc<RwLock<GPUVec<Point3<u32>>>>,
+        normals: Arc<RwLock<GPUVec<Vector3<f32>>>>,
+        uvs: Arc<RwLock<GPUVec<Point2<f32>>>>,
     ) -> Mesh {
         Mesh {
             coords: coords,
@@ -145,17 +145,17 @@ impl Mesh {
     }
 
     /// Binds this mesh vertex coordinates buffer to a vertex attribute.
-    pub fn bind_coords(&mut self, coords: &mut ShaderAttribute<Point3<GLfloat>>) {
+    pub fn bind_coords(&mut self, coords: &mut ShaderAttribute<Point3<f32>>) {
         coords.bind(&mut *self.coords.write().unwrap());
     }
 
     /// Binds this mesh vertex normals buffer to a vertex attribute.
-    pub fn bind_normals(&mut self, normals: &mut ShaderAttribute<Vector3<GLfloat>>) {
+    pub fn bind_normals(&mut self, normals: &mut ShaderAttribute<Vector3<f32>>) {
         normals.bind(&mut *self.normals.write().unwrap());
     }
 
     /// Binds this mesh vertex uvs buffer to a vertex attribute.
-    pub fn bind_uvs(&mut self, uvs: &mut ShaderAttribute<Point2<GLfloat>>) {
+    pub fn bind_uvs(&mut self, uvs: &mut ShaderAttribute<Point2<f32>>) {
         uvs.bind(&mut *self.uvs.write().unwrap());
     }
 
@@ -167,9 +167,9 @@ impl Mesh {
     /// Binds this mesh buffers to vertex attributes.
     pub fn bind(
         &mut self,
-        coords: &mut ShaderAttribute<Point3<GLfloat>>,
-        normals: &mut ShaderAttribute<Vector3<GLfloat>>,
-        uvs: &mut ShaderAttribute<Point2<GLfloat>>,
+        coords: &mut ShaderAttribute<Point3<f32>>,
+        normals: &mut ShaderAttribute<Vector3<f32>>,
+        uvs: &mut ShaderAttribute<Point2<f32>>,
     ) {
         self.bind_coords(coords);
         self.bind_normals(normals);
@@ -200,30 +200,30 @@ impl Mesh {
     }
 
     /// This mesh faces.
-    pub fn faces(&self) -> &Arc<RwLock<GPUVec<Point3<GLuint>>>> {
+    pub fn faces(&self) -> &Arc<RwLock<GPUVec<Point3<u32>>>> {
         &self.faces
     }
 
     /// This mesh normals.
-    pub fn normals(&self) -> &Arc<RwLock<GPUVec<Vector3<GLfloat>>>> {
+    pub fn normals(&self) -> &Arc<RwLock<GPUVec<Vector3<f32>>>> {
         &self.normals
     }
 
     /// This mesh vertex coordinates.
-    pub fn coords(&self) -> &Arc<RwLock<GPUVec<Point3<GLfloat>>>> {
+    pub fn coords(&self) -> &Arc<RwLock<GPUVec<Point3<f32>>>> {
         &self.coords
     }
 
     /// This mesh texture coordinates.
-    pub fn uvs(&self) -> &Arc<RwLock<GPUVec<Point2<GLfloat>>>> {
+    pub fn uvs(&self) -> &Arc<RwLock<GPUVec<Point2<f32>>>> {
         &self.uvs
     }
 
     /// Computes normals from a set of faces.
     pub fn compute_normals_array(
-        coordinates: &[Point3<GLfloat>],
-        faces: &[Point3<GLuint>],
-    ) -> Vec<Vector3<GLfloat>> {
+        coordinates: &[Point3<f32>],
+        faces: &[Point3<u32>],
+    ) -> Vec<Vector3<f32>> {
         let mut res = Vec::new();
 
         Mesh::compute_normals(coordinates, faces, &mut res);
@@ -233,14 +233,14 @@ impl Mesh {
 
     /// Computes normals from a set of faces.
     pub fn compute_normals(
-        coordinates: &[Point3<GLfloat>],
-        faces: &[Point3<GLuint>],
-        normals: &mut Vec<Vector3<GLfloat>>,
+        coordinates: &[Point3<f32>],
+        faces: &[Point3<u32>],
+        normals: &mut Vec<Vector3<f32>>,
     ) {
         let mut divisor: Vec<f32> = iter::repeat(0f32).take(coordinates.len()).collect();
 
         normals.clear();
-        normals.extend(iter::repeat(Vector3::<GLfloat>::zero()).take(coordinates.len()));
+        normals.extend(iter::repeat(Vector3::<f32>::zero()).take(coordinates.len()));
 
         // Accumulate normals ...
         for f in faces.iter() {

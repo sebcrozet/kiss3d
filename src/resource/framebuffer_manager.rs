@@ -1,8 +1,8 @@
 //! Resource manager to allocate and switch between framebuffers.
 
-use std::ptr;
 use gl;
 use gl::types::*;
+use std::ptr;
 
 #[path = "../error.rs"]
 mod error;
@@ -12,29 +12,29 @@ pub enum RenderTarget {
     /// The screen (main framebuffer).
     Screen,
     /// An off-screen buffer.
-    Offscreen(OffscreenBuffers)
+    Offscreen(OffscreenBuffers),
 }
 
 /// OpenGL identifiers to an off-screen buffer.
 pub struct OffscreenBuffers {
-    texture: GLuint,
-    depth:   GLuint
+    texture: u32,
+    depth: u32,
 }
 
 impl RenderTarget {
     /// Returns an opengl handle to the off-screen texture buffer.
-    pub fn texture_id(&self) -> GLuint {
+    pub fn texture_id(&self) -> u32 {
         match *self {
-            RenderTarget::Screen           => 0,
-            RenderTarget::Offscreen(ref o) => o.texture
+            RenderTarget::Screen => 0,
+            RenderTarget::Offscreen(ref o) => o.texture,
         }
     }
 
     /// Returns an opengl handle to the off-screen depth buffer.
-    pub fn depth_id(&self) -> GLuint {
+    pub fn depth_id(&self) -> u32 {
         match *self {
-            RenderTarget::Screen           => 0,
-            RenderTarget::Offscreen(ref o) => o.depth
+            RenderTarget::Screen => 0,
+            RenderTarget::Offscreen(ref o) => o.depth,
         }
     }
 
@@ -43,20 +43,38 @@ impl RenderTarget {
         match *self {
             RenderTarget::Screen => {
                 verify!(gl::Viewport(0, 0, w as i32, h as i32));
-            },
+            }
             RenderTarget::Offscreen(ref o) => {
                 // Update the fbo
                 verify!(gl::BindTexture(gl::TEXTURE_2D, o.texture));
                 unsafe {
-                    verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA as GLint, w as GLint, h as GLint, 0,
-                    gl::RGBA, gl::UNSIGNED_BYTE, ptr::null()));
+                    verify!(gl::TexImage2D(
+                        gl::TEXTURE_2D,
+                        0,
+                        gl::RGBA as i32,
+                        w as i32,
+                        h as i32,
+                        0,
+                        gl::RGBA,
+                        gl::UNSIGNED_BYTE,
+                        ptr::null()
+                    ));
                 }
                 verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
                 verify!(gl::BindTexture(gl::TEXTURE_2D, o.depth));
                 unsafe {
-                    verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::DEPTH_COMPONENT as GLint, w as GLint, h as GLint, 0,
-                    gl::DEPTH_COMPONENT, gl::UNSIGNED_BYTE, ptr::null()));
+                    verify!(gl::TexImage2D(
+                        gl::TEXTURE_2D,
+                        0,
+                        gl::DEPTH_COMPONENT as i32,
+                        w as i32,
+                        h as i32,
+                        0,
+                        gl::DEPTH_COMPONENT,
+                        gl::UNSIGNED_BYTE,
+                        ptr::null()
+                    ));
                 }
                 verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
             }
@@ -67,66 +85,125 @@ impl RenderTarget {
 /// A framebuffer manager. It is a simple to to switch between an off-screen framebuffer and the
 /// default (window) framebuffer.
 pub struct FramebufferManager {
-    curr_fbo:   GLuint,
-    curr_color: GLuint,
-    curr_depth: GLuint,
-    fbo:        GLuint
+    curr_fbo: u32,
+    curr_color: u32,
+    curr_depth: u32,
+    fbo: u32,
 }
 
 impl FramebufferManager {
     /// Creates a new framebuffer manager.
     pub fn new() -> FramebufferManager {
         // create an off-screen framebuffer
-        let mut fbo: GLuint = 0;
+        let mut fbo: u32 = 0;
 
-        unsafe { gl::GenFramebuffers(1, &mut fbo); }
+        unsafe {
+            gl::GenFramebuffers(1, &mut fbo);
+        }
 
         // ensure that the current framebuffer is the screen
         verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
 
         FramebufferManager {
-            curr_fbo:   0,
+            curr_fbo: 0,
             curr_color: 0,
             curr_depth: 0,
-            fbo:        fbo
+            fbo: fbo,
         }
     }
 
     /// Creates a new render target. A render target is the combination of a color buffer and a
     /// depth buffer.
     pub fn new_render_target(width: usize, height: usize) -> RenderTarget {
-        let mut fbo_texture: GLuint = 0;
-        let mut fbo_depth:   GLuint = 0;
+        let mut fbo_texture: u32 = 0;
+        let mut fbo_depth: u32 = 0;
 
         /* Texture */
         verify!(gl::ActiveTexture(gl::TEXTURE0));
-        unsafe { verify!(gl::GenTextures(1, &mut fbo_texture)); }
-        verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_texture));
-        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
-        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));
-        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));
-        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
         unsafe {
-            verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA as GLint, width as GLint, height as GLint,
-            0, gl::RGBA, gl::UNSIGNED_BYTE, ptr::null()));
+            verify!(gl::GenTextures(1, &mut fbo_texture));
+        }
+        verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_texture));
+        verify!(gl::TexParameteri(
+            gl::TEXTURE_2D,
+            gl::TEXTURE_MAG_FILTER,
+            gl::LINEAR as i32
+        ));
+        verify!(gl::TexParameteri(
+            gl::TEXTURE_2D,
+            gl::TEXTURE_MIN_FILTER,
+            gl::LINEAR as i32
+        ));
+        verify!(gl::TexParameteri(
+            gl::TEXTURE_2D,
+            gl::TEXTURE_WRAP_S,
+            gl::CLAMP_TO_EDGE as i32
+        ));
+        verify!(gl::TexParameteri(
+            gl::TEXTURE_2D,
+            gl::TEXTURE_WRAP_T,
+            gl::CLAMP_TO_EDGE as i32
+        ));
+        unsafe {
+            verify!(gl::TexImage2D(
+                gl::TEXTURE_2D,
+                0,
+                gl::RGBA as i32,
+                width as i32,
+                height as i32,
+                0,
+                gl::RGBA,
+                gl::UNSIGNED_BYTE,
+                ptr::null()
+            ));
         }
         verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
         /* Depth buffer */
         verify!(gl::ActiveTexture(gl::TEXTURE1));
-        unsafe { verify!(gl::GenTextures(1, &mut fbo_depth)); }
-        verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_depth));
-        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
-        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));
-        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));
-        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
         unsafe {
-            verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::DEPTH_COMPONENT as GLint, width as GLint, height as GLint,
-            0, gl::DEPTH_COMPONENT, gl::UNSIGNED_BYTE, ptr::null()));
+            verify!(gl::GenTextures(1, &mut fbo_depth));
+        }
+        verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_depth));
+        verify!(gl::TexParameteri(
+            gl::TEXTURE_2D,
+            gl::TEXTURE_MAG_FILTER,
+            gl::LINEAR as i32
+        ));
+        verify!(gl::TexParameteri(
+            gl::TEXTURE_2D,
+            gl::TEXTURE_MIN_FILTER,
+            gl::LINEAR as i32
+        ));
+        verify!(gl::TexParameteri(
+            gl::TEXTURE_2D,
+            gl::TEXTURE_WRAP_S,
+            gl::CLAMP_TO_EDGE as i32
+        ));
+        verify!(gl::TexParameteri(
+            gl::TEXTURE_2D,
+            gl::TEXTURE_WRAP_T,
+            gl::CLAMP_TO_EDGE as i32
+        ));
+        unsafe {
+            verify!(gl::TexImage2D(
+                gl::TEXTURE_2D,
+                0,
+                gl::DEPTH_COMPONENT as i32,
+                width as i32,
+                height as i32,
+                0,
+                gl::DEPTH_COMPONENT,
+                gl::UNSIGNED_BYTE,
+                ptr::null()
+            ));
         }
         verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
 
-        RenderTarget::Offscreen(OffscreenBuffers { texture: fbo_texture, depth: fbo_depth })
+        RenderTarget::Offscreen(OffscreenBuffers {
+            texture: fbo_texture,
+            depth: fbo_depth,
+        })
     }
 
     /// Returns the render target associated with the screen.
@@ -141,34 +218,38 @@ impl FramebufferManager {
                 self.do_select(0);
                 self.curr_color = 0;
                 self.curr_depth = 0;
-            },
+            }
             RenderTarget::Offscreen(ref o) => {
                 let fbo = self.fbo;
                 self.do_select(fbo);
 
                 if self.curr_color != o.texture {
-                    verify!(gl::FramebufferTexture2D(gl::FRAMEBUFFER,
-                                                     gl::COLOR_ATTACHMENT0,
-                                                     gl::TEXTURE_2D,
-                                                     o.texture,
-                                                     0));
+                    verify!(gl::FramebufferTexture2D(
+                        gl::FRAMEBUFFER,
+                        gl::COLOR_ATTACHMENT0,
+                        gl::TEXTURE_2D,
+                        o.texture,
+                        0
+                    ));
                     self.curr_color = o.texture;
                 }
 
                 if self.curr_depth != o.depth {
-                    verify!(gl::FramebufferTexture2D(gl::FRAMEBUFFER,
-                                                     gl::DEPTH_ATTACHMENT,
-                                                     gl::TEXTURE_2D,
-                                                     o.depth,
-                                                     0));
+                    verify!(gl::FramebufferTexture2D(
+                        gl::FRAMEBUFFER,
+                        gl::DEPTH_ATTACHMENT,
+                        gl::TEXTURE_2D,
+                        o.depth,
+                        0
+                    ));
 
                     self.curr_depth = o.depth;
                 }
             }
         }
     }
-    
-    fn do_select(&mut self, fbo: GLuint) {
+
+    fn do_select(&mut self, fbo: u32) {
         if self.curr_fbo != fbo {
             verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, fbo));
 
@@ -179,7 +260,7 @@ impl FramebufferManager {
 
 impl Drop for FramebufferManager {
     fn drop(&mut self) {
-        unsafe { 
+        unsafe {
             if gl::IsFramebuffer(gl::FRAMEBUFFER) != 0 {
                 verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
                 verify!(gl::DeleteFramebuffers(1, &self.fbo));

@@ -3,33 +3,33 @@
  * FIXME: this file is too big. Some heavy refactoring need to be done here.
  */
 
-use std::mem;
-use std::thread;
-use std::time::{Duration, Instant};
-use glfw;
-use glfw::{Action, Context, Key, WindowEvent, WindowMode};
-use std::cell::RefCell;
-use std::rc::Rc;
-use std::sync::mpsc::Receiver;
-use std::sync::{Once, ONCE_INIT};
-use std::path::Path;
-use std::iter::repeat;
+use camera::ArcBall;
+use camera::Camera;
 use gl;
 use gl::types::*;
-use image::{ImageBuffer, Rgb};
+use glfw;
+use glfw::{Action, Context, Key, WindowEvent, WindowMode};
 use image::imageops;
+use image::{ImageBuffer, Rgb};
+use light::Light;
+use line_renderer::LineRenderer;
 use na::{Point2, Point3, Vector2, Vector3};
 use ncollide3d::procedural::TriMesh;
-use camera::Camera;
-use scene::SceneNode;
-use line_renderer::LineRenderer;
 use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, Mesh, RenderTarget, Texture, TextureManager};
-use light::Light;
+use scene::SceneNode;
+use std::cell::RefCell;
+use std::iter::repeat;
+use std::mem;
+use std::path::Path;
+use std::rc::Rc;
+use std::sync::mpsc::Receiver;
+use std::sync::{Once, ONCE_INIT};
+use std::thread;
+use std::time::{Duration, Instant};
 use text::{Font, TextRenderer};
 use window::EventManager;
-use camera::ArcBall;
 
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
@@ -45,7 +45,7 @@ pub struct Window {
     max_dur_per_frame: Option<Duration>,
     scene: SceneNode,
     light_mode: Light, // FIXME: move that to the scene graph
-    background: Vector3<GLfloat>,
+    background: Vector3<f32>,
     line_renderer: LineRenderer,
     point_renderer: PointRenderer,
     text_renderer: TextRenderer,
@@ -148,7 +148,7 @@ impl Window {
 
     /// Sets the background color.
     #[inline]
-    pub fn set_background_color(&mut self, r: f32, g: GLfloat, b: f32) {
+    pub fn set_background_color(&mut self, r: f32, g: f32, b: f32) {
         self.background.x = r;
         self.background.y = g;
         self.background.z = b;
@@ -235,7 +235,7 @@ impl Window {
     /// * `wx` - the cube extent along the z axis
     /// * `wy` - the cube extent along the y axis
     /// * `wz` - the cube extent along the z axis
-    pub fn add_cube(&mut self, wx: GLfloat, wy: GLfloat, wz: GLfloat) -> SceneNode {
+    pub fn add_cube(&mut self, wx: f32, wy: f32, wz: f32) -> SceneNode {
         self.scene.add_cube(wx, wy, wz)
     }
 
@@ -243,7 +243,7 @@ impl Window {
     ///
     /// # Arguments
     /// * `r` - the sphere radius
-    pub fn add_sphere(&mut self, r: GLfloat) -> SceneNode {
+    pub fn add_sphere(&mut self, r: f32) -> SceneNode {
         self.scene.add_sphere(r)
     }
 
@@ -253,7 +253,7 @@ impl Window {
     /// # Arguments
     /// * `h` - the cone height
     /// * `r` - the cone base radius
-    pub fn add_cone(&mut self, r: GLfloat, h: GLfloat) -> SceneNode {
+    pub fn add_cone(&mut self, r: f32, h: f32) -> SceneNode {
         self.scene.add_cone(r, h)
     }
 
@@ -263,7 +263,7 @@ impl Window {
     /// # Arguments
     /// * `h` - the cylinder height
     /// * `r` - the cylinder base radius
-    pub fn add_cylinder(&mut self, r: GLfloat, h: GLfloat) -> SceneNode {
+    pub fn add_cylinder(&mut self, r: f32, h: f32) -> SceneNode {
         self.scene.add_cylinder(r, h)
     }
 
@@ -273,7 +273,7 @@ impl Window {
     /// # Arguments
     /// * `h` - the capsule height
     /// * `r` - the capsule caps radius
-    pub fn add_capsule(&mut self, r: GLfloat, h: GLfloat) -> SceneNode {
+    pub fn add_capsule(&mut self, r: f32, h: f32) -> SceneNode {
         self.scene.add_capsule(r, h)
     }
 
@@ -348,12 +348,15 @@ impl Window {
     // FIXME: make this pub?
     fn do_new(title: &str, hide: bool, width: u32, height: u32) -> Window {
         let glfw = Self::context();
-        let (mut window, events) = glfw.create_window(width, height, title, WindowMode::Windowed)
+        let (mut window, events) = glfw
+            .create_window(width, height, title, WindowMode::Windowed)
             .expect("Unable to open a glfw window.");
 
         window.make_current();
 
-        verify!(gl::load_with(|name| window.get_proc_address(name) as *const _));
+        verify!(gl::load_with(
+            |name| window.get_proc_address(name) as *const _
+        ));
         init_gl();
 
         let mut usr_window = Window {

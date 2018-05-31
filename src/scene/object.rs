@@ -1,28 +1,28 @@
 //! Data structure of a scene node.
 
+use camera::Camera;
+use gl::types::*;
+use light::Light;
+use na::{Isometry3, Point2, Point3, Vector3};
+use resource::{Material, Mesh, Texture, TextureManager};
 use std::any::Any;
 use std::cell::RefCell;
-use std::rc::Rc;
 use std::path::Path;
-use gl::types::*;
-use na::{Point3, Point2, Vector3, Isometry3};
-use resource::{Texture, TextureManager, Material, Mesh};
-use camera::Camera;
-use light::Light;
+use std::rc::Rc;
 
 #[path = "../error.rs"]
 mod error;
 
 /// Set of data identifying a scene node.
 pub struct ObjectData {
-    material:     Rc<RefCell<Box<Material + 'static>>>,
-    texture:      Rc<Texture>,
-    color:        Point3<f32>,
-    wlines:       f32,
-    wpoints:      f32,
+    material: Rc<RefCell<Box<Material + 'static>>>,
+    texture: Rc<Texture>,
+    color: Point3<f32>,
+    wlines: f32,
+    wpoints: f32,
     draw_surface: bool,
-    cull:         bool,
-    user_data:    Box<Any + 'static>
+    cull: bool,
+    user_data: Box<Any + 'static>,
 }
 
 impl ObjectData {
@@ -77,43 +77,47 @@ impl ObjectData {
 pub struct Object {
     // FIXME: should Mesh and Object be merged?
     // (thus removing the need of ObjectData at all.)
-    data:     ObjectData,
-    mesh:     Rc<RefCell<Mesh>>
+    data: ObjectData,
+    mesh: Rc<RefCell<Mesh>>,
 }
 
 impl Object {
     #[doc(hidden)]
-    pub fn new(mesh:         Rc<RefCell<Mesh>>,
-               r:            f32,
-               g:            f32,
-               b:            f32,
-               texture:      Rc<Texture>,
-               material:     Rc<RefCell<Box<Material + 'static>>>) -> Object {
+    pub fn new(
+        mesh: Rc<RefCell<Mesh>>,
+        r: f32,
+        g: f32,
+        b: f32,
+        texture: Rc<Texture>,
+        material: Rc<RefCell<Box<Material + 'static>>>,
+    ) -> Object {
         let user_data = ();
         let data = ObjectData {
-            color:        Point3::new(r, g, b),
-            texture:      texture,
-            wlines:       0.0,
-            wpoints:      0.0,
+            color: Point3::new(r, g, b),
+            texture: texture,
+            wlines: 0.0,
+            wpoints: 0.0,
             draw_surface: true,
-            cull:         true,
-            material:     material,
-            user_data:    Box::new(user_data)
+            cull: true,
+            material: material,
+            user_data: Box::new(user_data),
         };
 
         Object {
-            data:     data,
-            mesh:     mesh
+            data: data,
+            mesh: mesh,
         }
     }
 
     #[doc(hidden)]
-    pub fn render(&self,
-                  transform: &Isometry3<f32>,
-                  scale:     &Vector3<f32>,
-                  pass:      usize,
-                  camera:    &mut Camera,
-                  light:     &Light) {
+    pub fn render(
+        &self,
+        transform: &Isometry3<f32>,
+        scale: &Vector3<f32>,
+        pass: usize,
+        camera: &mut Camera,
+        light: &Light,
+    ) {
         self.data.material.borrow_mut().render(
             pass,
             transform,
@@ -121,7 +125,8 @@ impl Object {
             camera,
             light,
             &self.data,
-            &mut *self.mesh.borrow_mut());
+            &mut *self.mesh.borrow_mut(),
+        );
     }
 
     /// Gets the data of this object.
@@ -204,16 +209,28 @@ impl Object {
 
     /// Mutably access the object's vertices.
     #[inline(always)]
-    pub fn modify_vertices<F: FnMut(&mut Vec<Point3<GLfloat>>)>(&mut self, f: &mut F) {
+    pub fn modify_vertices<F: FnMut(&mut Vec<Point3<f32>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh.coords().write().unwrap().data_mut().as_mut().map(|coords| f(coords));
+        let _ = bmesh
+            .coords()
+            .write()
+            .unwrap()
+            .data_mut()
+            .as_mut()
+            .map(|coords| f(coords));
     }
 
     /// Access the object's vertices.
     #[inline(always)]
-    pub fn read_vertices<F: FnMut(&[Point3<GLfloat>])>(&self, f: &mut F) {
+    pub fn read_vertices<F: FnMut(&[Point3<f32>])>(&self, f: &mut F) {
         let bmesh = self.mesh.borrow();
-        let _ = bmesh.coords().read().unwrap().data().as_ref().map(|coords| f(&coords[..]));
+        let _ = bmesh
+            .coords()
+            .read()
+            .unwrap()
+            .data()
+            .as_ref()
+            .map(|coords| f(&coords[..]));
     }
 
     /// Recomputes the normals of this object's mesh.
@@ -224,46 +241,81 @@ impl Object {
 
     /// Mutably access the object's normals.
     #[inline(always)]
-    pub fn modify_normals<F: FnMut(&mut Vec<Vector3<GLfloat>>)>(&mut self, f: &mut F) {
+    pub fn modify_normals<F: FnMut(&mut Vec<Vector3<f32>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh.normals().write().unwrap().data_mut().as_mut().map(|normals| f(normals));
+        let _ = bmesh
+            .normals()
+            .write()
+            .unwrap()
+            .data_mut()
+            .as_mut()
+            .map(|normals| f(normals));
     }
 
     /// Access the object's normals.
     #[inline(always)]
-    pub fn read_normals<F: FnMut(&[Vector3<GLfloat>])>(&self, f: &mut F) {
+    pub fn read_normals<F: FnMut(&[Vector3<f32>])>(&self, f: &mut F) {
         let bmesh = self.mesh.borrow();
-        let _ = bmesh.normals().read().unwrap().data().as_ref().map(|normals| f(&normals[..]));
+        let _ = bmesh
+            .normals()
+            .read()
+            .unwrap()
+            .data()
+            .as_ref()
+            .map(|normals| f(&normals[..]));
     }
 
     /// Mutably access the object's faces.
     #[inline(always)]
-    pub fn modify_faces<F: FnMut(&mut Vec<Point3<GLuint>>)>(&mut self, f: &mut F) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u32>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh.faces().write().unwrap().data_mut().as_mut().map(|faces| f(faces));
+        let _ = bmesh
+            .faces()
+            .write()
+            .unwrap()
+            .data_mut()
+            .as_mut()
+            .map(|faces| f(faces));
     }
 
     /// Access the object's faces.
     #[inline(always)]
-    pub fn read_faces<F: FnMut(&[Point3<GLuint>])>(&self, f: &mut F) {
+    pub fn read_faces<F: FnMut(&[Point3<u32>])>(&self, f: &mut F) {
         let bmesh = self.mesh.borrow();
-        let _ = bmesh.faces().read().unwrap().data().as_ref().map(|faces| f(&faces[..]));
+        let _ = bmesh
+            .faces()
+            .read()
+            .unwrap()
+            .data()
+            .as_ref()
+            .map(|faces| f(&faces[..]));
     }
 
     /// Mutably access the object's texture coordinates.
     #[inline(always)]
-    pub fn modify_uvs<F: FnMut(&mut Vec<Point2<GLfloat>>)>(&mut self, f: &mut F) {
+    pub fn modify_uvs<F: FnMut(&mut Vec<Point2<f32>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh.uvs().write().unwrap().data_mut().as_mut().map(|uvs| f(uvs));
+        let _ = bmesh
+            .uvs()
+            .write()
+            .unwrap()
+            .data_mut()
+            .as_mut()
+            .map(|uvs| f(uvs));
     }
 
     /// Access the object's texture coordinates.
     #[inline(always)]
-    pub fn read_uvs<F: FnMut(&[Point2<GLfloat>])>(&self, f: &mut F) {
+    pub fn read_uvs<F: FnMut(&[Point2<f32>])>(&self, f: &mut F) {
         let bmesh = self.mesh.borrow();
-        let _ = bmesh.uvs().read().unwrap().data().as_ref().map(|uvs| f(&uvs[..]));
+        let _ = bmesh
+            .uvs()
+            .read()
+            .unwrap()
+            .data()
+            .as_ref()
+            .map(|uvs| f(&uvs[..]));
     }
-
 
     /// Sets the color of the object.
     ///
@@ -293,8 +345,11 @@ impl Object {
     /// The texture must already have been registered as `name`.
     #[inline]
     pub fn set_texture_with_name(&mut self, name: &str) {
-        let texture = TextureManager::get_global_manager(|tm| tm.get(name).unwrap_or_else(
-            || panic!("Invalid attempt to use the unregistered texture: {}", name)));
+        let texture = TextureManager::get_global_manager(|tm| {
+            tm.get(name).unwrap_or_else(|| {
+                panic!("Invalid attempt to use the unregistered texture: {}", name)
+            })
+        });
 
         self.set_texture(texture)
     }

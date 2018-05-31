@@ -1,42 +1,46 @@
 //! A resource manager to load textures.
 
-use std::cell::RefCell;
-use std::mem;
-use std::rc::Rc;
-use std::collections::HashMap;
-use std::collections::hash_map::Entry;
-use std::path::Path;
 use gl;
 use gl::types::*;
 use image::{self, DynamicImage};
+use std::cell::RefCell;
+use std::collections::hash_map::Entry;
+use std::collections::HashMap;
+use std::mem;
+use std::path::Path;
+use std::rc::Rc;
 
 #[path = "../error.rs"]
 mod error;
 
 /// A gpu texture. It contains the texture id provided by opengl and is automatically released.
 pub struct Texture {
-    id: GLuint
+    id: u32,
 }
 
 impl Texture {
     /// Allocates a new texture on the gpu. The texture is not configured.
     pub fn new() -> Rc<Texture> {
-        let mut id: GLuint = 0;
+        let mut id: u32 = 0;
 
-        unsafe { verify!(gl::GenTextures(1, &mut id)); }
+        unsafe {
+            verify!(gl::GenTextures(1, &mut id));
+        }
 
         Rc::new(Texture { id: id })
     }
 
     /// The opengl-provided texture id.
-    pub fn id(&self) -> GLuint {
+    pub fn id(&self) -> u32 {
         self.id
     }
 }
 
 impl Drop for Texture {
     fn drop(&mut self) {
-       unsafe { verify!(gl::DeleteTextures(1, &self.id)); }
+        unsafe {
+            verify!(gl::DeleteTextures(1, &self.id));
+        }
     }
 }
 
@@ -47,31 +51,56 @@ thread_local!(static KEY_TEXTURE_MANAGER: RefCell<TextureManager> = RefCell::new
 /// It keeps a cache of already-loaded textures, and can load new textures.
 pub struct TextureManager {
     default_texture: Rc<Texture>,
-    textures:        HashMap<String, Rc<Texture>>,
+    textures: HashMap<String, Rc<Texture>>,
 }
 
 impl TextureManager {
     /// Creates a new texture manager.
     pub fn new() -> TextureManager {
         let default_tex = Texture::new();
-        let default_tex_pixels: [ GLfloat; 3 ] = [ 1.0, 1.0, 1.0 ];
+        let default_tex_pixels: [f32; 3] = [1.0, 1.0, 1.0];
         verify!(gl::ActiveTexture(gl::TEXTURE0));
         verify!(gl::BindTexture(gl::TEXTURE_2D, default_tex.id()));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_BASE_LEVEL, 0));
         verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAX_LEVEL, 0));
-        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT as i32));
-        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT as i32));
-        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32));
-        verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR as i32));
+        verify!(gl::TexParameteri(
+            gl::TEXTURE_2D,
+            gl::TEXTURE_WRAP_S,
+            gl::REPEAT as i32
+        ));
+        verify!(gl::TexParameteri(
+            gl::TEXTURE_2D,
+            gl::TEXTURE_WRAP_T,
+            gl::REPEAT as i32
+        ));
+        verify!(gl::TexParameteri(
+            gl::TEXTURE_2D,
+            gl::TEXTURE_MAG_FILTER,
+            gl::LINEAR as i32
+        ));
+        verify!(gl::TexParameteri(
+            gl::TEXTURE_2D,
+            gl::TEXTURE_MIN_FILTER,
+            gl::LINEAR_MIPMAP_LINEAR as i32
+        ));
 
         unsafe {
-            verify!(gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, 1, 1, 0, gl::RGB, gl::FLOAT,
-                                   mem::transmute(&default_tex_pixels[0])));
+            verify!(gl::TexImage2D(
+                gl::TEXTURE_2D,
+                0,
+                gl::RGB as i32,
+                1,
+                1,
+                0,
+                gl::RGB,
+                gl::FLOAT,
+                mem::transmute(&default_tex_pixels[0])
+            ));
         }
 
         TextureManager {
-            textures:        HashMap::new(),
-            default_texture: default_tex
+            textures: HashMap::new(),
+            default_texture: default_tex,
         }
     }
 
@@ -96,7 +125,7 @@ impl TextureManager {
     pub fn add_empty(&mut self, name: &str) -> Rc<Texture> {
         match self.textures.entry(name.to_string()) {
             Entry::Occupied(entry) => entry.into_mut().clone(),
-            Entry::Vacant(entry)   => entry.insert(Texture::new()).clone()
+            Entry::Vacant(entry) => entry.insert(Texture::new()).clone(),
         }
     }
 
@@ -110,32 +139,59 @@ impl TextureManager {
 
             match image::open(path).unwrap() {
                 DynamicImage::ImageRgb8(image) => {
-                        verify!(gl::TexImage2D(
-                                gl::TEXTURE_2D, 0,
-                                gl::RGB as GLint,
-                                image.width() as GLsizei,
-                                image.height() as GLsizei,
-                                0, gl::RGB, gl::UNSIGNED_BYTE,
-                                mem::transmute(&image.into_raw()[0])));
-                },
+                    verify!(gl::TexImage2D(
+                        gl::TEXTURE_2D,
+                        0,
+                        gl::RGB as i32,
+                        image.width() as GLsizei,
+                        image.height() as GLsizei,
+                        0,
+                        gl::RGB,
+                        gl::UNSIGNED_BYTE,
+                        mem::transmute(&image.into_raw()[0])
+                    ));
+                }
                 DynamicImage::ImageRgba8(image) => {
-                        verify!(gl::TexImage2D(
-                                gl::TEXTURE_2D, 0,
-                                gl::RGBA as GLint,
-                                image.width() as GLsizei,
-                                image.height() as GLsizei,
-                                0, gl::RGBA, gl::UNSIGNED_BYTE,
-                                mem::transmute(&image.into_raw()[0])));
+                    verify!(gl::TexImage2D(
+                        gl::TEXTURE_2D,
+                        0,
+                        gl::RGBA as i32,
+                        image.width() as GLsizei,
+                        image.height() as GLsizei,
+                        0,
+                        gl::RGBA,
+                        gl::UNSIGNED_BYTE,
+                        mem::transmute(&image.into_raw()[0])
+                    ));
                 }
                 _ => {
-                    panic!("Failed to load texture {}, unsuported pixel format.", path.to_str().unwrap());
+                    panic!(
+                        "Failed to load texture {}, unsuported pixel format.",
+                        path.to_str().unwrap()
+                    );
                 }
             }
 
-            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as GLint));
-            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as GLint));
-            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as GLint));
-            verify!(gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint));
+            verify!(gl::TexParameteri(
+                gl::TEXTURE_2D,
+                gl::TEXTURE_WRAP_S,
+                gl::CLAMP_TO_EDGE as i32
+            ));
+            verify!(gl::TexParameteri(
+                gl::TEXTURE_2D,
+                gl::TEXTURE_WRAP_T,
+                gl::CLAMP_TO_EDGE as i32
+            ));
+            verify!(gl::TexParameteri(
+                gl::TEXTURE_2D,
+                gl::TEXTURE_MIN_FILTER,
+                gl::LINEAR as i32
+            ));
+            verify!(gl::TexParameteri(
+                gl::TEXTURE_2D,
+                gl::TEXTURE_MAG_FILTER,
+                gl::LINEAR as i32
+            ));
         }
 
         tex
@@ -144,6 +200,9 @@ impl TextureManager {
     /// Allocates a new texture read from a file. If a texture with same name exists, nothing is
     /// created and the old texture is returned.
     pub fn add(&mut self, path: &Path, name: &str) -> Rc<Texture> {
-        self.textures.entry(name.to_string()).or_insert_with(|| TextureManager::load_texture(path)).clone()
+        self.textures
+            .entry(name.to_string())
+            .or_insert_with(|| TextureManager::load_texture(path))
+            .clone()
     }
 }

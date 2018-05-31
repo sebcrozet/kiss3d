@@ -1,21 +1,21 @@
 //! A batched line renderer.
 
+use camera::Camera;
 use gl;
 use gl::types::*;
-use na::{Point3, Matrix4};
-use resource::{BufferType, AllocationType, GPUVec, Shader, ShaderAttribute, ShaderUniform};
-use camera::Camera;
+use na::{Matrix4, Point3};
+use resource::{AllocationType, BufferType, GPUVec, Shader, ShaderAttribute, ShaderUniform};
 
 #[path = "error.rs"]
 mod error;
 
 /// Structure which manages the display of short-living lines.
 pub struct LineRenderer {
-    shader:    Shader,
-    pos:       ShaderAttribute<Point3<f32>>,
-    color:     ShaderAttribute<Point3<f32>>,
-    view:      ShaderUniform<Matrix4<f32>>,
-    lines:     GPUVec<Point3<GLfloat>>
+    shader: Shader,
+    pos: ShaderAttribute<Point3<f32>>,
+    color: ShaderAttribute<Point3<f32>>,
+    view: ShaderUniform<Matrix4<f32>>,
+    lines: GPUVec<Point3<f32>>,
 }
 
 impl LineRenderer {
@@ -26,14 +26,14 @@ impl LineRenderer {
         shader.use_program();
 
         LineRenderer {
-            lines:     GPUVec::new(Vec::new(), BufferType::Array, AllocationType::StreamDraw),
-            pos:       shader.get_attrib::<Point3<f32>>("position").unwrap(),
-            color:     shader.get_attrib::<Point3<f32>>("color").unwrap(),
-            view:      shader.get_uniform::<Matrix4<f32>>("view").unwrap(),
-            shader:    shader
+            lines: GPUVec::new(Vec::new(), BufferType::Array, AllocationType::StreamDraw),
+            pos: shader.get_attrib::<Point3<f32>>("position").unwrap(),
+            color: shader.get_attrib::<Point3<f32>>("color").unwrap(),
+            view: shader.get_uniform::<Matrix4<f32>>("view").unwrap(),
+            shader: shader,
         }
     }
- 
+
     /// Indicates whether some lines have to be drawn.
     pub fn needs_rendering(&self) -> bool {
         self.lines.len() != 0
@@ -41,7 +41,7 @@ impl LineRenderer {
 
     /// Adds a line to be drawn during the next frame. Lines are not persistent between frames.
     /// This method must be called for each line to draw, and at each update loop iteration.
-    pub fn draw_line(&mut self, a: Point3<GLfloat>, b: Point3<GLfloat>, color: Point3<GLfloat>) {
+    pub fn draw_line(&mut self, a: Point3<f32>, b: Point3<f32>, color: Point3<f32>) {
         for lines in self.lines.data_mut().iter_mut() {
             lines.push(a);
             lines.push(color);
@@ -52,7 +52,9 @@ impl LineRenderer {
 
     /// Actually draws the lines.
     pub fn render(&mut self, pass: usize, camera: &mut Camera) {
-        if self.lines.len() == 0 { return }
+        if self.lines.len() == 0 {
+            return;
+        }
 
         self.shader.use_program();
         self.pos.enable();
@@ -75,12 +77,11 @@ impl LineRenderer {
 }
 
 /// Vertex shader used by the material to display line.
-pub static LINES_VERTEX_SRC:   &'static str = A_VERY_LONG_STRING;
+pub static LINES_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
 /// Fragment shader used by the material to display line.
 pub static LINES_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str =
-   "#version 120
+const A_VERY_LONG_STRING: &'static str = "#version 120
     attribute vec3 position;
     attribute vec3 color;
     varying   vec3 Color;
@@ -90,8 +91,7 @@ const A_VERY_LONG_STRING: &'static str =
         Color = color;
     }";
 
-const ANOTHER_VERY_LONG_STRING: &'static str =
-   "#version 120
+const ANOTHER_VERY_LONG_STRING: &'static str = "#version 120
     varying vec3 Color;
     void main() {
         gl_FragColor = vec4(Color, 1.0);

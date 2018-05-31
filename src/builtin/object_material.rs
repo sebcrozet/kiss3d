@@ -1,28 +1,28 @@
-use std::ptr;
+use camera::Camera;
 use gl;
 use gl::types::*;
-use na::{Point2, Point3, Vector3, Matrix3, Matrix4, Isometry3};
-use resource::Material;
-use scene::ObjectData;
 use light::Light;
-use camera::Camera;
+use na::{Isometry3, Matrix3, Matrix4, Point2, Point3, Vector3};
+use resource::Material;
 use resource::{Mesh, Shader, ShaderAttribute, ShaderUniform};
+use scene::ObjectData;
+use std::ptr;
 
 #[path = "../error.rs"]
 mod error;
 
 /// The default material used to draw objects.
 pub struct ObjectMaterial {
-    shader:     Shader,
-    pos:        ShaderAttribute<Point3<f32>>,
-    normal:     ShaderAttribute<Vector3<f32>>,
-    tex_coord:  ShaderAttribute<Point2<f32>>,
-    light:      ShaderUniform<Point3<f32>>,
-    color:      ShaderUniform<Point3<f32>>,
-    transform:  ShaderUniform<Matrix4<f32>>,
-    scale:      ShaderUniform<Matrix3<f32>>,
+    shader: Shader,
+    pos: ShaderAttribute<Point3<f32>>,
+    normal: ShaderAttribute<Vector3<f32>>,
+    tex_coord: ShaderAttribute<Point2<f32>>,
+    light: ShaderUniform<Point3<f32>>,
+    color: ShaderUniform<Point3<f32>>,
+    transform: ShaderUniform<Matrix4<f32>>,
+    scale: ShaderUniform<Matrix3<f32>>,
     ntransform: ShaderUniform<Matrix3<f32>>,
-    view:       ShaderUniform<Matrix4<f32>>
+    view: ShaderUniform<Matrix4<f32>>,
 }
 
 impl ObjectMaterial {
@@ -35,16 +35,16 @@ impl ObjectMaterial {
 
         // get the variables locations
         ObjectMaterial {
-            pos:        shader.get_attrib("position").unwrap(),
-            normal:     shader.get_attrib("normal").unwrap(),
-            tex_coord:  shader.get_attrib("tex_coord_v").unwrap(),
-            light:      shader.get_uniform("light_position").unwrap(),
-            color:      shader.get_uniform("color").unwrap(),
-            transform:  shader.get_uniform("transform").unwrap(),
-            scale:      shader.get_uniform("scale").unwrap(),
+            pos: shader.get_attrib("position").unwrap(),
+            normal: shader.get_attrib("normal").unwrap(),
+            tex_coord: shader.get_attrib("tex_coord_v").unwrap(),
+            light: shader.get_uniform("light_position").unwrap(),
+            color: shader.get_uniform("color").unwrap(),
+            transform: shader.get_uniform("transform").unwrap(),
+            scale: shader.get_uniform("scale").unwrap(),
             ntransform: shader.get_uniform("ntransform").unwrap(),
-            view:       shader.get_uniform("view").unwrap(),
-            shader:     shader
+            view: shader.get_uniform("view").unwrap(),
+            shader: shader,
         }
     }
 
@@ -63,16 +63,17 @@ impl ObjectMaterial {
 }
 
 impl Material for ObjectMaterial {
-    fn render(&mut self,
-              pass:      usize,
-              transform: &Isometry3<f32>,
-              scale:     &Vector3<f32>,
-              camera:    &mut Camera,
-              light:     &Light,
-              data:      &ObjectData,
-              mesh:      &mut Mesh) {
+    fn render(
+        &mut self,
+        pass: usize,
+        transform: &Isometry3<f32>,
+        scale: &Vector3<f32>,
+        camera: &mut Camera,
+        light: &Light,
+        data: &ObjectData,
+        mesh: &mut Mesh,
+    ) {
         self.activate();
-
 
         /*
          *
@@ -83,7 +84,7 @@ impl Material for ObjectMaterial {
 
         let pos = match *light {
             Light::Absolute(ref p) => p.clone(),
-            Light::StickToCamera   => camera.eye()
+            Light::StickToCamera => camera.eye(),
         };
 
         self.light.upload(&pos);
@@ -93,9 +94,9 @@ impl Material for ObjectMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform  = transform.to_homogeneous();
+        let formated_transform = transform.to_homogeneous();
         let formated_ntransform = transform.rotation.to_rotation_matrix().unwrap();
-        let formated_scale      = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
+        let formated_scale = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
 
         unsafe {
             self.transform.upload(&formated_transform);
@@ -111,17 +112,17 @@ impl Material for ObjectMaterial {
             if data.surface_rendering_active() {
                 if data.backface_culling_enabled() {
                     verify!(gl::Enable(gl::CULL_FACE));
-                }
-                else {
+                } else {
                     verify!(gl::Disable(gl::CULL_FACE));
                 }
 
                 verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
                 verify!(gl::DrawElements(
-                            gl::TRIANGLES,
-                            mesh.num_pts() as GLint,
-                            gl::UNSIGNED_INT,
-                            ptr::null()));
+                    gl::TRIANGLES,
+                    mesh.num_pts() as i32,
+                    gl::UNSIGNED_INT,
+                    ptr::null()
+                ));
             }
 
             if data.lines_width() != 0.0 {
@@ -129,10 +130,11 @@ impl Material for ObjectMaterial {
                 verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE));
                 gl::LineWidth(data.lines_width());
                 verify!(gl::DrawElements(
-                            gl::TRIANGLES,
-                            mesh.num_pts() as GLint,
-                            gl::UNSIGNED_INT,
-                            ptr::null()));
+                    gl::TRIANGLES,
+                    mesh.num_pts() as i32,
+                    gl::UNSIGNED_INT,
+                    ptr::null()
+                ));
                 gl::LineWidth(1.0);
             }
 
@@ -141,10 +143,11 @@ impl Material for ObjectMaterial {
                 verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::POINT));
                 gl::PointSize(data.points_size());
                 verify!(gl::DrawElements(
-                            gl::TRIANGLES,
-                            mesh.num_pts() as GLint,
-                            gl::UNSIGNED_INT,
-                            ptr::null()));
+                    gl::TRIANGLES,
+                    mesh.num_pts() as i32,
+                    gl::UNSIGNED_INT,
+                    ptr::null()
+                ));
                 gl::PointSize(1.0);
             }
         }
@@ -155,12 +158,11 @@ impl Material for ObjectMaterial {
 }
 
 /// Vertex shader of the default object material.
-pub static OBJECT_VERTEX_SRC:   &'static str = A_VERY_LONG_STRING;
+pub static OBJECT_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
 /// Fragment shader of the default object material.
 pub static OBJECT_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str =
-   "#version 120
+const A_VERY_LONG_STRING: &'static str = "#version 120
     attribute vec3 position;
     attribute vec3 normal;
     attribute vec3 color;
@@ -183,8 +185,7 @@ const A_VERY_LONG_STRING: &'static str =
 
 // phong-like lighting (heavily) inspired
 // by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
-const ANOTHER_VERY_LONG_STRING: &'static str =
-   "#version 120
+const ANOTHER_VERY_LONG_STRING: &'static str = "#version 120
     uniform vec3      color;
     uniform vec3      light_position;
     uniform sampler2D tex;

@@ -86,24 +86,30 @@ I’d love to see people improving this library for their own needs. However, ke
 #![allow(missing_copy_implementations)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
 
-extern crate freetype;
-extern crate gl;
-extern crate glfw;
-extern crate image;
-extern crate libc;
+// extern crate freetype;
+// extern crate gl;
+// extern crate glfw;
+// extern crate image;
+// extern crate libc;
 extern crate nalgebra as na;
-extern crate ncollide3d;
+// extern crate ncollide3d;
 extern crate num_traits as num;
 
+#[cfg(target_arch = "wasm32")]
+extern crate stdweb;
+#[cfg(target_arch = "wasm32")]
+extern crate webgl_stdweb as webgl;
+
+pub mod context;
 mod error;
-pub mod window;
-pub mod scene;
-pub mod camera;
-pub mod light;
-pub mod loader;
-pub mod line_renderer;
-pub mod point_renderer;
-pub mod builtin;
-pub mod post_processing;
+// pub mod window;
+// pub mod scene;
+// pub mod camera;
+// pub mod light;
+// pub mod loader;
+// pub mod line_renderer;
+// pub mod point_renderer;
+// pub mod builtin;
+// pub mod post_processing;
 pub mod resource;
-pub mod text;
+// pub mod text;

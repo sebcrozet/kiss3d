@@ -1,25 +1,24 @@
-use std::ptr;
+use camera::Camera;
 use gl;
 use gl::types::*;
-use na::{Point3, Point2, Vector3, Matrix3, Matrix4, Isometry3};
-use resource::Material;
-use scene::ObjectData;
 use light::Light;
-use camera::Camera;
+use na::{Isometry3, Matrix3, Matrix4, Point2, Point3, Vector3};
+use resource::Material;
 use resource::{Mesh, Shader, ShaderAttribute, ShaderUniform};
+use scene::ObjectData;
+use std::ptr;
 
 #[path = "../error.rs"]
 mod error;
 
-
 /// A material that draws normals of an object.
 pub struct UvsMaterial {
-    shader:    Shader,
-    position:  ShaderAttribute<Point3<f32>>,
-    uvs:       ShaderAttribute<Point2<f32>>,
-    view:      ShaderUniform<Matrix4<f32>>,
+    shader: Shader,
+    position: ShaderAttribute<Point3<f32>>,
+    uvs: ShaderAttribute<Point2<f32>>,
+    view: ShaderUniform<Matrix4<f32>>,
     transform: ShaderUniform<Matrix4<f32>>,
-    scale:     ShaderUniform<Matrix3<f32>>
+    scale: ShaderUniform<Matrix3<f32>>,
 }
 
 impl UvsMaterial {
@@ -30,36 +29,36 @@ impl UvsMaterial {
         shader.use_program();
 
         UvsMaterial {
-            position:  shader.get_attrib("position").unwrap(),
-            uvs:       shader.get_attrib("uvs").unwrap(),
+            position: shader.get_attrib("position").unwrap(),
+            uvs: shader.get_attrib("uvs").unwrap(),
             transform: shader.get_uniform("transform").unwrap(),
-            scale:     shader.get_uniform("scale").unwrap(),
-            view:      shader.get_uniform("view").unwrap(),
-            shader:    shader
+            scale: shader.get_uniform("scale").unwrap(),
+            view: shader.get_uniform("view").unwrap(),
+            shader: shader,
         }
     }
 }
 
 impl Material for UvsMaterial {
-    fn render(&mut self,
-              pass:      usize,
-              transform: &Isometry3<f32>,
-              scale:     &Vector3<f32>,
-              camera:    &mut Camera,
-              _:         &Light,
-              data:      &ObjectData,
-              mesh:      &mut Mesh) {
+    fn render(
+        &mut self,
+        pass: usize,
+        transform: &Isometry3<f32>,
+        scale: &Vector3<f32>,
+        camera: &mut Camera,
+        _: &Light,
+        data: &ObjectData,
+        mesh: &mut Mesh,
+    ) {
         if !data.surface_rendering_active() {
-            return
+            return;
         }
         // enable/disable culling.
         if data.backface_culling_enabled() {
             verify!(gl::Enable(gl::CULL_FACE));
-        }
-        else {
+        } else {
             verify!(gl::Disable(gl::CULL_FACE));
         }
-
 
         self.shader.use_program();
         self.position.enable();
@@ -78,7 +77,7 @@ impl Material for UvsMaterial {
          *
          */
         let formated_transform = transform.to_homogeneous();
-        let formated_scale     = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
+        let formated_scale = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
 
         self.transform.upload(&formated_transform);
         self.scale.upload(&formated_scale);
@@ -88,7 +87,12 @@ impl Material for UvsMaterial {
         mesh.bind_faces();
 
         unsafe {
-            gl::DrawElements(gl::TRIANGLES, mesh.num_pts() as GLint, gl::UNSIGNED_INT, ptr::null());
+            gl::DrawElements(
+                gl::TRIANGLES,
+                mesh.num_pts() as i32,
+                gl::UNSIGNED_INT,
+                ptr::null(),
+            );
         }
 
         mesh.unbind();
@@ -104,8 +108,7 @@ pub static UVS_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
 /// A fragment shader for coloring each point of an object depending on its texture coordinates.
 pub static UVS_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str =
-"#version 120
+const A_VERY_LONG_STRING: &'static str = "#version 120
 attribute vec3 position;
 attribute vec3 uvs;
 uniform mat4 view;
@@ -119,12 +122,10 @@ void main() {
 }
 ";
 
-const ANOTHER_VERY_LONG_STRING: &'static str =
-"#version 120
+const ANOTHER_VERY_LONG_STRING: &'static str = "#version 120
 varying vec3 uv_as_a_color;
 
 void main() {
     gl_FragColor = vec4(uv_as_a_color, 1.0);
 }
 ";
-

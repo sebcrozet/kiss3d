@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 use std::iter::Filter;
 use std::str::Split;
 use num::Bounded;
-use gl::types::GLfloat;
+use gl::types::f32;
 use na::{Vector3, Point2, Point3};
 use resource::{BufferType, AllocationType, Mesh};
 use loader::mtl::MtlMaterial;
@@ -20,11 +20,11 @@ use loader::mtl;
 use resource::GPUVec;
 
 /// The type of vertex coordinates.
-pub type Coord  = Point3<GLfloat>;
+pub type Coord  = Point3<f32>;
 /// The type of normals.
-pub type Normal = Vector3<GLfloat>;
+pub type Normal = Vector3<f32>;
 /// The type of texture coordinates.
-pub type UV     = Point2<GLfloat>;
+pub type UV     = Point2<f32>;
 
 /// Iterator through words.
 pub type Words<'a> = Filter<Split<'a, fn(char) -> bool>, fn(&&str) -> bool>;

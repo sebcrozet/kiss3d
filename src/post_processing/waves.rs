@@ -7,8 +7,10 @@
 use gl;
 use gl::types::*;
 use na::Vector2;
-use resource::{BufferType, AllocationType, Shader, ShaderUniform, ShaderAttribute, RenderTarget, GPUVec};
 use post_processing::post_processing_effect::PostProcessingEffect;
+use resource::{
+    AllocationType, BufferType, GPUVec, RenderTarget, Shader, ShaderAttribute, ShaderUniform,
+};
 
 #[path = "../error.rs"]
 mod error;
@@ -17,24 +19,26 @@ mod error;
 ///
 /// It deforms the displayed scene with a wave effect.
 pub struct Waves {
-    shader:       Shader,
-    time:         f32,
-    offset:       ShaderUniform<GLfloat>,
-    fbo_texture:  ShaderUniform<GLint>,
-    v_coord:      ShaderAttribute<Vector2<f32>>,
-    fbo_vertices: GPUVec<Vector2<GLfloat>>
+    shader: Shader,
+    time: f32,
+    offset: ShaderUniform<f32>,
+    fbo_texture: ShaderUniform<i32>,
+    v_coord: ShaderAttribute<Vector2<f32>>,
+    fbo_vertices: GPUVec<Vector2<f32>>,
 }
 
 impl Waves {
     /// Creates a new Waves post processing effect.
     pub fn new() -> Waves {
-        let fbo_vertices: Vec<Vector2<GLfloat>>  = vec!(
+        let fbo_vertices: Vec<Vector2<f32>> = vec![
             Vector2::new(-1.0, -1.0),
             Vector2::new(1.0, -1.0),
-            Vector2::new(-1.0,  1.0),
-            Vector2::new(1.0,  1.0));
+            Vector2::new(-1.0, 1.0),
+            Vector2::new(1.0, 1.0),
+        ];
 
-        let mut fbo_vertices = GPUVec::new(fbo_vertices, BufferType::Array, AllocationType::StaticDraw);
+        let mut fbo_vertices =
+            GPUVec::new(fbo_vertices, BufferType::Array, AllocationType::StaticDraw);
         fbo_vertices.load_to_gpu();
         fbo_vertices.unload_from_ram();
 
@@ -43,12 +47,12 @@ impl Waves {
         shader.use_program();
 
         Waves {
-            time:         0.0,
-            offset:       shader.get_uniform("offset").unwrap(),
-            fbo_texture:  shader.get_uniform("fbo_texture").unwrap(),
-            v_coord:      shader.get_attrib("v_coord").unwrap(),
+            time: 0.0,
+            offset: shader.get_uniform("offset").unwrap(),
+            fbo_texture: shader.get_uniform("fbo_texture").unwrap(),
+            v_coord: shader.get_attrib("v_coord").unwrap(),
             fbo_vertices: fbo_vertices,
-            shader:       shader
+            shader: shader,
         }
     }
 }
@@ -64,7 +68,7 @@ impl PostProcessingEffect for Waves {
          */
         self.shader.use_program();
 
-        let move_amount = self.time * 2.0 * 3.14159 * 0.75;  // 3/4 of a wave cycle per second
+        let move_amount = self.time * 2.0 * 3.14159 * 0.75; // 3/4 of a wave cycle per second
 
         self.offset.upload(&move_amount);
 
@@ -85,23 +89,21 @@ impl PostProcessingEffect for Waves {
     }
 }
 
-static VERTEX_SHADER: &'static str =
-    "#version 120
+static VERTEX_SHADER: &'static str = "#version 120
     attribute vec2    v_coord;
     uniform sampler2D fbo_texture;
     varying vec2      f_texcoord;
-     
+
     void main(void) {
       gl_Position = vec4(v_coord, 0.0, 1.0);
       f_texcoord  = (v_coord + 1.0) / 2.0;
     }";
 
-static FRAGMENT_SHADER: &'static str =
-    "#version 120
+static FRAGMENT_SHADER: &'static str = "#version 120
     uniform sampler2D fbo_texture;
     uniform float     offset;
     varying vec2      f_texcoord;
-    
+
     void main(void) {
       vec2 texcoord =  f_texcoord;
       texcoord.x    += sin(texcoord.y * 4 * 2 * 3.14159 + offset) / 100;

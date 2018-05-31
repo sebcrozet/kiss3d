@@ -24,14 +24,20 @@ name = "kiss3d"
 path = "src/lib.rs"
 
 [dependencies]
+num-traits  = "0.2"
+nalgebra    = "0.15"
+libc        = "0.2"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 freetype    = "0.3"
 gl          = "0.6"
 glfw        = "0.19"
-image       = "0.17"
-libc        = "0.2"
-nalgebra    = "0.14"
 ncollide3d  = "0.15"
-num-traits = "0.1"
+image       = "0.17"
+
+[target.wasm32-unknown-unknown.dependencies]
+stdweb = "0.4"
+webgl_stdweb = "0.1"
 
 [dev-dependencies]
 rand = "0.4"
