@@ -5,7 +5,7 @@ extern crate nalgebra as na;
 use gl::types::i32;
 use kiss3d::camera::Camera;
 use kiss3d::light::Light;
-use kiss3d::resource::{Material, Mesh, Shader, ShaderAttribute, ShaderUniform};
+use kiss3d::resource::{Effect, Material, Mesh, ShaderAttribute, ShaderUniform};
 use kiss3d::scene::ObjectData;
 use kiss3d::window::Window;
 use na::{Isometry3, Matrix3, Matrix4, Point3, UnitQuaternion, Vector3};
@@ -31,7 +31,7 @@ fn main() {
 
 // A material that draws normals
 pub struct NormalMaterial {
-    shader: Shader,
+    shader: Effect,
     position: ShaderAttribute<Point3<f32>>,
     normal: ShaderAttribute<Vector3<f32>>,
     view: ShaderUniform<Matrix4<f32>>,
@@ -41,7 +41,7 @@ pub struct NormalMaterial {
 
 impl NormalMaterial {
     pub fn new() -> NormalMaterial {
-        let mut shader = Shader::new_from_str(NORMAL_VERTEX_SRC, NORMAL_FRAGMENT_SRC);
+        let mut shader = Effect::new_from_str(NORMAL_VERTEX_SRC, NORMAL_FRAGMENT_SRC);
 
         shader.use_program();
 

@@ -4,7 +4,7 @@ use gl::types::*;
 use light::Light;
 use na::{Isometry3, Matrix3, Matrix4, Point3, Vector3};
 use resource::Material;
-use resource::{Mesh, Shader, ShaderAttribute, ShaderUniform};
+use resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
 use scene::ObjectData;
 use std::ptr;
 
@@ -13,7 +13,7 @@ mod error;
 
 /// A material that draws normals of an object.
 pub struct NormalsMaterial {
-    shader: Shader,
+    shader: Effect,
     position: ShaderAttribute<Point3<f32>>,
     normal: ShaderAttribute<Vector3<f32>>,
     view: ShaderUniform<Matrix4<f32>>,
@@ -24,7 +24,7 @@ pub struct NormalsMaterial {
 impl NormalsMaterial {
     /// Creates a new NormalsMaterial.
     pub fn new() -> NormalsMaterial {
-        let mut shader = Shader::new_from_str(NORMAL_VERTEX_SRC, NORMAL_FRAGMENT_SRC);
+        let mut shader = Effect::new_from_str(NORMAL_VERTEX_SRC, NORMAL_FRAGMENT_SRC);
 
         shader.use_program();
 

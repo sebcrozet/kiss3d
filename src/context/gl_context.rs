@@ -15,3 +15,5 @@ impl Context for GLContext {
         gl::get_error()
     }
 }
+
+// if attribute_location != -1

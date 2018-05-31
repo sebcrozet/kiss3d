@@ -9,7 +9,7 @@ use gl::types::*;
 use na::Vector2;
 use post_processing::post_processing_effect::PostProcessingEffect;
 use resource::{
-    AllocationType, BufferType, GPUVec, RenderTarget, Shader, ShaderAttribute, ShaderUniform,
+    AllocationType, BufferType, Effect, GPUVec, RenderTarget, ShaderAttribute, ShaderUniform,
 };
 
 #[path = "../error.rs"]
@@ -19,7 +19,7 @@ mod error;
 ///
 /// It deforms the displayed scene with a wave effect.
 pub struct Waves {
-    shader: Shader,
+    shader: Effect,
     time: f32,
     offset: ShaderUniform<f32>,
     fbo_texture: ShaderUniform<i32>,
@@ -42,7 +42,7 @@ impl Waves {
         fbo_vertices.load_to_gpu();
         fbo_vertices.unload_from_ram();
 
-        let mut shader = Shader::new_from_str(VERTEX_SHADER, FRAGMENT_SHADER);
+        let mut shader = Effect::new_from_str(VERTEX_SHADER, FRAGMENT_SHADER);
 
         shader.use_program();
 

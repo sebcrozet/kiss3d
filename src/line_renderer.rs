@@ -4,14 +4,14 @@ use camera::Camera;
 use gl;
 use gl::types::*;
 use na::{Matrix4, Point3};
-use resource::{AllocationType, BufferType, GPUVec, Shader, ShaderAttribute, ShaderUniform};
+use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 
 #[path = "error.rs"]
 mod error;
 
 /// Structure which manages the display of short-living lines.
 pub struct LineRenderer {
-    shader: Shader,
+    shader: Effect,
     pos: ShaderAttribute<Point3<f32>>,
     color: ShaderAttribute<Point3<f32>>,
     view: ShaderUniform<Matrix4<f32>>,
@@ -21,7 +21,7 @@ pub struct LineRenderer {
 impl LineRenderer {
     /// Creates a new lines manager.
     pub fn new() -> LineRenderer {
-        let mut shader = Shader::new_from_str(LINES_VERTEX_SRC, LINES_FRAGMENT_SRC);
+        let mut shader = Effect::new_from_str(LINES_VERTEX_SRC, LINES_FRAGMENT_SRC);
 
         shader.use_program();
 

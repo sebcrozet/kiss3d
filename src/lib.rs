@@ -92,7 +92,7 @@ I’d love to see people improving this library for their own needs. However, ke
 // extern crate image;
 // extern crate libc;
 extern crate nalgebra as na;
-// extern crate ncollide3d;
+extern crate ncollide3d;
 extern crate num_traits as num;
 
 #[cfg(target_arch = "wasm32")]
@@ -106,7 +106,7 @@ mod error;
 // pub mod scene;
 // pub mod camera;
 // pub mod light;
-// pub mod loader;
+pub mod loader;
 // pub mod line_renderer;
 // pub mod point_renderer;
 // pub mod builtin;

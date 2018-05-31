@@ -5,7 +5,7 @@
 use gl;
 use gl::types::*;
 use na::{Point2, Point3, Vector2};
-use resource::{AllocationType, BufferType, GPUVec, Shader, ShaderAttribute, ShaderUniform};
+use resource::{AllocationType, BufferType, GPUVec, Effect, ShaderAttribute, ShaderUniform};
 use std::rc::Rc;
 use text::Font;
 
@@ -32,7 +32,7 @@ impl TextRenderContext {
 
 /// A ttf text renderer.
 pub struct TextRenderer {
-    shader: Shader,
+    shader: Effect,
     invsz: ShaderUniform<Vector2<f32>>,
     tex: ShaderUniform<i32>,
     color: ShaderUniform<Point3<f32>>,
@@ -45,7 +45,7 @@ pub struct TextRenderer {
 impl TextRenderer {
     /// Creates a new text renderer with `font` as the default font.
     pub fn new() -> TextRenderer {
-        let mut shader = Shader::new_from_str(TEXT_VERTEX_SRC, TEXT_FRAGMENT_SRC);
+        let mut shader = Effect::new_from_str(TEXT_VERTEX_SRC, TEXT_FRAGMENT_SRC);
 
         shader.use_program();
 

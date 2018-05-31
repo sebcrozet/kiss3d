@@ -1,14 +1,12 @@
 //! Data structure of a scene node geometry.
+use std::iter;
+use std::sync::{Arc, RwLock};
 
-use gl::types::*;
-use na;
-use na::{Point2, Point3, Vector3};
+use na::{self, Point2, Point3, Vector3};
 use ncollide3d::procedural::{IndexBuffer, TriMesh};
 use num::Zero;
 use resource::gpu_vector::{AllocationType, BufferType, GPUVec};
 use resource::ShaderAttribute;
-use std::iter;
-use std::sync::{Arc, RwLock};
 
 #[path = "../error.rs"]
 mod error;
@@ -18,7 +16,7 @@ mod error;
 /// It also contains the GPU location of those buffers.
 pub struct Mesh {
     coords: Arc<RwLock<GPUVec<Point3<f32>>>>,
-    faces: Arc<RwLock<GPUVec<Point3<u32>>>>,
+    faces: Arc<RwLock<GPUVec<Point3<i32>>>>,
     normals: Arc<RwLock<GPUVec<Vector3<f32>>>>,
     uvs: Arc<RwLock<GPUVec<Point2<f32>>>>,
 }
@@ -29,7 +27,7 @@ impl Mesh {
     /// If the normals and uvs are not given, they are automatically computed.
     pub fn new(
         coords: Vec<Point3<f32>>,
-        faces: Vec<Point3<u32>>,
+        faces: Vec<Point3<i32>>,
         normals: Option<Vec<Vector3<f32>>>,
         uvs: Option<Vec<Point2<f32>>>,
         dynamic_draw: bool,
@@ -132,7 +130,7 @@ impl Mesh {
     /// Creates a new mesh. Arguments set to `None` are automatically computed.
     pub fn new_with_gpu_vectors(
         coords: Arc<RwLock<GPUVec<Point3<f32>>>>,
-        faces: Arc<RwLock<GPUVec<Point3<u32>>>>,
+        faces: Arc<RwLock<GPUVec<Point3<i32>>>>,
         normals: Arc<RwLock<GPUVec<Vector3<f32>>>>,
         uvs: Arc<RwLock<GPUVec<Point2<f32>>>>,
     ) -> Mesh {
@@ -200,7 +198,7 @@ impl Mesh {
     }
 
     /// This mesh faces.
-    pub fn faces(&self) -> &Arc<RwLock<GPUVec<Point3<u32>>>> {
+    pub fn faces(&self) -> &Arc<RwLock<GPUVec<Point3<i32>>>> {
         &self.faces
     }
 
@@ -222,7 +220,7 @@ impl Mesh {
     /// Computes normals from a set of faces.
     pub fn compute_normals_array(
         coordinates: &[Point3<f32>],
-        faces: &[Point3<u32>],
+        faces: &[Point3<i32>],
     ) -> Vec<Vector3<f32>> {
         let mut res = Vec::new();
 
@@ -234,7 +232,7 @@ impl Mesh {
     /// Computes normals from a set of faces.
     pub fn compute_normals(
         coordinates: &[Point3<f32>],
-        faces: &[Point3<u32>],
+        faces: &[Point3<i32>],
         normals: &mut Vec<Vector3<f32>>,
     ) {
         let mut divisor: Vec<f32> = iter::repeat(0f32).take(coordinates.len()).collect();

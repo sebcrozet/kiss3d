@@ -1,5 +1,3 @@
-use gl::{self, types::*};
-use resource::{GLPrimitive, GPUVec};
 use std::ffi::CString;
 use std::fs::File;
 use std::io::Read;
@@ -10,19 +8,22 @@ use std::path::Path;
 use std::ptr;
 use std::str;
 
+use context::{Context, Program, Shader, UniformLocation};
+use resource::{GLPrimitive, GPUVec};
+
 #[path = "../error.rs"]
 mod error;
 
-/// Structure encapsulating a shader program.
-pub struct Shader {
-    program: u32,
-    vshader: u32,
-    fshader: u32,
+/// Structure encapsulating a program.
+pub struct Effect {
+    program: Program,
+    vshader: Shader,
+    fshader: Shader,
 }
 
-impl Shader {
+impl Effect {
     /// Creates a new shader program from two files containing the vertex and fragment shader.
-    pub fn new(vshader_path: &Path, fshader_path: &Path) -> Option<Shader> {
+    pub fn new(vshader_path: &Path, fshader_path: &Path) -> Option<Effect> {
         let mut vshader = String::new();
         let mut fshader = String::new();
 
@@ -40,82 +41,80 @@ impl Shader {
             return None;
         }
 
-        Some(Shader::new_from_str(&vshader[..], &fshader[..]))
+        Some(Effect::new_from_str(&vshader[..], &fshader[..]))
     }
 
     /// Creates a new shader program from strings of the vertex and fragment shader.
-    pub fn new_from_str(vshader: &str, fshader: &str) -> Shader {
+    pub fn new_from_str(vshader: &str, fshader: &str) -> Effect {
         let (program, vshader, fshader) = load_shader_program(vshader, fshader);
 
-        Shader {
-            program: program,
-            vshader: vshader,
-            fshader: fshader,
+        Effect {
+            program,
+            vshader,
+            fshader,
         }
     }
 
     /// Gets a uniform variable from the shader program.
     pub fn get_uniform<T: GLPrimitive>(&self, name: &str) -> Option<ShaderUniform<T>> {
-        let c_str = CString::new(name.as_bytes()).unwrap();
-        let location = unsafe { gl::GetUniformLocation(self.program, c_str.as_ptr()) };
+        let ctxt = Context::get();
+        let location = ctxt.get_uniform_location(&self.program, name);
 
-        if unsafe { gl::GetError() } == 0 && location != -1 {
-            Some(ShaderUniform {
-                id: location as u32,
-                data_type: PhantomData,
-            })
-        } else {
-            None
+        if ctxt.get_error() == 0 {
+            if let Some(id) = location {
+                let data_type = PhantomData;
+                return Some(ShaderUniform { id, data_type });
+            }
         }
+
+        return None;
     }
 
     /// Gets an attribute from the shader program.
     pub fn get_attrib<T: GLPrimitive>(&self, name: &str) -> Option<ShaderAttribute<T>> {
-        let c_str = CString::new(name.as_bytes()).unwrap();
-        let location = unsafe { gl::GetAttribLocation(self.program, c_str.as_ptr()) };
+        let ctxt = Context::get();
+        let location = ctxt.get_attrib_location(&self.program, name);
 
-        if unsafe { gl::GetError() } == 0 && location != -1 {
-            Some(ShaderAttribute {
-                id: location as u32,
-                data_type: PhantomData,
-            })
-        } else {
-            None
+        if ctxt.get_error() == 0 && location != -1 {
+            let id = location as u32;
+            let data_type = PhantomData;
+            return Some(ShaderAttribute { id, data_type });
         }
+
+        return None;
     }
 
     /// Make this program active.
     pub fn use_program(&mut self) {
-        verify!(gl::UseProgram(self.program));
+        verify!(Context::get().use_program(Some(&self.program)));
     }
 }
 
-impl Drop for Shader {
+impl Drop for Effect {
     fn drop(&mut self) {
-        unsafe {
-            if gl::IsProgram(self.program) != 0 {
-                verify!(gl::DeleteProgram(self.program));
-            }
-            if gl::IsShader(self.fshader) != 0 {
-                verify!(gl::DeleteShader(self.fshader));
-            }
-            if gl::IsShader(self.vshader) != 0 {
-                verify!(gl::DeleteShader(self.vshader));
-            }
+        let ctxt = Context::get();
+        if ctxt.is_program(Some(&self.program)) {
+            verify!(ctxt.delete_program(Some(&self.program)));
+        }
+        if ctxt.is_shader(Some(&self.fshader)) {
+            verify!(ctxt.delete_shader(Some(&self.fshader)));
+        }
+        if ctxt.is_shader(Some(&self.vshader)) {
+            verify!(ctxt.delete_shader(Some(&self.vshader)));
         }
     }
 }
 
 /// Structure encapsulating an uniform variable.
 pub struct ShaderUniform<T> {
-    id: u32,
+    id: UniformLocation,
     data_type: PhantomData<T>,
 }
 
 impl<T: GLPrimitive> ShaderUniform<T> {
     /// Upload a value to this variable.
     pub fn upload(&mut self, value: &T) {
-        value.upload(self.id)
+        value.upload(&self.id)
     }
 }
 
@@ -128,7 +127,7 @@ pub struct ShaderAttribute<T> {
 impl<T: GLPrimitive> ShaderAttribute<T> {
     /// Disable this attribute.
     pub fn disable(&mut self) {
-        verify!(gl::DisableVertexAttribArray(self.id));
+        verify!(Context::get().disable_vertex_attrib_array(self.id));
     }
 
     /// Enable this attribute.
@@ -143,8 +142,8 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
         unsafe {
             verify!(gl::VertexAttribPointer(
                 self.id,
-                GLPrimitive::size(None::<T>) as i32,
-                GLPrimitive::gl_type(None::<T>),
+                GLPrimitive::size() as i32,
+                GLPrimitive::gl_type(),
                 gl::FALSE,
                 0,
                 ptr::null()
@@ -159,8 +158,8 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
         unsafe {
             verify!(gl::VertexAttribPointer(
                 self.id,
-                GLPrimitive::size(None::<T>) as i32,
-                GLPrimitive::gl_type(None::<T>),
+                GLPrimitive::size() as i32,
+                GLPrimitive::gl_type(),
                 gl::FALSE,
                 ((strides + 1) * mem::size_of::<T>()) as i32,
                 mem::transmute(start_index * mem::size_of::<T>())
@@ -172,9 +171,10 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
 /// Loads a shader program using the given source codes for the vertex and fragment shader.
 ///
 /// Fails after displaying opengl compilation errors if the shaders are invalid.
-fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (u32, u32, u32) {
+fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (Program, Shader, Shader) {
     // Create and compile the vertex shader
-    let vshader = verify!(gl::CreateShader(gl::VERTEX_SHADER));
+    let ctxt = Context::get();
+    let vshader = verify!(ctxt.create_shader(Context::VERTEX_SHADER));
     let vertex_shader = CString::new(vertex_shader.as_bytes()).unwrap();
     let fragment_shader = CString::new(fragment_shader.as_bytes()).unwrap();
 

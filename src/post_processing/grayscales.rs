@@ -5,7 +5,7 @@ use gl::types::*;
 use na::Vector2;
 use post_processing::post_processing_effect::PostProcessingEffect;
 use resource::{
-    AllocationType, BufferType, GPUVec, RenderTarget, Shader, ShaderAttribute, ShaderUniform,
+    AllocationType, BufferType, Effect, GPUVec, RenderTarget, ShaderAttribute, ShaderUniform,
 };
 
 #[path = "../error.rs"]
@@ -13,7 +13,7 @@ mod error;
 
 /// Post processing effect which turns everything in gray scales.
 pub struct Grayscales {
-    shader: Shader,
+    shader: Effect,
     fbo_texture: ShaderUniform<i32>,
     v_coord: ShaderAttribute<Vector2<f32>>,
     fbo_vertices: GPUVec<Vector2<f32>>,
@@ -34,7 +34,7 @@ impl Grayscales {
         fbo_vertices.load_to_gpu();
         fbo_vertices.unload_from_ram();
 
-        let mut shader = Shader::new_from_str(VERTEX_SHADER, FRAGMENT_SHADER);
+        let mut shader = Effect::new_from_str(VERTEX_SHADER, FRAGMENT_SHADER);
 
         shader.use_program();
 

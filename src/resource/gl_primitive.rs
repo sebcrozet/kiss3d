@@ -409,39 +409,59 @@ unsafe impl GLPrimitive for Point2<f32> {
     }
 }
 
-// unsafe impl GLPrimitive for Point2<u32> {
-//     #[inline]
-//     fn gl_type(_: Option<Point2<u32>>) -> u32 {
-//         gl::UNSIGNED_INT
-//     }
+unsafe impl GLPrimitive for Point3<i32> {
+    #[inline]
+    fn gl_type() -> u32 {
+        Context::INT
+    }
 
-//     #[inline]
-//     fn size(_: Option<Point2<u32>>) -> u32 {
-//         2
-//     }
+    #[inline]
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
 
-//     #[inline]
-//     fn upload(&self, location: &UniformLocation) {
-//         verify!(Context::get().uniform2ui(Some(location), self.x, self.y));
-//     }
-// }
+            PrimitiveArray::Int32(slice::from_raw_parts(ptr as *const i32, len))
+        }
+    }
 
-// unsafe impl GLPrimitive for Point3<u32> {
-//     #[inline]
-//     fn gl_type(_: Option<Point3<u32>>) -> u32 {
-//         gl::UNSIGNED_INT
-//     }
+    #[inline]
+    fn size() -> u32 {
+        3
+    }
 
-//     #[inline]
-//     fn size(_: Option<Point3<u32>>) -> u32 {
-//         3
-//     }
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform3i(Some(location), self.x, self.y, self.z));
+    }
+}
 
-//     #[inline]
-//     fn upload(&self, location: &UniformLocation) {
-//         verify!(Context::get().uniform3ui(Some(location), self.x, self.y, self.z));
-//     }
-// }
+unsafe impl GLPrimitive for Point2<i32> {
+    #[inline]
+    fn gl_type() -> u32 {
+        Context::INT
+    }
+
+    #[inline]
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Int32(slice::from_raw_parts(ptr as *const i32, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
+        2
+    }
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform2i(Some(location), self.x, self.y));
+    }
+}
 
 /*
  *

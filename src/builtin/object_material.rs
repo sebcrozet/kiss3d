@@ -4,7 +4,7 @@ use gl::types::*;
 use light::Light;
 use na::{Isometry3, Matrix3, Matrix4, Point2, Point3, Vector3};
 use resource::Material;
-use resource::{Mesh, Shader, ShaderAttribute, ShaderUniform};
+use resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
 use scene::ObjectData;
 use std::ptr;
 
@@ -13,7 +13,7 @@ mod error;
 
 /// The default material used to draw objects.
 pub struct ObjectMaterial {
-    shader: Shader,
+    shader: Effect,
     pos: ShaderAttribute<Point3<f32>>,
     normal: ShaderAttribute<Vector3<f32>>,
     tex_coord: ShaderAttribute<Point2<f32>>,
@@ -29,7 +29,7 @@ impl ObjectMaterial {
     /// Creates a new `ObjectMaterial`.
     pub fn new() -> ObjectMaterial {
         // load the shader
-        let mut shader = Shader::new_from_str(OBJECT_VERTEX_SRC, OBJECT_FRAGMENT_SRC);
+        let mut shader = Effect::new_from_str(OBJECT_VERTEX_SRC, OBJECT_FRAGMENT_SRC);
 
         shader.use_program();
 

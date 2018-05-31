@@ -5,7 +5,7 @@ use gl::types::*;
 use na::Vector2;
 use post_processing::post_processing_effect::PostProcessingEffect;
 use resource::{
-    AllocationType, BufferType, GPUVec, RenderTarget, Shader, ShaderAttribute, ShaderUniform,
+    AllocationType, BufferType, Effect, GPUVec, RenderTarget, ShaderAttribute, ShaderUniform,
 };
 
 #[path = "../error.rs"]
@@ -18,7 +18,7 @@ pub struct SobelEdgeHighlight {
     zn: f32,
     zf: f32,
     threshold: f32,
-    shader: Shader,
+    shader: Effect,
     gl_nx: ShaderUniform<f32>,
     gl_ny: ShaderUniform<f32>,
     gl_fbo_depth: ShaderUniform<i32>,
@@ -45,7 +45,7 @@ impl SobelEdgeHighlight {
         fbo_vertices.load_to_gpu();
         fbo_vertices.unload_from_ram();
 
-        let mut shader = Shader::new_from_str(VERTEX_SHADER, FRAGMENT_SHADER);
+        let mut shader = Effect::new_from_str(VERTEX_SHADER, FRAGMENT_SHADER);
 
         shader.use_program();
 

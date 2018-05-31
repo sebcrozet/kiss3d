@@ -1,9 +1,9 @@
 use std::sync::Once;
 
 use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr};
-use stdweb::unstable::TryInto;
 use stdweb::web::{self, html_element::CanvasElement, IParentNode, TypedArray};
-use webgl::{WebGLBuffer, WebGLRenderingContext, WebGLUniformLocation};
+use stdweb::{unstable::TryInto, Value};
+use webgl::{WebGLBuffer, WebGLProgram, WebGLRenderingContext, WebGLShader, WebGLUniformLocation};
 
 use na::{Matrix2, Matrix3, Matrix4};
 use resource::{GLPrimitive, PrimitiveArray};
@@ -35,11 +35,15 @@ impl AbstractContextConst for WebGLContext {
     const STREAM_DRAW: u32 = WebGLRenderingContext::STREAM_DRAW;
     const ARRAY_BUFFER: u32 = WebGLRenderingContext::ARRAY_BUFFER;
     const ELEMENT_ARRAY_BUFFER: u32 = WebGLRenderingContext::ELEMENT_ARRAY_BUFFER;
+    const VERTEX_SHADER: u32 = WebGLRenderingContext::VERTEX_SHADER;
+    const FRAGMENT_SHADER: u32 = WebGLRenderingContext::FRAGMENT_SHADER;
 }
 
 impl AbstractContext for WebGLContext {
     type UniformLocation = WebGLUniformLocation;
     type Buffer = WebGLBuffer;
+    type Shader = WebGLShader;
+    type Program = WebGLProgram;
 
     fn get_error(&self) -> GLenum {
         self.ctxt.get_error()
@@ -87,6 +91,14 @@ impl AbstractContext for WebGLContext {
         self.ctxt.uniform1f(location, x)
     }
 
+    fn uniform3i(&self, location: Option<&Self::UniformLocation>, x: i32, y: i32, z: i32) {
+        self.ctxt.uniform3i(location, x, y, z)
+    }
+
+    fn uniform2i(&self, location: Option<&Self::UniformLocation>, x: i32, y: i32) {
+        self.ctxt.uniform2i(location, x, y)
+    }
+
     fn uniform1i(&self, location: Option<&Self::UniformLocation>, x: i32) {
         self.ctxt.uniform1i(location, x)
     }
@@ -131,5 +143,93 @@ impl AbstractContext for WebGLContext {
                 self.ctxt.buffer_sub_data(target, offset, &abuf.buffer())
             }
         }
+    }
+
+    fn create_shader(&self, type_: GLenum) -> Option<Self::Shader> {
+        self.ctxt.create_shader(type_)
+    }
+
+    fn create_program(&self) -> Option<Self::Program> {
+        self.ctxt.create_program()
+    }
+
+    fn delete_program(&self, program: Option<&Self::Program>) {
+        self.ctxt.delete_program(program)
+    }
+
+    fn delete_shader(&self, shader: Option<&Self::Shader>) {
+        self.ctxt.delete_shader(shader)
+    }
+
+    fn is_shader(&self, shader: Option<&Self::Shader>) -> bool {
+        self.ctxt.is_shader(shader)
+    }
+
+    fn is_program(&self, program: Option<&Self::Program>) -> bool {
+        self.ctxt.is_program(program)
+    }
+
+    fn shader_source(&self, shader: &Self::Shader, source: &str) {
+        self.ctxt.shader_source(shader, source)
+    }
+
+    fn compile_shader(&self, shader: &Self::Shader) {
+        self.ctxt.compile_shader(shader)
+    }
+
+    fn link_program(&self, program: &Self::Program) {
+        self.ctxt.link_program(program)
+    }
+
+    fn use_program(&self, program: Option<&Self::Program>) {
+        self.ctxt.use_program(program)
+    }
+
+    fn attach_shader(&self, program: &Self::Program, shader: &Self::Shader) {
+        self.ctxt.attach_shader(program, shader)
+    }
+
+    fn get_shader_parameter_int(&self, shader: &Self::Shader, pname: GLenum) -> Option<i32> {
+        match self.ctxt.get_shader_parameter(shader, pname) {
+            Value::Number(n) => n.try_into().ok(),
+            _ => None,
+        }
+    }
+
+    fn get_shader_info_log(&self, shader: &Self::Shader) -> Option<String> {
+        self.ctxt.get_shader_info_log(shader)
+    }
+
+    fn vertex_attrib_pointer(
+        &self,
+        index: u32,
+        size: i32,
+        type_: GLenum,
+        normalized: bool,
+        stride: i32,
+        offset: GLintptr,
+    ) {
+        self.ctxt
+            .vertex_attrib_pointer(index, size, type_, normalized, stride, offset)
+    }
+
+    fn enable_vertex_attrib_array(&self, index: u32) {
+        self.ctxt.enable_vertex_attrib_array(index)
+    }
+
+    fn disable_vertex_attrib_array(&self, index: u32) {
+        self.ctxt.disable_vertex_attrib_array(index)
+    }
+
+    fn get_attrib_location(&self, program: &Self::Program, name: &str) -> i32 {
+        self.ctxt.get_attrib_location(program, name)
+    }
+
+    fn get_uniform_location(
+        &self,
+        program: &Self::Program,
+        name: &str,
+    ) -> Option<Self::UniformLocation> {
+        self.ctxt.get_uniform_location(program, name)
     }
 }
