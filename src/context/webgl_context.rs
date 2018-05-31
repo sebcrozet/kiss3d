@@ -1,11 +1,12 @@
 use std::sync::Once;
 
-use context::{AbstractContext, AbstractContextConst, GLenum};
+use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr};
 use stdweb::unstable::TryInto;
-use stdweb::web::{self, html_element::CanvasElement, IParentNode};
+use stdweb::web::{self, html_element::CanvasElement, IParentNode, TypedArray};
 use webgl::{WebGLBuffer, WebGLRenderingContext, WebGLUniformLocation};
 
 use na::{Matrix2, Matrix3, Matrix4};
+use resource::{GLPrimitive, PrimitiveArray};
 
 #[derive(Clone)]
 pub struct WebGLContext {
@@ -90,6 +91,14 @@ impl AbstractContext for WebGLContext {
         self.ctxt.uniform1i(location, x)
     }
 
+    fn create_buffer(&self) -> Option<Self::Buffer> {
+        self.ctxt.create_buffer()
+    }
+
+    fn delete_buffer(&self, buffer: Option<&Self::Buffer>) {
+        self.ctxt.delete_buffer(buffer)
+    }
+
     fn bind_buffer(&self, target: GLenum, buffer: Option<&Self::Buffer>) {
         self.ctxt.bind_buffer(target, buffer)
     }
@@ -98,12 +107,29 @@ impl AbstractContext for WebGLContext {
         self.ctxt.is_buffer(buffer)
     }
 
-    fn delete_buffer(&self, buffer: Option<&Self::Buffer>) {
-        self.ctxt.delete_buffer(buffer)
+    fn buffer_data<T: GLPrimitive>(&self, target: GLenum, data: &[T], usage: GLenum) {
+        match T::flatten(data) {
+            PrimitiveArray::Float32(arr) => {
+                let abuf = TypedArray::<f32>::from(arr);
+                self.ctxt.buffer_data_1(target, Some(&abuf.buffer()), usage)
+            }
+            PrimitiveArray::Int32(arr) => {
+                let abuf = TypedArray::<i32>::from(arr);
+                self.ctxt.buffer_data_1(target, Some(&abuf.buffer()), usage)
+            }
+        }
     }
 
-    fn buffer_data<T: GLPrimitive>(&self, target: GLenum, data: &[T], usage: GLenum) {
-        let abuf = TypedArray::from(data);
-        self.ctxt.buffer_data(target, Some(&abuf), usage)
+    fn buffer_sub_data<T: GLPrimitive>(&self, target: GLenum, offset: GLintptr, data: &[T]) {
+        match T::flatten(data) {
+            PrimitiveArray::Float32(arr) => {
+                let abuf = TypedArray::<f32>::from(arr);
+                self.ctxt.buffer_sub_data(target, offset, &abuf.buffer())
+            }
+            PrimitiveArray::Int32(arr) => {
+                let abuf = TypedArray::<i32>::from(arr);
+                self.ctxt.buffer_sub_data(target, offset, &abuf.buffer())
+            }
+        }
     }
 }

@@ -4,14 +4,20 @@ use std::sync::{Once, ONCE_INIT};
 use context::GLContext as ContextImpl;
 #[cfg(target_arch = "wasm32")]
 use context::WebGLContext as ContextImpl;
-use resource::GLPrimitive;
+
+#[cfg(not(target_arch = "wasm32"))]
+use gl;
+#[cfg(target_arch = "wasm32")]
+use webgl as gl;
 
 use na::{Matrix2, Matrix3, Matrix4};
+use resource::GLPrimitive;
 
 #[path = "../error.rs"]
 mod error;
 
-pub type GLenum = u32;
+pub type GLenum = gl::GLenum;
+pub type GLintptr = gl::GLintptr;
 pub struct UniformLocation(<ContextImpl as AbstractContext>::UniformLocation);
 pub struct Buffer(<ContextImpl as AbstractContext>::Buffer);
 
@@ -105,6 +111,14 @@ impl Context {
         self.ctxt.uniform1i(location.map(|e| &e.0), x)
     }
 
+    pub fn create_buffer(&self) -> Option<Buffer> {
+        self.ctxt.create_buffer().map(|e| Buffer(e))
+    }
+
+    pub fn delete_buffer(&self, buffer: Option<&Buffer>) {
+        self.ctxt.delete_buffer(buffer.map(|e| &e.0))
+    }
+
     pub fn bind_buffer(&self, target: GLenum, buffer: Option<&Buffer>) {
         self.ctxt.bind_buffer(target, buffer.map(|e| &e.0))
     }
@@ -113,8 +127,12 @@ impl Context {
         self.ctxt.is_buffer(buffer.map(|e| &e.0))
     }
 
-    pub fn delete_buffer(&self, buffer: Option<&Buffer>) {
-        self.ctxt.delete_buffer(buffer.map(|e| &e.0))
+    pub fn buffer_data<T: GLPrimitive>(&self, target: GLenum, data: &[T], usage: GLenum) {
+        self.ctxt.buffer_data(target, data, usage)
+    }
+
+    pub fn buffer_sub_data<T: GLPrimitive>(&self, target: GLenum, offset: GLintptr, data: &[T]) {
+        self.ctxt.buffer_sub_data(target, offset, data)
     }
 }
 
@@ -156,10 +174,10 @@ pub(crate) trait AbstractContext {
     fn uniform1f(&self, location: Option<&Self::UniformLocation>, x: f32);
     fn uniform1i(&self, location: Option<&Self::UniformLocation>, x: i32);
 
+    fn create_buffer(&self) -> Option<Self::Buffer>;
+    fn delete_buffer(&self, buffer: Option<&Self::Buffer>);
     fn is_buffer(&self, buffer: Option<&Self::Buffer>) -> bool;
     fn bind_buffer(&self, target: GLenum, buffer: Option<&Self::Buffer>);
-    // fn buffer_sub_data(&self, target: GLenum, offset: GLintptr, data: &ArrayBuffer);
-    // fn create_buffer(&self) -> Option<&Self::Buffer>;
-    fn delete_buffer(&self, buffer: Option<&Self::Buffer>);
     fn buffer_data<T: GLPrimitive>(&self, target: GLenum, data: &[T], usage: GLenum);
+    fn buffer_sub_data<T: GLPrimitive>(&self, target: GLenum, offset: GLintptr, data: &[T]);
 }

@@ -7,7 +7,7 @@
 // pub use resource::mesh_manager::MeshManager;
 // pub use resource::shader::{Shader, ShaderAttribute, ShaderUniform};
 // pub use resource::gpu_vector::{GPUVec, BufferType, AllocationType};
-pub use resource::gl_primitive::GLPrimitive;
+pub use resource::gl_primitive::{GLPrimitive, PrimitiveArray};
 // pub use resource::mesh::Mesh;
 
 // mod framebuffer_manager;
