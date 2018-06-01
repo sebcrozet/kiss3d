@@ -5,8 +5,6 @@
 
 use camera::{ArcBall, Camera};
 use context::Context;
-use glfw;
-use glfw::{Action, Context, Key, WindowEvent, WindowMode};
 use image::imageops;
 use image::{ImageBuffer, Rgb};
 use light::Light;
@@ -26,8 +24,8 @@ use std::sync::mpsc::Receiver;
 use std::sync::{Once, ONCE_INIT};
 use std::thread;
 use std::time::{Duration, Instant};
-use text::{Font, TextRenderer};
-use window::EventManager;
+// use text::{Font, TextRenderer};
+use window::{Action, Canvas, EventManager, Key, WindowEvent};
 
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
@@ -38,15 +36,14 @@ static DEFAULT_HEIGHT: u32 = 600u32;
 pub struct Window {
     events: Rc<Receiver<(f64, WindowEvent)>>,
     unhandled_events: Rc<RefCell<Vec<WindowEvent>>>,
-    glfw: glfw::Glfw,
-    window: glfw::Window,
+    canvas: Canvas,
     max_dur_per_frame: Option<Duration>,
     scene: SceneNode,
     light_mode: Light, // FIXME: move that to the scene graph
     background: Vector3<f32>,
     line_renderer: LineRenderer,
     point_renderer: PointRenderer,
-    text_renderer: TextRenderer,
+    // text_renderer: TextRenderer,
     framebuffer_manager: FramebufferManager,
     post_process_render_target: RenderTarget,
     curr_time: Instant,
@@ -57,57 +54,25 @@ impl Window {
     /// Indicates whether this window should be closed.
     #[inline]
     pub fn should_close(&self) -> bool {
-        self.window.should_close()
-    }
-
-    /// Access the glfw context.
-    #[inline]
-    pub fn context() -> glfw::Glfw {
-        // FIXME: glfw::set_error_callback(~ErrorCallback);
-
-        static mut GLFW_SINGLETON: Option<glfw::Glfw> = None;
-        static INIT: Once = ONCE_INIT;
-
-        unsafe {
-            INIT.call_once(|| {
-                GLFW_SINGLETON = Some(glfw::init(glfw::FAIL_ON_ERRORS).unwrap());
-            });
-            GLFW_SINGLETON.unwrap().clone()
-        }
-    }
-
-    /// Access the glfw window.
-    #[inline]
-    pub fn glfw_window(&self) -> &glfw::Window {
-        &self.window
-    }
-
-    /// Mutably access the glfw window.
-    #[inline]
-    pub fn glfw_window_mut(&mut self) -> &mut glfw::Window {
-        &mut self.window
+        self.canvas.should_close()
     }
 
     /// The window width.
     #[inline]
     pub fn width(&self) -> f32 {
-        let (w, _) = self.window.get_size();
-
-        w as f32
+        self.canvas.size().0 as f32;
     }
 
     /// The window height.
     #[inline]
     pub fn height(&self) -> f32 {
-        let (_, h) = self.window.get_size();
-
-        h as f32
+        self.canvas.size().1 as f32;
     }
 
     /// The size of the window.
     #[inline]
     pub fn size(&self) -> Vector2<f32> {
-        let (w, h) = self.window.get_size();
+        let (w, h) = self.canvas.size();
 
         Vector2::new(w as f32, h as f32)
     }
@@ -123,25 +88,25 @@ impl Window {
 
     /// Set window title
     pub fn set_title(&mut self, title: &str) {
-        self.window.set_title(title)
+        self.canvas.set_title(title)
     }
 
     /// Closes the window.
     #[inline]
     pub fn close(&mut self) {
-        self.window.set_should_close(true)
+        self.canvas.set_should_close(true)
     }
 
     /// Hides the window, without closing it. Use `show` to make it visible again.
     #[inline]
     pub fn hide(&mut self) {
-        self.window.hide()
+        self.canvas.hide()
     }
 
     /// Makes the window visible. Use `hide` to hide it.
     #[inline]
     pub fn show(&mut self) {
-        self.window.show()
+        self.canvas.show()
     }
 
     /// Sets the background color.
@@ -173,18 +138,18 @@ impl Window {
         self.point_renderer.draw_point(pt.clone(), color.clone());
     }
 
-    // XXX: remove this (moved to the render_frame).
-    /// Adds a string to be drawn during the next frame.
-    #[inline]
-    pub fn draw_text(
-        &mut self,
-        text: &str,
-        pos: &Point2<f32>,
-        font: &Rc<Font>,
-        color: &Point3<f32>,
-    ) {
-        self.text_renderer.draw_text(text, pos, font, color);
-    }
+    // // XXX: remove this (moved to the render_frame).
+    // /// Adds a string to be drawn during the next frame.
+    // #[inline]
+    // pub fn draw_text(
+    //     &mut self,
+    //     text: &str,
+    //     pos: &Point2<f32>,
+    //     font: &Rc<Font>,
+    //     color: &Point3<f32>,
+    // ) {
+    //     self.text_renderer.draw_text(text, pos, font, color);
+    // }
 
     /// Removes an object from the scene.
     pub fn remove(&mut self, sn: &mut SceneNode) {
@@ -345,22 +310,13 @@ impl Window {
 
     // FIXME: make this pub?
     fn do_new(title: &str, hide: bool, width: u32, height: u32) -> Window {
-        let glfw = Self::context();
-        let (mut window, events) = glfw
-            .create_window(width, height, title, WindowMode::Windowed)
-            .expect("Unable to open a glfw window.");
+        let canvas = Canvas::open(title, hide, width, height);
 
-        window.make_current();
-
-        verify!(gl::load_with(
-            |name| window.get_proc_address(name) as *const _
-        ));
         init_gl();
 
         let mut usr_window = Window {
             max_dur_per_frame: None,
-            glfw: glfw,
-            window: window,
+            canvas: canvas,
             events: Rc::new(events),
             unhandled_events: Rc::new(RefCell::new(Vec::new())),
             scene: SceneNode::new_empty(),
@@ -368,7 +324,7 @@ impl Window {
             background: Vector3::new(0.0, 0.0, 0.0),
             line_renderer: LineRenderer::new(),
             point_renderer: PointRenderer::new(),
-            text_renderer: TextRenderer::new(),
+            // text_renderer: TextRenderer::new(),
             post_process_render_target: FramebufferManager::new_render_target(
                 width as usize,
                 height as usize,
@@ -381,15 +337,8 @@ impl Window {
             ))),
         };
 
-        // setup callbacks
-        usr_window.window.set_framebuffer_size_polling(true);
-        usr_window.window.set_key_polling(true);
-        usr_window.window.set_mouse_button_polling(true);
-        usr_window.window.set_cursor_pos_polling(true);
-        usr_window.window.set_scroll_polling(true);
-
         if hide {
-            usr_window.window.hide()
+            usr_window.canvas.hide()
         }
 
         // usr_window.framebuffer_size_callback(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -417,7 +366,7 @@ impl Window {
     /// # Arguments:
     /// * `out` - the output buffer. It is automatically resized.
     pub fn snap(&self, out: &mut Vec<u8>) {
-        let (width, height) = self.window.get_size();
+        let (width, height) = self.canvas.size();
         self.snap_rect(out, 0, 0, width as usize, height as usize)
     }
 
@@ -437,23 +386,21 @@ impl Window {
         }
 
         // FIXME: this is _not_ the fastest way of doing this.
-        unsafe {
-            ctxt.pixel_storei(Context::PACK_ALIGNMENT, 1);
-            ctxt.read_pixels(
-                x as i32,
-                y as i32,
-                width as i32,
-                height as i32,
-                Context::RGB,
-                Context::UNSIGNED_BYTE,
-                mem::transmute(&mut out[0]),
-            );
-        }
+        let ctxt = Context::get();
+        ctxt.pixel_storei(Context::PACK_ALIGNMENT, 1);
+        ctxt.read_pixels(
+            x as i32,
+            y as i32,
+            width as i32,
+            height as i32,
+            Context::RGB,
+            mem::transmute(&mut out[0]),
+        );
     }
 
     /// Get the current screen as an image
     pub fn snap_image(&self) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
-        let (width, height) = self.window.get_size();
+        let (width, height) = self.canvas.size();
         let mut buf = Vec::new();
         self.snap(&mut buf);
         let img_opt = ImageBuffer::from_vec(width as u32, height as u32, buf);
@@ -479,12 +426,12 @@ impl Window {
             self.handle_event(camera, event)
         }
 
-        for event in glfw::flush_messages(&*events) {
+        for event in self.canvas.events() {
             self.handle_event(camera, &event.1)
         }
 
         unhandled_events.borrow_mut().clear();
-        self.glfw.poll_events();
+        self.canvas.poll_events();
     }
 
     fn handle_event(&mut self, camera: &mut Option<&mut Camera>, event: &WindowEvent) {
@@ -499,8 +446,8 @@ impl Window {
         }
 
         match *camera {
-            Some(ref mut cam) => cam.handle_event(&self.window, event),
-            None => self.camera.borrow_mut().handle_event(&self.window, event),
+            Some(ref mut cam) => cam.handle_event(&self.canvas, event),
+            None => self.camera.borrow_mut().handle_event(&self.canvas, event),
         }
     }
 
@@ -567,10 +514,10 @@ impl Window {
         let h = self.height();
 
         camera.handle_event(
-            &self.window,
+            &self.canvas,
             &WindowEvent::FramebufferSize(w as i32, h as i32),
         );
-        camera.update(&self.window);
+        camera.update(&self.canvas);
 
         match self.light_mode {
             Light::StickToCamera => self.set_light(Light::StickToCamera),
@@ -588,10 +535,10 @@ impl Window {
         }
 
         for pass in 0usize..camera.num_passes() {
-            camera.start_pass(pass, &self.window);
+            camera.start_pass(pass, &self.canvas);
             self.render_scene(camera, pass);
         }
-        camera.render_complete(&self.window);
+        camera.render_complete(&self.canvas);
 
         let (znear, zfar) = camera.clip_planes();
 
@@ -614,10 +561,10 @@ impl Window {
             None => {}
         }
 
-        self.text_renderer.render(w, h);
+        // self.text_renderer.render(w, h);
 
         // We are done: swap buffers
-        self.window.swap_buffers();
+        self.canvas.swap_buffers();
 
         // Limit the fps if needed.
         match self.max_dur_per_frame {

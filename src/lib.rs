@@ -86,6 +86,8 @@ I’d love to see people improving this library for their own needs. However, ke
 #![allow(missing_copy_implementations)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
 
+#[macro_use]
+extern crate bitflags;
 // extern crate freetype;
 // extern crate gl;
 // extern crate glfw;

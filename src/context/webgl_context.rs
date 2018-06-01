@@ -433,13 +433,19 @@ impl AbstractContext for WebGLContext {
         width: i32,
         height: i32,
         format: GLenum,
-        type_: GLenum,
         pixels: Option<&mut [u8]>,
     ) {
         if let Some(pixels) = pixels {
             let abuf = TypedArray::<u8>::from(&*pixels);
-            self.ctxt
-                .read_pixels(x, y, width, height, format, type_, Some(&abuf.buffer()));
+            self.ctxt.read_pixels(
+                x,
+                y,
+                width,
+                height,
+                format,
+                Self::UNSIGNED_BYTE,
+                Some(&abuf.buffer()),
+            );
             let v = Vec::<u8>::from(abuf);
             pixels.copy_from_slice(&v[..]);
         }

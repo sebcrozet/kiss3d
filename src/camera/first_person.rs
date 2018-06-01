@@ -1,10 +1,8 @@
-use std::f32;
-use glfw;
-use glfw::{Key, MouseButton, Action, WindowEvent};
-use num::Zero;
-use na::{Point3, Vector2, Vector3, Matrix4, Isometry3, Perspective3, Translation3};
-use na;
 use camera::Camera;
+use na::{self, Isometry3, Matrix4, Perspective3, Point3, Translation3, Vector2, Vector3};
+use num::Zero;
+use std::f32;
+use window::{Action, Canvas, Key, MouseButton, WindowEvent};
 
 /// First-person camera mode.
 ///
@@ -14,24 +12,24 @@ use camera::Camera;
 ///   * Scroll in/out - zoom in/out
 #[derive(Debug, Clone)]
 pub struct FirstPerson {
-    eye:             Point3<f32>,
-    yaw:             f32,
-    pitch:           f32,
+    eye: Point3<f32>,
+    yaw: f32,
+    pitch: f32,
 
-    yaw_step:        f32,
-    pitch_step:      f32,
-    move_step:       f32,
-    rotate_button:   Option<MouseButton>,
-    drag_button:     Option<MouseButton>,
-    up_key:          Option<Key>,
-    down_key:        Option<Key>,
-    left_key:        Option<Key>,
-    right_key:       Option<Key>,
+    yaw_step: f32,
+    pitch_step: f32,
+    move_step: f32,
+    rotate_button: Option<MouseButton>,
+    drag_button: Option<MouseButton>,
+    up_key: Option<Key>,
+    down_key: Option<Key>,
+    left_key: Option<Key>,
+    right_key: Option<Key>,
 
-    projection:      Perspective3<f32>,
-    proj_view:       Matrix4<f32>,
-    inverse_proj_view:   Matrix4<f32>,
-    last_cursor_pos: Vector2<f32>
+    projection: Perspective3<f32>,
+    proj_view: Matrix4<f32>,
+    inverse_proj_view: Matrix4<f32>,
+    last_cursor_pos: Vector2<f32>,
 }
 
 impl FirstPerson {
@@ -41,27 +39,29 @@ impl FirstPerson {
     }
 
     /// Creates a new first person camera with default sensitivity values.
-    pub fn new_with_frustrum(fov:    f32,
-                             znear:  f32,
-                             zfar:   f32,
-                             eye:    Point3<f32>,
-                             at:     Point3<f32>) -> FirstPerson {
+    pub fn new_with_frustrum(
+        fov: f32,
+        znear: f32,
+        zfar: f32,
+        eye: Point3<f32>,
+        at: Point3<f32>,
+    ) -> FirstPerson {
         let mut res = FirstPerson {
-            eye:             Point3::new(0.0, 0.0, 0.0),
-            yaw:             0.0,
-            pitch:           0.0,
-            yaw_step:        0.005,
-            pitch_step:      0.005,
-            move_step:       0.5,
-            rotate_button:   Some(glfw::MouseButtonLeft),
-            drag_button:     Some(glfw::MouseButtonRight),
-            up_key:          Some(Key::Up),
-            down_key:        Some(Key::Down),
-            left_key:        Some(Key::Left),
-            right_key:       Some(Key::Right),
-            projection:      Perspective3::new(800.0 / 600.0, fov, znear, zfar),
-            proj_view:       na::zero(),
-            inverse_proj_view:   na::zero(),
+            eye: Point3::new(0.0, 0.0, 0.0),
+            yaw: 0.0,
+            pitch: 0.0,
+            yaw_step: 0.005,
+            pitch_step: 0.005,
+            move_step: 0.5,
+            rotate_button: Some(MouseButton::Button1),
+            drag_button: Some(MouseButton::Button2),
+            up_key: Some(Key::Up),
+            down_key: Some(Key::Down),
+            left_key: Some(Key::Left),
+            right_key: Some(Key::Right),
+            projection: Perspective3::new(800.0 / 600.0, fov, znear, zfar),
+            proj_view: na::zero(),
+            inverse_proj_view: na::zero(),
             last_cursor_pos: na::zero(),
         };
 
@@ -85,7 +85,6 @@ impl FirstPerson {
     pub fn set_pitch_step(&mut self, step: f32) {
         self.pitch_step = step;
     }
-
 
     /// Sets the yaw increment per mouse movement.
     ///
@@ -115,13 +114,13 @@ impl FirstPerson {
 
     /// Changes the orientation and position of the camera to look at the specified point.
     pub fn look_at(&mut self, eye: Point3<f32>, at: Point3<f32>) {
-        let dist  = na::norm(&(eye - at));
+        let dist = na::norm(&(eye - at));
 
         let pitch = ((at.y - eye.y) / dist).acos();
-        let yaw   = (at.z - eye.z).atan2(at.x - eye.x);
+        let yaw = (at.z - eye.z).atan2(at.x - eye.x);
 
-        self.eye   = eye;
-        self.yaw   = yaw;
+        self.eye = eye;
+        self.yaw = yaw;
         self.pitch = pitch;
         self.update_projviews();
     }
@@ -214,15 +213,15 @@ impl FirstPerson {
 
     /// Disable the movement buttons for up, down, left and right.
     pub fn unbind_movement_keys(&mut self) {
-        self.up_key    = None;
-        self.down_key  = None;
-        self.left_key  = None;
+        self.up_key = None;
+        self.down_key = None;
+        self.left_key = None;
         self.right_key = None;
     }
 
     #[doc(hidden)]
     pub fn handle_left_button_displacement(&mut self, dpos: &Vector2<f32>) {
-        self.yaw   = self.yaw   + dpos.x * self.yaw_step;
+        self.yaw = self.yaw + dpos.x * self.yaw_step;
         self.pitch = self.pitch + dpos.y * self.pitch_step;
 
         self.update_restrictions();
@@ -231,9 +230,9 @@ impl FirstPerson {
 
     #[doc(hidden)]
     pub fn handle_right_button_displacement(&mut self, dpos: &Vector2<f32>) {
-        let at        = self.at();
-        let dir       = na::normalize(&(at - self.eye));
-        let tangent   = na::normalize(&Vector3::y().cross(&dir));
+        let at = self.at();
+        let dir = na::normalize(&(at - self.eye));
+        let tangent = na::normalize(&Vector3::y().cross(&dir));
         let bitangent = dir.cross(&tangent);
 
         self.eye = self.eye + tangent * (0.01 * dpos.x / 10.0) + bitangent * (0.01 * dpos.y / 10.0);
@@ -252,8 +251,12 @@ impl FirstPerson {
     }
 
     fn update_projviews(&mut self) {
-        let _ = self.proj_view = *self.projection.as_matrix() * self.view_transform().to_homogeneous();
-        let _ = self.proj_view.try_inverse().map(|inverse_proj| self.inverse_proj_view = inverse_proj);
+        let _ =
+            self.proj_view = *self.projection.as_matrix() * self.view_transform().to_homogeneous();
+        let _ = self
+            .proj_view
+            .try_inverse()
+            .map(|inverse_proj| self.inverse_proj_view = inverse_proj);
     }
 
     /// The direction this camera is looking at.
@@ -263,7 +266,7 @@ impl FirstPerson {
 
     /// The direction this camera is being moved by the keyboard keys for a given set of key states.
     pub fn move_dir(&self, up: bool, down: bool, right: bool, left: bool) -> Vector3<f32> {
-        let t      = self.observer_frame();
+        let t = self.observer_frame();
         let frontv = t * Vector3::z();
         let rightv = t * Vector3::x();
 
@@ -282,13 +285,12 @@ impl FirstPerson {
         }
 
         if left {
-            movement =  movement + rightv
+            movement = movement + rightv
         }
 
         if movement.is_zero() {
             movement
-        }
-        else {
+        } else {
             na::normalize(&movement)
         }
     }
@@ -333,33 +335,33 @@ impl Camera for FirstPerson {
         Isometry3::look_at_rh(&self.eye, &self.at(), &Vector3::y())
     }
 
-    fn handle_event(&mut self, window: &glfw::Window, event: &WindowEvent) {
+    fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
         match *event {
             WindowEvent::CursorPos(x, y) => {
                 let curr_pos = Vector2::new(x as f32, y as f32);
 
                 if let Some(rotate_button) = self.rotate_button {
-                    if window.get_mouse_button(rotate_button) == Action::Press {
+                    if canvas.get_mouse_button(rotate_button) == Action::Press {
                         let dpos = curr_pos - self.last_cursor_pos;
                         self.handle_left_button_displacement(&dpos)
                     }
                 }
 
                 if let Some(drag_button) = self.drag_button {
-                    if window.get_mouse_button(drag_button) == Action::Press {
+                    if canvas.get_mouse_button(drag_button) == Action::Press {
                         let dpos = curr_pos - self.last_cursor_pos;
                         self.handle_right_button_displacement(&dpos)
                     }
                 }
 
                 self.last_cursor_pos = curr_pos;
-            },
+            }
             WindowEvent::Scroll(_, off) => self.handle_scroll(off as f32),
             WindowEvent::FramebufferSize(w, h) => {
                 self.projection.set_aspect(w as f32 / h as f32);
                 self.update_projviews();
             }
-            _ => { }
+            _ => {}
         }
     }
 
@@ -375,21 +377,21 @@ impl Camera for FirstPerson {
         self.inverse_proj_view
     }
 
-    fn update(&mut self, window: &glfw::Window) {
-        let up    = check_optional_key_state(window, self.up_key,    Action::Press);
-        let down  = check_optional_key_state(window, self.down_key,  Action::Press);
-        let right = check_optional_key_state(window, self.right_key, Action::Press);
-        let left  = check_optional_key_state(window, self.left_key,  Action::Press);
-        let dir   = self.move_dir(up, down, right, left);
+    fn update(&mut self, canvas: &Canvas) {
+        let up = check_optional_key_state(canvas, self.up_key, Action::Press);
+        let down = check_optional_key_state(canvas, self.down_key, Action::Press);
+        let right = check_optional_key_state(canvas, self.right_key, Action::Press);
+        let left = check_optional_key_state(canvas, self.left_key, Action::Press);
+        let dir = self.move_dir(up, down, right, left);
 
-        let move_amount  = dir * self.move_step;
+        let move_amount = dir * self.move_step;
         self.translate_mut(&Translation3::from_vector(move_amount));
     }
 }
 
-fn check_optional_key_state(window: &glfw::Window, key: Option<Key>, key_state: Action) -> bool {
+fn check_optional_key_state(canvas: &Canvas, key: Option<Key>, key_state: Action) -> bool {
     if let Some(actual_key) = key {
-        window.get_key(actual_key) == key_state
+        canvas.get_key(actual_key) == key_state
     } else {
         false
     }

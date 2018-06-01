@@ -25,6 +25,7 @@ path = "src/lib.rs"
 
 [dependencies]
 libc        = "0.2"
+bitflags    = "1.0"
 num-traits  = "0.2"
 nalgebra    = "0.15"
 ncollide3d  = "0.16"

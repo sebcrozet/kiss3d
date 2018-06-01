@@ -1,10 +1,7 @@
-use std::f32;
-use glfw::{Key, Action, MouseButton};
-use glfw;
-use glfw::WindowEvent;
-use na::{Point3, Vector2, Vector3, Matrix4, Isometry3, Perspective3};
-use na;
 use camera::Camera;
+use na::{self, Isometry3, Matrix4, Perspective3, Point3, Vector2, Vector3};
+use std::f32;
+use window::{Action, Canvas, Key, MouseButton, WindowEvent};
 
 /// Arc-ball camera mode.
 ///
@@ -19,28 +16,28 @@ use camera::Camera;
 #[derive(Clone, Debug)]
 pub struct ArcBall {
     /// The focus point.
-    at:    Point3<f32>,
+    at: Point3<f32>,
     /// Yaw of the camera (rotation along the y axis).
-    yaw:   f32,
+    yaw: f32,
     /// Pitch of the camera (rotation along the x axis).
     pitch: f32,
     /// Distance from the camera to the `at` focus point.
-    dist:  f32,
+    dist: f32,
 
     /// Increment of the yaw per unit mouse movement. The default value is 0.005.
-    yaw_step:   f32,
+    yaw_step: f32,
     /// Increment of the pitch per unit mouse movement. The default value is 0.005.
     pitch_step: f32,
     /// Increment of the distance per unit scrolling. The default value is 40.0.
-    dist_step:  f32,
+    dist_step: f32,
     rotate_button: Option<MouseButton>,
-    drag_button:   Option<MouseButton>,
-    reset_key:     Option<Key>,
+    drag_button: Option<MouseButton>,
+    reset_key: Option<Key>,
 
-    projection:        Perspective3<f32>,
-    proj_view:         Matrix4<f32>,
+    projection: Perspective3<f32>,
+    proj_view: Matrix4<f32>,
     inverse_proj_view: Matrix4<f32>,
-    last_cursor_pos:   Vector2<f32>
+    last_cursor_pos: Vector2<f32>,
 }
 
 impl ArcBall {
@@ -50,26 +47,28 @@ impl ArcBall {
     }
 
     /// Creates a new arc ball camera with default sensitivity values.
-    pub fn new_with_frustrum(fov:    f32,
-                             znear:  f32,
-                             zfar:   f32,
-                             eye:    Point3<f32>,
-                             at:     Point3<f32>) -> ArcBall {
+    pub fn new_with_frustrum(
+        fov: f32,
+        znear: f32,
+        zfar: f32,
+        eye: Point3<f32>,
+        at: Point3<f32>,
+    ) -> ArcBall {
         let mut res = ArcBall {
-            at:              Point3::new(0.0, 0.0, 0.0),
-            yaw:             0.0,
-            pitch:           0.0,
-            dist:            0.0,
-            yaw_step:        0.005,
-            pitch_step:      0.005,
-            dist_step:       40.0,
-            rotate_button:   Some(glfw::MouseButtonLeft),
-            drag_button:     Some(glfw::MouseButtonRight),
-            reset_key:       Some(Key::Enter),
-            projection:      Perspective3::new(800.0 / 600.0, fov, znear, zfar),
-            proj_view:       na::zero(),
-            inverse_proj_view:   na::zero(),
-            last_cursor_pos: na::zero()
+            at: Point3::new(0.0, 0.0, 0.0),
+            yaw: 0.0,
+            pitch: 0.0,
+            dist: 0.0,
+            yaw_step: 0.005,
+            pitch_step: 0.005,
+            dist_step: 40.0,
+            rotate_button: Some(MouseButton::Button1),
+            drag_button: Some(MouseButton::Button2),
+            reset_key: Some(Key::Enter),
+            projection: Perspective3::new(800.0 / 600.0, fov, znear, zfar),
+            proj_view: na::zero(),
+            inverse_proj_view: na::zero(),
+            last_cursor_pos: na::zero(),
         };
 
         res.look_at(eye, at);
@@ -129,13 +128,13 @@ impl ArcBall {
 
     /// Move and orient the camera such that it looks at a specific point.
     pub fn look_at(&mut self, eye: Point3<f32>, at: Point3<f32>) {
-        let dist  = na::norm(&(eye - at));
+        let dist = na::norm(&(eye - at));
         let pitch = ((eye.y - at.y) / dist).acos();
-        let yaw   = (eye.z - at.z).atan2(eye.x - at.x);
+        let yaw = (eye.z - at.z).atan2(eye.x - at.x);
 
-        self.at    = at;
-        self.dist  = dist;
-        self.yaw   = yaw;
+        self.at = at;
+        self.dist = dist;
+        self.yaw = yaw;
         self.pitch = pitch;
 
         self.update_restrictions();
@@ -187,12 +186,12 @@ impl ArcBall {
 
     /// Set the key used to reset the ArcBall camera.
     /// Use None to disable reset.
-    pub fn rebind_reset_key(&mut self, new_key : Option<Key>) {
+    pub fn rebind_reset_key(&mut self, new_key: Option<Key>) {
         self.reset_key = new_key;
     }
 
     fn handle_left_button_displacement(&mut self, dpos: &Vector2<f32>) {
-        self.yaw   = self.yaw   + dpos.x * self.yaw_step;
+        self.yaw = self.yaw + dpos.x * self.yaw_step;
         self.pitch = self.pitch - dpos.y * self.pitch_step;
 
         self.update_restrictions();
@@ -200,11 +199,11 @@ impl ArcBall {
     }
 
     fn handle_right_button_displacement(&mut self, dpos: &Vector2<f32>) {
-        let eye       = self.eye();
-        let dir       = na::normalize(&(self.at - eye));
-        let tangent   = na::normalize(&Vector3::y().cross(&dir));
+        let eye = self.eye();
+        let dir = na::normalize(&(self.at - eye));
+        let tangent = na::normalize(&Vector3::y().cross(&dir));
         let bitangent = dir.cross(&tangent);
-        let mult      = self.dist / 1000.0;
+        let mult = self.dist / 1000.0;
 
         self.at = self.at + tangent * (dpos.x * mult) + bitangent * (dpos.y * mult);
         self.update_projviews();
@@ -217,7 +216,7 @@ impl ArcBall {
     }
 
     fn update_projviews(&mut self) {
-        self.proj_view         = *self.projection.as_matrix() * self.view_transform().to_homogeneous();
+        self.proj_view = *self.projection.as_matrix() * self.view_transform().to_homogeneous();
         self.inverse_proj_view = self.proj_view.try_inverse().unwrap();
     }
 }
@@ -239,37 +238,37 @@ impl Camera for ArcBall {
         Point3::new(px, py, pz)
     }
 
-    fn handle_event(&mut self, window: &glfw::Window, event: &WindowEvent) {
+    fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
         match *event {
             WindowEvent::CursorPos(x, y) => {
                 let curr_pos = Vector2::new(x as f32, y as f32);
 
                 if let Some(rotate_button) = self.rotate_button {
-                    if window.get_mouse_button(rotate_button) == Action::Press {
+                    if canvas.get_mouse_button(rotate_button) == Action::Press {
                         let dpos = curr_pos - self.last_cursor_pos;
                         self.handle_left_button_displacement(&dpos)
                     }
                 }
 
                 if let Some(drag_button) = self.drag_button {
-                    if window.get_mouse_button(drag_button) == Action::Press {
+                    if canvas.get_mouse_button(drag_button) == Action::Press {
                         let dpos = curr_pos - self.last_cursor_pos;
                         self.handle_right_button_displacement(&dpos)
                     }
                 }
 
                 self.last_cursor_pos = curr_pos;
-            },
+            }
             WindowEvent::Key(key, _, Action::Press, _) if Some(key) == self.reset_key => {
                 self.at = Point3::origin();
                 self.update_projviews();
-            },
+            }
             WindowEvent::Scroll(_, off) => self.handle_scroll(off as f32),
             WindowEvent::FramebufferSize(w, h) => {
                 self.projection.set_aspect(w as f32 / h as f32);
                 self.update_projviews();
-            },
-            _ => { }
+            }
+            _ => {}
         }
     }
 
@@ -281,5 +280,5 @@ impl Camera for ArcBall {
         self.inverse_proj_view
     }
 
-    fn update(&mut self, _: &glfw::Window) { }
+    fn update(&mut self, _: &Canvas) {}
 }

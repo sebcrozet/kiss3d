@@ -408,11 +408,9 @@ impl Context {
         width: i32,
         height: i32,
         format: GLenum,
-        type_: GLenum,
         pixels: Option<&mut [u8]>,
     ) {
-        self.ctxt
-            .read_pixels(x, y, width, height, format, type_, pixels)
+        self.ctxt.read_pixels(x, y, width, height, format, pixels)
     }
 
     pub fn pixel_storei(&self, pname: GLenum, param: i32) {
@@ -600,7 +598,6 @@ pub(crate) trait AbstractContext {
         width: i32,
         height: i32,
         format: GLenum,
-        type_: GLenum,
         pixels: Option<&mut [u8]>,
     );
     fn pixel_storei(&self, pname: GLenum, param: i32);
