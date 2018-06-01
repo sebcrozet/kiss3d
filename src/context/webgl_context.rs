@@ -3,7 +3,10 @@ use std::sync::Once;
 use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr};
 use stdweb::web::{self, html_element::CanvasElement, IParentNode, TypedArray};
 use stdweb::{unstable::TryInto, Value};
-use webgl::{WebGLBuffer, WebGLProgram, WebGLRenderingContext, WebGLShader, WebGLUniformLocation};
+use webgl::{
+    WebGLBuffer, WebGLFramebuffer, WebGLProgram, WebGLRenderingContext, WebGLShader, WebGLTexture,
+    WebGLUniformLocation,
+};
 
 use na::{Matrix2, Matrix3, Matrix4};
 use resource::{GLPrimitive, PrimitiveArray};
@@ -37,6 +40,22 @@ impl AbstractContextConst for WebGLContext {
     const ELEMENT_ARRAY_BUFFER: u32 = WebGLRenderingContext::ELEMENT_ARRAY_BUFFER;
     const VERTEX_SHADER: u32 = WebGLRenderingContext::VERTEX_SHADER;
     const FRAGMENT_SHADER: u32 = WebGLRenderingContext::FRAGMENT_SHADER;
+    const COMPILE_STATUS: u32 = WebGLRenderingContext::COMPILE_STATUS;
+    const FRAMEBUFFER: u32 = WebGLRenderingContext::FRAMEBUFFER;
+    const DEPTH_ATTACHMENT: u32 = WebGLRenderingContext::DEPTH_ATTACHMENT;
+    const COLOR_ATTACHMENT0: u32 = WebGLRenderingContext::COLOR_ATTACHMENT0;
+    const TEXTURE_2D: u32 = WebGLRenderingContext::TEXTURE_2D;
+    const DEPTH_COMPONENT: u32 = WebGLRenderingContext::DEPTH_COMPONENT;
+    const UNSIGNED_BYTE: u32 = WebGLRenderingContext::UNSIGNED_BYTE;
+    const TEXTURE_WRAP_S: u32 = WebGLRenderingContext::TEXTURE_WRAP_S;
+    const TEXTURE_WRAP_T: u32 = WebGLRenderingContext::TEXTURE_WRAP_T;
+    const TEXTURE_MIN_FILTER: u32 = WebGLRenderingContext::TEXTURE_MIN_FILTER;
+    const TEXTURE_MAG_FILTER: u32 = WebGLRenderingContext::TEXTURE_MAG_FILTER;
+    const LINEAR: u32 = WebGLRenderingContext::LINEAR;
+    const CLAMP_TO_EDGE: u32 = WebGLRenderingContext::CLAMP_TO_EDGE;
+    const RGBA: u32 = WebGLRenderingContext::RGBA;
+    const TEXTURE0: u32 = WebGLRenderingContext::TEXTURE0;
+    const TEXTURE1: u32 = WebGLRenderingContext::TEXTURE1;
 }
 
 impl AbstractContext for WebGLContext {
@@ -44,6 +63,8 @@ impl AbstractContext for WebGLContext {
     type Buffer = WebGLBuffer;
     type Shader = WebGLShader;
     type Program = WebGLProgram;
+    type Framebuffer = WebGLFramebuffer;
+    type Texture = WebGLTexture;
 
     fn get_error(&self) -> GLenum {
         self.ctxt.get_error()
@@ -231,5 +252,118 @@ impl AbstractContext for WebGLContext {
         name: &str,
     ) -> Option<Self::UniformLocation> {
         self.ctxt.get_uniform_location(program, name)
+    }
+
+    fn viewport(&self, x: i32, y: i32, width: i32, height: i32) {
+        self.ctxt.viewport(x, y, width, height)
+    }
+
+    fn create_framebuffer(&self) -> Option<Self::Framebuffer> {
+        self.ctxt.create_framebuffer()
+    }
+
+    fn is_framebuffer(&self, framebuffer: Option<&Self::Framebuffer>) -> bool {
+        self.ctxt.is_framebuffer(framebuffer)
+    }
+
+    fn bind_framebuffer(&self, target: GLenum, framebuffer: Option<&Self::Framebuffer>) {
+        self.ctxt.bind_framebuffer(target, framebuffer)
+    }
+
+    fn delete_framebuffer(&self, framebuffer: Option<&Self::Framebuffer>) {
+        self.ctxt.delete_framebuffer(framebuffer)
+    }
+
+    fn framebuffer_texture2d(
+        &self,
+        target: GLenum,
+        attachment: GLenum,
+        textarget: GLenum,
+        texture: Option<&Self::Texture>,
+        level: i32,
+    ) {
+        self.ctxt
+            .framebuffer_texture2_d(target, attachment, textarget, texture, level)
+    }
+
+    fn bind_texture(&self, target: GLenum, texture: Option<&Self::Texture>) {
+        self.ctxt.bind_texture(target, texture)
+    }
+
+    fn tex_image2d<T: GLPrimitive>(
+        &self,
+        target: GLenum,
+        level: i32,
+        internalformat: i32,
+        width: i32,
+        height: i32,
+        border: i32,
+        format: GLenum,
+        type_: GLenum,
+        pixels: Option<&[T]>,
+    ) {
+        match pixels {
+            Some(pixels) => match T::flatten(pixels) {
+                PrimitiveArray::Float32(arr) => {
+                    let abuf = TypedArray::<f32>::from(arr);
+                    self.ctxt.tex_image2_d(
+                        target,
+                        level,
+                        internalformat,
+                        width,
+                        height,
+                        border,
+                        format,
+                        type_,
+                        Some(&abuf.buffer()),
+                    )
+                }
+                PrimitiveArray::Int32(arr) => {
+                    let abuf = TypedArray::<i32>::from(arr);
+                    self.ctxt.tex_image2_d(
+                        target,
+                        level,
+                        internalformat,
+                        width,
+                        height,
+                        border,
+                        format,
+                        type_,
+                        Some(&abuf.buffer()),
+                    )
+                }
+            },
+            None => self.ctxt.tex_image2_d(
+                target,
+                level,
+                internalformat,
+                width,
+                height,
+                border,
+                format,
+                type_,
+                None,
+            ),
+        }
+    }
+
+    fn tex_parameteri(&self, target: GLenum, pname: GLenum, param: i32) {
+        self.ctxt.tex_parameteri(target, pname, param)
+    }
+
+    fn is_texture(&self, texture: Option<&Self::Texture>) -> bool {
+        self.ctxt.is_texture(texture)
+    }
+
+    fn create_texture(&self) -> Option<Self::Texture> {
+        self.ctxt.create_texture()
+    }
+
+    fn delete_texture(&self, texture: Option<&Self::Texture>) {
+        self.ctxt.delete_texture(texture)
+    }
+
+    fn active_texture(&self, texture: GLenum) {
+        self.ctxt.active_texture(texture)
     }
 }

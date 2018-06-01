@@ -10,7 +10,7 @@ pub use resource::gl_primitive::{GLPrimitive, PrimitiveArray};
 pub use resource::gpu_vector::{AllocationType, BufferType, GPUVec};
 pub use resource::mesh::Mesh;
 
-// mod framebuffer_manager;
+mod framebuffer_manager;
 // mod texture_manager;
 // mod mesh_manager;
 // mod material_manager;

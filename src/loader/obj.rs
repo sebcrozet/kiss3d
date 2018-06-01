@@ -297,11 +297,11 @@ fn parse_f<'a>(
             g.push(p2);
         }
 
-        if curr_ids.y == Bounded::max_value() {
+        if curr_ids.y == i32::max_value() {
             *ignore_uvs = true;
         }
 
-        if curr_ids.z == Bounded::max_value() {
+        if curr_ids.z == i32::max_value() {
             *ignore_normals = true;
         }
 

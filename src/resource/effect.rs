@@ -1,14 +1,11 @@
-use std::ffi::CString;
 use std::fs::File;
 use std::io::Read;
-use std::iter::repeat;
 use std::marker::PhantomData;
 use std::mem;
 use std::path::Path;
-use std::ptr;
 use std::str;
 
-use context::{Context, Program, Shader, UniformLocation};
+use context::{Context, GLintptr, Program, Shader, UniformLocation};
 use resource::{GLPrimitive, GPUVec};
 
 #[path = "../error.rs"]
@@ -132,39 +129,35 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
 
     /// Enable this attribute.
     pub fn enable(&mut self) {
-        verify!(gl::EnableVertexAttribArray(self.id));
+        verify!(Context::get().enable_vertex_attrib_array(self.id));
     }
 
     /// Binds this attribute to a gpu vector.
     pub fn bind(&mut self, vector: &mut GPUVec<T>) {
         vector.bind();
 
-        unsafe {
-            verify!(gl::VertexAttribPointer(
-                self.id,
-                GLPrimitive::size() as i32,
-                GLPrimitive::gl_type(),
-                gl::FALSE,
-                0,
-                ptr::null()
-            ));
-        }
+        verify!(Context::get().vertex_attrib_pointer(
+            self.id,
+            T::size() as i32,
+            T::gl_type(),
+            false,
+            0,
+            0
+        ));
     }
 
     /// Binds this attribute to non contiguous parts of a gpu vector.
     pub fn bind_sub_buffer(&mut self, vector: &mut GPUVec<T>, strides: usize, start_index: usize) {
         vector.bind();
 
-        unsafe {
-            verify!(gl::VertexAttribPointer(
-                self.id,
-                GLPrimitive::size() as i32,
-                GLPrimitive::gl_type(),
-                gl::FALSE,
-                ((strides + 1) * mem::size_of::<T>()) as i32,
-                mem::transmute(start_index * mem::size_of::<T>())
-            ));
-        }
+        verify!(Context::get().vertex_attrib_pointer(
+            self.id,
+            T::size() as i32,
+            T::gl_type(),
+            false,
+            ((strides + 1) * mem::size_of::<T>()) as i32,
+            (start_index * mem::size_of::<T>()) as GLintptr
+        ));
     }
 }
 
@@ -174,40 +167,30 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
 fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (Program, Shader, Shader) {
     // Create and compile the vertex shader
     let ctxt = Context::get();
-    let vshader = verify!(ctxt.create_shader(Context::VERTEX_SHADER));
-    let vertex_shader = CString::new(vertex_shader.as_bytes()).unwrap();
-    let fragment_shader = CString::new(fragment_shader.as_bytes()).unwrap();
+    let vshader = verify!(
+        ctxt.create_shader(Context::VERTEX_SHADER)
+            .expect("Could not create vertex shader.")
+    );
 
-    unsafe {
-        verify!(gl::ShaderSource(
-            vshader,
-            1,
-            &vertex_shader.as_ptr(),
-            ptr::null()
-        ));
-        verify!(gl::CompileShader(vshader));
-    }
-    check_shader_error(vshader);
+    verify!(ctxt.shader_source(&vshader, vertex_shader));
+    verify!(ctxt.compile_shader(&vshader));
+    check_shader_error(&vshader);
 
     // Create and compile the fragment shader
-    let fshader = verify!(gl::CreateShader(gl::FRAGMENT_SHADER));
-    unsafe {
-        verify!(gl::ShaderSource(
-            fshader,
-            1,
-            &fragment_shader.as_ptr(),
-            ptr::null()
-        ));
-        verify!(gl::CompileShader(fshader));
-    }
+    let fshader = verify!(
+        ctxt.create_shader(Context::FRAGMENT_SHADER)
+            .expect("Could not create fragment shader.")
+    );
+    verify!(ctxt.shader_source(&fshader, fragment_shader));
+    verify!(ctxt.compile_shader(&fshader));
 
-    check_shader_error(fshader);
+    check_shader_error(&fshader);
 
     // Link the vertex and fragment shader into a shader program
-    let program = verify!(gl::CreateProgram());
-    verify!(gl::AttachShader(program, vshader));
-    verify!(gl::AttachShader(program, fshader));
-    verify!(gl::LinkProgram(program));
+    let program = verify!(ctxt.create_program().expect("Could not create program."));
+    verify!(ctxt.attach_shader(&program, &vshader));
+    verify!(ctxt.attach_shader(&program, &fshader));
+    verify!(ctxt.link_program(&program));
 
     (program, vshader, fshader)
 }
@@ -215,38 +198,14 @@ fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (Program, 
 /// Checks if a shader handle is valid.
 ///
 /// If it is not valid, it fails with a descriptive error message.
-fn check_shader_error(shader: u32) {
-    let mut compiles: i32 = 0;
+fn check_shader_error(shader: &Shader) {
+    let ctxt = Context::get();
+    let compiles = ctxt.get_shader_parameter_int(shader, Context::COMPILE_STATUS);
 
-    unsafe {
-        gl::GetShaderiv(shader, gl::COMPILE_STATUS, &mut compiles);
-
-        if compiles == 0 {
-            println!("Shader compilation failed.");
-            let mut info_log_len = 0;
-
-            gl::GetShaderiv(shader, gl::INFO_LOG_LENGTH, &mut info_log_len);
-
-            if info_log_len > 0 {
-                // error check for fail to allocate memory omitted
-                let mut chars_written = 0;
-                let info_log: String = repeat(' ').take(info_log_len as usize).collect();
-
-                let c_str = CString::new(info_log.as_bytes()).unwrap();
-                gl::GetShaderInfoLog(
-                    shader,
-                    info_log_len,
-                    &mut chars_written,
-                    c_str.as_ptr() as *mut _,
-                );
-
-                let bytes = c_str.as_bytes();
-                let bytes = &bytes[..bytes.len() - 1];
-                panic!(
-                    "Shader compilation failed: {}",
-                    str::from_utf8(bytes).unwrap()
-                );
-            }
+    if compiles == Some(0) {
+        println!("Shader compilation failed.");
+        if let Some(log) = ctxt.get_shader_info_log(shader) {
+            panic!("Shader compilation failed: {}", log);
         }
     }
 }

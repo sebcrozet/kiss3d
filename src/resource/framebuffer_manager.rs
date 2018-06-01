@@ -1,8 +1,8 @@
 //! Resource manager to allocate and switch between framebuffers.
 
-use gl;
-use gl::types::*;
 use std::ptr;
+
+use context::{Context, Framebuffer, Texture};
 
 #[path = "../error.rs"]
 mod error;
@@ -17,66 +17,68 @@ pub enum RenderTarget {
 
 /// OpenGL identifiers to an off-screen buffer.
 pub struct OffscreenBuffers {
-    texture: u32,
-    depth: u32,
+    texture: Texture,
+    depth: Texture,
 }
 
 impl RenderTarget {
     /// Returns an opengl handle to the off-screen texture buffer.
-    pub fn texture_id(&self) -> u32 {
+    ///
+    /// Returns `None` if the texture is off-screen.
+    pub fn texture_id(&self) -> Option<&Texture> {
         match *self {
-            RenderTarget::Screen => 0,
-            RenderTarget::Offscreen(ref o) => o.texture,
+            RenderTarget::Screen => None,
+            RenderTarget::Offscreen(ref o) => Some(&o.texture),
         }
     }
 
     /// Returns an opengl handle to the off-screen depth buffer.
-    pub fn depth_id(&self) -> u32 {
+    ///
+    /// Returns `None` if the texture is off-screen.
+    pub fn depth_id(&self) -> Option<&Texture> {
         match *self {
-            RenderTarget::Screen => 0,
-            RenderTarget::Offscreen(ref o) => o.depth,
+            RenderTarget::Screen => None,
+            RenderTarget::Offscreen(ref o) => Some(&o.depth),
         }
     }
 
     /// Resizes this render target.
     pub fn resize(&mut self, w: f32, h: f32) {
+        let ctxt = Context::get();
+
         match *self {
             RenderTarget::Screen => {
-                verify!(gl::Viewport(0, 0, w as i32, h as i32));
+                verify!(ctxt.viewport(0, 0, w as i32, h as i32));
             }
             RenderTarget::Offscreen(ref o) => {
                 // Update the fbo
-                verify!(gl::BindTexture(gl::TEXTURE_2D, o.texture));
-                unsafe {
-                    verify!(gl::TexImage2D(
-                        gl::TEXTURE_2D,
-                        0,
-                        gl::RGBA as i32,
-                        w as i32,
-                        h as i32,
-                        0,
-                        gl::RGBA,
-                        gl::UNSIGNED_BYTE,
-                        ptr::null()
-                    ));
-                }
-                verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
+                verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&o.texture)));
+                verify!(ctxt.tex_image2d::<i32>(
+                    Context::TEXTURE_2D,
+                    0,
+                    Context::RGBA as i32,
+                    w as i32,
+                    h as i32,
+                    0,
+                    Context::RGBA,
+                    Context::UNSIGNED_BYTE,
+                    None
+                ));
+                verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
-                verify!(gl::BindTexture(gl::TEXTURE_2D, o.depth));
-                unsafe {
-                    verify!(gl::TexImage2D(
-                        gl::TEXTURE_2D,
-                        0,
-                        gl::DEPTH_COMPONENT as i32,
-                        w as i32,
-                        h as i32,
-                        0,
-                        gl::DEPTH_COMPONENT,
-                        gl::UNSIGNED_BYTE,
-                        ptr::null()
-                    ));
-                }
-                verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
+                verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&o.depth)));
+                verify!(ctxt.tex_image2d::<i32>(
+                    Context::TEXTURE_2D,
+                    0,
+                    Context::DEPTH_COMPONENT as i32,
+                    w as i32,
+                    h as i32,
+                    0,
+                    Context::DEPTH_COMPONENT,
+                    Context::UNSIGNED_BYTE,
+                    None
+                ));
+                verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&o.depth)));
             }
         }
     }
@@ -85,29 +87,25 @@ impl RenderTarget {
 /// A framebuffer manager. It is a simple to to switch between an off-screen framebuffer and the
 /// default (window) framebuffer.
 pub struct FramebufferManager {
-    curr_fbo: u32,
-    curr_color: u32,
-    curr_depth: u32,
-    fbo: u32,
+    fbo_onscreen: bool,
+    fbo: Framebuffer,
 }
 
 impl FramebufferManager {
     /// Creates a new framebuffer manager.
     pub fn new() -> FramebufferManager {
-        // create an off-screen framebuffer
-        let mut fbo: u32 = 0;
+        let ctxt = Context::get();
 
-        unsafe {
-            gl::GenFramebuffers(1, &mut fbo);
-        }
+        // create an off-screen framebuffer
+        let fbo = ctxt
+            .create_framebuffer()
+            .expect("Framebuffer creation failed.");
 
         // ensure that the current framebuffer is the screen
-        verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
+        verify!(ctxt.bind_framebuffer(Context::FRAMEBUFFER, None));
 
         FramebufferManager {
-            curr_fbo: 0,
-            curr_color: 0,
-            curr_depth: 0,
+            fbo_onscreen: true,
             fbo: fbo,
         }
     }
@@ -115,90 +113,84 @@ impl FramebufferManager {
     /// Creates a new render target. A render target is the combination of a color buffer and a
     /// depth buffer.
     pub fn new_render_target(width: usize, height: usize) -> RenderTarget {
-        let mut fbo_texture: u32 = 0;
-        let mut fbo_depth: u32 = 0;
+        let ctxt = Context::get();
 
         /* Texture */
-        verify!(gl::ActiveTexture(gl::TEXTURE0));
-        unsafe {
-            verify!(gl::GenTextures(1, &mut fbo_texture));
-        }
-        verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_texture));
-        verify!(gl::TexParameteri(
-            gl::TEXTURE_2D,
-            gl::TEXTURE_MAG_FILTER,
-            gl::LINEAR as i32
+        verify!(ctxt.active_texture(Context::TEXTURE0));
+        let fbo_texture = verify!(
+            ctxt.create_texture()
+                .expect("Failde to create framebuffer object texture.")
+        );
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&fbo_texture)));
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_MAG_FILTER,
+            Context::LINEAR as i32
         ));
-        verify!(gl::TexParameteri(
-            gl::TEXTURE_2D,
-            gl::TEXTURE_MIN_FILTER,
-            gl::LINEAR as i32
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_MIN_FILTER,
+            Context::LINEAR as i32
         ));
-        verify!(gl::TexParameteri(
-            gl::TEXTURE_2D,
-            gl::TEXTURE_WRAP_S,
-            gl::CLAMP_TO_EDGE as i32
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_WRAP_S,
+            Context::CLAMP_TO_EDGE as i32
         ));
-        verify!(gl::TexParameteri(
-            gl::TEXTURE_2D,
-            gl::TEXTURE_WRAP_T,
-            gl::CLAMP_TO_EDGE as i32
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_WRAP_T,
+            Context::CLAMP_TO_EDGE as i32
         ));
-        unsafe {
-            verify!(gl::TexImage2D(
-                gl::TEXTURE_2D,
-                0,
-                gl::RGBA as i32,
-                width as i32,
-                height as i32,
-                0,
-                gl::RGBA,
-                gl::UNSIGNED_BYTE,
-                ptr::null()
-            ));
-        }
-        verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
+        verify!(ctxt.tex_image2d::<i32>(
+            Context::TEXTURE_2D,
+            0,
+            Context::RGBA as i32,
+            width as i32,
+            height as i32,
+            0,
+            Context::RGBA,
+            Context::UNSIGNED_BYTE,
+            None
+        ));
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
         /* Depth buffer */
-        verify!(gl::ActiveTexture(gl::TEXTURE1));
-        unsafe {
-            verify!(gl::GenTextures(1, &mut fbo_depth));
-        }
-        verify!(gl::BindTexture(gl::TEXTURE_2D, fbo_depth));
-        verify!(gl::TexParameteri(
-            gl::TEXTURE_2D,
-            gl::TEXTURE_MAG_FILTER,
-            gl::LINEAR as i32
+        verify!(ctxt.active_texture(Context::TEXTURE1));
+        let fbo_depth = verify!(ctxt.create_texture().expect("Failed to create a texture."));
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&fbo_depth)));
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_MAG_FILTER,
+            Context::LINEAR as i32
         ));
-        verify!(gl::TexParameteri(
-            gl::TEXTURE_2D,
-            gl::TEXTURE_MIN_FILTER,
-            gl::LINEAR as i32
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_MIN_FILTER,
+            Context::LINEAR as i32
         ));
-        verify!(gl::TexParameteri(
-            gl::TEXTURE_2D,
-            gl::TEXTURE_WRAP_S,
-            gl::CLAMP_TO_EDGE as i32
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_WRAP_S,
+            Context::CLAMP_TO_EDGE as i32
         ));
-        verify!(gl::TexParameteri(
-            gl::TEXTURE_2D,
-            gl::TEXTURE_WRAP_T,
-            gl::CLAMP_TO_EDGE as i32
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_WRAP_T,
+            Context::CLAMP_TO_EDGE as i32
         ));
-        unsafe {
-            verify!(gl::TexImage2D(
-                gl::TEXTURE_2D,
-                0,
-                gl::DEPTH_COMPONENT as i32,
-                width as i32,
-                height as i32,
-                0,
-                gl::DEPTH_COMPONENT,
-                gl::UNSIGNED_BYTE,
-                ptr::null()
-            ));
-        }
-        verify!(gl::BindTexture(gl::TEXTURE_2D, 0));
+        verify!(ctxt.tex_image2d::<i32>(
+            Context::TEXTURE_2D,
+            0,
+            Context::DEPTH_COMPONENT as i32,
+            width as i32,
+            height as i32,
+            0,
+            Context::DEPTH_COMPONENT,
+            Context::UNSIGNED_BYTE,
+            None
+        ));
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
         RenderTarget::Offscreen(OffscreenBuffers {
             texture: fbo_texture,
@@ -215,69 +207,65 @@ impl FramebufferManager {
     pub fn select(&mut self, target: &RenderTarget) {
         match *target {
             RenderTarget::Screen => {
-                self.do_select(0);
-                self.curr_color = 0;
-                self.curr_depth = 0;
+                self.select_onscreen();
             }
             RenderTarget::Offscreen(ref o) => {
-                let fbo = self.fbo;
-                self.do_select(fbo);
+                let ctxt = Context::get();
+                self.select_fbo();
 
-                if self.curr_color != o.texture {
-                    verify!(gl::FramebufferTexture2D(
-                        gl::FRAMEBUFFER,
-                        gl::COLOR_ATTACHMENT0,
-                        gl::TEXTURE_2D,
-                        o.texture,
-                        0
-                    ));
-                    self.curr_color = o.texture;
-                }
-
-                if self.curr_depth != o.depth {
-                    verify!(gl::FramebufferTexture2D(
-                        gl::FRAMEBUFFER,
-                        gl::DEPTH_ATTACHMENT,
-                        gl::TEXTURE_2D,
-                        o.depth,
-                        0
-                    ));
-
-                    self.curr_depth = o.depth;
-                }
+                // FIXME: don't switch if the current texture is
+                // already o.texture ?
+                verify!(ctxt.framebuffer_texture2d(
+                    Context::FRAMEBUFFER,
+                    Context::COLOR_ATTACHMENT0,
+                    Context::TEXTURE_2D,
+                    Some(&o.texture),
+                    0
+                ));
+                verify!(ctxt.framebuffer_texture2d(
+                    Context::FRAMEBUFFER,
+                    Context::DEPTH_ATTACHMENT,
+                    Context::TEXTURE_2D,
+                    Some(&o.depth),
+                    0
+                ));
             }
         }
     }
 
-    fn do_select(&mut self, fbo: u32) {
-        if self.curr_fbo != fbo {
-            verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, fbo));
+    fn select_onscreen(&mut self) {
+        if !self.fbo_onscreen {
+            verify!(Context::get().bind_framebuffer(Context::FRAMEBUFFER, None));
+            self.fbo_onscreen = true;
+        }
+    }
 
-            self.curr_fbo = fbo;
+    fn select_fbo(&mut self) {
+        if self.fbo_onscreen {
+            verify!(Context::get().bind_framebuffer(Context::FRAMEBUFFER, Some(&self.fbo)));
+            self.fbo_onscreen = false;
         }
     }
 }
 
 impl Drop for FramebufferManager {
     fn drop(&mut self) {
-        unsafe {
-            if gl::IsFramebuffer(gl::FRAMEBUFFER) != 0 {
-                verify!(gl::BindFramebuffer(gl::FRAMEBUFFER, 0));
-                verify!(gl::DeleteFramebuffers(1, &self.fbo));
-            }
+        let ctxt = Context::get();
+        if ctxt.is_framebuffer(Some(&self.fbo)) {
+            verify!(ctxt.bind_framebuffer(Context::FRAMEBUFFER, None));
+            verify!(ctxt.delete_framebuffer(Some(&self.fbo)));
         }
     }
 }
 
 impl Drop for OffscreenBuffers {
     fn drop(&mut self) {
-        unsafe {
-            if gl::IsBuffer(self.texture) != 0 {
-                verify!(gl::DeleteBuffers(1, &self.texture));
-            }
-            if gl::IsBuffer(self.depth) != 0 {
-                verify!(gl::DeleteBuffers(1, &self.depth));
-            }
+        let ctxt = Context::get();
+        if ctxt.is_texture(Some(&self.texture)) {
+            verify!(ctxt.delete_texture(Some(&self.texture)));
+        }
+        if ctxt.is_texture(Some(&self.depth)) {
+            verify!(ctxt.delete_texture(Some(&self.depth)));
         }
     }
 }
