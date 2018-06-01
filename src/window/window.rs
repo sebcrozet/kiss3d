@@ -2,6 +2,15 @@
 /*
  * FIXME: this file is too big. Some heavy refactoring need to be done here.
  */
+use std::cell::RefCell;
+use std::iter::repeat;
+use std::mem;
+use std::path::Path;
+use std::rc::Rc;
+use std::sync::mpsc::{self, Receiver};
+use std::sync::{Once, ONCE_INIT};
+use std::thread;
+use std::time::{Duration, Instant};
 
 use camera::{ArcBall, Camera};
 use context::Context;
@@ -15,17 +24,9 @@ use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, Mesh, RenderTarget, Texture, TextureManager};
 use scene::SceneNode;
-use std::cell::RefCell;
-use std::iter::repeat;
-use std::mem;
-use std::path::Path;
-use std::rc::Rc;
-use std::sync::mpsc::Receiver;
-use std::sync::{Once, ONCE_INIT};
-use std::thread;
-use std::time::{Duration, Instant};
 // use text::{Font, TextRenderer};
-use window::{Action, Canvas, EventManager, Key, WindowEvent};
+use event::{Action, EventManager, Key, WindowEvent};
+use window::Canvas;
 
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
@@ -34,7 +35,7 @@ static DEFAULT_HEIGHT: u32 = 600u32;
 ///
 /// This is the main interface with the 3d engine.
 pub struct Window {
-    events: Rc<Receiver<(f64, WindowEvent)>>,
+    events: Rc<Receiver<WindowEvent>>,
     unhandled_events: Rc<RefCell<Vec<WindowEvent>>>,
     canvas: Canvas,
     max_dur_per_frame: Option<Duration>,
@@ -59,22 +60,21 @@ impl Window {
 
     /// The window width.
     #[inline]
-    pub fn width(&self) -> f32 {
-        self.canvas.size().0 as f32;
+    pub fn width(&self) -> u32 {
+        self.canvas.size().0
     }
 
     /// The window height.
     #[inline]
-    pub fn height(&self) -> f32 {
-        self.canvas.size().1 as f32;
+    pub fn height(&self) -> u32 {
+        self.canvas.size().1
     }
 
     /// The size of the window.
     #[inline]
-    pub fn size(&self) -> Vector2<f32> {
+    pub fn size(&self) -> Vector2<u32> {
         let (w, h) = self.canvas.size();
-
-        Vector2::new(w as f32, h as f32)
+        Vector2::new(w, h)
     }
 
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
@@ -94,7 +94,7 @@ impl Window {
     /// Closes the window.
     #[inline]
     pub fn close(&mut self) {
-        self.canvas.set_should_close(true)
+        self.canvas.close()
     }
 
     /// Hides the window, without closing it. Use `show` to make it visible again.
@@ -310,14 +310,15 @@ impl Window {
 
     // FIXME: make this pub?
     fn do_new(title: &str, hide: bool, width: u32, height: u32) -> Window {
-        let canvas = Canvas::open(title, hide, width, height);
+        let (event_send, event_receive) = mpsc::channel();
+        let canvas = Canvas::open(title, hide, width, height, event_send);
 
         init_gl();
 
         let mut usr_window = Window {
             max_dur_per_frame: None,
             canvas: canvas,
-            events: Rc::new(events),
+            events: Rc::new(event_receive),
             unhandled_events: Rc::new(RefCell::new(Vec::new())),
             scene: SceneNode::new_empty(),
             light_mode: Light::Absolute(Point3::new(0.0, 10.0, 0.0)),
@@ -394,7 +395,7 @@ impl Window {
             width as i32,
             height as i32,
             Context::RGB,
-            mem::transmute(&mut out[0]),
+            Some(out),
         );
     }
 
@@ -426,9 +427,10 @@ impl Window {
             self.handle_event(camera, event)
         }
 
+        /* XXX
         for event in self.canvas.events() {
             self.handle_event(camera, &event.1)
-        }
+        }*/
 
         unhandled_events.borrow_mut().clear();
         self.canvas.poll_events();
@@ -555,7 +557,7 @@ impl Window {
                     .select(&FramebufferManager::screen());
                 // … and execute the post-process
                 // FIXME: use the real time value instead of 0.016!
-                p.update(0.016, w, h, znear, zfar);
+                p.update(0.016, w as f32, h as f32, znear, zfar);
                 p.draw(&self.post_process_render_target);
             }
             None => {}

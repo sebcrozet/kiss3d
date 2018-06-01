@@ -1,25 +1,30 @@
+use std::sync::mpsc::Sender;
+
+use event::{Action, Key, MouseButton, WindowEvent};
 #[cfg(not(target_arch = "wasm32"))]
 use window::GLCanvas as CanvasImpl;
 #[cfg(target_arch = "wasm32")]
 use window::WebGLCanvas as CanvasImpl;
-use window::{Action, Key, MouseButton, WindowEvent};
 
-#[derive(Clone)]
 pub struct Canvas {
     canvas: CanvasImpl,
 }
 
 impl Canvas {
-    pub fn open(title: &str, hide: bool, width: u32, height: u32) -> Self {
-        CanvasImpl::open(title, hide, width, height)
+    pub fn open(
+        title: &str,
+        hide: bool,
+        width: u32,
+        height: u32,
+        out_events: Sender<WindowEvent>,
+    ) -> Self {
+        Canvas {
+            canvas: CanvasImpl::open(title, hide, width, height, out_events),
+        }
     }
 
-    pub fn poll_events(&mut self) {
+    pub fn poll_events(&self) {
         self.canvas.poll_events()
-    }
-
-    pub fn events(&self) -> impl Iterator<Item = WindowEvent> {
-        self.canvas.events()
     }
 
     pub fn swap_buffers(&mut self) {
@@ -60,9 +65,14 @@ impl Canvas {
 }
 
 pub(crate) trait AbstractCanvas {
-    fn open(title: &str, hide: bool, width: u32, height: u32) -> Self;
-    fn poll_events(&mut self);
-    fn events(&self) -> impl Iterator<Item = WindowEvent>;
+    fn open(
+        title: &str,
+        hide: bool,
+        width: u32,
+        height: u32,
+        out_events: Sender<WindowEvent>,
+    ) -> Self;
+    fn poll_events(&self);
     fn swap_buffers(&mut self);
     fn should_close(&self) -> bool;
     fn size(&self) -> (u32, u32);

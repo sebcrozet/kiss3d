@@ -1,8 +1,9 @@
 use camera::Camera;
+use event::{Action, Key, MouseButton, WindowEvent};
 use na::{self, Isometry3, Matrix4, Perspective3, Point3, Translation3, Vector2, Vector3};
 use num::Zero;
 use std::f32;
-use window::{Action, Canvas, Key, MouseButton, WindowEvent};
+use window::Canvas;
 
 /// First-person camera mode.
 ///

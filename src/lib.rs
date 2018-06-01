@@ -106,6 +106,7 @@ pub mod builtin;
 pub mod camera;
 pub mod context;
 mod error;
+pub mod event;
 pub mod light;
 pub mod line_renderer;
 pub mod loader;

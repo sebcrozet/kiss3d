@@ -4,8 +4,9 @@ use na::{self, Isometry3, Matrix4, Perspective3, Point2, Point3, Vector2, Vector
 
 use camera::Camera;
 use context::Context;
+use event::{Action, Key, MouseButton, WindowEvent};
 use resource::ShaderUniform;
-use window::{Action, Canvas, Key, MouseButton, WindowEvent};
+use window::Canvas;
 
 #[path = "../error.rs"]
 mod error;
