@@ -1,8 +1,7 @@
 //! A batched line renderer.
 
 use camera::Camera;
-use gl;
-use gl::types::*;
+use context::Context;
 use na::{Matrix4, Point3};
 use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 
@@ -65,7 +64,8 @@ impl LineRenderer {
         self.color.bind_sub_buffer(&mut self.lines, 1, 1);
         self.pos.bind_sub_buffer(&mut self.lines, 1, 0);
 
-        verify!(gl::DrawArrays(gl::LINES, 0, (self.lines.len() / 2) as i32));
+        let ctxt = Context::get();
+        verify!(ctxt.draw_arrays(Context::LINES, 0, (self.lines.len() / 2) as i32));
 
         self.pos.disable();
         self.color.disable();

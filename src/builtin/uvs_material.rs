@@ -1,6 +1,5 @@
 use camera::Camera;
-use gl;
-use gl::types::*;
+use context::Context;
 use light::Light;
 use na::{Isometry3, Matrix3, Matrix4, Point2, Point3, Vector3};
 use resource::Material;
@@ -53,11 +52,13 @@ impl Material for UvsMaterial {
         if !data.surface_rendering_active() {
             return;
         }
+
+        let ctxt = Context::get();
         // enable/disable culling.
         if data.backface_culling_enabled() {
-            verify!(gl::Enable(gl::CULL_FACE));
+            verify!(ctxt.enable(Context::CULL_FACE));
         } else {
-            verify!(gl::Disable(gl::CULL_FACE));
+            verify!(ctxt.disable(Context::CULL_FACE));
         }
 
         self.shader.use_program();
@@ -87,11 +88,11 @@ impl Material for UvsMaterial {
         mesh.bind_faces();
 
         unsafe {
-            gl::DrawElements(
-                gl::TRIANGLES,
+            ctxt.draw_elements(
+                Context::TRIANGLES,
                 mesh.num_pts() as i32,
-                gl::UNSIGNED_INT,
-                ptr::null(),
+                Context::UNSIGNED_INT,
+                0,
             );
         }
 

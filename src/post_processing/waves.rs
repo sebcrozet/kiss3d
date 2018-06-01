@@ -4,9 +4,9 @@
 // useless for anybody else.
 // This is inspired _a lot_ by: http://en.wikibooks.org/wiki/Opengl::Programming/Post-Processing
 
-use gl;
-use gl::types::*;
 use na::Vector2;
+
+use context::Context;
 use post_processing::post_processing_effect::PostProcessingEffect;
 use resource::{
     AllocationType, BufferType, Effect, GPUVec, RenderTarget, ShaderAttribute, ShaderUniform,
@@ -63,6 +63,8 @@ impl PostProcessingEffect for Waves {
     }
 
     fn draw(&mut self, target: &RenderTarget) {
+        let ctxt = Context::get();
+
         /*
          * Configure the post-process effect.
          */
@@ -75,15 +77,15 @@ impl PostProcessingEffect for Waves {
         /*
          * Finalize draw
          */
-        verify!(gl::ClearColor(0.0, 0.0, 0.0, 1.0));
-        verify!(gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT));
-        verify!(gl::BindTexture(gl::TEXTURE_2D, target.texture_id()));
+        verify!(ctxt.clear_color(0.0, 0.0, 0.0, 1.0));
+        verify!(ctxt.clear(Context::COLOR_BUFFER_BIT | Context::DEPTH_BUFFER_BIT));
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, target.texture_id()));
 
         self.fbo_texture.upload(&0);
         self.v_coord.enable();
         self.v_coord.bind(&mut self.fbo_vertices);
 
-        verify!(gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4));
+        verify!(ctxt.draw_arrays(Context::TRIANGLE_STRIP, 0, 4));
 
         self.v_coord.disable();
     }

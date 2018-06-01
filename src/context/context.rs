@@ -44,6 +44,7 @@ pub struct Context {
 impl Context {
     pub const FLOAT: u32 = ContextImpl::FLOAT;
     pub const INT: u32 = ContextImpl::INT;
+    pub const UNSIGNED_INT: u32 = ContextImpl::UNSIGNED_INT;
     pub const STATIC_DRAW: u32 = ContextImpl::STATIC_DRAW;
     pub const DYNAMIC_DRAW: u32 = ContextImpl::DYNAMIC_DRAW;
     pub const STREAM_DRAW: u32 = ContextImpl::STREAM_DRAW;
@@ -64,9 +65,30 @@ impl Context {
     pub const TEXTURE_MAG_FILTER: u32 = ContextImpl::TEXTURE_MAG_FILTER;
     pub const LINEAR: u32 = ContextImpl::LINEAR;
     pub const CLAMP_TO_EDGE: u32 = ContextImpl::CLAMP_TO_EDGE;
+    pub const RGB: u32 = ContextImpl::RGB;
     pub const RGBA: u32 = ContextImpl::RGBA;
     pub const TEXTURE0: u32 = ContextImpl::TEXTURE0;
     pub const TEXTURE1: u32 = ContextImpl::TEXTURE1;
+    pub const REPEAT: u32 = ContextImpl::REPEAT;
+    pub const LINEAR_MIPMAP_LINEAR: u32 = ContextImpl::LINEAR_MIPMAP_LINEAR;
+    pub const TRIANGLES: u32 = ContextImpl::TRIANGLES;
+    pub const CULL_FACE: u32 = ContextImpl::CULL_FACE;
+    pub const FRONT_AND_BACK: u32 = ContextImpl::FRONT_AND_BACK;
+    pub const FILL: u32 = ContextImpl::FILL;
+    pub const LINE: u32 = ContextImpl::LINE;
+    pub const POINT: u32 = ContextImpl::POINT;
+    pub const LINES: u32 = ContextImpl::LINES;
+    pub const POINTS: u32 = ContextImpl::POINTS;
+    pub const TRIANGLE_STRIP: u32 = ContextImpl::TRIANGLE_STRIP;
+    pub const COLOR_BUFFER_BIT: u32 = ContextImpl::COLOR_BUFFER_BIT;
+    pub const DEPTH_BUFFER_BIT: u32 = ContextImpl::DEPTH_BUFFER_BIT;
+    pub const CCW: u32 = ContextImpl::CCW;
+    pub const DEPTH_TEST: u32 = ContextImpl::DEPTH_TEST;
+    pub const SCISSOR_TEST: u32 = ContextImpl::SCISSOR_TEST;
+    pub const PROGRAM_POINT_SIZE: u32 = ContextImpl::PROGRAM_POINT_SIZE;
+    pub const LEQUAL: u32 = ContextImpl::LEQUAL;
+    pub const BACK: u32 = ContextImpl::BACK;
+    pub const PACK_ALIGNMENT: u32 = ContextImpl::PACK_ALIGNMENT;
 
     pub fn get() -> Context {
         static mut CONTEXT_SINGLETON: Option<Context> = None;
@@ -251,6 +273,10 @@ impl Context {
         self.ctxt.viewport(x, y, width, height)
     }
 
+    pub fn scissor(&self, x: i32, y: i32, width: i32, height: i32) {
+        self.ctxt.scissor(x, y, width, height)
+    }
+
     pub fn create_framebuffer(&self) -> Option<Framebuffer> {
         self.ctxt.create_framebuffer().map(|e| Framebuffer(e))
     }
@@ -284,7 +310,7 @@ impl Context {
         self.ctxt.bind_texture(target, texture.map(|e| &e.0))
     }
 
-    pub fn tex_image2d<T: GLPrimitive>(
+    pub fn tex_image2d(
         &self,
         target: GLenum,
         level: i32,
@@ -293,8 +319,7 @@ impl Context {
         height: i32,
         border: i32,
         format: GLenum,
-        type_: GLenum,
-        pixels: Option<&[T]>,
+        pixels: Option<&[u8]>,
     ) {
         self.ctxt.tex_image2d(
             target,
@@ -304,7 +329,6 @@ impl Context {
             height,
             border,
             format,
-            type_,
             pixels,
         )
     }
@@ -328,11 +352,78 @@ impl Context {
     pub fn active_texture(&self, texture: GLenum) {
         self.ctxt.active_texture(texture)
     }
+
+    pub fn enable(&self, cap: GLenum) {
+        self.ctxt.enable(cap)
+    }
+
+    pub fn disable(&self, cap: GLenum) {
+        self.ctxt.disable(cap)
+    }
+
+    pub fn draw_elements(&self, mode: GLenum, count: i32, type_: GLenum, offset: GLintptr) {
+        self.ctxt.draw_elements(mode, count, type_, offset)
+    }
+
+    pub fn draw_arrays(&self, mode: GLenum, first: i32, count: i32) {
+        self.ctxt.draw_arrays(mode, first, count)
+    }
+
+    pub fn point_size(&self, size: f32) {
+        self.ctxt.point_size(size)
+    }
+
+    pub fn line_width(&self, size: f32) {
+        self.ctxt.line_width(size)
+    }
+
+    pub fn clear(&self, mask: u32) {
+        self.ctxt.clear(mask)
+    }
+
+    pub fn clear_color(&self, r: f32, g: f32, b: f32, a: f32) {
+        self.ctxt.clear_color(r, g, b, a)
+    }
+
+    pub fn polygon_mode(&self, face: GLenum, mode: GLenum) {
+        self.ctxt.polygon_mode(face, mode)
+    }
+
+    pub fn front_face(&self, mode: GLenum) {
+        self.ctxt.front_face(mode)
+    }
+
+    pub fn depth_func(&self, mode: GLenum) {
+        self.ctxt.depth_func(mode)
+    }
+
+    pub fn cull_face(&self, mode: GLenum) {
+        self.ctxt.cull_face(mode)
+    }
+
+    pub fn read_pixels(
+        &self,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        format: GLenum,
+        type_: GLenum,
+        pixels: Option<&mut [u8]>,
+    ) {
+        self.ctxt
+            .read_pixels(x, y, width, height, format, type_, pixels)
+    }
+
+    pub fn pixel_storei(&self, pname: GLenum, param: i32) {
+        self.ctxt.pixel_storei(pname, param)
+    }
 }
 
 pub(crate) trait AbstractContextConst {
     const FLOAT: u32;
     const INT: u32;
+    const UNSIGNED_INT: u32;
     const STATIC_DRAW: u32;
     const DYNAMIC_DRAW: u32;
     const STREAM_DRAW: u32;
@@ -353,9 +444,30 @@ pub(crate) trait AbstractContextConst {
     const TEXTURE_MAG_FILTER: u32;
     const LINEAR: u32;
     const CLAMP_TO_EDGE: u32;
+    const RGB: u32;
     const RGBA: u32;
     const TEXTURE0: u32;
     const TEXTURE1: u32;
+    const REPEAT: u32;
+    const LINEAR_MIPMAP_LINEAR: u32;
+    const TRIANGLES: u32;
+    const CULL_FACE: u32;
+    const FRONT_AND_BACK: u32;
+    const FILL: u32;
+    const LINE: u32;
+    const POINT: u32;
+    const LINES: u32;
+    const POINTS: u32;
+    const TRIANGLE_STRIP: u32;
+    const COLOR_BUFFER_BIT: u32;
+    const DEPTH_BUFFER_BIT: u32;
+    const CCW: u32;
+    const DEPTH_TEST: u32;
+    const SCISSOR_TEST: u32;
+    const PROGRAM_POINT_SIZE: u32;
+    const LEQUAL: u32;
+    const BACK: u32;
+    const PACK_ALIGNMENT: u32;
 }
 
 pub(crate) trait AbstractContext {
@@ -432,6 +544,7 @@ pub(crate) trait AbstractContext {
     ) -> Option<Self::UniformLocation>;
 
     fn viewport(&self, x: i32, y: i32, width: i32, height: i32);
+    fn scissor(&self, x: i32, y: i32, width: i32, height: i32);
     fn create_framebuffer(&self) -> Option<Self::Framebuffer>;
     fn is_framebuffer(&self, framebuffer: Option<&Self::Framebuffer>) -> bool;
     fn bind_framebuffer(&self, target: GLenum, framebuffer: Option<&Self::Framebuffer>);
@@ -445,7 +558,7 @@ pub(crate) trait AbstractContext {
         level: i32,
     );
     fn bind_texture(&self, target: GLenum, texture: Option<&Self::Texture>);
-    fn tex_image2d<T: GLPrimitive>(
+    fn tex_image2d(
         &self,
         target: GLenum,
         level: i32,
@@ -454,12 +567,41 @@ pub(crate) trait AbstractContext {
         height: i32,
         border: i32,
         format: GLenum,
-        type_: GLenum,
-        pixels: Option<&[T]>,
+        pixels: Option<&[u8]>,
     );
     fn tex_parameteri(&self, target: GLenum, pname: GLenum, param: i32);
     fn is_texture(&self, texture: Option<&Self::Texture>) -> bool;
     fn create_texture(&self) -> Option<Self::Texture>;
     fn delete_texture(&self, texture: Option<&Self::Texture>);
     fn active_texture(&self, texture: GLenum);
+
+    fn enable(&self, cap: GLenum);
+    fn disable(&self, cap: GLenum);
+
+    fn draw_elements(&self, mode: GLenum, count: i32, type_: GLenum, offset: GLintptr);
+    fn draw_arrays(&self, mode: GLenum, first: i32, count: i32);
+
+    fn point_size(&self, size: f32);
+    fn line_width(&self, size: f32);
+
+    fn clear(&self, mask: u32);
+    fn clear_color(&self, r: f32, g: f32, b: f32, a: f32);
+
+    fn polygon_mode(&self, face: GLenum, mode: GLenum);
+
+    fn front_face(&self, mode: GLenum);
+    fn depth_func(&self, mode: GLenum);
+    fn cull_face(&self, mode: GLenum);
+
+    fn read_pixels(
+        &self,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        format: GLenum,
+        type_: GLenum,
+        pixels: Option<&mut [u8]>,
+    );
+    fn pixel_storei(&self, pname: GLenum, param: i32);
 }

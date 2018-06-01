@@ -24,16 +24,17 @@ name = "kiss3d"
 path = "src/lib.rs"
 
 [dependencies]
+libc        = "0.2"
 num-traits  = "0.2"
 nalgebra    = "0.15"
 ncollide3d  = "0.16"
-libc        = "0.2"
+image       = "0.19"
+pistoncore-input = "0.21"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 freetype    = "0.3"
 gl          = "0.6"
-glfw        = "0.19"
-image       = "0.17"
+glutin      = { version = "0.16" }
 
 [target.wasm32-unknown-unknown.dependencies]
 stdweb = "0.4"

@@ -53,7 +53,7 @@ impl RenderTarget {
             RenderTarget::Offscreen(ref o) => {
                 // Update the fbo
                 verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&o.texture)));
-                verify!(ctxt.tex_image2d::<i32>(
+                verify!(ctxt.tex_image2d(
                     Context::TEXTURE_2D,
                     0,
                     Context::RGBA as i32,
@@ -61,13 +61,12 @@ impl RenderTarget {
                     h as i32,
                     0,
                     Context::RGBA,
-                    Context::UNSIGNED_BYTE,
                     None
                 ));
                 verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
                 verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&o.depth)));
-                verify!(ctxt.tex_image2d::<i32>(
+                verify!(ctxt.tex_image2d(
                     Context::TEXTURE_2D,
                     0,
                     Context::DEPTH_COMPONENT as i32,
@@ -75,7 +74,6 @@ impl RenderTarget {
                     h as i32,
                     0,
                     Context::DEPTH_COMPONENT,
-                    Context::UNSIGNED_BYTE,
                     None
                 ));
                 verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&o.depth)));
@@ -142,7 +140,7 @@ impl FramebufferManager {
             Context::TEXTURE_WRAP_T,
             Context::CLAMP_TO_EDGE as i32
         ));
-        verify!(ctxt.tex_image2d::<i32>(
+        verify!(ctxt.tex_image2d(
             Context::TEXTURE_2D,
             0,
             Context::RGBA as i32,
@@ -150,7 +148,6 @@ impl FramebufferManager {
             height as i32,
             0,
             Context::RGBA,
-            Context::UNSIGNED_BYTE,
             None
         ));
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
@@ -179,7 +176,7 @@ impl FramebufferManager {
             Context::TEXTURE_WRAP_T,
             Context::CLAMP_TO_EDGE as i32
         ));
-        verify!(ctxt.tex_image2d::<i32>(
+        verify!(ctxt.tex_image2d(
             Context::TEXTURE_2D,
             0,
             Context::DEPTH_COMPONENT as i32,
@@ -187,7 +184,6 @@ impl FramebufferManager {
             height as i32,
             0,
             Context::DEPTH_COMPONENT,
-            Context::UNSIGNED_BYTE,
             None
         ));
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));

@@ -1,8 +1,8 @@
 //! Post processing effect to support the Oculus Rift.
 
-use gl;
-use gl::types::*;
 use na::Vector2;
+
+use context::Context;
 use post_processing::post_processing_effect::PostProcessingEffect;
 use resource::{
     AllocationType, BufferType, Effect, GPUVec, RenderTarget, ShaderAttribute, ShaderUniform,
@@ -70,6 +70,7 @@ impl PostProcessingEffect for OculusStereo {
     }
 
     fn draw(&mut self, target: &RenderTarget) {
+        let ctxt = Context::get();
         let scale_factor = 0.9f32; // firebox: in Oculus SDK example it's "1.0f/Distortion.Scale"
         let aspect = (self.w / 2.0f32) / (self.h); // firebox: rift's "half screen aspect ratio"
 
@@ -94,16 +95,16 @@ impl PostProcessingEffect for OculusStereo {
         /*
          * Finalize draw
          */
-        verify!(gl::ClearColor(0.0, 0.0, 0.0, 1.0));
-        verify!(gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT));
+        verify!(ctxt.clear_color(0.0, 0.0, 0.0, 1.0));
+        verify!(ctxt.clear(Context::COLOR_BUFFER_BIT | Context::DEPTH_BUFFER_BIT));
 
-        verify!(gl::BindTexture(gl::TEXTURE_2D, target.texture_id()));
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, target.texture_id()));
 
         self.fbo_texture.upload(&0);
 
         self.v_coord.bind(&mut self.fbo_vertices);
 
-        verify!(gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4));
+        verify!(ctxt.draw_arrays(Context::TRIANGLE_STRIP, 0, 4));
 
         self.v_coord.disable();
     }

@@ -1,8 +1,8 @@
 //! A post-processing effect to highlight edges.
 
-use gl;
-use gl::types::*;
 use na::Vector2;
+
+use context::Context;
 use post_processing::post_processing_effect::PostProcessingEffect;
 use resource::{
     AllocationType, BufferType, Effect, GPUVec, RenderTarget, ShaderAttribute, ShaderUniform,
@@ -78,12 +78,13 @@ impl PostProcessingEffect for SobelEdgeHighlight {
     }
 
     fn draw(&mut self, target: &RenderTarget) {
+        let ctxt = Context::get();
         self.gl_v_coord.enable();
 
         /*
          * Finalize draw
          */
-        verify!(gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT));
+        verify!(ctxt.clear(Context::COLOR_BUFFER_BIT | Context::DEPTH_BUFFER_BIT));
 
         self.shader.use_program();
 
@@ -93,19 +94,19 @@ impl PostProcessingEffect for SobelEdgeHighlight {
         self.gl_znear.upload(&self.zn);
         self.gl_zfar.upload(&self.zf);
 
-        verify!(gl::ActiveTexture(gl::TEXTURE0));
-        verify!(gl::BindTexture(gl::TEXTURE_2D, target.texture_id()));
+        verify!(ctxt.active_texture(Context::TEXTURE0));
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, target.texture_id()));
 
         self.gl_fbo_texture.upload(&0);
 
-        verify!(gl::ActiveTexture(gl::TEXTURE1));
-        verify!(gl::BindTexture(gl::TEXTURE_2D, target.depth_id()));
+        verify!(ctxt.active_texture(Context::TEXTURE1));
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, target.depth_id()));
 
         self.gl_fbo_depth.upload(&1);
 
         self.gl_v_coord.bind(&mut self.gl_fbo_vertices);
 
-        verify!(gl::DrawArrays(gl::TRIANGLE_STRIP, 0, 4));
+        verify!(ctxt.draw_arrays(Context::TRIANGLE_STRIP, 0, 4));
 
         self.gl_v_coord.disable();
     }

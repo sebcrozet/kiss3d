@@ -5,7 +5,7 @@
 use gl;
 use gl::types::*;
 use na::{Point2, Point3, Vector2};
-use resource::{AllocationType, BufferType, GPUVec, Effect, ShaderAttribute, ShaderUniform};
+use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 use std::rc::Rc;
 use text::Font;
 
@@ -148,10 +148,10 @@ impl TextRenderer {
 
         self.shader.use_program();
 
-        verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
-        verify!(gl::Enable(gl::BLEND));
+        verify!(gl::PolygonMode(Context::FRONT_AND_BACK, Context::FILL));
+        verify!(ctxt.enable(gl::BLEND));
         verify!(gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA));
-        verify!(gl::Disable(gl::DEPTH_TEST));
+        verify!(ctxt.disable(gl::DEPTH_TEST));
 
         self.pos.enable();
         self.uvs.enable();
@@ -159,16 +159,19 @@ impl TextRenderer {
         self.invsz.upload(&Vector2::new(1.0 / width, -1.0 / height));
 
         for ctxt in self.contexts.iter() {
-            verify!(gl::BindTexture(gl::TEXTURE_2D, ctxt.font.texture_atlas()));
-            verify!(gl::TexParameteri(
-                gl::TEXTURE_2D,
-                gl::TEXTURE_WRAP_S,
-                gl::CLAMP_TO_EDGE as i32
+            verify!(gl::BindTexture(
+                Context::TEXTURE_2D,
+                ctxt.font.texture_atlas()
             ));
             verify!(gl::TexParameteri(
-                gl::TEXTURE_2D,
-                gl::TEXTURE_WRAP_T,
-                gl::CLAMP_TO_EDGE as i32
+                Context::TEXTURE_2D,
+                Context::TEXTURE_WRAP_S,
+                Context::CLAMP_TO_EDGE as i32
+            ));
+            verify!(gl::TexParameteri(
+                Context::TEXTURE_2D,
+                Context::TEXTURE_WRAP_T,
+                Context::CLAMP_TO_EDGE as i32
             ));
 
             self.pos
@@ -177,14 +180,18 @@ impl TextRenderer {
                 .bind_sub_buffer(&mut self.coords, 1, ctxt.begin + 1);
             self.color.upload(&ctxt.color);
 
-            verify!(gl::DrawArrays(gl::TRIANGLES, 0, (ctxt.size / 2) as i32));
+            verify!(gl::DrawArrays(
+                Context::TRIANGLES,
+                0,
+                (ctxt.size / 2) as i32
+            ));
         }
 
         self.pos.disable();
         self.uvs.enable();
 
-        verify!(gl::Enable(gl::DEPTH_TEST));
-        verify!(gl::Disable(gl::BLEND));
+        verify!(ctxt.enable(gl::DEPTH_TEST));
+        verify!(ctxt.disable(gl::BLEND));
 
         for coords in self.coords.data_mut().iter_mut() {
             coords.clear()

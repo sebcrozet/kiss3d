@@ -3,10 +3,8 @@
  * FIXME: this file is too big. Some heavy refactoring need to be done here.
  */
 
-use camera::ArcBall;
-use camera::Camera;
-use gl;
-use gl::types::*;
+use camera::{ArcBall, Camera};
+use context::Context;
 use glfw;
 use glfw::{Action, Context, Key, WindowEvent, WindowMode};
 use image::imageops;
@@ -440,14 +438,14 @@ impl Window {
 
         // FIXME: this is _not_ the fastest way of doing this.
         unsafe {
-            gl::PixelStorei(gl::PACK_ALIGNMENT, 1);
-            gl::ReadPixels(
+            ctxt.pixel_storei(Context::PACK_ALIGNMENT, 1);
+            ctxt.read_pixels(
                 x as i32,
                 y as i32,
                 width as i32,
                 height as i32,
-                gl::RGB,
-                gl::UNSIGNED_BYTE,
+                Context::RGB,
+                Context::UNSIGNED_BYTE,
                 mem::transmute(&mut out[0]),
             );
         }
@@ -600,7 +598,7 @@ impl Window {
         // FIXME: remove this completely?
         // swatch off the wireframe mode for post processing and text rendering.
         // if self.wireframe_mode {
-        //     verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
+        //     verify!(gl::PolygonMode(Context::FRONT_AND_BACK, Context::FILL));
         // }
 
         match post_processing {
@@ -641,17 +639,13 @@ impl Window {
     }
 
     fn render_scene(&mut self, camera: &mut Camera, pass: usize) {
+        let ctxt = Context::get();
         // Activate the default texture
-        verify!(gl::ActiveTexture(gl::TEXTURE0));
+        verify!(ctxt.active_texture(Context::TEXTURE0));
         // Clear the screen to black
-        verify!(gl::ClearColor(
-            self.background.x,
-            self.background.y,
-            self.background.z,
-            1.0
-        ));
-        verify!(gl::Clear(gl::COLOR_BUFFER_BIT));
-        verify!(gl::Clear(gl::DEPTH_BUFFER_BIT));
+        verify!(ctxt.clear_color(self.background.x, self.background.y, self.background.z, 1.0));
+        verify!(ctxt.clear(Context::COLOR_BUFFER_BIT));
+        verify!(ctxt.clear(Context::DEPTH_BUFFER_BIT));
 
         if self.line_renderer.needs_rendering() {
             self.line_renderer.render(pass, camera);
@@ -666,7 +660,7 @@ impl Window {
 
     fn update_viewport(&mut self, w: f32, h: f32) {
         // Update the viewport
-        verify!(gl::Scissor(0, 0, w as i32, h as i32));
+        verify!(Context::get().scissor(0, 0, w as i32, h as i32));
         FramebufferManager::screen().resize(w, h);
         self.post_process_render_target.resize(w, h);
     }
@@ -676,12 +670,16 @@ fn init_gl() {
     /*
      * Misc configurations
      */
-    verify!(gl::FrontFace(gl::CCW));
-    verify!(gl::Enable(gl::DEPTH_TEST));
-    verify!(gl::Enable(gl::SCISSOR_TEST));
-    verify!(gl::Enable(gl::PROGRAM_POINT_SIZE));
-    verify!(gl::DepthFunc(gl::LEQUAL));
-    verify!(gl::FrontFace(gl::CCW));
-    verify!(gl::Enable(gl::CULL_FACE));
-    verify!(gl::CullFace(gl::BACK));
+    let ctxt = Context::get();
+    verify!(ctxt.front_face(Context::CCW));
+    verify!(ctxt.enable(Context::DEPTH_TEST));
+    verify!(ctxt.enable(Context::SCISSOR_TEST));
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        verify!(ctxt.enable(Context::PROGRAM_POINT_SIZE));
+    }
+    verify!(ctxt.depth_func(Context::LEQUAL));
+    verify!(ctxt.front_face(Context::CCW));
+    verify!(ctxt.enable(Context::CULL_FACE));
+    verify!(ctxt.cull_face(Context::BACK));
 }

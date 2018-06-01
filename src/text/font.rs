@@ -80,7 +80,7 @@ impl Font {
             }
 
             let _ = freetype::FT_Set_Pixel_Sizes(font.face, 0, size as c_uint);
-            verify!(gl::ActiveTexture(gl::TEXTURE0));
+            verify!(ctxt.active_texture(Context::TEXTURE0));
 
             let ft_glyph = (*font.face).glyph;
             let max_width = 1024;
@@ -136,41 +136,41 @@ impl Font {
             verify!(gl::PixelStorei(gl::UNPACK_ALIGNMENT, 1));
 
             verify!(gl::GenTextures(1, &mut font.texture_atlas));
-            verify!(gl::BindTexture(gl::TEXTURE_2D, font.texture_atlas));
+            verify!(gl::BindTexture(Context::TEXTURE_2D, font.texture_atlas));
             verify!(gl::TexImage2D(
-                gl::TEXTURE_2D,
+                Context::TEXTURE_2D,
                 0,
-                gl::RGB as i32,
+                Context::RGB as i32,
                 font.atlas_dimensions.x as i32,
                 font.atlas_dimensions.y as i32,
                 0,
                 gl::RED,
-                gl::UNSIGNED_BYTE,
+                Context::UNSIGNED_BYTE,
                 ptr::null()
             ));
 
             /* Clamp to the edge to avoid artifacts when scaling. */
             verify!(gl::TexParameteri(
-                gl::TEXTURE_2D,
-                gl::TEXTURE_WRAP_S,
-                gl::CLAMP_TO_EDGE as i32
+                Context::TEXTURE_2D,
+                Context::TEXTURE_WRAP_S,
+                Context::CLAMP_TO_EDGE as i32
             ));
             verify!(gl::TexParameteri(
-                gl::TEXTURE_2D,
-                gl::TEXTURE_WRAP_T,
-                gl::CLAMP_TO_EDGE as i32
+                Context::TEXTURE_2D,
+                Context::TEXTURE_WRAP_T,
+                Context::CLAMP_TO_EDGE as i32
             ));
 
             /* Linear filtering usually looks best for text. */
             verify!(gl::TexParameteri(
-                gl::TEXTURE_2D,
-                gl::TEXTURE_MIN_FILTER,
-                gl::LINEAR as i32
+                Context::TEXTURE_2D,
+                Context::TEXTURE_MIN_FILTER,
+                Context::LINEAR as i32
             ));
             verify!(gl::TexParameteri(
-                gl::TEXTURE_2D,
-                gl::TEXTURE_MAG_FILTER,
-                gl::LINEAR as i32
+                Context::TEXTURE_2D,
+                Context::TEXTURE_MAG_FILTER,
+                Context::LINEAR as i32
             ));
 
             /* Copy all glyphs into the texture atlas. */
@@ -190,14 +190,14 @@ impl Font {
 
                 if !glyph.buffer.is_empty() {
                     verify!(gl::TexSubImage2D(
-                        gl::TEXTURE_2D,
+                        Context::TEXTURE_2D,
                         0,
                         offset.x as i32,
                         offset.y as i32,
                         glyph.dimensions.x as i32,
                         glyph.dimensions.y as i32,
                         gl::RED,
-                        gl::UNSIGNED_BYTE,
+                        Context::UNSIGNED_BYTE,
                         mem::transmute(&glyph.buffer[0])
                     ));
                 }

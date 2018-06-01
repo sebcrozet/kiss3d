@@ -1,6 +1,5 @@
 use camera::Camera;
-use gl;
-use gl::types::*;
+use context::Context;
 use light::Light;
 use na::{Isometry3, Matrix3, Matrix4, Point2, Point3, Vector3};
 use resource::Material;
@@ -73,6 +72,7 @@ impl Material for ObjectMaterial {
         data: &ObjectData,
         mesh: &mut Mesh,
     ) {
+        let ctxt = Context::get();
         self.activate();
 
         /*
@@ -106,49 +106,49 @@ impl Material for ObjectMaterial {
 
             mesh.bind(&mut self.pos, &mut self.normal, &mut self.tex_coord);
 
-            verify!(gl::ActiveTexture(gl::TEXTURE0));
-            verify!(gl::BindTexture(gl::TEXTURE_2D, data.texture().id()));
+            verify!(ctxt.active_texture(Context::TEXTURE0));
+            verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&*data.texture())));
 
             if data.surface_rendering_active() {
                 if data.backface_culling_enabled() {
-                    verify!(gl::Enable(gl::CULL_FACE));
+                    verify!(ctxt.enable(Context::CULL_FACE));
                 } else {
-                    verify!(gl::Disable(gl::CULL_FACE));
+                    verify!(ctxt.disable(Context::CULL_FACE));
                 }
 
-                verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::FILL));
-                verify!(gl::DrawElements(
-                    gl::TRIANGLES,
+                verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::FILL));
+                verify!(ctxt.draw_elements(
+                    Context::TRIANGLES,
                     mesh.num_pts() as i32,
-                    gl::UNSIGNED_INT,
-                    ptr::null()
+                    Context::UNSIGNED_INT,
+                    0
                 ));
             }
 
             if data.lines_width() != 0.0 {
-                verify!(gl::Disable(gl::CULL_FACE));
-                verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE));
-                gl::LineWidth(data.lines_width());
-                verify!(gl::DrawElements(
-                    gl::TRIANGLES,
+                verify!(ctxt.disable(Context::CULL_FACE));
+                verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::LINE));
+                ctxt.line_width(data.lines_width());
+                verify!(ctxt.draw_elements(
+                    Context::TRIANGLES,
                     mesh.num_pts() as i32,
-                    gl::UNSIGNED_INT,
-                    ptr::null()
+                    Context::UNSIGNED_INT,
+                    0
                 ));
-                gl::LineWidth(1.0);
+                ctxt.line_width(1.0);
             }
 
             if data.points_size() != 0.0 {
-                verify!(gl::Disable(gl::CULL_FACE));
-                verify!(gl::PolygonMode(gl::FRONT_AND_BACK, gl::POINT));
-                gl::PointSize(data.points_size());
-                verify!(gl::DrawElements(
-                    gl::TRIANGLES,
+                verify!(ctxt.disable(Context::CULL_FACE));
+                verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::POINT));
+                ctxt.point_size(data.points_size());
+                verify!(ctxt.draw_elements(
+                    Context::TRIANGLES,
                     mesh.num_pts() as i32,
-                    gl::UNSIGNED_INT,
-                    ptr::null()
+                    Context::UNSIGNED_INT,
+                    0
                 ));
-                gl::PointSize(1.0);
+                ctxt.point_size(1.0);
             }
         }
 

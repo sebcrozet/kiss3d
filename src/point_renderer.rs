@@ -1,8 +1,7 @@
 //! A batched point renderer.
 
 use camera::Camera;
-use gl;
-use gl::types::*;
+use context::Context;
 use na::{Matrix4, Point3};
 use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 
@@ -41,7 +40,7 @@ impl PointRenderer {
 
     /// Sets the point size for the rendered points.
     pub fn set_point_size(&mut self, pt_size: f32) {
-        verify!(gl::PointSize(pt_size));
+        verify!(Context::get().point_size(pt_size));
     }
 
     /// Adds a line to be drawn during the next frame. Lines are not persistent between frames.
@@ -68,11 +67,8 @@ impl PointRenderer {
         self.color.bind_sub_buffer(&mut self.points, 1, 1);
         self.pos.bind_sub_buffer(&mut self.points, 1, 0);
 
-        verify!(gl::DrawArrays(
-            gl::POINTS,
-            0,
-            (self.points.len() / 2) as i32
-        ));
+        let ctxt = Context::get();
+        verify!(ctxt.draw_arrays(Context::POINTS, 0, (self.points.len() / 2) as i32));
 
         self.pos.disable();
         self.color.disable();

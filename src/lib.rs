@@ -89,7 +89,7 @@ I’d love to see people improving this library for their own needs. However, ke
 // extern crate freetype;
 // extern crate gl;
 // extern crate glfw;
-// extern crate image;
+extern crate image;
 // extern crate libc;
 extern crate nalgebra as na;
 extern crate ncollide3d;
@@ -100,16 +100,16 @@ extern crate stdweb;
 #[cfg(target_arch = "wasm32")]
 extern crate webgl_stdweb as webgl;
 
+pub mod builtin;
+pub mod camera;
 pub mod context;
 mod error;
-// pub mod window;
-// pub mod scene;
-// pub mod camera;
-// pub mod light;
+pub mod light;
+pub mod line_renderer;
 pub mod loader;
-// pub mod line_renderer;
-// pub mod point_renderer;
-// pub mod builtin;
-// pub mod post_processing;
+pub mod point_renderer;
+pub mod post_processing;
 pub mod resource;
+pub mod scene;
+pub mod window;
 // pub mod text;

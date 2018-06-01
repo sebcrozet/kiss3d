@@ -95,9 +95,9 @@ impl Material for NormalMaterial {
 
         unsafe {
             gl::DrawElements(
-                gl::TRIANGLES,
+                Context::TRIANGLES,
                 mesh.num_pts() as i32,
-                gl::UNSIGNED_INT,
+                Context::UNSIGNED_INT,
                 ptr::null(),
             );
         }

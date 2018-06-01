@@ -93,7 +93,7 @@ unsafe impl GLPrimitive for i32 {
 // // unsafe impl GLPrimitive for u32 {
 // //     #[inline]
 // //     fn gl_type(_: Option<u32>) -> u32 {
-// //         gl::UNSIGNED_INT
+// //         Context::UNSIGNED_INT
 // //     }
 
 // //     #[inline]
@@ -319,7 +319,7 @@ unsafe impl GLPrimitive for Vector2<f32> {
 // unsafe impl GLPrimitive for Vector2<u32> {
 //     #[inline]
 //     fn gl_type(_: Option<Vector2<u32>>) -> u32 {
-//         gl::UNSIGNED_INT
+//         Context::UNSIGNED_INT
 //     }
 
 //     #[inline]
@@ -336,7 +336,7 @@ unsafe impl GLPrimitive for Vector2<f32> {
 // unsafe impl GLPrimitive for Vector3<u32> {
 //     #[inline]
 //     fn gl_type(_: Option<Vector3<u32>>) -> u32 {
-//         gl::UNSIGNED_INT
+//         Context::UNSIGNED_INT
 //     }
 
 //     #[inline]
@@ -525,7 +525,7 @@ unsafe impl GLPrimitive for (f32, f32) {
 // unsafe impl GLPrimitive for (u32, u32) {
 //     #[inline]
 //     fn gl_type(_: Option<(u32, u32)>) -> u32 {
-//         gl::UNSIGNED_INT
+//         Context::UNSIGNED_INT
 //     }
 
 //     #[inline]
@@ -542,7 +542,7 @@ unsafe impl GLPrimitive for (f32, f32) {
 // unsafe impl GLPrimitive for (u32, u32, u32) {
 //     #[inline]
 //     fn gl_type(_: Option<(u32, u32, u32)>) -> u32 {
-//         gl::UNSIGNED_INT
+//         Context::UNSIGNED_INT
 //     }
 
 //     #[inline]

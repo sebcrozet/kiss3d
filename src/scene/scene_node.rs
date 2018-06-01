@@ -1,15 +1,15 @@
-use std::rc::Rc;
+use camera::Camera;
+use light::Light;
+use na;
+use na::{Isometry3, Point2, Point3, Translation3, UnitQuaternion, Vector3};
+use ncollide3d::procedural;
+use ncollide3d::procedural::TriMesh;
+use resource::{Material, MaterialManager, Mesh, MeshManager, Texture, TextureManager};
+use scene::Object;
 use std::cell::{Ref, RefCell, RefMut};
 use std::mem;
 use std::path::{Path, PathBuf};
-use na;
-use na::{Isometry3, Point2, Point3, Translation3, UnitQuaternion, Vector3};
-use resource::{Material, MaterialManager, Mesh, MeshManager, Texture, TextureManager};
-use ncollide3d::procedural::TriMesh;
-use ncollide3d::procedural;
-use scene::Object;
-use camera::Camera;
-use light::Light;
+use std::rc::Rc;
 
 // XXX: once something like `fn foo(self: Rc<RefCell<SceneNode>>)` is allowed, this extra struct
 // will not be needed any more.
@@ -259,7 +259,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u32>>)>(&mut self, f: &mut F) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Point3<i32>>)>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_faces(f))
     }
 
@@ -267,7 +267,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_faces<F: FnMut(&[Point3<u32>])>(&self, f: &mut F) {
+    pub fn read_faces<F: FnMut(&[Point3<i32>])>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_faces(f))
     }
 
@@ -954,7 +954,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u32>>)>(&mut self, f: &mut F) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Point3<i32>>)>(&mut self, f: &mut F) {
         self.data_mut().modify_faces(f)
     }
 
@@ -962,7 +962,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_faces<F: FnMut(&[Point3<u32>])>(&self, f: &mut F) {
+    pub fn read_faces<F: FnMut(&[Point3<i32>])>(&self, f: &mut F) {
         self.data().read_faces(f)
     }
 

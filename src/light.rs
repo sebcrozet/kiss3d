@@ -1,6 +1,5 @@
 //! Lights.
 
-use gl::types::f32;
 use na::Point3;
 
 /// The light configuration.

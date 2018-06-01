@@ -33,6 +33,7 @@ impl WebGLContext {
 impl AbstractContextConst for WebGLContext {
     const FLOAT: u32 = WebGLRenderingContext::FLOAT;
     const INT: u32 = WebGLRenderingContext::INT;
+    const UNSIGNED_INT: u32 = WebGLRenderingContext::UNSIGNED_INT;
     const STATIC_DRAW: u32 = WebGLRenderingContext::STATIC_DRAW;
     const DYNAMIC_DRAW: u32 = WebGLRenderingContext::DYNAMIC_DRAW;
     const STREAM_DRAW: u32 = WebGLRenderingContext::STREAM_DRAW;
@@ -53,9 +54,32 @@ impl AbstractContextConst for WebGLContext {
     const TEXTURE_MAG_FILTER: u32 = WebGLRenderingContext::TEXTURE_MAG_FILTER;
     const LINEAR: u32 = WebGLRenderingContext::LINEAR;
     const CLAMP_TO_EDGE: u32 = WebGLRenderingContext::CLAMP_TO_EDGE;
+    const RGB: u32 = WebGLRenderingContext::RGB;
     const RGBA: u32 = WebGLRenderingContext::RGBA;
     const TEXTURE0: u32 = WebGLRenderingContext::TEXTURE0;
     const TEXTURE1: u32 = WebGLRenderingContext::TEXTURE1;
+    const REPEAT: u32 = WebGLRenderingContext::REPEAT;
+    const LINEAR_MIPMAP_LINEAR: u32 = WebGLRenderingContext::LINEAR_MIPMAP_LINEAR;
+    const TRIANGLES: u32 = WebGLRenderingContext::TRIANGLES;
+    const CULL_FACE: u32 = WebGLRenderingContext::CULL_FACE;
+    const FRONT_AND_BACK: u32 = WebGLRenderingContext::FRONT_AND_BACK;
+    const LINES: u32 = WebGLRenderingContext::LINES;
+    const POINTS: u32 = WebGLRenderingContext::POINTS;
+    const TRIANGLE_STRIP: u32 = WebGLRenderingContext::TRIANGLE_STRIP;
+    const COLOR_BUFFER_BIT: u32 = WebGLRenderingContext::COLOR_BUFFER_BIT;
+    const DEPTH_BUFFER_BIT: u32 = WebGLRenderingContext::DEPTH_BUFFER_BIT;
+    const CCW: u32 = WebGLRenderingContext::CCW;
+    const DEPTH_TEST: u32 = WebGLRenderingContext::DEPTH_TEST;
+    const SCISSOR_TEST: u32 = WebGLRenderingContext::SCISSOR_TEST;
+    const LEQUAL: u32 = WebGLRenderingContext::LEQUAL;
+    const BACK: u32 = WebGLRenderingContext::BACK;
+    const PACK_ALIGNMENT: u32 = WebGLRenderingContext::PACK_ALIGNMENT;
+
+    // Not supported.
+    const PROGRAM_POINT_SIZE: u32 = 0;
+    const LINE: u32 = 0;
+    const POINT: u32 = 0;
+    const FILL: u32 = 0;
 }
 
 impl AbstractContext for WebGLContext {
@@ -258,6 +282,10 @@ impl AbstractContext for WebGLContext {
         self.ctxt.viewport(x, y, width, height)
     }
 
+    fn scissor(&self, x: i32, y: i32, width: i32, height: i32) {
+        self.ctxt.scissor(x, y, width, height)
+    }
+
     fn create_framebuffer(&self) -> Option<Self::Framebuffer> {
         self.ctxt.create_framebuffer()
     }
@@ -290,7 +318,7 @@ impl AbstractContext for WebGLContext {
         self.ctxt.bind_texture(target, texture)
     }
 
-    fn tex_image2d<T: GLPrimitive>(
+    fn tex_image2d(
         &self,
         target: GLenum,
         level: i32,
@@ -299,40 +327,23 @@ impl AbstractContext for WebGLContext {
         height: i32,
         border: i32,
         format: GLenum,
-        type_: GLenum,
-        pixels: Option<&[T]>,
+        pixels: Option<&[u8]>,
     ) {
         match pixels {
-            Some(pixels) => match T::flatten(pixels) {
-                PrimitiveArray::Float32(arr) => {
-                    let abuf = TypedArray::<f32>::from(arr);
-                    self.ctxt.tex_image2_d(
-                        target,
-                        level,
-                        internalformat,
-                        width,
-                        height,
-                        border,
-                        format,
-                        type_,
-                        Some(&abuf.buffer()),
-                    )
-                }
-                PrimitiveArray::Int32(arr) => {
-                    let abuf = TypedArray::<i32>::from(arr);
-                    self.ctxt.tex_image2_d(
-                        target,
-                        level,
-                        internalformat,
-                        width,
-                        height,
-                        border,
-                        format,
-                        type_,
-                        Some(&abuf.buffer()),
-                    )
-                }
-            },
+            Some(pixels) => {
+                let abuf = TypedArray::<u8>::from(pixels);
+                self.ctxt.tex_image2_d(
+                    target,
+                    level,
+                    internalformat,
+                    width,
+                    height,
+                    border,
+                    format,
+                    Self::UNSIGNED_BYTE,
+                    Some(&abuf.buffer()),
+                )
+            }
             None => self.ctxt.tex_image2_d(
                 target,
                 level,
@@ -341,7 +352,7 @@ impl AbstractContext for WebGLContext {
                 height,
                 border,
                 format,
-                type_,
+                Self::UNSIGNED_BYTE,
                 None,
             ),
         }
@@ -365,5 +376,76 @@ impl AbstractContext for WebGLContext {
 
     fn active_texture(&self, texture: GLenum) {
         self.ctxt.active_texture(texture)
+    }
+
+    fn enable(&self, cap: GLenum) {
+        self.ctxt.enable(cap)
+    }
+
+    fn disable(&self, cap: GLenum) {
+        self.ctxt.disable(cap)
+    }
+
+    fn draw_elements(&self, mode: GLenum, count: i32, type_: GLenum, offset: GLintptr) {
+        self.ctxt.draw_elements(mode, count, type_, offset)
+    }
+
+    fn draw_arrays(&self, mode: GLenum, first: i32, count: i32) {
+        self.ctxt.draw_arrays(mode, first, count)
+    }
+
+    fn point_size(&self, _: f32) {
+        // Not supported.
+    }
+
+    fn line_width(&self, size: f32) {
+        self.ctxt.line_width(size)
+    }
+
+    fn clear(&self, mask: u32) {
+        self.ctxt.clear(mask)
+    }
+
+    fn clear_color(&self, r: f32, g: f32, b: f32, a: f32) {
+        self.ctxt.clear_color(r, g, b, a)
+    }
+
+    fn polygon_mode(&self, _: GLenum, _: GLenum) {
+        // Not supported.
+    }
+
+    fn front_face(&self, mode: GLenum) {
+        self.front_face(mode)
+    }
+
+    fn depth_func(&self, mode: GLenum) {
+        self.depth_func(mode)
+    }
+
+    fn cull_face(&self, mode: GLenum) {
+        self.cull_face(mode)
+    }
+
+    fn read_pixels(
+        &self,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        format: GLenum,
+        type_: GLenum,
+        pixels: Option<&mut [u8]>,
+    ) {
+        if let Some(pixels) = pixels {
+            let abuf = TypedArray::<u8>::from(&*pixels);
+            self.ctxt
+                .read_pixels(x, y, width, height, format, type_, Some(&abuf.buffer()));
+            let v = Vec::<u8>::from(abuf);
+            pixels.copy_from_slice(&v[..]);
+        }
+    }
+
+    fn pixel_storei(&self, pname: GLenum, param: i32) {
+        self.ctxt.pixel_storei(pname, param)
     }
 }
