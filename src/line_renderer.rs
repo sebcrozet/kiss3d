@@ -14,6 +14,7 @@ pub struct LineRenderer {
     pos: ShaderAttribute<Point3<f32>>,
     color: ShaderAttribute<Point3<f32>>,
     view: ShaderUniform<Matrix4<f32>>,
+    proj: ShaderUniform<Matrix4<f32>>,
     lines: GPUVec<Point3<f32>>,
 }
 
@@ -33,6 +34,9 @@ impl LineRenderer {
                 .get_attrib::<Point3<f32>>("color")
                 .expect("Failed to get shader attribute."),
             view: shader
+                .get_uniform::<Matrix4<f32>>("view")
+                .expect("Failed to get shader uniform."),
+            proj: shader
                 .get_uniform::<Matrix4<f32>>("view")
                 .expect("Failed to get shader uniform."),
             shader: shader,
@@ -65,7 +69,7 @@ impl LineRenderer {
         self.pos.enable();
         self.color.enable();
 
-        camera.upload(pass, &mut self.view);
+        camera.upload(pass, &mut self.view, &mut self.proj);
 
         self.color.bind_sub_buffer(&mut self.lines, 1, 1);
         self.pos.bind_sub_buffer(&mut self.lines, 1, 0);
@@ -91,9 +95,10 @@ const A_VERY_LONG_STRING: &'static str = "#version 100
     attribute vec3 position;
     attribute vec3 color;
     varying   vec3 vColor;
-    uniform   mat4   view;
+    uniform   mat4 proj;
+    uniform   mat4 view;
     void main() {
-        gl_Position = view * vec4(position, 1.0);
+        gl_Position = proj * view * vec4(position, 1.0);
         vColor = color;
     }";
 
@@ -104,7 +109,6 @@ const ANOTHER_VERY_LONG_STRING: &'static str = "#version 100
    precision mediump float;
 #endif
 
-    precision mediump float;
     varying vec3 vColor;
     void main() {
         gl_FragColor = vec4(vColor, 1.0);

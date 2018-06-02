@@ -41,9 +41,10 @@ pub struct FirstPersonStereo {
 
     /// Low level datas
     projection: Perspective3<f32>,
+    view_left: Matrix4<f32>,
+    view_right: Matrix4<f32>,
+    proj: Matrix4<f32>,
     proj_view: Matrix4<f32>,
-    proj_view_left: Matrix4<f32>,
-    proj_view_right: Matrix4<f32>,
     inverse_proj_view: Matrix4<f32>,
     last_cursor_pos: Point2<f32>,
 }
@@ -78,8 +79,9 @@ impl FirstPersonStereo {
             proj_view: na::zero(),
             inverse_proj_view: na::zero(),
             last_cursor_pos: Point2::origin(),
-            proj_view_left: na::zero(),
-            proj_view_right: na::zero(),
+            proj: na::zero(),
+            view_left: na::zero(),
+            view_right: na::zero(),
         };
 
         res.look_at(eye, at);
@@ -169,16 +171,15 @@ impl FirstPersonStereo {
     fn update_projviews(&mut self) {
         self.proj_view = *self.projection.as_matrix() * self.view_transform().to_homogeneous();
         self.inverse_proj_view = self.proj_view.try_inverse().unwrap();
-        self.proj_view_left =
-            *self.projection.as_matrix() * self.view_transform_left().to_homogeneous();
-        self.proj_view_right =
-            *self.projection.as_matrix() * self.view_transform_right().to_homogeneous();
+        self.proj = *self.projection.as_matrix();
+        self.view_left = self.view_transform_left().to_homogeneous();
+        self.view_right = self.view_transform_right().to_homogeneous();
     }
 
-    fn transformation_eye(&self, eye: usize) -> Matrix4<f32> {
+    fn view_eye(&self, eye: usize) -> Matrix4<f32> {
         match eye {
-            0usize => self.proj_view_left,
-            1usize => self.proj_view_right,
+            0usize => self.view_left,
+            1usize => self.view_right,
             _ => panic!("bad eye index"),
         }
     }
@@ -282,8 +283,14 @@ impl Camera for FirstPersonStereo {
         self.update_projviews();
     }
 
-    fn upload(&self, pass: usize, uniform: &mut ShaderUniform<Matrix4<f32>>) {
-        uniform.upload(&self.transformation_eye(pass));
+    fn upload(
+        &self,
+        pass: usize,
+        proj: &mut ShaderUniform<Matrix4<f32>>,
+        view: &mut ShaderUniform<Matrix4<f32>>,
+    ) {
+        view.upload(&self.view_eye(pass));
+        proj.upload(&self.proj);
     }
 
     fn num_passes(&self) -> usize {

@@ -90,7 +90,6 @@ I’d love to see people improving this library for their own needs. However, ke
 #[macro_use]
 extern crate bitflags;
 // extern crate freetype;
-// extern crate gl;
 // extern crate glfw;
 extern crate image;
 // extern crate libc;
@@ -101,6 +100,10 @@ extern crate num_traits as num;
 extern crate serde_derive;
 extern crate serde;
 
+#[cfg(not(target_arch = "wasm32"))]
+extern crate gl;
+#[cfg(not(target_arch = "wasm32"))]
+extern crate glutin;
 #[cfg(target_arch = "wasm32")]
 #[macro_use]
 extern crate stdweb;

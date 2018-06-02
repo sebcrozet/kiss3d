@@ -9,3 +9,16 @@ macro_rules! verify(
         }
     }
 );
+
+macro_rules! checked(
+    ($e: expr) => {
+        unsafe {
+            let res = $e;
+            if gl::GetError() != 0 {
+                None
+            } else {
+                Some(res)
+            }
+        }
+    }
+);

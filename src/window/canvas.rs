@@ -27,7 +27,7 @@ impl Canvas {
         CanvasImpl::render_loop(data)
     }
 
-    pub fn poll_events(&self) {
+    pub fn poll_events(&mut self) {
         self.canvas.poll_events()
     }
 
@@ -77,7 +77,7 @@ pub(crate) trait AbstractCanvas {
         out_events: Sender<WindowEvent>,
     ) -> Self;
     fn render_loop(data: impl FnMut(f64) + 'static);
-    fn poll_events(&self);
+    fn poll_events(&mut self);
     fn swap_buffers(&mut self);
     fn should_close(&self) -> bool;
     fn size(&self) -> (u32, u32);
@@ -90,23 +90,3 @@ pub(crate) trait AbstractCanvas {
     fn get_mouse_button(&self, button: MouseButton) -> Action;
     fn get_key(&self, key: Key) -> Action;
 }
-
-/*
-let glfw = Self::context();
-let (mut window, events) = glfw
-    .create_window(width, height, title, WindowMode::Windowed)
-    .expect("Unable to open a glfw window.");
-
-window.make_current();
-
-verify!(gl::load_with(
-    |name| window.get_proc_address(name) as *const _
-));
-
-// setup callbacks
-window.set_framebuffer_size_polling(true);
-window.set_key_polling(true);
-window.set_mouse_button_polling(true);
-window.set_cursor_pos_polling(true);
-window.set_scroll_polling(true);
-*/

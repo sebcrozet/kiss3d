@@ -33,12 +33,15 @@ pub trait Camera {
     /// Update the camera. This is called once at the beginning of the render loop.
     fn update(&mut self, canvas: &Canvas);
 
-    /// Upload the camera transformation to the gpu. This can be called multiple times on the
+    /// Upload the camera view and projection to the gpu. This can be called multiple times on the
     /// render loop.
     #[inline]
-    fn upload(&self, _pass: usize, uniform: &mut ShaderUniform<Matrix4<f32>>) {
-        uniform.upload(&self.transformation());
-    }
+    fn upload(
+        &self,
+        pass: usize,
+        proj: &mut ShaderUniform<Matrix4<f32>>,
+        view: &mut ShaderUniform<Matrix4<f32>>,
+    );
 
     /// The number of passes required by this camera.
     #[inline]

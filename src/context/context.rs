@@ -6,9 +6,12 @@ use context::GLContext as ContextImpl;
 use context::WebGLContext as ContextImpl;
 
 #[cfg(not(target_arch = "wasm32"))]
-use gl;
+use gl::{
+    self, types::GLenum as GLenumTy, types::GLintptr as GLintptrTy,
+    types::GLsizeiptr as GLsizeiptrTy,
+};
 #[cfg(target_arch = "wasm32")]
-use webgl as gl;
+use webgl::{self as gl, GLenum as GLenumTy, GLintptr as GLintptrTy, GLsizeiptr as GLsizeiptrTy};
 
 use na::{Matrix2, Matrix3, Matrix4};
 use resource::GLPrimitive;
@@ -16,8 +19,9 @@ use resource::GLPrimitive;
 #[path = "../error.rs"]
 mod error;
 
-pub type GLenum = gl::GLenum;
-pub type GLintptr = gl::GLintptr;
+pub type GLenum = GLenumTy;
+pub type GLintptr = GLintptrTy;
+pub type GLsizeiptr = GLsizeiptrTy;
 pub struct UniformLocation(<ContextImpl as AbstractContext>::UniformLocation);
 pub struct Buffer(<ContextImpl as AbstractContext>::Buffer);
 pub struct Program(<ContextImpl as AbstractContext>::Program);

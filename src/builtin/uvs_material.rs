@@ -16,6 +16,7 @@ pub struct UvsMaterial {
     position: ShaderAttribute<Point3<f32>>,
     uvs: ShaderAttribute<Point2<f32>>,
     view: ShaderUniform<Matrix4<f32>>,
+    proj: ShaderUniform<Matrix4<f32>>,
     transform: ShaderUniform<Matrix4<f32>>,
     scale: ShaderUniform<Matrix3<f32>>,
 }
@@ -33,6 +34,7 @@ impl UvsMaterial {
             transform: shader.get_uniform("transform").unwrap(),
             scale: shader.get_uniform("scale").unwrap(),
             view: shader.get_uniform("view").unwrap(),
+            proj: shader.get_uniform("proj").unwrap(),
             shader: shader,
         }
     }
@@ -70,7 +72,7 @@ impl Material for UvsMaterial {
          * Setup camera and light.
          *
          */
-        camera.upload(pass, &mut self.view);
+        camera.upload(pass, &mut self.view, &mut self.proj);
 
         /*
          *
@@ -112,6 +114,7 @@ pub static UVS_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 const A_VERY_LONG_STRING: &'static str = "#version 100
 attribute vec3 position;
 attribute vec3 uvs;
+uniform mat4 proj;
 uniform mat4 view;
 uniform mat4 transform;
 uniform mat3 scale;
@@ -119,7 +122,7 @@ varying vec3 uv_as_a_color;
 
 void main() {
     uv_as_a_color  = vec3(uvs.xy, 0.0);
-    gl_Position = view * transform * mat4(scale) * vec4(position, 1.0);
+    gl_Position = proj * view * transform * mat4(scale) * vec4(position, 1.0);
 }
 ";
 

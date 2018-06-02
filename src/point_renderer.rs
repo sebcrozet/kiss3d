@@ -13,6 +13,7 @@ pub struct PointRenderer {
     shader: Effect,
     pos: ShaderAttribute<Point3<f32>>,
     color: ShaderAttribute<Point3<f32>>,
+    proj: ShaderUniform<Matrix4<f32>>,
     view: ShaderUniform<Matrix4<f32>>,
     points: GPUVec<Point3<f32>>,
 }
@@ -28,6 +29,7 @@ impl PointRenderer {
             points: GPUVec::new(Vec::new(), BufferType::Array, AllocationType::StreamDraw),
             pos: shader.get_attrib::<Point3<f32>>("position").unwrap(),
             color: shader.get_attrib::<Point3<f32>>("color").unwrap(),
+            proj: shader.get_uniform::<Matrix4<f32>>("proj").unwrap(),
             view: shader.get_uniform::<Matrix4<f32>>("view").unwrap(),
             shader: shader,
         }
@@ -62,7 +64,7 @@ impl PointRenderer {
         self.pos.enable();
         self.color.enable();
 
-        camera.upload(pass, &mut self.view);
+        camera.upload(pass, &mut self.view, &mut self.proj);
 
         self.color.bind_sub_buffer(&mut self.points, 1, 1);
         self.pos.bind_sub_buffer(&mut self.points, 1, 0);
@@ -88,9 +90,10 @@ const A_VERY_LONG_STRING: &'static str = "#version 100
     attribute vec3 position;
     attribute vec3 color;
     varying   vec3 Color;
+    uniform   mat4   proj;
     uniform   mat4   view;
     void main() {
-        gl_Position = view * vec4(position, 1.0);
+        gl_Position = proj * view * vec4(position, 1.0);
         Color = color;
     }";
 

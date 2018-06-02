@@ -105,7 +105,7 @@ impl AbstractCanvas for WebGLCanvas {
         });
     }
 
-    fn poll_events(&self) {
+    fn poll_events(&mut self) {
         // Nothing to do.
     }
 

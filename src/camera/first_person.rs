@@ -2,6 +2,7 @@ use camera::Camera;
 use event::{Action, Key, MouseButton, WindowEvent};
 use na::{self, Isometry3, Matrix4, Perspective3, Point3, Translation3, Vector2, Vector3};
 use num::Zero;
+use resource::ShaderUniform;
 use std::f32;
 use window::Canvas;
 
@@ -28,6 +29,8 @@ pub struct FirstPerson {
     right_key: Option<Key>,
 
     projection: Perspective3<f32>,
+    proj: Matrix4<f32>,
+    view: Matrix4<f32>,
     proj_view: Matrix4<f32>,
     inverse_proj_view: Matrix4<f32>,
     last_cursor_pos: Vector2<f32>,
@@ -61,6 +64,8 @@ impl FirstPerson {
             left_key: Some(Key::Left),
             right_key: Some(Key::Right),
             projection: Perspective3::new(800.0 / 600.0, fov, znear, zfar),
+            proj: na::zero(),
+            view: na::zero(),
             proj_view: na::zero(),
             inverse_proj_view: na::zero(),
             last_cursor_pos: na::zero(),
@@ -252,8 +257,9 @@ impl FirstPerson {
     }
 
     fn update_projviews(&mut self) {
-        let _ =
-            self.proj_view = *self.projection.as_matrix() * self.view_transform().to_homogeneous();
+        self.view = self.view_transform().to_homogeneous();
+        self.proj = *self.projection.as_matrix();
+        self.proj_view = self.proj * self.view;
         let _ = self
             .proj_view
             .try_inverse()
@@ -376,6 +382,17 @@ impl Camera for FirstPerson {
 
     fn inverse_transformation(&self) -> Matrix4<f32> {
         self.inverse_proj_view
+    }
+
+    #[inline]
+    fn upload(
+        &self,
+        _: usize,
+        proj: &mut ShaderUniform<Matrix4<f32>>,
+        view: &mut ShaderUniform<Matrix4<f32>>,
+    ) {
+        proj.upload(&self.proj);
+        view.upload(&self.view);
     }
 
     fn update(&mut self, canvas: &Canvas) {

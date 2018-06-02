@@ -12,8 +12,6 @@ use std::sync::{Once, ONCE_INIT};
 use std::thread;
 use std::time::{Duration, Instant};
 
-use stdweb::web;
-
 use na::{Point2, Point3, Vector2, Vector3};
 
 use camera::{ArcBall, Camera};
@@ -444,7 +442,6 @@ impl Window {
                 self.close();
             }
             WindowEvent::FramebufferSize(w, h) => {
-                console!(log, "Handling resize event: ", w, h);
                 self.update_viewport(w as f32, h as f32);
             }
             _ => {}

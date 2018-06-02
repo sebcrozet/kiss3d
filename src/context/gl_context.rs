@@ -1,14 +1,30 @@
+use std::ffi::CString;
+use std::iter;
+use std::mem;
+use std::ptr;
 use std::rc::Rc;
 use std::sync::Once;
 
-use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr};
+use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr, GLsizeiptr};
 use gl;
+use glutin::{self, Context};
+use num::Zero;
 
 use na::{Matrix2, Matrix3, Matrix4};
 use resource::{GLPrimitive, PrimitiveArray};
 
+#[path = "../error.rs"]
+mod error;
+
 #[derive(Clone)]
 pub struct GLContext;
+
+fn val<T: Copy + Zero>(val: Option<&T>) -> T {
+    match val {
+        Some(t) => *t,
+        None => T::zero(),
+    }
+}
 
 impl GLContext {
     pub fn new() -> Self {
@@ -61,16 +77,14 @@ impl AbstractContextConst for GLContext {
     const LEQUAL: u32 = gl::LEQUAL;
     const BACK: u32 = gl::BACK;
     const PACK_ALIGNMENT: u32 = gl::PACK_ALIGNMENT;
-
-    // Not supported.
-    const PROGRAM_POINT_SIZE: u32 = 0;
-    const LINE: u32 = 0;
-    const POINT: u32 = 0;
-    const FILL: u32 = 0;
+    const PROGRAM_POINT_SIZE: u32 = gl::PROGRAM_POINT_SIZE;
+    const LINE: u32 = gl::LINE;
+    const POINT: u32 = gl::POINT;
+    const FILL: u32 = gl::FILL;
 }
 
 impl AbstractContext for GLContext {
-    type UniformLocation = u32;
+    type UniformLocation = i32;
     type Buffer = u32;
     type Shader = u32;
     type Program = u32;
@@ -78,7 +92,7 @@ impl AbstractContext for GLContext {
     type Texture = u32;
 
     fn get_error(&self) -> GLenum {
-        self.ctxt.get_error()
+        unsafe { gl::GetError() }
     }
 
     fn uniform_matrix2fv(
@@ -87,8 +101,7 @@ impl AbstractContext for GLContext {
         transpose: bool,
         m: &Matrix2<f32>,
     ) {
-        self.ctxt
-            .uniform_matrix2fv(location, transpose, m.as_slice())
+        unsafe { gl::UniformMatrix2fv(val(location), 1, transpose as u8, mem::transmute(m)) }
     }
 
     fn uniform_matrix3fv(
@@ -97,8 +110,7 @@ impl AbstractContext for GLContext {
         transpose: bool,
         m: &Matrix3<f32>,
     ) {
-        self.ctxt
-            .uniform_matrix3fv(location, transpose, m.as_slice())
+        unsafe { gl::UniformMatrix3fv(val(location), 1, transpose as u8, mem::transmute(m)) }
     }
 
     fn uniform_matrix4fv(
@@ -107,137 +119,150 @@ impl AbstractContext for GLContext {
         transpose: bool,
         m: &Matrix4<f32>,
     ) {
-        self.ctxt
-            .uniform_matrix4fv(location, transpose, m.as_slice())
+        unsafe { gl::UniformMatrix4fv(val(location), 1, transpose as u8, mem::transmute(m)) }
     }
 
     fn uniform3f(&self, location: Option<&Self::UniformLocation>, x: f32, y: f32, z: f32) {
-        self.ctxt.uniform3f(location, x, y, z)
+        unsafe { gl::Uniform3f(val(location), x, y, z) }
     }
 
     fn uniform2f(&self, location: Option<&Self::UniformLocation>, x: f32, y: f32) {
-        self.ctxt.uniform2f(location, x, y)
+        unsafe { gl::Uniform2f(val(location), x, y) }
     }
 
     fn uniform1f(&self, location: Option<&Self::UniformLocation>, x: f32) {
-        self.ctxt.uniform1f(location, x)
+        unsafe { gl::Uniform1f(val(location), x) }
     }
 
     fn uniform3i(&self, location: Option<&Self::UniformLocation>, x: i32, y: i32, z: i32) {
-        self.ctxt.uniform3i(location, x, y, z)
+        unsafe { gl::Uniform3i(val(location), x, y, z) }
     }
 
     fn uniform2i(&self, location: Option<&Self::UniformLocation>, x: i32, y: i32) {
-        self.ctxt.uniform2i(location, x, y)
+        unsafe { gl::Uniform2i(val(location), x, y) }
     }
 
     fn uniform1i(&self, location: Option<&Self::UniformLocation>, x: i32) {
-        self.ctxt.uniform1i(location, x)
+        unsafe { gl::Uniform1i(val(location), x) }
     }
 
     fn create_buffer(&self) -> Option<Self::Buffer> {
-        self.ctxt.create_buffer()
+        let mut buf = 0;
+        unsafe { gl::GenBuffers(1, &mut buf) };
+        checked!(buf)
     }
 
     fn delete_buffer(&self, buffer: Option<&Self::Buffer>) {
-        self.ctxt.delete_buffer(buffer)
+        unsafe { gl::DeleteBuffers(1, &val(buffer)) }
     }
 
     fn bind_buffer(&self, target: GLenum, buffer: Option<&Self::Buffer>) {
-        self.ctxt.bind_buffer(target, buffer)
+        unsafe { gl::BindBuffer(target, val(buffer)) }
     }
 
     fn is_buffer(&self, buffer: Option<&Self::Buffer>) -> bool {
-        self.ctxt.is_buffer(buffer)
+        unsafe { gl::IsBuffer(val(buffer)) != 0 }
     }
 
     fn buffer_data<T: GLPrimitive>(&self, target: GLenum, data: &[T], usage: GLenum) {
-        match T::flatten(data) {
-            PrimitiveArray::Float32(arr) => {
-                let abuf = TypedArray::<f32>::from(arr);
-                self.ctxt.buffer_data_1(target, Some(&abuf.buffer()), usage)
-            }
-            PrimitiveArray::Int32(arr) => {
-                let abuf = TypedArray::<i32>::from(arr);
-                self.ctxt.buffer_data_1(target, Some(&abuf.buffer()), usage)
-            }
-            PrimitiveArray::UInt16(arr) => {
-                let abuf = TypedArray::<u16>::from(arr);
-                self.ctxt.buffer_data_1(target, Some(&abuf.buffer()), usage)
-            }
+        unsafe {
+            gl::BufferData(
+                target,
+                (data.len() * mem::size_of::<T>()) as GLsizeiptr,
+                mem::transmute(&data[0]),
+                usage,
+            )
         }
     }
 
     fn buffer_sub_data<T: GLPrimitive>(&self, target: GLenum, offset: GLintptr, data: &[T]) {
-        match T::flatten(data) {
-            PrimitiveArray::Float32(arr) => {
-                let abuf = TypedArray::<f32>::from(arr);
-                self.ctxt.buffer_sub_data(target, offset, &abuf.buffer())
-            }
-            PrimitiveArray::Int32(arr) => {
-                let abuf = TypedArray::<i32>::from(arr);
-                self.ctxt.buffer_sub_data(target, offset, &abuf.buffer())
-            }
-            PrimitiveArray::UInt16(arr) => {
-                let abuf = TypedArray::<u16>::from(arr);
-                self.ctxt.buffer_sub_data(target, offset, &abuf.buffer())
-            }
+        unsafe {
+            gl::BufferSubData(
+                target,
+                offset,
+                (data.len() * mem::size_of::<T>()) as GLsizeiptr,
+                mem::transmute(&data[0]),
+            )
         }
     }
 
     fn create_shader(&self, type_: GLenum) -> Option<Self::Shader> {
-        self.ctxt.create_shader(type_)
+        checked!(unsafe { gl::CreateShader(type_) })
     }
 
     fn create_program(&self) -> Option<Self::Program> {
-        self.ctxt.create_program()
+        checked!(unsafe { gl::CreateProgram() })
     }
 
     fn delete_program(&self, program: Option<&Self::Program>) {
-        self.ctxt.delete_program(program)
+        unsafe { gl::DeleteProgram(val(program)) }
     }
 
     fn delete_shader(&self, shader: Option<&Self::Shader>) {
-        self.ctxt.delete_shader(shader)
+        unsafe { gl::DeleteShader(val(shader)) }
     }
 
     fn is_shader(&self, shader: Option<&Self::Shader>) -> bool {
-        self.ctxt.is_shader(shader)
+        unsafe { gl::IsShader(val(shader)) != 0 }
     }
 
     fn is_program(&self, program: Option<&Self::Program>) -> bool {
-        self.ctxt.is_program(program)
+        unsafe { gl::IsProgram(val(program)) != 0 }
     }
 
     fn shader_source(&self, shader: &Self::Shader, source: &str) {
-        self.ctxt.shader_source(shader, source)
+        let source = CString::new(source.as_bytes()).unwrap();
+        unsafe { gl::ShaderSource(*shader, 1, &source.as_ptr(), ptr::null()) }
     }
 
     fn compile_shader(&self, shader: &Self::Shader) {
-        self.ctxt.compile_shader(shader)
+        unsafe { gl::CompileShader(*shader) }
     }
 
     fn link_program(&self, program: &Self::Program) {
-        self.ctxt.link_program(program)
+        unsafe { gl::LinkProgram(*program) }
     }
 
     fn use_program(&self, program: Option<&Self::Program>) {
-        self.ctxt.use_program(program)
+        unsafe { gl::UseProgram(val(program)) }
     }
 
     fn attach_shader(&self, program: &Self::Program, shader: &Self::Shader) {
-        self.ctxt.attach_shader(program, shader)
+        unsafe { gl::AttachShader(*program, *shader) }
     }
 
     fn get_shader_parameter_int(&self, shader: &Self::Shader, pname: GLenum) -> Option<i32> {
-        match self.ctxt.get_shader_parameter(shader, pname) {
-            Value::Number(n) => n.try_into().ok(),
-            _ => None,
-        }
+        let mut res = 0;
+        unsafe { gl::GetShaderiv(*shader, pname, &mut res) };
+        Some(res)
     }
 
     fn get_shader_info_log(&self, shader: &Self::Shader) -> Option<String> {
-        self.ctxt.get_shader_info_log(shader)
+        let mut info_log_len = 0;
+
+        unsafe { gl::GetShaderiv(*shader, gl::INFO_LOG_LENGTH, &mut info_log_len) };
+
+        if info_log_len > 0 {
+            // Error check for memory allocation failure is omitted here.
+            let mut chars_written = 0;
+            let info_log: String = iter::repeat(' ').take(info_log_len as usize).collect();
+
+            let c_str = CString::new(info_log.as_bytes()).unwrap();
+            unsafe {
+                gl::GetShaderInfoLog(
+                    *shader,
+                    info_log_len,
+                    &mut chars_written,
+                    c_str.as_ptr() as *mut _,
+                )
+            };
+
+            let bytes = c_str.as_bytes();
+            let bytes = &bytes[..bytes.len() - 1];
+            String::from_utf8(bytes.to_vec()).ok()
+        } else {
+            None
+        }
     }
 
     fn vertex_attrib_pointer(
@@ -249,20 +274,29 @@ impl AbstractContext for GLContext {
         stride: i32,
         offset: GLintptr,
     ) {
-        self.ctxt
-            .vertex_attrib_pointer(index, size, type_, normalized, stride, offset)
+        unsafe {
+            gl::VertexAttribPointer(
+                index,
+                size,
+                type_,
+                normalized as u8,
+                stride,
+                mem::transmute(offset),
+            )
+        }
     }
 
     fn enable_vertex_attrib_array(&self, index: u32) {
-        self.ctxt.enable_vertex_attrib_array(index)
+        unsafe { gl::EnableVertexAttribArray(index) }
     }
 
     fn disable_vertex_attrib_array(&self, index: u32) {
-        self.ctxt.disable_vertex_attrib_array(index)
+        unsafe { gl::DisableVertexAttribArray(index) }
     }
 
     fn get_attrib_location(&self, program: &Self::Program, name: &str) -> i32 {
-        self.ctxt.get_attrib_location(program, name)
+        let c_str = CString::new(name.as_bytes()).expect("Invalid uniform name.");
+        unsafe { gl::GetAttribLocation(*program, c_str.as_ptr()) }
     }
 
     fn get_uniform_location(
@@ -270,31 +304,40 @@ impl AbstractContext for GLContext {
         program: &Self::Program,
         name: &str,
     ) -> Option<Self::UniformLocation> {
-        self.ctxt.get_uniform_location(program, name)
+        let c_str = CString::new(name.as_bytes()).expect("Invalid uniform name.");
+        let location = unsafe { unsafe { gl::GetUniformLocation(*program, c_str.as_ptr()) } };
+
+        if unsafe { gl::GetError() } == 0 && location != -1 {
+            Some(location)
+        } else {
+            None
+        }
     }
 
     fn viewport(&self, x: i32, y: i32, width: i32, height: i32) {
-        self.ctxt.viewport(x, y, width, height)
+        unsafe { gl::Viewport(x, y, width, height) }
     }
 
     fn scissor(&self, x: i32, y: i32, width: i32, height: i32) {
-        self.ctxt.scissor(x, y, width, height)
+        unsafe { gl::Scissor(x, y, width, height) }
     }
 
     fn create_framebuffer(&self) -> Option<Self::Framebuffer> {
-        self.ctxt.create_framebuffer()
+        let mut fbo = 0;
+        unsafe { gl::GenFramebuffers(1, &mut fbo) };
+        checked!(fbo)
     }
 
     fn is_framebuffer(&self, framebuffer: Option<&Self::Framebuffer>) -> bool {
-        self.ctxt.is_framebuffer(framebuffer)
+        unsafe { gl::IsFramebuffer(val(framebuffer)) != 0 }
     }
 
     fn bind_framebuffer(&self, target: GLenum, framebuffer: Option<&Self::Framebuffer>) {
-        self.ctxt.bind_framebuffer(target, framebuffer)
+        unsafe { gl::BindFramebuffer(target, val(framebuffer)) }
     }
 
     fn delete_framebuffer(&self, framebuffer: Option<&Self::Framebuffer>) {
-        self.ctxt.delete_framebuffer(framebuffer)
+        unsafe { gl::DeleteFramebuffers(1, &val(framebuffer)) }
     }
 
     fn framebuffer_texture2d(
@@ -305,12 +348,11 @@ impl AbstractContext for GLContext {
         texture: Option<&Self::Texture>,
         level: i32,
     ) {
-        self.ctxt
-            .framebuffer_texture2_d(target, attachment, textarget, texture, level)
+        unsafe { gl::FramebufferTexture2D(target, attachment, textarget, val(texture), level) }
     }
 
     fn bind_texture(&self, target: GLenum, texture: Option<&Self::Texture>) {
-        self.ctxt.bind_texture(target, texture)
+        unsafe { gl::BindTexture(target, val(texture)) }
     }
 
     fn tex_image2d(
@@ -325,28 +367,32 @@ impl AbstractContext for GLContext {
         pixels: Option<&[u8]>,
     ) {
         match pixels {
-            Some(pixels) => self.ctxt.tex_image2_d(
-                target,
-                level,
-                internalformat,
-                width,
-                height,
-                border,
-                format,
-                Self::UNSIGNED_BYTE,
-                Some(pixels),
-            ),
-            None => self.ctxt.tex_image2_d(
-                target,
-                level,
-                internalformat,
-                width,
-                height,
-                border,
-                format,
-                Self::UNSIGNED_BYTE,
-                None::<&TypedArray<u8>>,
-            ),
+            Some(pixels) => unsafe {
+                gl::TexImage2D(
+                    target,
+                    level,
+                    internalformat,
+                    width,
+                    height,
+                    border,
+                    format,
+                    Self::UNSIGNED_BYTE,
+                    mem::transmute(&pixels[0]),
+                )
+            },
+            None => unsafe {
+                gl::TexImage2D(
+                    target,
+                    level,
+                    internalformat,
+                    width,
+                    height,
+                    border,
+                    format,
+                    Self::UNSIGNED_BYTE,
+                    ptr::null(),
+                )
+            },
         }
     }
 
@@ -362,97 +408,103 @@ impl AbstractContext for GLContext {
         pixels: Option<&[i32]>,
     ) {
         match pixels {
-            Some(pixels) => self.ctxt.tex_image2_d(
-                target,
-                level,
-                internalformat,
-                width,
-                height,
-                border,
-                format,
-                Self::UNSIGNED_INT,
-                Some(pixels),
-            ),
-            None => self.ctxt.tex_image2_d(
-                target,
-                level,
-                internalformat,
-                width,
-                height,
-                border,
-                format,
-                Self::UNSIGNED_INT,
-                None::<&TypedArray<i32>>,
-            ),
+            Some(pixels) => unsafe {
+                gl::TexImage2D(
+                    target,
+                    level,
+                    internalformat,
+                    width,
+                    height,
+                    border,
+                    format,
+                    Self::UNSIGNED_INT,
+                    mem::transmute(&pixels[0]),
+                )
+            },
+            None => unsafe {
+                gl::TexImage2D(
+                    target,
+                    level,
+                    internalformat,
+                    width,
+                    height,
+                    border,
+                    format,
+                    Self::UNSIGNED_INT,
+                    ptr::null(),
+                )
+            },
         }
     }
 
     fn tex_parameteri(&self, target: GLenum, pname: GLenum, param: i32) {
-        self.ctxt.tex_parameteri(target, pname, param)
+        unsafe { gl::TexParameteri(target, pname, param) }
     }
 
     fn is_texture(&self, texture: Option<&Self::Texture>) -> bool {
-        self.ctxt.is_texture(texture)
+        unsafe { gl::IsTexture(val(texture)) != 0 }
     }
 
     fn create_texture(&self) -> Option<Self::Texture> {
-        self.ctxt.create_texture()
+        let mut res = 0;
+        unsafe { gl::GenTextures(1, &mut res) };
+        checked!(res)
     }
 
     fn delete_texture(&self, texture: Option<&Self::Texture>) {
-        self.ctxt.delete_texture(texture)
+        unsafe { gl::DeleteTextures(1, &val(texture)) }
     }
 
     fn active_texture(&self, texture: GLenum) {
-        self.ctxt.active_texture(texture)
+        unsafe { gl::ActiveTexture(texture) }
     }
 
     fn enable(&self, cap: GLenum) {
-        self.ctxt.enable(cap)
+        unsafe { gl::Enable(cap) }
     }
 
     fn disable(&self, cap: GLenum) {
-        self.ctxt.disable(cap)
+        unsafe { gl::Disable(cap) }
     }
 
     fn draw_elements(&self, mode: GLenum, count: i32, type_: GLenum, offset: GLintptr) {
-        self.ctxt.draw_elements(mode, count, type_, offset)
+        unsafe { gl::DrawElements(mode, count, type_, mem::transmute(offset)) }
     }
 
     fn draw_arrays(&self, mode: GLenum, first: i32, count: i32) {
-        self.ctxt.draw_arrays(mode, first, count)
+        unsafe { gl::DrawArrays(mode, first, count) }
     }
 
-    fn point_size(&self, _: f32) {
-        // Not supported.
+    fn point_size(&self, size: f32) {
+        unsafe { gl::PointSize(size) }
     }
 
-    fn line_width(&self, size: f32) {
-        self.ctxt.line_width(size)
+    fn line_width(&self, width: f32) {
+        unsafe { gl::LineWidth(width) }
     }
 
     fn clear(&self, mask: u32) {
-        self.ctxt.clear(mask)
+        unsafe { gl::Clear(mask) }
     }
 
     fn clear_color(&self, r: f32, g: f32, b: f32, a: f32) {
-        self.ctxt.clear_color(r, g, b, a)
+        unsafe { gl::ClearColor(r, g, b, a) }
     }
 
-    fn polygon_mode(&self, _: GLenum, _: GLenum) {
-        // Not supported.
+    fn polygon_mode(&self, face: GLenum, mode: GLenum) {
+        unsafe { gl::PolygonMode(face, mode) }
     }
 
     fn front_face(&self, mode: GLenum) {
-        self.front_face(mode)
+        unsafe { gl::FrontFace(mode) }
     }
 
     fn depth_func(&self, mode: GLenum) {
-        self.depth_func(mode)
+        unsafe { gl::DepthFunc(mode) }
     }
 
     fn cull_face(&self, mode: GLenum) {
-        self.cull_face(mode)
+        unsafe { gl::CullFace(mode) }
     }
 
     fn read_pixels(
@@ -465,22 +517,22 @@ impl AbstractContext for GLContext {
         pixels: Option<&mut [u8]>,
     ) {
         if let Some(pixels) = pixels {
-            let abuf = TypedArray::<u8>::from(&*pixels);
-            self.ctxt.read_pixels(
-                x,
-                y,
-                width,
-                height,
-                format,
-                Self::UNSIGNED_BYTE,
-                Some(&abuf),
-            );
-            let v = Vec::<u8>::from(abuf);
-            pixels.copy_from_slice(&v[..]);
+            // FIXME: this may segfault?
+            unsafe {
+                gl::ReadPixels(
+                    x,
+                    y,
+                    width,
+                    height,
+                    format,
+                    Self::UNSIGNED_BYTE,
+                    mem::transmute(&mut pixels[0]),
+                );
+            }
         }
     }
 
     fn pixel_storei(&self, pname: GLenum, param: i32) {
-        self.ctxt.pixel_storei(pname, param)
+        unsafe { unsafe { gl::PixelStorei(pname, param) } }
     }
 }
