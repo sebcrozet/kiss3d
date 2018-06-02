@@ -78,7 +78,7 @@ pub fn parse(
     let mut normals: Vec<Normal> = Vec::new();
     let mut uvs: Vec<UV> = Vec::new();
     let mut groups: HashMap<String, usize> = HashMap::new();
-    let mut groups_ids: Vec<Vec<Point3<i32>>> = Vec::new();
+    let mut groups_ids: Vec<Vec<Point3<u16>>> = Vec::new();
     let mut curr_group: usize = 0;
     let mut ignore_normals = false;
     let mut ignore_uvs = false;
@@ -168,7 +168,7 @@ fn parse_usemtl<'a>(
     mtllib: &HashMap<String, MtlMaterial>,
     group2mtl: &mut HashMap<usize, MtlMaterial>,
     groups: &mut HashMap<String, usize>,
-    groups_ids: &mut Vec<Vec<Point3<i32>>>,
+    groups_ids: &mut Vec<Vec<Point3<u16>>>,
     curr_mtl: &mut Option<MtlMaterial>,
 ) -> usize {
     let mname: Vec<&'a str> = ws.collect();
@@ -270,20 +270,20 @@ fn parse_f<'a>(
     normals: &[Vector3<f32>],
     ignore_uvs: &mut bool,
     ignore_normals: &mut bool,
-    groups_ids: &mut Vec<Vec<Point3<i32>>>,
+    groups_ids: &mut Vec<Vec<Point3<u16>>>,
     curr_group: usize,
 ) {
     // Four formats possible: v   v/t   v//n   v/t/n
     let mut i = 0;
     for word in ws {
-        let mut curr_ids: Vector3<i32> = Bounded::max_value();
+        let mut curr_ids: Vector3<u16> = Bounded::max_value();
 
         for (i, w) in word.split('/').enumerate() {
             if i == 0 || w.len() != 0 {
-                let idx: Result<i32, _> = FromStr::from_str(w);
+                let idx: Result<u16, _> = FromStr::from_str(w);
                 match idx {
                     Ok(id) => curr_ids[i] = id - 1,
-                    Err(e) => error(l, &format!("failed to parse `{}' as a i32: {}", w, e)[..]),
+                    Err(e) => error(l, &format!("failed to parse `{}' as a u16: {}", w, e)[..]),
                 }
             }
         }
@@ -297,11 +297,11 @@ fn parse_f<'a>(
             g.push(p2);
         }
 
-        if curr_ids.y == i32::max_value() {
+        if curr_ids.y == u16::max_value() {
             *ignore_uvs = true;
         }
 
-        if curr_ids.z == i32::max_value() {
+        if curr_ids.z == u16::max_value() {
             *ignore_normals = true;
         }
 
@@ -311,19 +311,19 @@ fn parse_f<'a>(
         let z;
 
         if curr_ids.x < 0 {
-            x = coords.len() as i32 + curr_ids.x + 1;
+            x = coords.len() as u16 + curr_ids.x + 1;
         } else {
             x = curr_ids.x;
         }
 
         if curr_ids.y < 0 {
-            y = uvs.len() as i32 + curr_ids.y + 1;
+            y = uvs.len() as u16 + curr_ids.y + 1;
         } else {
             y = curr_ids.y;
         }
 
         if curr_ids.z < 0 {
-            z = normals.len() as i32 + curr_ids.z + 1;
+            z = normals.len() as u16 + curr_ids.z + 1;
         } else {
             z = curr_ids.z;
         }
@@ -370,7 +370,7 @@ fn parse_g<'a>(
     ws: Words<'a>,
     prefix: &str,
     groups: &mut HashMap<String, usize>,
-    groups_ids: &mut Vec<Vec<Point3<i32>>>,
+    groups_ids: &mut Vec<Vec<Point3<u16>>>,
 ) -> usize {
     let suffix: Vec<&'a str> = ws.collect();
     let suffix = suffix.join(" ");
@@ -395,17 +395,17 @@ fn reformat(
     coords: Vec<Coord>,
     normals: Option<Vec<Normal>>,
     uvs: Option<Vec<UV>>,
-    groups_ids: Vec<Vec<Point3<i32>>>,
+    groups_ids: Vec<Vec<Point3<u16>>>,
     groups: HashMap<String, usize>,
     group2mtl: HashMap<usize, MtlMaterial>,
 ) -> Vec<(String, Mesh, Option<MtlMaterial>)> {
-    let mut vt2id: HashMap<Point3<i32>, i32> = HashMap::new();
-    let mut vertex_ids: Vec<i32> = Vec::new();
+    let mut vt2id: HashMap<Point3<u16>, u16> = HashMap::new();
+    let mut vertex_ids: Vec<u16> = Vec::new();
     let mut resc: Vec<Coord> = Vec::new();
     let mut resn: Option<Vec<Normal>> = normals.as_ref().map(|_| Vec::new());
     let mut resu: Option<Vec<UV>> = uvs.as_ref().map(|_| Vec::new());
-    let mut resfs: Vec<Vec<Point3<i32>>> = Vec::new();
-    let mut allfs: Vec<Point3<i32>> = Vec::new();
+    let mut resfs: Vec<Vec<Point3<u16>>> = Vec::new();
+    let mut allfs: Vec<Point3<u16>> = Vec::new();
     let mut names: Vec<String> = Vec::new();
     let mut mtls: Vec<Option<MtlMaterial>> = Vec::new();
 
@@ -420,7 +420,7 @@ fn reformat(
                     None
                 }
                 None => {
-                    let idx = resc.len() as i32;
+                    let idx = resc.len() as u16;
 
                     resc.push(coords[point.x as usize]);
 

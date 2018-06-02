@@ -111,7 +111,7 @@ impl PostProcessingEffect for OculusStereo {
 }
 
 static VERTEX_SHADER: &'static str = "
-#version 120
+#version 100
 attribute vec2    v_coord;
 uniform sampler2D fbo_texture;
 varying vec2      f_texcoord;
@@ -123,7 +123,7 @@ void main(void) {
 ";
 
 static FRAGMENT_SHADER: &'static str = "
-#version 120
+#version 100
 uniform sampler2D fbo_texture;
 uniform float kappa_0;
 uniform float kappa_1;

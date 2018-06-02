@@ -71,7 +71,7 @@ impl PostProcessingEffect for Grayscales {
     }
 }
 
-static VERTEX_SHADER: &'static str = "#version 120
+static VERTEX_SHADER: &'static str = "#version 100
     attribute vec2    v_coord;
     uniform sampler2D fbo_texture;
     varying vec2      f_texcoord;
@@ -81,7 +81,7 @@ static VERTEX_SHADER: &'static str = "#version 120
       f_texcoord  = (v_coord + 1.0) / 2.0;
     }";
 
-static FRAGMENT_SHADER: &'static str = "#version 120
+static FRAGMENT_SHADER: &'static str = "#version 100
     uniform sampler2D fbo_texture;
     varying vec2      f_texcoord;
 

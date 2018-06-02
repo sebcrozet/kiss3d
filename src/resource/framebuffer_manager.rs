@@ -66,16 +66,16 @@ impl RenderTarget {
                 verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
                 verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&o.depth)));
-                verify!(ctxt.tex_image2d(
-                    Context::TEXTURE_2D,
-                    0,
-                    Context::DEPTH_COMPONENT as i32,
-                    w as i32,
-                    h as i32,
-                    0,
-                    Context::DEPTH_COMPONENT,
-                    None
-                ));
+                // verify!(ctxt.tex_image2d(
+                //     Context::TEXTURE_2D,
+                //     0,
+                //     Context::DEPTH_COMPONENT as i32,
+                //     w as i32,
+                //     h as i32,
+                //     0,
+                //     Context::DEPTH_COMPONENT,
+                //     None
+                // ));
                 verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&o.depth)));
             }
         }
@@ -176,16 +176,16 @@ impl FramebufferManager {
             Context::TEXTURE_WRAP_T,
             Context::CLAMP_TO_EDGE as i32
         ));
-        verify!(ctxt.tex_image2d(
-            Context::TEXTURE_2D,
-            0,
-            Context::DEPTH_COMPONENT as i32,
-            width as i32,
-            height as i32,
-            0,
-            Context::DEPTH_COMPONENT,
-            None
-        ));
+        // verify!(ctxt.tex_image2di(
+        //     Context::TEXTURE_2D,
+        //     0,
+        //     Context::DEPTH_COMPONENT as i32,
+        //     width as i32,
+        //     height as i32,
+        //     0,
+        //     Context::DEPTH_COMPONENT,
+        //     None
+        // ));
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
         RenderTarget::Offscreen(OffscreenBuffers {

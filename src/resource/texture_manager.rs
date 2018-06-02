@@ -48,7 +48,7 @@ impl TextureManager {
     pub fn new() -> TextureManager {
         let ctxt = Context::get();
         let default_tex = Texture::new();
-        let default_tex_pixels: [u8; 12] = [0; 12];
+        let default_tex_pixels: [u8; 12] = [255; 12];
         verify!(ctxt.active_texture(Context::TEXTURE0));
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&*default_tex)));
         // verify!(ctxt.tex_parameteri(Context::TEXTURE_2D, Context::TEXTURE_BASE_LEVEL, 0));

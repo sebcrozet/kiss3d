@@ -81,10 +81,11 @@ I’d love to see people improving this library for their own needs. However, ke
 #![deny(non_upper_case_globals)]
 #![deny(unused_qualifications)]
 #![warn(missing_docs)] // FIXME: should be denied.
-#![deny(unused_results)]
+#![warn(unused_results)]
 #![allow(unused_unsafe)] // FIXME: should be denied
 #![allow(missing_copy_implementations)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
+#![feature(custom_attribute)]
 
 #[macro_use]
 extern crate bitflags;
@@ -96,11 +97,23 @@ extern crate image;
 extern crate nalgebra as na;
 extern crate ncollide3d;
 extern crate num_traits as num;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde;
 
 #[cfg(target_arch = "wasm32")]
+#[macro_use]
 extern crate stdweb;
 #[cfg(target_arch = "wasm32")]
-extern crate webgl_stdweb as webgl;
+#[macro_use]
+extern crate stdweb_derive;
+// extern crate webgl_stdweb as webgl;
+
+#[cfg(target_arch = "wasm32")]
+mod webgl {
+  #![allow(dead_code, unused_parens, unused_imports)]
+  include!(concat!(env!("OUT_DIR"), "/webgl_rendering_context.rs"));
+}
 
 pub mod builtin;
 pub mod camera;

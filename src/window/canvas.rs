@@ -23,6 +23,10 @@ impl Canvas {
         }
     }
 
+    pub fn render_loop(data: impl FnMut(f64) + 'static) {
+        CanvasImpl::render_loop(data)
+    }
+
     pub fn poll_events(&self) {
         self.canvas.poll_events()
     }
@@ -72,6 +76,7 @@ pub(crate) trait AbstractCanvas {
         height: u32,
         out_events: Sender<WindowEvent>,
     ) -> Self;
+    fn render_loop(data: impl FnMut(f64) + 'static);
     fn poll_events(&self);
     fn swap_buffers(&mut self);
     fn should_close(&self) -> bool;

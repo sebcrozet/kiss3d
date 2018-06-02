@@ -1,12 +1,12 @@
-#[derive(Copy, Clone, PartialEq, PartialOrd, Debug)]
+#[derive(Copy, Clone, PartialEq, PartialOrd, Debug, Serialize, Deserialize)]
 pub enum WindowEvent {
     Pos(i32, i32),
-    Size(i32, i32),
+    Size(u32, u32),
     Close,
     Refresh,
     Focus(bool),
     Iconify(bool),
-    FramebufferSize(i32, i32),
+    FramebufferSize(u32, u32),
     MouseButton(MouseButton, Action, Modifiers),
     CursorPos(f64, f64),
     CursorEnter(bool),
@@ -16,7 +16,7 @@ pub enum WindowEvent {
     CharModifiers(char, Modifiers),
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Serialize, Deserialize)]
 pub enum Key {
     Space,
     Apostrophe,
@@ -142,7 +142,7 @@ pub enum Key {
 }
 pub type Scancode = u32;
 
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Serialize, Deserialize)]
 pub enum MouseButton {
     Button1,
     Button2,
@@ -154,7 +154,7 @@ pub enum MouseButton {
     Button8,
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Serialize, Deserialize)]
 pub enum Action {
     Release,
     Press,
@@ -163,6 +163,7 @@ pub enum Action {
 
 bitflags! {
     #[doc = "Key modifiers"]
+    #[derive(Serialize, Deserialize)]
     pub struct Modifiers: i32 {
         #[allow(non_upper_case_globals)]
         const Shift       = 0b0001;

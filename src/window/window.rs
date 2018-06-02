@@ -12,13 +12,16 @@ use std::sync::{Once, ONCE_INIT};
 use std::thread;
 use std::time::{Duration, Instant};
 
+use stdweb::web;
+
+use na::{Point2, Point3, Vector2, Vector3};
+
 use camera::{ArcBall, Camera};
 use context::Context;
 use image::imageops;
 use image::{ImageBuffer, Rgb};
 use light::Light;
 use line_renderer::LineRenderer;
-use na::{Point2, Point3, Vector2, Vector3};
 use ncollide3d::procedural::TriMesh;
 use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
@@ -26,7 +29,7 @@ use resource::{FramebufferManager, Mesh, RenderTarget, Texture, TextureManager};
 use scene::SceneNode;
 // use text::{Font, TextRenderer};
 use event::{Action, EventManager, Key, WindowEvent};
-use window::Canvas;
+use window::{Canvas, State};
 
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
@@ -47,7 +50,7 @@ pub struct Window {
     // text_renderer: TextRenderer,
     framebuffer_manager: FramebufferManager,
     post_process_render_target: RenderTarget,
-    curr_time: Instant,
+    curr_time: usize, // Instant,
     camera: Rc<RefCell<ArcBall>>,
 }
 
@@ -331,7 +334,7 @@ impl Window {
                 height as usize,
             ),
             framebuffer_manager: FramebufferManager::new(),
-            curr_time: Instant::now(),
+            curr_time: 0, // Instant::now(),
             camera: Rc::new(RefCell::new(ArcBall::new(
                 Point3::new(0.0f32, 0.0, -1.0),
                 Point3::origin(),
@@ -427,10 +430,9 @@ impl Window {
             self.handle_event(camera, event)
         }
 
-        /* XXX
-        for event in self.canvas.events() {
-            self.handle_event(camera, &event.1)
-        }*/
+        for event in events.try_iter() {
+            self.handle_event(camera, &event)
+        }
 
         unhandled_events.borrow_mut().clear();
         self.canvas.poll_events();
@@ -442,6 +444,7 @@ impl Window {
                 self.close();
             }
             WindowEvent::FramebufferSize(w, h) => {
+                console!(log, "Handling resize event: ", w, h);
                 self.update_viewport(w as f32, h as f32);
             }
             _ => {}
@@ -451,6 +454,18 @@ impl Window {
             Some(ref mut cam) => cam.handle_event(&self.canvas, event),
             None => self.camera.borrow_mut().handle_event(&self.canvas, event),
         }
+    }
+
+    pub fn render_loop<S: State>(mut self, mut state: S) {
+        Canvas::render_loop(move |_| self.render_with_state(&mut state))
+    }
+
+    pub fn render_with_state<S: State>(&mut self, state: &mut S) {
+        {
+            let (camera, effect) = state.camera_and_effect();
+            self.render_with(camera, effect);
+        }
+        state.step(self)
     }
 
     /// Renders the scene using the default camera.
@@ -463,14 +478,14 @@ impl Window {
     /// Render using a specific post processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    pub fn render_with_effect(&mut self, effect: &mut PostProcessingEffect) -> bool {
+    pub fn render_with_effect(&mut self, effect: &mut (PostProcessingEffect)) -> bool {
         self.render_with(None, Some(effect))
     }
 
     /// Render using a specific camera.
     ///
     /// Returns `false` if the window should be closed.
-    pub fn render_with_camera(&mut self, camera: &mut Camera) -> bool {
+    pub fn render_with_camera(&mut self, camera: &mut (Camera)) -> bool {
         self.render_with(Some(camera), None)
     }
 
@@ -515,10 +530,7 @@ impl Window {
         let w = self.width();
         let h = self.height();
 
-        camera.handle_event(
-            &self.canvas,
-            &WindowEvent::FramebufferSize(w as i32, h as i32),
-        );
+        camera.handle_event(&self.canvas, &WindowEvent::FramebufferSize(w, h));
         camera.update(&self.canvas);
 
         match self.light_mode {
@@ -526,63 +538,66 @@ impl Window {
             _ => {}
         }
 
-        let mut post_processing = post_processing;
-        if post_processing.is_some() {
-            // if we need post-processing, render to our own frame buffer
-            self.framebuffer_manager
-                .select(&self.post_process_render_target);
-        } else {
-            self.framebuffer_manager
-                .select(&FramebufferManager::screen());
-        }
-
-        for pass in 0usize..camera.num_passes() {
-            camera.start_pass(pass, &self.canvas);
-            self.render_scene(camera, pass);
-        }
-        camera.render_complete(&self.canvas);
-
-        let (znear, zfar) = camera.clip_planes();
-
-        // FIXME: remove this completely?
-        // swatch off the wireframe mode for post processing and text rendering.
-        // if self.wireframe_mode {
-        //     verify!(gl::PolygonMode(Context::FRONT_AND_BACK, Context::FILL));
-        // }
-
-        match post_processing {
-            Some(ref mut p) => {
-                // switch back to the screen framebuffer …
+        {
+            let mut post_processing = post_processing;
+            if post_processing.is_some() {
+                // if we need post-processing, render to our own frame buffer
+                self.framebuffer_manager
+                    .select(&self.post_process_render_target);
+            } else {
                 self.framebuffer_manager
                     .select(&FramebufferManager::screen());
-                // … and execute the post-process
-                // FIXME: use the real time value instead of 0.016!
-                p.update(0.016, w as f32, h as f32, znear, zfar);
-                p.draw(&self.post_process_render_target);
             }
-            None => {}
-        }
 
-        // self.text_renderer.render(w, h);
+            for pass in 0usize..camera.num_passes() {
+                camera.start_pass(pass, &self.canvas);
+                self.render_scene(camera, pass);
+            }
+            camera.render_complete(&self.canvas);
 
-        // We are done: swap buffers
-        self.canvas.swap_buffers();
+            let (znear, zfar) = camera.clip_planes();
 
-        // Limit the fps if needed.
-        match self.max_dur_per_frame {
-            None => {}
-            Some(dur) => {
-                let elapsed = self.curr_time.elapsed();
-                if elapsed < dur {
-                    thread::sleep(dur - elapsed);
+            // FIXME: remove this completely?
+            // swatch off the wireframe mode for post processing and text rendering.
+            // if self.wireframe_mode {
+            //     verify!(gl::PolygonMode(Context::FRONT_AND_BACK, Context::FILL));
+            // }
+
+            match post_processing {
+                Some(ref mut p) => {
+                    // switch back to the screen framebuffer …
+                    self.framebuffer_manager
+                        .select(&FramebufferManager::screen());
+                    // … and execute the post-process
+                    // FIXME: use the real time value instead of 0.016!
+                    p.update(0.016, w as f32, h as f32, znear, zfar);
+                    p.draw(&self.post_process_render_target);
                 }
+                None => {}
             }
+
+            // self.text_renderer.render(w, h);
+
+            // We are done: swap buffers
+            self.canvas.swap_buffers();
+
+            // Limit the fps if needed.
+            /*
+            match self.max_dur_per_frame {
+                None => {}
+                Some(dur) => {
+                    let elapsed = self.curr_time.elapsed();
+                    if elapsed < dur {
+                        thread::sleep(dur - elapsed);
+                    }
+                }
+            }*/
+
+            self.curr_time = 0; // Instant::now();
+
+            // self.transparent_objects.clear();
+            // self.opaque_objects.clear();
         }
-
-        self.curr_time = Instant::now();
-
-        // self.transparent_objects.clear();
-        // self.opaque_objects.clear();
 
         !self.should_close()
     }

@@ -120,7 +120,7 @@ impl Material for ObjectMaterial {
                 verify!(ctxt.draw_elements(
                     Context::TRIANGLES,
                     mesh.num_pts() as i32,
-                    Context::UNSIGNED_INT,
+                    Context::UNSIGNED_SHORT,
                     0
                 ));
             }
@@ -132,7 +132,7 @@ impl Material for ObjectMaterial {
                 verify!(ctxt.draw_elements(
                     Context::TRIANGLES,
                     mesh.num_pts() as i32,
-                    Context::UNSIGNED_INT,
+                    Context::UNSIGNED_SHORT,
                     0
                 ));
                 ctxt.line_width(1.0);
@@ -145,7 +145,7 @@ impl Material for ObjectMaterial {
                 verify!(ctxt.draw_elements(
                     Context::TRIANGLES,
                     mesh.num_pts() as i32,
-                    Context::UNSIGNED_INT,
+                    Context::UNSIGNED_SHORT,
                     0
                 ));
                 ctxt.point_size(1.0);
@@ -162,7 +162,7 @@ pub static OBJECT_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
 /// Fragment shader of the default object material.
 pub static OBJECT_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str = "#version 120
+const A_VERY_LONG_STRING: &'static str = "#version 100
     attribute vec3 position;
     attribute vec3 normal;
     attribute vec3 color;
@@ -185,7 +185,13 @@ const A_VERY_LONG_STRING: &'static str = "#version 120
 
 // phong-like lighting (heavily) inspired
 // by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
-const ANOTHER_VERY_LONG_STRING: &'static str = "#version 120
+const ANOTHER_VERY_LONG_STRING: &'static str = "#version 100
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+   precision highp float;
+#else
+   precision mediump float;
+#endif
+
     uniform vec3      color;
     uniform vec3      light_position;
     uniform sampler2D tex;
@@ -208,5 +214,5 @@ const ANOTHER_VERY_LONG_STRING: &'static str = "#version 120
       Idiff2 = clamp(Idiff2, 0.0, 1.0);
 
       vec4 tex_color = texture2D(tex, tex_coord);
-      gl_FragColor   = tex_color * (Iamb + (Idiff1 + Idiff2) / 2) / 2;
+      gl_FragColor   = tex_color * (Iamb + (Idiff1 + Idiff2) / 2.0) / 2.0;
     }";

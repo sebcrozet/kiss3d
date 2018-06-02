@@ -183,15 +183,17 @@ fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (Program, 
     );
     verify!(ctxt.shader_source(&fshader, fragment_shader));
     verify!(ctxt.compile_shader(&fshader));
-
     check_shader_error(&fshader);
 
     // Link the vertex and fragment shader into a shader program
     let program = verify!(ctxt.create_program().expect("Could not create program."));
+    console!(log, "Attaching vertex: ", vertex_shader);
     verify!(ctxt.attach_shader(&program, &vshader));
+    console!(log, "Attaching fragment: ", fragment_shader);
     verify!(ctxt.attach_shader(&program, &fshader));
+    console!(log, "Linking.");
     verify!(ctxt.link_program(&program));
-
+    console!(log, "Linked.");
     (program, vshader, fshader)
 }
 
@@ -202,10 +204,13 @@ fn check_shader_error(shader: &Shader) {
     let ctxt = Context::get();
     let compiles = ctxt.get_shader_parameter_int(shader, Context::COMPILE_STATUS);
 
-    if compiles == Some(0) {
-        println!("Shader compilation failed.");
-        if let Some(log) = ctxt.get_shader_info_log(shader) {
-            panic!("Shader compilation failed: {}", log);
-        }
+    // console!(log, "Compile: ", compiles);
+    // if compiles == Some(0) {
+    //     println!("Shader compilation failed.");
+    if let Some(log) = ctxt.get_shader_info_log(shader) {
+        console!(log, log);
+        // panic!("Shader compilation failed: {}", log);
     }
+    //     panic!("Fail");
+    // }
 }

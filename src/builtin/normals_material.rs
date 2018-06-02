@@ -108,7 +108,7 @@ pub static NORMAL_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
 /// A fragment shader for coloring each point of an object depending on its normal.
 pub static NORMAL_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str = "#version 120
+const A_VERY_LONG_STRING: &'static str = "#version 100
 attribute vec3 position;
 attribute vec3 normal;
 uniform mat4 view;
@@ -122,7 +122,13 @@ void main() {
 }
 ";
 
-const ANOTHER_VERY_LONG_STRING: &'static str = "#version 120
+const ANOTHER_VERY_LONG_STRING: &'static str = "#version 100
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+   precision highp float;
+#else
+   precision mediump float;
+#endif
+
 varying vec3 ls_normal;
 
 void main() {

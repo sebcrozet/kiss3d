@@ -30,16 +30,21 @@ num-traits  = "0.2"
 nalgebra    = "0.15"
 ncollide3d  = "0.16"
 image       = "0.19"
+serde       = "1.0"
+serde_derive = "1.0"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 freetype    = "0.3"
 gl          = "0.6"
-glutin      = { version = "0.16" }
+glutin      = "0.16"
 
 [target.wasm32-unknown-unknown.dependencies]
 stdweb = "0.4"
-webgl_stdweb = "0.1"
+stdweb-derive = "0.4"
 
 [dev-dependencies]
-rand = "0.4"
-ncollide2d  = "0.15"
+rand = "0.5"
+ncollide2d  = "0.16"
+
+[build-dependencies]
+webgl_generator = { git = "https://github.com/brendanzab/gl-rs" }

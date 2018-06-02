@@ -207,7 +207,7 @@ pub static TEXT_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
 pub static TEXT_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
 const A_VERY_LONG_STRING: &'static str = "
-#version 120
+#version 100
 
 uniform vec2 invsz;
 uniform vec3 color;
@@ -226,7 +226,13 @@ void main() {
 ";
 
 const ANOTHER_VERY_LONG_STRING: &'static str = "
-#version 120
+#version 100
+
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+   precision highp float;
+#else
+   precision mediump float;
+#endif
 
 uniform sampler2D tex0;
 

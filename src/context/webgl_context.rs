@@ -1,8 +1,9 @@
+use std::rc::Rc;
 use std::sync::Once;
 
 use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr};
 use stdweb::web::{self, html_element::CanvasElement, IParentNode, TypedArray};
-use stdweb::{unstable::TryInto, Value};
+use stdweb::{self, unstable::TryInto, Value};
 use webgl::{
     WebGLBuffer, WebGLFramebuffer, WebGLProgram, WebGLRenderingContext, WebGLShader, WebGLTexture,
     WebGLUniformLocation,
@@ -13,19 +14,20 @@ use resource::{GLPrimitive, PrimitiveArray};
 
 #[derive(Clone)]
 pub struct WebGLContext {
-    ctxt: WebGLRenderingContext,
+    ctxt: Rc<WebGLRenderingContext>,
 }
 
 impl WebGLContext {
     pub fn new() -> Self {
+        stdweb::initialize();
         let canvas: CanvasElement = web::document()
             .query_selector("#canvas")
             .expect("No canvas found.")
             .unwrap()
             .try_into()
             .unwrap();
-        let ctxt: WebGLRenderingContext = canvas.get_context().unwrap();
-
+        let web_ctxt: WebGLRenderingContext = canvas.get_context().unwrap();
+        let ctxt = Rc::new(web_ctxt);
         WebGLContext { ctxt }
     }
 }
@@ -34,6 +36,7 @@ impl AbstractContextConst for WebGLContext {
     const FLOAT: u32 = WebGLRenderingContext::FLOAT;
     const INT: u32 = WebGLRenderingContext::INT;
     const UNSIGNED_INT: u32 = WebGLRenderingContext::UNSIGNED_INT;
+    const UNSIGNED_SHORT: u32 = WebGLRenderingContext::UNSIGNED_SHORT;
     const STATIC_DRAW: u32 = WebGLRenderingContext::STATIC_DRAW;
     const DYNAMIC_DRAW: u32 = WebGLRenderingContext::DYNAMIC_DRAW;
     const STREAM_DRAW: u32 = WebGLRenderingContext::STREAM_DRAW;
@@ -174,6 +177,10 @@ impl AbstractContext for WebGLContext {
                 let abuf = TypedArray::<i32>::from(arr);
                 self.ctxt.buffer_data_1(target, Some(&abuf.buffer()), usage)
             }
+            PrimitiveArray::UInt16(arr) => {
+                let abuf = TypedArray::<u16>::from(arr);
+                self.ctxt.buffer_data_1(target, Some(&abuf.buffer()), usage)
+            }
         }
     }
 
@@ -185,6 +192,10 @@ impl AbstractContext for WebGLContext {
             }
             PrimitiveArray::Int32(arr) => {
                 let abuf = TypedArray::<i32>::from(arr);
+                self.ctxt.buffer_sub_data(target, offset, &abuf.buffer())
+            }
+            PrimitiveArray::UInt16(arr) => {
+                let abuf = TypedArray::<u16>::from(arr);
                 self.ctxt.buffer_sub_data(target, offset, &abuf.buffer())
             }
         }
@@ -330,20 +341,17 @@ impl AbstractContext for WebGLContext {
         pixels: Option<&[u8]>,
     ) {
         match pixels {
-            Some(pixels) => {
-                let abuf = TypedArray::<u8>::from(pixels);
-                self.ctxt.tex_image2_d(
-                    target,
-                    level,
-                    internalformat,
-                    width,
-                    height,
-                    border,
-                    format,
-                    Self::UNSIGNED_BYTE,
-                    Some(&abuf.buffer()),
-                )
-            }
+            Some(pixels) => self.ctxt.tex_image2_d(
+                target,
+                level,
+                internalformat,
+                width,
+                height,
+                border,
+                format,
+                Self::UNSIGNED_BYTE,
+                Some(pixels),
+            ),
             None => self.ctxt.tex_image2_d(
                 target,
                 level,
@@ -353,7 +361,44 @@ impl AbstractContext for WebGLContext {
                 border,
                 format,
                 Self::UNSIGNED_BYTE,
-                None,
+                None::<&TypedArray<u8>>,
+            ),
+        }
+    }
+
+    fn tex_image2di(
+        &self,
+        target: GLenum,
+        level: i32,
+        internalformat: i32,
+        width: i32,
+        height: i32,
+        border: i32,
+        format: GLenum,
+        pixels: Option<&[i32]>,
+    ) {
+        match pixels {
+            Some(pixels) => self.ctxt.tex_image2_d(
+                target,
+                level,
+                internalformat,
+                width,
+                height,
+                border,
+                format,
+                Self::UNSIGNED_INT,
+                Some(pixels),
+            ),
+            None => self.ctxt.tex_image2_d(
+                target,
+                level,
+                internalformat,
+                width,
+                height,
+                border,
+                format,
+                Self::UNSIGNED_INT,
+                None::<&TypedArray<i32>>,
             ),
         }
     }
@@ -444,7 +489,7 @@ impl AbstractContext for WebGLContext {
                 height,
                 format,
                 Self::UNSIGNED_BYTE,
-                Some(&abuf.buffer()),
+                Some(&abuf),
             );
             let v = Vec::<u8>::from(abuf);
             pixels.copy_from_slice(&v[..]);

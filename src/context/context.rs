@@ -45,6 +45,7 @@ impl Context {
     pub const FLOAT: u32 = ContextImpl::FLOAT;
     pub const INT: u32 = ContextImpl::INT;
     pub const UNSIGNED_INT: u32 = ContextImpl::UNSIGNED_INT;
+    pub const UNSIGNED_SHORT: u32 = ContextImpl::UNSIGNED_SHORT;
     pub const STATIC_DRAW: u32 = ContextImpl::STATIC_DRAW;
     pub const DYNAMIC_DRAW: u32 = ContextImpl::DYNAMIC_DRAW;
     pub const STREAM_DRAW: u32 = ContextImpl::STREAM_DRAW;
@@ -333,6 +334,29 @@ impl Context {
         )
     }
 
+    pub fn tex_image2di(
+        &self,
+        target: GLenum,
+        level: i32,
+        internalformat: i32,
+        width: i32,
+        height: i32,
+        border: i32,
+        format: GLenum,
+        pixels: Option<&[i32]>,
+    ) {
+        self.ctxt.tex_image2di(
+            target,
+            level,
+            internalformat,
+            width,
+            height,
+            border,
+            format,
+            pixels,
+        )
+    }
+
     pub fn tex_parameteri(&self, target: GLenum, pname: GLenum, param: i32) {
         self.ctxt.tex_parameteri(target, pname, param)
     }
@@ -422,6 +446,7 @@ pub(crate) trait AbstractContextConst {
     const FLOAT: u32;
     const INT: u32;
     const UNSIGNED_INT: u32;
+    const UNSIGNED_SHORT: u32;
     const STATIC_DRAW: u32;
     const DYNAMIC_DRAW: u32;
     const STREAM_DRAW: u32;
@@ -566,6 +591,17 @@ pub(crate) trait AbstractContext {
         border: i32,
         format: GLenum,
         pixels: Option<&[u8]>,
+    );
+    fn tex_image2di(
+        &self,
+        target: GLenum,
+        level: i32,
+        internalformat: i32,
+        width: i32,
+        height: i32,
+        border: i32,
+        format: GLenum,
+        pixels: Option<&[i32]>,
     );
     fn tex_parameteri(&self, target: GLenum, pname: GLenum, param: i32);
     fn is_texture(&self, texture: Option<&Self::Texture>) -> bool;

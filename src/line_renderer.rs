@@ -26,9 +26,15 @@ impl LineRenderer {
 
         LineRenderer {
             lines: GPUVec::new(Vec::new(), BufferType::Array, AllocationType::StreamDraw),
-            pos: shader.get_attrib::<Point3<f32>>("position").unwrap(),
-            color: shader.get_attrib::<Point3<f32>>("color").unwrap(),
-            view: shader.get_uniform::<Matrix4<f32>>("view").unwrap(),
+            pos: shader
+                .get_attrib::<Point3<f32>>("position")
+                .expect("Failed to get shader attribute."),
+            color: shader
+                .get_attrib::<Point3<f32>>("color")
+                .expect("Failed to get shader attribute."),
+            view: shader
+                .get_uniform::<Matrix4<f32>>("view")
+                .expect("Failed to get shader uniform."),
             shader: shader,
         }
     }
@@ -81,18 +87,25 @@ pub static LINES_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
 /// Fragment shader used by the material to display line.
 pub static LINES_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str = "#version 120
+const A_VERY_LONG_STRING: &'static str = "#version 100
     attribute vec3 position;
     attribute vec3 color;
-    varying   vec3 Color;
+    varying   vec3 vColor;
     uniform   mat4   view;
     void main() {
         gl_Position = view * vec4(position, 1.0);
-        Color = color;
+        vColor = color;
     }";
 
-const ANOTHER_VERY_LONG_STRING: &'static str = "#version 120
-    varying vec3 Color;
+const ANOTHER_VERY_LONG_STRING: &'static str = "#version 100
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+   precision highp float;
+#else
+   precision mediump float;
+#endif
+
+    precision mediump float;
+    varying vec3 vColor;
     void main() {
-        gl_FragColor = vec4(Color, 1.0);
+        gl_FragColor = vec4(vColor, 1.0);
     }";

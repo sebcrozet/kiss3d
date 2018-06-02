@@ -11,6 +11,7 @@ mod error;
 pub enum PrimitiveArray<'a> {
     Float32(&'a [f32]),
     Int32(&'a [i32]),
+    UInt16(&'a [u16]),
 }
 
 /// Trait implemented by structures that can be uploaded to a uniform or contained by a gpu array.
@@ -460,6 +461,60 @@ unsafe impl GLPrimitive for Point2<i32> {
     #[inline]
     fn upload(&self, location: &UniformLocation) {
         verify!(Context::get().uniform2i(Some(location), self.x, self.y));
+    }
+}
+
+unsafe impl GLPrimitive for Point2<u16> {
+    #[inline]
+    fn gl_type() -> u32 {
+        Context::UNSIGNED_SHORT
+    }
+
+    #[inline]
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::UInt16(slice::from_raw_parts(ptr as *const u16, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
+        2
+    }
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        unimplemented!()
+    }
+}
+
+unsafe impl GLPrimitive for Point3<u16> {
+    #[inline]
+    fn gl_type() -> u32 {
+        Context::UNSIGNED_SHORT
+    }
+
+    #[inline]
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::UInt16(slice::from_raw_parts(ptr as *const u16, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
+        3
+    }
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        unimplemented!()
     }
 }
 
