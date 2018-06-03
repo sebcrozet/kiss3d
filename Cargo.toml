@@ -33,12 +33,22 @@ image       = "0.19"
 serde       = "1.0"
 serde_derive = "1.0"
 
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+[target.'cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))'.dependencies]
 freetype    = "0.3"
 gl          = "0.6"
 glutin      = "0.16"
 
+# We repeat all three targets instead of any(target_arch = "wasm32", target_arch = "asmjs")
+# to avoid https://github.com/koute/stdweb/issues/135
 [target.wasm32-unknown-unknown.dependencies]
+stdweb = "0.4"
+stdweb-derive = "0.4"
+
+[target.wasm32-unknown-emscripten.dependencies]
+stdweb = "0.4"
+stdweb-derive = "0.4"
+
+[target.asmjs-unknown-emscripten.dependencies]
 stdweb = "0.4"
 stdweb-derive = "0.4"
 

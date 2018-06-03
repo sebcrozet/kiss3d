@@ -129,6 +129,12 @@ static VERTEX_SHADER: &'static str = "#version 100
     }";
 
 static FRAGMENT_SHADER: &'static str = "#version 100
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+   precision highp float;
+#else
+   precision mediump float;
+#endif
+
     uniform sampler2D fbo_depth;
     uniform sampler2D fbo_texture;
     uniform float     nx;
@@ -147,29 +153,31 @@ static FRAGMENT_SHADER: &'static str = "#version 100
     void main(void) {
         vec2 texcoord  = f_texcoord;
 
-        float KX[9] = float[](1, 0, -1,
-                              2, 0, -2,
-                              1, 0, -1);
+        float KX[9];
+        KX[0] = 1.0; KX[1] = 0.0; KX[2] = -1.0;
+        KX[3] = 2.0; KX[4] = 0.0; KX[5] = -2.0;
+        KX[6] = 1.0; KX[7] = 0.0; KX[8] = -1.0;
 
-        float gx = 0;
+        float gx = 0.0;
 
         for (int i = -1; i < 2; ++i) {
             for (int j = -1; j < 2; ++j) {
                 int off = (i + 1) * 3 + j + 1;
-                gx += KX[off] * lin_depth(vec2(f_texcoord.x + i * nx, f_texcoord.y + j * ny));
+                gx += KX[off] * lin_depth(vec2(f_texcoord.x + float(i) * nx, f_texcoord.y + float(j) * ny));
             }
         }
 
-        float KY[9] = float[](1,  2,  1,
-                              0,  0,  0,
-                              -1, -2, -1);
+        float KY[9];
+        KY[0] = 1.0;  KY[1] = 2.0;  KY[2] = 1.0;
+        KY[3] = 0.0;  KY[4] = 0.0;  KY[5] = 0.0;
+        KY[6] = -1.0; KY[7] = -2.0; KY[8] = -1.0;
 
-        float gy = 0;
+        float gy = 0.0;
 
         for (int i = -1; i < 2; ++i) {
             for (int j = -1; j < 2; ++j) {
                 int off = (i + 1) * 3 + j + 1;
-                gy += KY[off] * lin_depth(vec2(f_texcoord.x + i * nx, f_texcoord.y + j * ny));
+                gy += KY[off] * lin_depth(vec2(f_texcoord.x + float(i) * nx, f_texcoord.y + float(j) * ny));
             }
         }
 

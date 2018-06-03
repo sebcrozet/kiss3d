@@ -123,6 +123,10 @@ impl AbstractCanvas for GLCanvas {
             .expect("The window was closed.")
     }
 
+    fn hidpi_factor(&self) -> f64 {
+        self.window.hidpi_factor() as f64
+    }
+
     fn set_title(&mut self, title: &str) {
         self.window.set_title(title)
     }

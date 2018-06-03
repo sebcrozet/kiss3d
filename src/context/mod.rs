@@ -1,11 +1,11 @@
 pub use self::context::*;
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 pub use self::gl_context::GLContext;
-#[cfg(target_arch = "wasm32")]
+#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 pub use self::webgl_context::WebGLContext;
 
 mod context;
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 mod gl_context;
-#[cfg(target_arch = "wasm32")]
+#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 mod webgl_context;

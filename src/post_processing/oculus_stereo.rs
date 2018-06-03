@@ -124,6 +124,12 @@ void main(void) {
 
 static FRAGMENT_SHADER: &'static str = "
 #version 100
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+   precision highp float;
+#else
+   precision mediump float;
+#endif
+
 uniform sampler2D fbo_texture;
 uniform float kappa_0;
 uniform float kappa_1;

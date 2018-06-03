@@ -22,6 +22,7 @@ struct WebGLCanvasData {
 pub struct WebGLCanvas {
     data: Rc<RefCell<WebGLCanvasData>>,
     listeners: Vec<EventListenerHandle>,
+    hidpi_factor: f64,
 }
 
 impl AbstractCanvas for WebGLCanvas {
@@ -32,15 +33,15 @@ impl AbstractCanvas for WebGLCanvas {
         height: u32,
         out_events: Sender<WindowEvent>,
     ) -> Self {
+        let hidpi_factor = js!{ return window.devicePixelRatio; }.try_into().unwrap();
         let canvas: CanvasElement = web::document()
             .query_selector("#canvas")
             .expect("No canvas found.")
             .unwrap()
             .try_into()
             .unwrap();
-        canvas.set_width(width);
-        canvas.set_height(height);
-
+        canvas.set_width((canvas.offset_width() as f64 * hidpi_factor) as u32);
+        canvas.set_height((canvas.offset_height() as f64 * hidpi_factor) as u32);
         let data = Rc::new(RefCell::new(WebGLCanvasData {
             canvas,
             key_states: [Action::Release; Key::Unknown as usize + 1],
@@ -51,13 +52,14 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let resize = web::window().add_event_listener(move |_: webevent::ResizeEvent| {
             let edata = edata.borrow();
-            let (w, h) = (edata.canvas.offset_width(), edata.canvas.offset_height());
-            edata.canvas.set_width(w as u32);
-            edata.canvas.set_height(h as u32);
-            let _ = edata
-                .out_events
-                .send(WindowEvent::FramebufferSize(w as u32, h as u32));
-            let _ = edata.out_events.send(WindowEvent::Size(w as u32, h as u32));
+            let (w, h) = (
+                (edata.canvas.offset_width() as f64 * hidpi_factor) as u32,
+                (edata.canvas.offset_height() as f64 * hidpi_factor) as u32,
+            );
+            edata.canvas.set_width(w);
+            edata.canvas.set_height(h);
+            let _ = edata.out_events.send(WindowEvent::FramebufferSize(w, h));
+            let _ = edata.out_events.send(WindowEvent::Size(w, h));
         });
 
         let edata = data.clone();
@@ -95,7 +97,11 @@ impl AbstractCanvas for WebGLCanvas {
 
         let listeners = vec![resize, mouse_down, mouse_move, mouse_up];
 
-        WebGLCanvas { data, listeners }
+        WebGLCanvas {
+            data,
+            listeners,
+            hidpi_factor,
+        }
     }
 
     fn render_loop(mut callback: impl FnMut(f64) + 'static) {
@@ -103,6 +109,10 @@ impl AbstractCanvas for WebGLCanvas {
             callback(t);
             Self::render_loop(callback);
         });
+    }
+
+    fn hidpi_factor(&self) -> f64 {
+        self.hidpi_factor
     }
 
     fn poll_events(&mut self) {

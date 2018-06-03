@@ -1,16 +1,16 @@
 use std::sync::{Once, ONCE_INIT};
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 use context::GLContext as ContextImpl;
-#[cfg(target_arch = "wasm32")]
+#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 use context::WebGLContext as ContextImpl;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 use gl::{
     self, types::GLenum as GLenumTy, types::GLintptr as GLintptrTy,
     types::GLsizeiptr as GLsizeiptrTy,
 };
-#[cfg(target_arch = "wasm32")]
+#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 use webgl::{self as gl, GLenum as GLenumTy, GLintptr as GLintptrTy, GLsizeiptr as GLsizeiptrTy};
 
 use na::{Matrix2, Matrix3, Matrix4};

@@ -415,6 +415,11 @@ impl Window {
         EventManager::new(self.events.clone(), self.unhandled_events.clone())
     }
 
+    /// Retrueve the status of a key.
+    pub fn get_key(&self, key: Key) -> Action {
+        self.canvas.get_key(key)
+    }
+
     /// Poll events and pass them to a user-defined function. If the function returns `true`, the
     /// default engine event handler (camera, framebuffer size, etc.) is executed, if it returns
     /// `false`, the default engine event handler is not executed. Return `false` if you want to
@@ -635,7 +640,7 @@ fn init_gl() {
     verify!(ctxt.front_face(Context::CCW));
     verify!(ctxt.enable(Context::DEPTH_TEST));
     verify!(ctxt.enable(Context::SCISSOR_TEST));
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     {
         verify!(ctxt.enable(Context::PROGRAM_POINT_SIZE));
     }

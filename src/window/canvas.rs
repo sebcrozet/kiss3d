@@ -1,9 +1,9 @@
 use std::sync::mpsc::Sender;
 
 use event::{Action, Key, MouseButton, WindowEvent};
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 use window::GLCanvas as CanvasImpl;
-#[cfg(target_arch = "wasm32")]
+#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 use window::WebGLCanvas as CanvasImpl;
 
 pub struct Canvas {
@@ -41,6 +41,10 @@ impl Canvas {
 
     pub fn size(&self) -> (u32, u32) {
         self.canvas.size()
+    }
+
+    pub fn hidpi_factor(&self) -> f64 {
+        self.canvas.hidpi_factor()
     }
 
     pub fn set_title(&mut self, title: &str) {
@@ -81,6 +85,7 @@ pub(crate) trait AbstractCanvas {
     fn swap_buffers(&mut self);
     fn should_close(&self) -> bool;
     fn size(&self) -> (u32, u32);
+    fn hidpi_factor(&self) -> f64;
 
     fn set_title(&mut self, title: &str);
     fn close(&mut self);

@@ -1,15 +1,15 @@
-extern crate rand;
 extern crate kiss3d;
 extern crate nalgebra as na;
+extern crate rand;
 
-use rand::random;
-use kiss3d::window::Window;
 use kiss3d::light::Light;
+use kiss3d::window::Window;
+use rand::random;
 
 fn main() {
     let mut window = Window::new("Kiss3d: quad");
 
-    let mut c = window.add_quad(5.0, 4.0, 500, 400);
+    let mut c = window.add_quad(5.0, 4.0, 100, 100);
 
     c.set_color(random(), random(), random());
 
@@ -20,8 +20,9 @@ fn main() {
     while window.render() {
         c.modify_vertices(&mut |coords| {
             for v in coords.iter_mut() {
-                v.z = time.sin() * (((v.x + time) * 4.0).cos() +
-                      time.sin() * ((v.y + time) * 4.0 + time).cos()) / 2.0
+                v.z = time.sin()
+                    * (((v.x + time) * 4.0).cos() + time.sin() * ((v.y + time) * 4.0 + time).cos())
+                    / 2.0
             }
         });
         c.recompute_normals();

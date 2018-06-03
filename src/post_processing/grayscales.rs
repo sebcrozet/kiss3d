@@ -82,6 +82,12 @@ static VERTEX_SHADER: &'static str = "#version 100
     }";
 
 static FRAGMENT_SHADER: &'static str = "#version 100
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+   precision highp float;
+#else
+   precision mediump float;
+#endif
+
     uniform sampler2D fbo_texture;
     varying vec2      f_texcoord;
 

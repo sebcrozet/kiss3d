@@ -100,19 +100,19 @@ extern crate num_traits as num;
 extern crate serde_derive;
 extern crate serde;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 extern crate gl;
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 extern crate glutin;
-#[cfg(target_arch = "wasm32")]
+#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 #[macro_use]
 extern crate stdweb;
-#[cfg(target_arch = "wasm32")]
+#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 #[macro_use]
 extern crate stdweb_derive;
 // extern crate webgl_stdweb as webgl;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 mod webgl {
   #![allow(dead_code, unused_parens, unused_imports)]
   include!(concat!(env!("OUT_DIR"), "/webgl_rendering_context.rs"));

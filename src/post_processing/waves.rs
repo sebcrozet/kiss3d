@@ -102,12 +102,18 @@ static VERTEX_SHADER: &'static str = "#version 100
     }";
 
 static FRAGMENT_SHADER: &'static str = "#version 100
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+   precision highp float;
+#else
+   precision mediump float;
+#endif
+
     uniform sampler2D fbo_texture;
     uniform float     offset;
     varying vec2      f_texcoord;
 
     void main(void) {
       vec2 texcoord =  f_texcoord;
-      texcoord.x    += sin(texcoord.y * 4 * 2 * 3.14159 + offset) / 100;
+      texcoord.x    += sin(texcoord.y * 4.0 * 2.0 * 3.14159 + offset) / 100.0;
       gl_FragColor  =  texture2D(fbo_texture, texcoord);
     }";

@@ -164,63 +164,6 @@ pub static OBJECT_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
 /// Fragment shader of the default object material.
 pub static OBJECT_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
 
-// const A_VERY_LONG_STRING: &'static str = "#version 100
-//     attribute vec3 position;
-//     attribute vec3 normal;
-//     attribute vec2 tex_coord;
-//     varying vec3 ws_normal;
-//     varying vec3 ws_position;
-//     varying vec2 tex_coord;
-//     uniform mat4 view;
-//     uniform mat4 proj;
-//     uniform mat4 transform;
-//     uniform mat3 scale;
-//     uniform mat3 ntransform;
-//     void main() {
-//         mat4 scale4 = mat4(scale);
-//         vec4 pos4   = transform * scale4 * vec4(position, 1.0);
-//         tex_coord   = tex_coord;
-//         ws_position = pos4.xyz;
-//         gl_Position = proj * view * pos4;
-//         ws_normal   = normalize(ntransform * scale * normal);
-//     }";
-
-// // phong-like lighting (heavily) inspired
-// // by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
-// const ANOTHER_VERY_LONG_STRING: &'static str = "#version 100
-// #ifdef GL_FRAGMENT_PRECISION_HIGH
-//    precision highp float;
-// #else
-//    precision mediump float;
-// #endif
-
-//     uniform vec3      color;
-//     uniform vec3      light_position;
-//     uniform sampler2D tex;
-//     varying vec2      tex_coord;
-//     varying vec3      ws_normal;
-//     varying vec3      ws_position;
-//     void main() {
-//         vec3 L = normalize(light_position - ws_position);
-//         vec3 E = normalize(-ws_position);
-//         vec3 R = normalize(-reflect(L, ws_normal));
-
-//         //calculate Ambient Term:
-//         vec4 Iamb = vec4(color, 1.0);
-
-//         //calculate Diffuse Term:
-//         vec4 Idiff1 = vec4(color, 1.0) * max(dot(ws_normal, L), 0.0);
-//         Idiff1 = clamp(Idiff1, 0.0, 1.0);
-
-//         // calculate Specular Term:
-//         vec4 Ispec = vec4(1.0, 1.0, 1.0, 1.0)
-//                     * pow(max(dot(R, E), 0.0), 16.0);
-//         Ispec = clamp(Ispec, 0.0, 1.0);
-
-//         vec4 tex_color = texture2D(tex, tex_coord);
-//         gl_FragColor   = tex_color * (Iamb + Idiff1 + Ispec) / 3.0;
-//     }";
-
 const A_VERY_LONG_STRING: &'static str = "#version 100
 attribute vec3 position;
 attribute vec2 tex_coord;
@@ -245,7 +188,7 @@ void main(){
 }";
 
 // phong-like lighting (heavily) inspired
-// by http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
+// http://www.mathematik.uni-marburg.de/~thormae/lectures/graphics1/code/WebGLShaderLightMat/ShaderLightMat.html
 const ANOTHER_VERY_LONG_STRING: &'static str = "#version 100
 #ifdef GL_FRAGMENT_PRECISION_HIGH
    precision highp float;
