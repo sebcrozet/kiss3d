@@ -68,7 +68,7 @@ impl ArcBall {
             dist_step: 40.0,
             rotate_button: Some(MouseButton::Button1),
             drag_button: Some(MouseButton::Button2),
-            reset_key: Some(Key::Enter),
+            reset_key: Some(Key::Return),
             projection: Perspective3::new(800.0 / 600.0, fov, znear, zfar),
             view: na::zero(),
             proj: na::zero(),
@@ -248,7 +248,7 @@ impl Camera for ArcBall {
 
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
         match *event {
-            WindowEvent::CursorPos(x, y) => {
+            WindowEvent::CursorPos(x, y, _) => {
                 let curr_pos = Vector2::new(x as f32, y as f32);
 
                 if let Some(rotate_button) = self.rotate_button {
@@ -271,7 +271,7 @@ impl Camera for ArcBall {
                 self.at = Point3::origin();
                 self.update_projviews();
             }
-            WindowEvent::Scroll(_, off) => self.handle_scroll(off as f32),
+            WindowEvent::Scroll(_, off, _) => self.handle_scroll(off as f32),
             WindowEvent::FramebufferSize(w, h) => {
                 self.projection.set_aspect(w as f32 / h as f32);
                 self.update_projviews();

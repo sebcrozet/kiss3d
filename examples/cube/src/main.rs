@@ -22,7 +22,6 @@ fn main() {
     let mut c = window.add_cube(1.0, 1.0, 1.0);
 
     c.set_color(1.0, 0.0, 0.0);
-    c.append_translation(&Translation3::new(0.0, 0.0, 5.0));
 
     window.set_light(Light::StickToCamera);
 

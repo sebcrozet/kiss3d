@@ -344,7 +344,7 @@ impl Camera for FirstPerson {
 
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
         match *event {
-            WindowEvent::CursorPos(x, y) => {
+            WindowEvent::CursorPos(x, y, _) => {
                 let curr_pos = Vector2::new(x as f32, y as f32);
 
                 if let Some(rotate_button) = self.rotate_button {
@@ -363,7 +363,7 @@ impl Camera for FirstPerson {
 
                 self.last_cursor_pos = curr_pos;
             }
-            WindowEvent::Scroll(_, off) => self.handle_scroll(off as f32),
+            WindowEvent::Scroll(_, off, _) => self.handle_scroll(off as f32),
             WindowEvent::FramebufferSize(w, h) => {
                 self.projection.set_aspect(w as f32 / h as f32);
                 self.update_projviews();

@@ -1,21 +1,34 @@
 use std::cell::RefCell;
+use std::ops::DerefMut;
 use std::rc::Rc;
 use std::sync::mpsc::Sender;
 
 use event::{Action, Key, Modifiers, MouseButton, WindowEvent};
 use stdweb::web::event as webevent;
-use stdweb::web::event::IMouseEvent;
+use stdweb::web::event::{ConcreteEvent, IEvent, IMouseEvent, IUiEvent};
 use stdweb::web::{
     self, html_element::CanvasElement, EventListenerHandle, IEventTarget, IHtmlElement,
     IParentNode, TypedArray,
 };
-use stdweb::{unstable::TryInto, Value};
+use stdweb::{unstable::TryInto, Reference, ReferenceType, Value};
 use window::AbstractCanvas;
+
+#[derive(Clone, Debug, PartialEq, Eq, ReferenceType)]
+#[reference(instance_of = "Event")] // TODO: Better type check.
+pub struct WheelEvent(Reference);
+
+impl IEvent for WheelEvent {}
+impl IUiEvent for WheelEvent {}
+impl IMouseEvent for WheelEvent {}
+impl ConcreteEvent for WheelEvent {
+    const EVENT_TYPE: &'static str = "wheel";
+}
 
 struct WebGLCanvasData {
     canvas: CanvasElement,
     key_states: [Action; Key::Unknown as usize + 1],
     button_states: [Action; MouseButton::Button8 as usize + 1],
+    pending_events: Vec<WindowEvent>,
     out_events: Sender<WindowEvent>,
 }
 
@@ -46,27 +59,30 @@ impl AbstractCanvas for WebGLCanvas {
             canvas,
             key_states: [Action::Release; Key::Unknown as usize + 1],
             button_states: [Action::Release; MouseButton::Button8 as usize + 1],
+            pending_events: Vec::new(),
             out_events,
         }));
 
         let edata = data.clone();
         let resize = web::window().add_event_listener(move |_: webevent::ResizeEvent| {
-            let edata = edata.borrow();
+            let mut edata = edata.borrow_mut();
             let (w, h) = (
                 (edata.canvas.offset_width() as f64 * hidpi_factor) as u32,
                 (edata.canvas.offset_height() as f64 * hidpi_factor) as u32,
             );
             edata.canvas.set_width(w);
             edata.canvas.set_height(h);
-            let _ = edata.out_events.send(WindowEvent::FramebufferSize(w, h));
-            let _ = edata.out_events.send(WindowEvent::Size(w, h));
+            let _ = edata
+                .pending_events
+                .push(WindowEvent::FramebufferSize(w, h));
+            let _ = edata.pending_events.push(WindowEvent::Size(w, h));
         });
 
         let edata = data.clone();
         let mouse_down = web::window().add_event_listener(move |e: webevent::MouseDownEvent| {
             let mut edata = edata.borrow_mut();
             let button = translate_mouse_button(&e);
-            let _ = edata.out_events.send(WindowEvent::MouseButton(
+            let _ = edata.pending_events.push(WindowEvent::MouseButton(
                 button,
                 Action::Press,
                 translate_modifiers(&e),
@@ -78,7 +94,7 @@ impl AbstractCanvas for WebGLCanvas {
         let mouse_up = web::window().add_event_listener(move |e: webevent::MouseUpEvent| {
             let mut edata = edata.borrow_mut();
             let button = translate_mouse_button(&e);
-            let _ = edata.out_events.send(WindowEvent::MouseButton(
+            let _ = edata.pending_events.push(WindowEvent::MouseButton(
                 button,
                 Action::Release,
                 translate_modifiers(&e),
@@ -88,14 +104,35 @@ impl AbstractCanvas for WebGLCanvas {
 
         let edata = data.clone();
         let mouse_move = web::window().add_event_listener(move |e: webevent::MouseMoveEvent| {
-            let edata = edata.borrow();
-            let _ = edata.out_events.send(WindowEvent::CursorPos(
+            let mut edata = edata.borrow_mut();
+            let _ = edata.pending_events.push(WindowEvent::CursorPos(
                 e.client_x() as f64,
                 e.client_y() as f64,
+                translate_modifiers(&e),
             ));
         });
 
-        let listeners = vec![resize, mouse_down, mouse_move, mouse_up];
+        let edata = data.clone();
+        let wheel = web::window().add_event_listener(move |e: WheelEvent| {
+            let delta_x: i32 = js!(
+                return @{e.as_ref()}.deltaX;
+            ).try_into()
+                .ok()
+                .unwrap_or(0);
+            let delta_y: i32 = js!(
+                return @{e.as_ref()}.deltaY;
+            ).try_into()
+                .ok()
+                .unwrap_or(0);
+            let mut edata = edata.borrow_mut();
+            let _ = edata.pending_events.push(WindowEvent::Scroll(
+                delta_x as f64,
+                delta_y as f64,
+                translate_modifiers(&e),
+            ));
+        });
+
+        let listeners = vec![resize, mouse_down, mouse_move, mouse_up, wheel];
 
         WebGLCanvas {
             data,
@@ -116,7 +153,12 @@ impl AbstractCanvas for WebGLCanvas {
     }
 
     fn poll_events(&mut self) {
-        // Nothing to do.
+        let mut data_borrow = self.data.borrow_mut();
+        let mut data = data_borrow.deref_mut();
+
+        for e in data.pending_events.drain(..) {
+            let _ = data.out_events.send(e);
+        }
     }
 
     fn swap_buffers(&mut self) {
