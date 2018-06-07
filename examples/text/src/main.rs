@@ -39,9 +39,7 @@ fn main() {
 
     window.set_light(Light::StickToCamera);
 
-    let bytes = include_bytes!("media/font/Inconsolata.ttf");
-    let font = Font::from_bytes(bytes) // Font::new(&Path::new("media/font/Inconsolata.ttf"))
-        .expect("Font not found or invalid font format.");
+    let font = Font::default();
     let state = AppState { font };
 
     window.render_loop(state)

@@ -3,6 +3,7 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::rc::Rc;
+use std::sync::{Once, ONCE_INIT};
 
 use rusttype;
 use rusttype::gpu_cache::{Cache, CacheBuilder};
@@ -32,6 +33,22 @@ impl Font {
         let font = rusttype::Font::from_bytes(memory.to_vec()).unwrap();
 
         Some(Rc::new(Font { font }))
+    }
+
+    /// Instanciate a default font.
+    pub fn default() -> Rc<Font> {
+        const DATA: &'static [u8] = include_bytes!("WorkSans-Regular.ttf");
+        static mut DEFAULT_FONT_SINGLETON: Option<Rc<Font>> = None;
+        static INIT: Once = ONCE_INIT;
+
+        unsafe {
+            INIT.call_once(|| {
+                DEFAULT_FONT_SINGLETON =
+                    Some(Font::from_bytes(DATA).expect("Default font creation failed."));
+            });
+
+            DEFAULT_FONT_SINGLETON.clone().unwrap()
+        }
     }
 
     #[inline]
