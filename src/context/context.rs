@@ -94,6 +94,12 @@ impl Context {
     pub const LEQUAL: u32 = ContextImpl::LEQUAL;
     pub const BACK: u32 = ContextImpl::BACK;
     pub const PACK_ALIGNMENT: u32 = ContextImpl::PACK_ALIGNMENT;
+    pub const BLEND: u32 = ContextImpl::BLEND;
+    pub const SRC_ALPHA: u32 = ContextImpl::SRC_ALPHA;
+    pub const ONE_MINUS_SRC_ALPHA: u32 = ContextImpl::ONE_MINUS_SRC_ALPHA;
+    pub const UNPACK_ALIGNMENT: u32 = ContextImpl::UNPACK_ALIGNMENT;
+    pub const ALPHA: u32 = ContextImpl::ALPHA;
+    pub const RED: u32 = ContextImpl::RED;
 
     pub fn get() -> Context {
         static mut CONTEXT_SINGLETON: Option<Context> = None;
@@ -361,6 +367,22 @@ impl Context {
         )
     }
 
+    pub fn tex_sub_image2d(
+        &self,
+        target: GLenum,
+        level: i32,
+        xoffset: i32,
+        yoffset: i32,
+        width: i32,
+        height: i32,
+        format: GLenum,
+        pixels: Option<&[u8]>,
+    ) {
+        self.ctxt.tex_sub_image2d(
+            target, level, xoffset, yoffset, width, height, format, pixels,
+        )
+    }
+
     pub fn tex_parameteri(&self, target: GLenum, pname: GLenum, param: i32) {
         self.ctxt.tex_parameteri(target, pname, param)
     }
@@ -444,6 +466,10 @@ impl Context {
     pub fn pixel_storei(&self, pname: GLenum, param: i32) {
         self.ctxt.pixel_storei(pname, param)
     }
+
+    pub fn blend_func(&self, sfactor: GLenum, dfactor: GLenum) {
+        self.ctxt.blend_func(sfactor, dfactor)
+    }
 }
 
 pub(crate) trait AbstractContextConst {
@@ -495,6 +521,12 @@ pub(crate) trait AbstractContextConst {
     const LEQUAL: u32;
     const BACK: u32;
     const PACK_ALIGNMENT: u32;
+    const BLEND: u32;
+    const SRC_ALPHA: u32;
+    const ONE_MINUS_SRC_ALPHA: u32;
+    const UNPACK_ALIGNMENT: u32;
+    const ALPHA: u32;
+    const RED: u32;
 }
 
 pub(crate) trait AbstractContext {
@@ -607,6 +639,17 @@ pub(crate) trait AbstractContext {
         format: GLenum,
         pixels: Option<&[i32]>,
     );
+    fn tex_sub_image2d(
+        &self,
+        target: GLenum,
+        level: i32,
+        xoffset: i32,
+        yoffset: i32,
+        width: i32,
+        height: i32,
+        format: GLenum,
+        pixels: Option<&[u8]>,
+    );
     fn tex_parameteri(&self, target: GLenum, pname: GLenum, param: i32);
     fn is_texture(&self, texture: Option<&Self::Texture>) -> bool;
     fn create_texture(&self) -> Option<Self::Texture>;
@@ -641,4 +684,6 @@ pub(crate) trait AbstractContext {
         pixels: Option<&mut [u8]>,
     );
     fn pixel_storei(&self, pname: GLenum, param: i32);
+
+    fn blend_func(&self, sfactor: GLenum, dfactor: GLenum);
 }

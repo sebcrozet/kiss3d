@@ -16,6 +16,7 @@ use na::{Point2, Point3, Vector2, Vector3};
 
 use camera::{ArcBall, Camera};
 use context::Context;
+use event::{Action, EventManager, Key, WindowEvent};
 use image::imageops;
 use image::{ImageBuffer, Rgb};
 use light::Light;
@@ -25,8 +26,7 @@ use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, Mesh, RenderTarget, Texture, TextureManager};
 use scene::SceneNode;
-// use text::{Font, TextRenderer};
-use event::{Action, EventManager, Key, WindowEvent};
+use text::{Font, TextRenderer};
 use window::{Canvas, State};
 
 static DEFAULT_WIDTH: u32 = 800u32;
@@ -45,7 +45,7 @@ pub struct Window {
     background: Vector3<f32>,
     line_renderer: LineRenderer,
     point_renderer: PointRenderer,
-    // text_renderer: TextRenderer,
+    text_renderer: TextRenderer,
     framebuffer_manager: FramebufferManager,
     post_process_render_target: RenderTarget,
     curr_time: usize, // Instant,
@@ -139,18 +139,19 @@ impl Window {
         self.point_renderer.draw_point(pt.clone(), color.clone());
     }
 
-    // // XXX: remove this (moved to the render_frame).
-    // /// Adds a string to be drawn during the next frame.
-    // #[inline]
-    // pub fn draw_text(
-    //     &mut self,
-    //     text: &str,
-    //     pos: &Point2<f32>,
-    //     font: &Rc<Font>,
-    //     color: &Point3<f32>,
-    // ) {
-    //     self.text_renderer.draw_text(text, pos, font, color);
-    // }
+    // XXX: remove this (moved to the render_frame).
+    /// Adds a string to be drawn during the next frame.
+    #[inline]
+    pub fn draw_text(
+        &mut self,
+        text: &str,
+        pos: &Point2<f32>,
+        scale: f32,
+        font: &Rc<Font>,
+        color: &Point3<f32>,
+    ) {
+        self.text_renderer.draw_text(text, pos, scale, font, color);
+    }
 
     /// Removes an object from the scene.
     pub fn remove(&mut self, sn: &mut SceneNode) {
@@ -326,7 +327,7 @@ impl Window {
             background: Vector3::new(0.0, 0.0, 0.0),
             line_renderer: LineRenderer::new(),
             point_renderer: PointRenderer::new(),
-            // text_renderer: TextRenderer::new(),
+            text_renderer: TextRenderer::new(),
             post_process_render_target: FramebufferManager::new_render_target(
                 width as usize,
                 height as usize,
@@ -578,7 +579,7 @@ impl Window {
                 None => {}
             }
 
-            // self.text_renderer.render(w, h);
+            self.text_renderer.render(w as f32, h as f32);
 
             // We are done: swap buffers
             self.canvas.swap_buffers();

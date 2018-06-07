@@ -81,6 +81,12 @@ impl AbstractContextConst for GLContext {
     const LINE: u32 = gl::LINE;
     const POINT: u32 = gl::POINT;
     const FILL: u32 = gl::FILL;
+    const BLEND: u32 = gl::BLEND;
+    const SRC_ALPHA: u32 = gl::SRC_ALPHA;
+    const ONE_MINUS_SRC_ALPHA: u32 = gl::ONE_MINUS_SRC_ALPHA;
+    const UNPACK_ALIGNMENT: u32 = gl::UNPACK_ALIGNMENT;
+    const ALPHA: u32 = gl::ALPHA;
+    const RED: u32 = gl::RED;
 }
 
 impl AbstractContext for GLContext {
@@ -437,6 +443,47 @@ impl AbstractContext for GLContext {
         }
     }
 
+    fn tex_sub_image2d(
+        &self,
+        target: GLenum,
+        level: i32,
+        xoffset: i32,
+        yoffset: i32,
+        width: i32,
+        height: i32,
+        format: GLenum,
+        pixels: Option<&[u8]>,
+    ) {
+        match pixels {
+            Some(pixels) => unsafe {
+                gl::TexSubImage2D(
+                    target,
+                    level,
+                    xoffset,
+                    yoffset,
+                    width,
+                    height,
+                    format,
+                    Self::UNSIGNED_BYTE,
+                    mem::transmute(&pixels[0]),
+                )
+            },
+            None => unsafe {
+                gl::TexSubImage2D(
+                    target,
+                    level,
+                    xoffset,
+                    yoffset,
+                    width,
+                    height,
+                    format,
+                    Self::UNSIGNED_BYTE,
+                    ptr::null(),
+                )
+            },
+        }
+    }
+
     fn tex_parameteri(&self, target: GLenum, pname: GLenum, param: i32) {
         unsafe { gl::TexParameteri(target, pname, param) }
     }
@@ -533,6 +580,10 @@ impl AbstractContext for GLContext {
     }
 
     fn pixel_storei(&self, pname: GLenum, param: i32) {
-        unsafe { unsafe { gl::PixelStorei(pname, param) } }
+        unsafe { gl::PixelStorei(pname, param) }
+    }
+
+    fn blend_func(&self, sfactor: GLenum, dfactor: GLenum) {
+        unsafe { gl::BlendFunc(sfactor, dfactor) }
     }
 }

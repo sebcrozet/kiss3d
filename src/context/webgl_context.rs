@@ -77,6 +77,12 @@ impl AbstractContextConst for WebGLContext {
     const LEQUAL: u32 = WebGLRenderingContext::LEQUAL;
     const BACK: u32 = WebGLRenderingContext::BACK;
     const PACK_ALIGNMENT: u32 = WebGLRenderingContext::PACK_ALIGNMENT;
+    const BLEND: u32 = WebGLRenderingContext::BLEND;
+    const SRC_ALPHA: u32 = WebGLRenderingContext::SRC_ALPHA;
+    const ONE_MINUS_SRC_ALPHA: u32 = WebGLRenderingContext::ONE_MINUS_SRC_ALPHA;
+    const UNPACK_ALIGNMENT: u32 = WebGLRenderingContext::UNPACK_ALIGNMENT;
+    const ALPHA: u32 = WebGLRenderingContext::ALPHA;
+    const RED: u32 = WebGLRenderingContext::LUMINANCE;
 
     // Not supported.
     const PROGRAM_POINT_SIZE: u32 = 0;
@@ -403,6 +409,43 @@ impl AbstractContext for WebGLContext {
         }
     }
 
+    fn tex_sub_image2d(
+        &self,
+        target: GLenum,
+        level: i32,
+        xoffset: i32,
+        yoffset: i32,
+        width: i32,
+        height: i32,
+        format: GLenum,
+        pixels: Option<&[u8]>,
+    ) {
+        match pixels {
+            Some(pixels) => self.ctxt.tex_sub_image2_d(
+                target,
+                level,
+                xoffset,
+                yoffset,
+                width,
+                height,
+                format,
+                Self::UNSIGNED_BYTE,
+                Some(pixels),
+            ),
+            None => self.ctxt.tex_sub_image2_d(
+                target,
+                level,
+                xoffset,
+                yoffset,
+                width,
+                height,
+                format,
+                Self::UNSIGNED_BYTE,
+                None::<&TypedArray<u8>>,
+            ),
+        }
+    }
+
     fn tex_parameteri(&self, target: GLenum, pname: GLenum, param: i32) {
         self.ctxt.tex_parameteri(target, pname, param)
     }
@@ -498,5 +541,9 @@ impl AbstractContext for WebGLContext {
 
     fn pixel_storei(&self, pname: GLenum, param: i32) {
         self.ctxt.pixel_storei(pname, param)
+    }
+
+    fn blend_func(&self, sfactor: GLenum, dfactor: GLenum) {
+        self.ctxt.blend_func(sfactor, dfactor)
     }
 }

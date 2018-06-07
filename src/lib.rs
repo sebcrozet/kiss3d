@@ -89,7 +89,7 @@ I’d love to see people improving this library for their own needs. However, ke
 
 #[macro_use]
 extern crate bitflags;
-// extern crate freetype;
+extern crate rusttype;
 // extern crate glfw;
 extern crate image;
 // extern crate libc;
@@ -130,5 +130,5 @@ pub mod point_renderer;
 pub mod post_processing;
 pub mod resource;
 pub mod scene;
+pub mod text;
 pub mod window;
-// pub mod text;

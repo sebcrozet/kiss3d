@@ -2,37 +2,33 @@
 // available under the BSD-3 licence.
 // It has been modified to work with gl-rs, nalgebra, and rust-freetype
 
-use gl;
-use gl::types::*;
 use na::{Point2, Point3, Vector2};
-use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
+use rusttype;
+use rusttype::gpu_cache::{Cache, CacheBuilder};
+use std::mem;
 use std::rc::Rc;
+
+use context::{Context, Texture};
+use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 use text::Font;
 
 #[path = "../error.rs"]
 mod error;
 
 struct TextRenderContext {
+    len: usize,
+    scale: f32,
     color: Point3<f32>,
+    pos: Point2<f32>,
     font: Rc<Font>,
-    begin: usize,
-    size: usize,
-}
-
-impl TextRenderContext {
-    pub fn new(color: Point3<f32>, font: Rc<Font>, begin: usize, size: usize) -> TextRenderContext {
-        TextRenderContext {
-            color: color,
-            font: font,
-            begin: begin,
-            size: size,
-        }
-    }
 }
 
 /// A ttf text renderer.
 pub struct TextRenderer {
+    text: String,
+    texture: Texture,
     shader: Effect,
+    cache: Cache<'static>,
     invsz: ShaderUniform<Vector2<f32>>,
     tex: ShaderUniform<i32>,
     color: ShaderUniform<Point3<f32>>,
@@ -45,11 +41,75 @@ pub struct TextRenderer {
 impl TextRenderer {
     /// Creates a new text renderer with `font` as the default font.
     pub fn new() -> TextRenderer {
-        let mut shader = Effect::new_from_str(TEXT_VERTEX_SRC, TEXT_FRAGMENT_SRC);
+        //
+        // Create cache.
+        //
+        let atlas_width = 1024;
+        let atlas_height = 1024;
+        let cache = CacheBuilder {
+            width: atlas_width,
+            height: atlas_height,
+            ..CacheBuilder::default()
+        }.build();
 
+        //
+        // Create texture.
+        //
+        let ctxt = Context::get();
+
+        /* We're using 1 byte alignment buffering. */
+        verify!(ctxt.pixel_storei(Context::UNPACK_ALIGNMENT, 1));
+
+        let texture = verify!(
+            ctxt.create_texture()
+                .expect("Font texture creation failed.")
+        );
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&texture)));
+        verify!(ctxt.tex_image2d(
+            Context::TEXTURE_2D,
+            0,
+            Context::RED as i32,
+            atlas_width as i32,
+            atlas_height as i32,
+            0,
+            Context::RED,
+            None
+        ));
+
+        /* Clamp to the edge to avoid artifacts when scaling. */
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_WRAP_S,
+            Context::CLAMP_TO_EDGE as i32
+        ));
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_WRAP_T,
+            Context::CLAMP_TO_EDGE as i32
+        ));
+
+        /* Linear filtering usually looks best for text. */
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_MIN_FILTER,
+            Context::LINEAR as i32
+        ));
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_MAG_FILTER,
+            Context::LINEAR as i32
+        ));
+
+        //
+        // Create shader.
+        //
+        let mut shader = Effect::new_from_str(TEXT_VERTEX_SRC, TEXT_FRAGMENT_SRC);
         shader.use_program();
 
         TextRenderer {
+            text: String::new(),
+            cache,
+            texture,
             invsz: shader.get_uniform("invsz").expect("Could not find invsz"),
             tex: shader.get_uniform("tex0").expect("Could not find tex0"),
             color: shader.get_uniform("color").expect("Could not find color"),
@@ -68,134 +128,138 @@ impl TextRenderer {
         &mut self,
         text: &str,
         pos: &Point2<f32>,
+        scale: f32,
         font: &Rc<Font>,
         color: &Point3<f32>,
     ) {
-        for coords in self.coords.data_mut().iter_mut() {
-            let begin = coords.len();
-
-            for (line_count, line) in text.lines().enumerate() {
-                let mut temp_pos = pos.clone();
-                temp_pos.y = temp_pos.y + (font.height() as usize * (line_count + 1)) as f32;
-
-                for curr in line.chars() {
-                    // XXX: do _not_ use a hashmap!
-                    let glyph = match font.glyphs()[curr as usize] {
-                        Some(ref g) => g,
-                        None => continue,
-                    };
-
-                    let end_x = temp_pos.x + glyph.offset.x;
-                    let end_y = -temp_pos.y - (glyph.dimensions.y - glyph.offset.y);
-                    let end_w = glyph.dimensions.x;
-                    let end_h = glyph.dimensions.y;
-
-                    temp_pos.x = temp_pos.x + glyph.advance.x;
-                    temp_pos.y = temp_pos.y + glyph.advance.y;
-
-                    // Skip empty glyphs.
-                    if end_w <= 0.1 || end_h <= 0.1 {
-                        continue;
-                    }
-
-                    let adimx = font.atlas_dimensions().x as f32;
-                    let adimy = font.atlas_dimensions().y as f32;
-
-                    coords.push(Point2::new(end_x, -end_y - end_h));
-                    coords.push(Point2::new(glyph.tex.x, glyph.tex.y));
-
-                    coords.push(Point2::new(end_x, -end_y));
-                    coords.push(Point2::new(glyph.tex.x, glyph.tex.y + (end_h / adimy)));
-
-                    coords.push(Point2::new(end_x + end_w, -end_y));
-                    coords.push(Point2::new(
-                        glyph.tex.x + (end_w / adimx),
-                        glyph.tex.y + (end_h / adimy),
-                    ));
-
-                    coords.push(Point2::new(end_x, -end_y - end_h));
-                    coords.push(Point2::new(glyph.tex.x, glyph.tex.y));
-
-                    coords.push(Point2::new(end_x + end_w, -end_y));
-                    coords.push(Point2::new(
-                        glyph.tex.x + (end_w / adimx),
-                        glyph.tex.y + (end_h / adimy),
-                    ));
-
-                    coords.push(Point2::new(end_x + end_w, -end_y - end_h));
-                    coords.push(Point2::new(glyph.tex.x + (end_w / adimx), glyph.tex.y));
-                }
-            }
-
-            let size = coords.len() - begin;
-
-            if size > 0 {
-                self.contexts.push(TextRenderContext::new(
-                    color.clone(),
-                    font.clone(),
-                    begin,
-                    size,
-                ));
-            }
-        }
+        self.text.push_str(text);
+        self.contexts.push(TextRenderContext {
+            len: text.len(),
+            scale,
+            color: *color,
+            pos: *pos,
+            font: font.clone(),
+        })
     }
 
     /// Actually draws the text.
     pub fn render(&mut self, width: f32, height: f32) {
-        if self.coords.len() == 0 {
+        if self.contexts.len() == 0 {
             return;
         }
 
+        let ctxt = Context::get();
         self.shader.use_program();
 
-        verify!(gl::PolygonMode(Context::FRONT_AND_BACK, Context::FILL));
-        verify!(ctxt.enable(gl::BLEND));
-        verify!(gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA));
-        verify!(ctxt.disable(gl::DEPTH_TEST));
+        verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::FILL));
+        verify!(ctxt.enable(Context::BLEND));
+        verify!(ctxt.blend_func(Context::SRC_ALPHA, Context::ONE_MINUS_SRC_ALPHA));
+        verify!(ctxt.disable(Context::DEPTH_TEST));
 
         self.pos.enable();
         self.uvs.enable();
         self.tex.upload(&0);
         self.invsz.upload(&Vector2::new(1.0 / width, -1.0 / height));
 
-        for ctxt in self.contexts.iter() {
-            verify!(gl::BindTexture(
-                Context::TEXTURE_2D,
-                ctxt.font.texture_atlas()
-            ));
-            verify!(gl::TexParameteri(
-                Context::TEXTURE_2D,
-                Context::TEXTURE_WRAP_S,
-                Context::CLAMP_TO_EDGE as i32
-            ));
-            verify!(gl::TexParameteri(
-                Context::TEXTURE_2D,
-                Context::TEXTURE_WRAP_T,
-                Context::CLAMP_TO_EDGE as i32
-            ));
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self.texture)));
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_WRAP_S,
+            Context::CLAMP_TO_EDGE as i32
+        ));
+        verify!(ctxt.tex_parameteri(
+            Context::TEXTURE_2D,
+            Context::TEXTURE_WRAP_T,
+            Context::CLAMP_TO_EDGE as i32
+        ));
 
-            self.pos
-                .bind_sub_buffer(&mut self.coords, 1, ctxt.begin + 0);
-            self.uvs
-                .bind_sub_buffer(&mut self.coords, 1, ctxt.begin + 1);
-            self.color.upload(&ctxt.color);
+        let mut pos = 0;
 
-            verify!(gl::DrawArrays(
-                Context::TRIANGLES,
-                0,
-                (ctxt.size / 2) as i32
-            ));
+        for context in self.contexts.iter() {
+            let text = &self.text[pos..pos + context.len];
+            let font_uid = Font::uid(&context.font);
+
+            for (line_count, line) in text.lines().enumerate() {
+                let scale = rusttype::Scale::uniform(context.scale);
+                let orig = rusttype::Point {
+                    x: context.pos.x,
+                    y: context.pos.y,
+                };
+                let layout = context.font.font().layout(line, scale, orig);
+
+                for glyph in layout {
+                    let gly: rusttype::PositionedGlyph<'static> = context
+                        .font
+                        .font()
+                        .glyph(glyph.id())
+                        .scaled(glyph.scale())
+                        .positioned(glyph.position());
+                    self.cache.queue_glyph(font_uid, gly); // FIXME: is the call to `.standalone()` costly?
+                }
+
+                self.cache.cache_queued(|rect, data| {
+                    verify!(ctxt.tex_sub_image2d(
+                        Context::TEXTURE_2D,
+                        0,
+                        rect.min.x as i32,
+                        rect.min.y as i32,
+                        rect.width() as i32,
+                        rect.height() as i32,
+                        Context::RED,
+                        Some(&data)
+                    ));
+                });
+
+                let layout = context.font.font().layout(line, scale, orig);
+
+                {
+                    let vmetrics = context.font.font().v_metrics(scale);
+                    let coords = self.coords.data_mut().as_mut().unwrap();
+                    for glyph in layout {
+                        if let Some(Some((tex, rect))) = self.cache.rect_for(font_uid, &glyph).ok()
+                        {
+                            let min_px = rect.min.x as f32;
+                            let min_py = rect.min.y as f32 + vmetrics.ascent;
+                            let max_px = rect.max.x as f32;
+                            let max_py = rect.max.y as f32 + vmetrics.ascent;
+
+                            coords.push(Point2::new(min_px, min_py));
+                            coords.push(Point2::new(tex.min.x, tex.min.y));
+
+                            coords.push(Point2::new(min_px, max_py));
+                            coords.push(Point2::new(tex.min.x, tex.max.y));
+
+                            coords.push(Point2::new(max_px, min_py));
+                            coords.push(Point2::new(tex.max.x, tex.min.y));
+
+                            coords.push(Point2::new(max_px, min_py));
+                            coords.push(Point2::new(tex.max.x, tex.min.y));
+
+                            coords.push(Point2::new(min_px, max_py));
+                            coords.push(Point2::new(tex.min.x, tex.max.y));
+
+                            coords.push(Point2::new(max_px, max_py));
+                            coords.push(Point2::new(tex.max.x, tex.max.y));
+                        }
+                    }
+                }
+
+                self.pos.bind_sub_buffer(&mut self.coords, 1, 0);
+                self.uvs.bind_sub_buffer(&mut self.coords, 1, 1);
+                self.color.upload(&context.color);
+
+                verify!(ctxt.draw_arrays(Context::TRIANGLES, 0, (self.coords.len() / 2) as i32));
+            }
+            pos += context.len;
+
+            self.coords.data_mut().as_mut().unwrap().clear();
         }
 
         self.pos.disable();
         self.uvs.enable();
 
-        verify!(ctxt.enable(gl::DEPTH_TEST));
-        verify!(ctxt.disable(gl::BLEND));
-
-        for coords in self.coords.data_mut().iter_mut() {
-            coords.clear()
-        }
+        verify!(ctxt.enable(Context::DEPTH_TEST));
+        verify!(ctxt.disable(Context::BLEND));
 
         self.contexts.clear();
     }
