@@ -262,6 +262,7 @@ impl TextRenderer {
         verify!(ctxt.disable(Context::BLEND));
 
         self.contexts.clear();
+        self.text.clear();
     }
 }
 
