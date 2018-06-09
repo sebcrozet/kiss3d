@@ -141,10 +141,10 @@ impl AbstractCanvas for WebGLCanvas {
         }
     }
 
-    fn render_loop(mut callback: impl FnMut(f64) + 'static) {
+    fn render_loop(mut callback: impl FnMut(f64) -> bool + 'static) {
         let _ = web::window().request_animation_frame(move |t| {
             callback(t);
-            Self::render_loop(callback);
+            let _ = Self::render_loop(callback);
         });
     }
 
@@ -165,10 +165,6 @@ impl AbstractCanvas for WebGLCanvas {
         // Nothing to do.
     }
 
-    fn should_close(&self) -> bool {
-        false
-    }
-
     fn size(&self) -> (u32, u32) {
         (
             self.data.borrow().canvas.offset_width() as u32,
@@ -177,10 +173,6 @@ impl AbstractCanvas for WebGLCanvas {
     }
 
     fn set_title(&mut self, title: &str) {
-        // Not supported.
-    }
-
-    fn close(&mut self) {
         // Not supported.
     }
 

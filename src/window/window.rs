@@ -50,13 +50,14 @@ pub struct Window {
     post_process_render_target: RenderTarget,
     curr_time: usize, // Instant,
     camera: Rc<RefCell<ArcBall>>,
+    should_close: bool,
 }
 
 impl Window {
     /// Indicates whether this window should be closed.
     #[inline]
     pub fn should_close(&self) -> bool {
-        self.canvas.should_close()
+        self.should_close
     }
 
     /// The window width.
@@ -95,7 +96,7 @@ impl Window {
     /// Closes the window.
     #[inline]
     pub fn close(&mut self) {
-        self.canvas.close()
+        self.should_close = true;
     }
 
     /// Hides the window, without closing it. Use `show` to make it visible again.
@@ -318,6 +319,7 @@ impl Window {
         init_gl();
 
         let mut usr_window = Window {
+            should_close: false,
             max_dur_per_frame: None,
             canvas: canvas,
             events: Rc::new(event_receive),
@@ -444,7 +446,7 @@ impl Window {
 
     fn handle_event(&mut self, camera: &mut Option<&mut Camera>, event: &WindowEvent) {
         match *event {
-            WindowEvent::Key(Key::Escape, _, Action::Release, _) => {
+            WindowEvent::Key(Key::Escape, _, Action::Release, _) | WindowEvent::Close => {
                 self.close();
             }
             WindowEvent::FramebufferSize(w, h) => {
@@ -463,12 +465,17 @@ impl Window {
         Canvas::render_loop(move |_| self.render_with_state(&mut state))
     }
 
-    pub fn render_with_state<S: State>(&mut self, state: &mut S) {
+    pub fn render_with_state<S: State>(&mut self, state: &mut S) -> bool {
         {
             let (camera, effect) = state.camera_and_effect();
-            self.render_with(camera, effect);
+            self.should_close = !self.render_with(camera, effect);
         }
-        state.step(self)
+
+        if !self.should_close {
+            state.step(self)
+        }
+
+        !self.should_close
     }
 
     /// Renders the scene using the default camera.

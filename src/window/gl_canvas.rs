@@ -60,9 +60,11 @@ impl AbstractCanvas for GLCanvas {
         }
     }
 
-    fn render_loop(mut callback: impl FnMut(f64) + 'static) {
+    fn render_loop(mut callback: impl FnMut(f64) -> bool + 'static) {
         loop {
-            callback(0.0) // XXX: timestamp
+            if !callback(0.0) {
+                break;
+            } // XXX: timestamp
         }
     }
 
@@ -74,6 +76,9 @@ impl AbstractCanvas for GLCanvas {
 
         self.events.poll_events(|event| match event {
             glutin::Event::WindowEvent { event, .. } => match event {
+                glutin::WindowEvent::CloseRequested => {
+                    let _ = out_events.send(WindowEvent::Close);
+                }
                 glutin::WindowEvent::Resized(w, h) => {
                     if w != 0 && h != 0 {
                         window.context().resize(w, h);
@@ -130,10 +135,6 @@ impl AbstractCanvas for GLCanvas {
         let _ = self.window.swap_buffers();
     }
 
-    fn should_close(&self) -> bool {
-        false
-    }
-
     fn size(&self) -> (u32, u32) {
         self.window
             .get_inner_size()
@@ -146,10 +147,6 @@ impl AbstractCanvas for GLCanvas {
 
     fn set_title(&mut self, title: &str) {
         self.window.set_title(title)
-    }
-
-    fn close(&mut self) {
-        // Not supported.
     }
 
     fn hide(&mut self) {

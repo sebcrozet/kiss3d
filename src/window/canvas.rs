@@ -23,7 +23,7 @@ impl Canvas {
         }
     }
 
-    pub fn render_loop(data: impl FnMut(f64) + 'static) {
+    pub fn render_loop(data: impl FnMut(f64) -> bool + 'static) {
         CanvasImpl::render_loop(data)
     }
 
@@ -33,10 +33,6 @@ impl Canvas {
 
     pub fn swap_buffers(&mut self) {
         self.canvas.swap_buffers()
-    }
-
-    pub fn should_close(&self) -> bool {
-        self.canvas.should_close()
     }
 
     pub fn size(&self) -> (u32, u32) {
@@ -49,10 +45,6 @@ impl Canvas {
 
     pub fn set_title(&mut self, title: &str) {
         self.canvas.set_title(title)
-    }
-
-    pub fn close(&mut self) {
-        self.canvas.close()
     }
 
     pub fn hide(&mut self) {
@@ -80,15 +72,13 @@ pub(crate) trait AbstractCanvas {
         height: u32,
         out_events: Sender<WindowEvent>,
     ) -> Self;
-    fn render_loop(data: impl FnMut(f64) + 'static);
+    fn render_loop(data: impl FnMut(f64) -> bool + 'static);
     fn poll_events(&mut self);
     fn swap_buffers(&mut self);
-    fn should_close(&self) -> bool;
     fn size(&self) -> (u32, u32);
     fn hidpi_factor(&self) -> f64;
 
     fn set_title(&mut self, title: &str);
-    fn close(&mut self);
     fn hide(&mut self);
     fn show(&mut self);
 
