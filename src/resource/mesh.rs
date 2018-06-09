@@ -19,6 +19,7 @@ pub struct Mesh {
     faces: Arc<RwLock<GPUVec<Point3<u16>>>>,
     normals: Arc<RwLock<GPUVec<Vector3<f32>>>>,
     uvs: Arc<RwLock<GPUVec<Point2<f32>>>>,
+    edges: Option<Arc<RwLock<GPUVec<Point2<u16>>>>>,
 }
 
 impl Mesh {
@@ -156,6 +157,7 @@ impl Mesh {
             faces: faces,
             normals: normals,
             uvs: uvs,
+            edges: None,
         }
     }
 
@@ -190,6 +192,23 @@ impl Mesh {
         self.bind_normals(normals);
         self.bind_uvs(uvs);
         self.bind_faces();
+    }
+
+    /// Binds this mesh buffers to vertex attributes.
+    pub fn bind_edges(&mut self) {
+        if self.edges.is_none() {
+            let mut edges = Vec::new();
+            for face in self.faces.read().unwrap().data().as_ref().unwrap() {
+                edges.push(Point2::new(face.x, face.y));
+                edges.push(Point2::new(face.y, face.z));
+                edges.push(Point2::new(face.z, face.x));
+            }
+            let gpu_edges =
+                GPUVec::new(edges, BufferType::ElementArray, AllocationType::StaticDraw);
+            self.edges = Some(Arc::new(RwLock::new(gpu_edges)));
+        }
+
+        self.edges.as_mut().unwrap().write().unwrap().bind();
     }
 
     /// Unbind this mesh buffers to vertex attributes.

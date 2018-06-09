@@ -129,27 +129,45 @@ impl Material for ObjectMaterial {
 
             if data.lines_width() != 0.0 {
                 verify!(ctxt.disable(Context::CULL_FACE));
-                verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::LINE));
                 ctxt.line_width(data.lines_width());
-                verify!(ctxt.draw_elements(
-                    Context::TRIANGLES,
-                    mesh.num_pts() as i32,
-                    Context::UNSIGNED_SHORT,
-                    0
-                ));
+
+                if verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::LINE)) {
+                    verify!(ctxt.draw_elements(
+                        Context::TRIANGLES,
+                        mesh.num_pts() as i32,
+                        Context::UNSIGNED_SHORT,
+                        0
+                    ));
+                } else {
+                    mesh.bind_edges();
+                    verify!(ctxt.draw_elements(
+                        Context::LINES,
+                        mesh.num_pts() as i32 * 2,
+                        Context::UNSIGNED_SHORT,
+                        0
+                    ));
+                }
                 ctxt.line_width(1.0);
             }
 
             if data.points_size() != 0.0 {
                 verify!(ctxt.disable(Context::CULL_FACE));
-                verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::POINT));
                 ctxt.point_size(data.points_size());
-                verify!(ctxt.draw_elements(
-                    Context::TRIANGLES,
-                    mesh.num_pts() as i32,
-                    Context::UNSIGNED_SHORT,
-                    0
-                ));
+                if verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::POINT)) {
+                    verify!(ctxt.draw_elements(
+                        Context::TRIANGLES,
+                        mesh.num_pts() as i32,
+                        Context::UNSIGNED_SHORT,
+                        0
+                    ));
+                } else {
+                    verify!(ctxt.draw_elements(
+                        Context::POINTS,
+                        mesh.num_pts() as i32,
+                        Context::UNSIGNED_SHORT,
+                        0
+                    ));
+                }
                 ctxt.point_size(1.0);
             }
         }

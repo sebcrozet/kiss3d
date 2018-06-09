@@ -267,7 +267,7 @@ impl Camera for ArcBall {
 
                 self.last_cursor_pos = curr_pos;
             }
-            WindowEvent::Key(key, _, Action::Press, _) if Some(key) == self.reset_key => {
+            WindowEvent::Key(key, Action::Press, _) if Some(key) == self.reset_key => {
                 self.at = Point3::origin();
                 self.update_projviews();
             }

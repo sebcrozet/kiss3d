@@ -435,7 +435,7 @@ impl Context {
         self.ctxt.clear_color(r, g, b, a)
     }
 
-    pub fn polygon_mode(&self, face: GLenum, mode: GLenum) {
+    pub fn polygon_mode(&self, face: GLenum, mode: GLenum) -> bool {
         self.ctxt.polygon_mode(face, mode)
     }
 
@@ -668,7 +668,7 @@ pub(crate) trait AbstractContext {
     fn clear(&self, mask: u32);
     fn clear_color(&self, r: f32, g: f32, b: f32, a: f32);
 
-    fn polygon_mode(&self, face: GLenum, mode: GLenum);
+    fn polygon_mode(&self, face: GLenum, mode: GLenum) -> bool;
 
     fn front_face(&self, mode: GLenum);
     fn depth_func(&self, mode: GLenum);

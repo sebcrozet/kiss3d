@@ -11,7 +11,7 @@ pub enum WindowEvent {
     CursorPos(f64, f64, Modifiers),
     CursorEnter(bool),
     Scroll(f64, f64, Modifiers),
-    Key(Key, Scancode, Action, Modifiers),
+    Key(Key, Action, Modifiers),
     Char(char),
     CharModifiers(char, Modifiers),
 }

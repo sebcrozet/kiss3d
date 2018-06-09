@@ -538,8 +538,12 @@ impl AbstractContext for GLContext {
         unsafe { gl::ClearColor(r, g, b, a) }
     }
 
-    fn polygon_mode(&self, face: GLenum, mode: GLenum) {
-        unsafe { gl::PolygonMode(face, mode) }
+    fn polygon_mode(&self, face: GLenum, mode: GLenum) -> bool {
+        unsafe {
+            gl::PolygonMode(face, mode);
+        }
+
+        true
     }
 
     fn front_face(&self, mode: GLenum) {

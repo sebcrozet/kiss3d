@@ -122,8 +122,7 @@ impl AbstractCanvas for GLCanvas {
                     let key = translate_key(input.virtual_keycode);
                     let modifiers = translate_modifiers(input.modifiers);
                     key_states[key as usize] = action;
-                    let _ =
-                        out_events.send(WindowEvent::Key(key, input.scancode, action, modifiers));
+                    let _ = out_events.send(WindowEvent::Key(key, action, modifiers));
                 }
                 _ => {}
             },

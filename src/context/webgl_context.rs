@@ -498,8 +498,9 @@ impl AbstractContext for WebGLContext {
         self.ctxt.clear_color(r, g, b, a)
     }
 
-    fn polygon_mode(&self, _: GLenum, _: GLenum) {
+    fn polygon_mode(&self, _: GLenum, _: GLenum) -> bool {
         // Not supported.
+        false
     }
 
     fn front_face(&self, mode: GLenum) {

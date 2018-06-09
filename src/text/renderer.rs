@@ -176,15 +176,20 @@ impl TextRenderer {
         let mut pos = 0;
 
         for context in self.contexts.iter() {
+            let scale = rusttype::Scale::uniform(context.scale);
+            let vmetrics = context.font.font().v_metrics(scale);
+            let line_height = vmetrics.ascent - vmetrics.descent;
             let text = &self.text[pos..pos + context.len];
             let font_uid = Font::uid(&context.font);
+            let mut vshift = 0.0;
 
             for (line_count, line) in text.lines().enumerate() {
-                let scale = rusttype::Scale::uniform(context.scale);
                 let orig = rusttype::Point {
                     x: context.pos.x,
-                    y: context.pos.y,
+                    y: context.pos.y + vshift,
                 };
+
+                vshift += line_height as f32;
                 let layout = context.font.font().layout(line, scale, orig);
 
                 for glyph in layout {
@@ -213,7 +218,6 @@ impl TextRenderer {
                 let layout = context.font.font().layout(line, scale, orig);
 
                 {
-                    let vmetrics = context.font.font().v_metrics(scale);
                     let coords = self.coords.data_mut().as_mut().unwrap();
                     for glyph in layout {
                         if let Some(Some((tex, rect))) = self.cache.rect_for(font_uid, &glyph).ok()
