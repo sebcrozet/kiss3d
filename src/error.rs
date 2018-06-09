@@ -2,9 +2,10 @@
 
 macro_rules! verify(
     ($e: expr) => {
-        unsafe {
+        {
             let res = $e;
-            assert_eq!(::context::Context::get().get_error(), 0);
+            #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+            { assert_eq!(::context::Context::get().get_error(), 0); }
             res
         }
     }
@@ -12,9 +13,9 @@ macro_rules! verify(
 
 macro_rules! checked(
     ($e: expr) => {
-        unsafe {
+        {
             let res = $e;
-            if gl::GetError() != 0 {
+            if cfg!(not(any(target_arch = "wasm32", target_arch = "asmjs"))) && gl::GetError() != 0 {
                 None
             } else {
                 Some(res)
