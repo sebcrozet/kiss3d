@@ -126,6 +126,7 @@ pub mod event;
 pub mod light;
 pub mod line_renderer;
 pub mod loader;
+pub mod planar_line_renderer;
 pub mod point_renderer;
 pub mod post_processing;
 pub mod resource;

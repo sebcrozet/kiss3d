@@ -22,6 +22,7 @@ use image::{ImageBuffer, Rgb};
 use light::Light;
 use line_renderer::LineRenderer;
 use ncollide3d::procedural::TriMesh;
+use planar_line_renderer::PlanarLineRenderer;
 use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, Mesh, RenderTarget, Texture, TextureManager};
@@ -45,6 +46,7 @@ pub struct Window {
     light_mode: Light, // FIXME: move that to the scene graph
     background: Vector3<f32>,
     line_renderer: LineRenderer,
+    planar_line_renderer: PlanarLineRenderer,
     point_renderer: PointRenderer,
     text_renderer: TextRenderer,
     framebuffer_manager: FramebufferManager,
@@ -127,22 +129,23 @@ impl Window {
         self.point_renderer.set_point_size(pt_size);
     }
 
-    // XXX: remove this (moved to the render_frame).
-    /// Adds a line to be drawn during the next frame.
     #[inline]
     pub fn draw_line(&mut self, a: &Point3<f32>, b: &Point3<f32>, color: &Point3<f32>) {
-        self.line_renderer
-            .draw_line(a.clone(), b.clone(), color.clone());
+        self.line_renderer.draw_line(*a, *b, *color);
     }
 
-    // XXX: remove this (moved to the render_frame).
+    /// Adds a line to be drawn during the next frame.
+    #[inline]
+    pub fn draw_planar_line(&mut self, a: &Point2<f32>, b: &Point2<f32>, color: &Point3<f32>) {
+        self.planar_line_renderer.draw_line(*a, *b, *color);
+    }
+
     /// Adds a point to be drawn during the next frame.
     #[inline]
     pub fn draw_point(&mut self, pt: &Point3<f32>, color: &Point3<f32>) {
-        self.point_renderer.draw_point(pt.clone(), color.clone());
+        self.point_renderer.draw_point(*pt, *color);
     }
 
-    // XXX: remove this (moved to the render_frame).
     /// Adds a string to be drawn during the next frame.
     #[inline]
     pub fn draw_text(
@@ -158,6 +161,11 @@ impl Window {
 
     /// Removes an object from the scene.
     pub fn remove(&mut self, sn: &mut SceneNode) {
+        sn.unlink()
+    }
+
+    /// Removes a 2D object from the scene.
+    pub fn remove2(&mut self, sn: &mut SceneNode2) {
         sn.unlink()
     }
 
@@ -294,13 +302,17 @@ impl Window {
         self.scene2.add_circle(r)
     }
 
-    // /// Adds a convex polygon to the scene.
-    // ///
-    // /// # Arguments
-    // /// * `r` - the circle radius
-    // pub fn add_convex_polygon(&mut self, vertices: Vec<Point2<f32>>) -> SceneNode2 {
-    //     self.scene2.add_convex_polygon(r)
-    // }
+    /// Adds a convex polygon to the scene.
+    ///
+    /// # Arguments
+    /// * `r` - the circle radius
+    pub fn add_convex_polygon(
+        &mut self,
+        polygon: Vec<Point2<f32>>,
+        scale: Vector2<f32>,
+    ) -> SceneNode2 {
+        self.scene2.add_convex_polygon(polygon, scale)
+    }
 
     /// Returns whether this window is closed or not.
     pub fn is_closed(&self) -> bool {
@@ -361,6 +373,7 @@ impl Window {
             light_mode: Light::Absolute(Point3::new(0.0, 10.0, 0.0)),
             background: Vector3::new(0.0, 0.0, 0.0),
             line_renderer: LineRenderer::new(),
+            planar_line_renderer: PlanarLineRenderer::new(),
             point_renderer: PointRenderer::new(),
             text_renderer: TextRenderer::new(),
             post_process_render_target: FramebufferManager::new_render_target(
@@ -462,23 +475,32 @@ impl Window {
     /// `false`, the default engine event handler is not executed. Return `false` if you want to
     /// override the default engine behaviour.
     #[inline]
-    fn handle_events(&mut self, camera: &mut Option<&mut Camera>) {
+    fn handle_events(
+        &mut self,
+        camera: &mut Option<&mut Camera>,
+        camera2: &mut Option<&mut Camera2>,
+    ) {
         let unhandled_events = self.unhandled_events.clone(); // FIXME: this is very ugly.
         let events = self.events.clone(); // FIXME: this is very ugly
 
         for event in unhandled_events.borrow().iter() {
-            self.handle_event(camera, event)
+            self.handle_event(camera, camera2, event)
         }
 
         for event in events.try_iter() {
-            self.handle_event(camera, &event)
+            self.handle_event(camera, camera2, &event)
         }
 
         unhandled_events.borrow_mut().clear();
         self.canvas.poll_events();
     }
 
-    fn handle_event(&mut self, camera: &mut Option<&mut Camera>, event: &WindowEvent) {
+    fn handle_event(
+        &mut self,
+        camera: &mut Option<&mut Camera>,
+        camera2: &mut Option<&mut Camera2>,
+        event: &WindowEvent,
+    ) {
         match *event {
             WindowEvent::Key(Key::Escape, Action::Release, _) | WindowEvent::Close => {
                 self.close();
@@ -487,6 +509,11 @@ impl Window {
                 self.update_viewport(w as f32, h as f32);
             }
             _ => {}
+        }
+
+        match *camera2 {
+            Some(ref mut cam) => cam.handle_event(&self.canvas, event),
+            None => self.camera.borrow_mut().handle_event(&self.canvas, event),
         }
 
         match *camera {
@@ -501,8 +528,8 @@ impl Window {
 
     pub fn render_with_state<S: State>(&mut self, state: &mut S) -> bool {
         {
-            let (camera, effect) = state.camera_and_effect();
-            self.should_close = !self.render_with(camera, effect);
+            let (camera, camera2, effect) = state.cameras_and_effect();
+            self.should_close = !self.render_with(camera, camera2, effect);
         }
 
         if !self.should_close {
@@ -516,21 +543,28 @@ impl Window {
     ///
     /// Returns `false` if the window should be closed.
     pub fn render(&mut self) -> bool {
-        self.render_with(None, None)
+        self.render_with(None, None, None)
     }
 
     /// Render using a specific post processing effect.
     ///
     /// Returns `false` if the window should be closed.
     pub fn render_with_effect(&mut self, effect: &mut (PostProcessingEffect)) -> bool {
-        self.render_with(None, Some(effect))
+        self.render_with(None, None, Some(effect))
     }
 
     /// Render using a specific camera.
     ///
     /// Returns `false` if the window should be closed.
     pub fn render_with_camera(&mut self, camera: &mut (Camera)) -> bool {
-        self.render_with(Some(camera), None)
+        self.render_with(Some(camera), None, None)
+    }
+
+    /// Render using a specific 2D and 3D camera.
+    ///
+    /// Returns `false` if the window should be closed.
+    pub fn render_with_cameras(&mut self, camera: &mut Camera, camera2: &mut Camera2) -> bool {
+        self.render_with(Some(camera), Some(camera2), None)
     }
 
     /// Render using a specific camera and post processing effect.
@@ -541,7 +575,19 @@ impl Window {
         camera: &mut Camera,
         effect: &mut PostProcessingEffect,
     ) -> bool {
-        self.render_with(Some(camera), Some(effect))
+        self.render_with(Some(camera), None, Some(effect))
+    }
+
+    /// Render using a specific 2D and 3D camera and post processing effect.
+    ///
+    /// Returns `false` if the window should be closed.
+    pub fn render_with_cameras_and_effect(
+        &mut self,
+        camera: &mut Camera,
+        camera2: &mut Camera2,
+        effect: &mut PostProcessingEffect,
+    ) -> bool {
+        self.render_with(Some(camera), Some(camera2), Some(effect))
     }
 
     /// Draws the scene with the given camera and post-processing effect.
@@ -550,21 +596,24 @@ impl Window {
     pub fn render_with(
         &mut self,
         camera: Option<&mut Camera>,
+        camera2: Option<&mut Camera2>,
         post_processing: Option<&mut PostProcessingEffect>,
     ) -> bool {
         let mut camera = camera;
-        self.handle_events(&mut camera);
+        let mut camera2 = camera2;
+        self.handle_events(&mut camera, &mut camera2);
 
         let self_cam2 = self.camera2.clone(); // FIXME: this is ugly.
         let mut bself_cam2 = self_cam2.borrow_mut();
 
-        match camera {
-            Some(cam) => self.do_render_with(cam, &mut *bself_cam2, post_processing),
-            None => {
-                let self_cam = self.camera.clone(); // FIXME: this is ugly.
-                let mut bself_cam = self_cam.borrow_mut();
-                self.do_render_with(&mut *bself_cam, &mut *bself_cam2, post_processing)
-            }
+        let self_cam = self.camera.clone(); // FIXME: this is ugly.
+        let mut bself_cam = self_cam.borrow_mut();
+
+        match (camera, camera2) {
+            (Some(cam), Some(cam2)) => self.do_render_with(cam, cam2, post_processing),
+            (None, Some(cam2)) => self.do_render_with(&mut *bself_cam, cam2, post_processing),
+            (Some(cam), None) => self.do_render_with(cam, &mut *bself_cam2, post_processing),
+            (None, None) => self.do_render_with(&mut *bself_cam, &mut *bself_cam2, post_processing),
         }
     }
 
@@ -681,9 +730,9 @@ impl Window {
         verify!(ctxt.active_texture(Context::TEXTURE0));
         // Clear the screen to black
 
-        // if self.line_renderer2.needs_rendering() {
-        //     self.line_renderer2.render(camera);
-        // }
+        if self.planar_line_renderer.needs_rendering() {
+            self.planar_line_renderer.render(camera);
+        }
 
         // if self.point_renderer2.needs_rendering() {
         //     self.point_renderer2.render(camera);

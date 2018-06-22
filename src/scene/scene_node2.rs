@@ -646,18 +646,25 @@ impl SceneNode2 {
         self.add_object(scale, na::one(), object)
     }
 
-    // /// Creates and adds a new object to this node children using a convex polyline
-    // pub fn add_convex_polygon(
-    //     &mut self,
-    //     polyline: Vec<Point2<f32>>,
-    //     scale: Vector2<f32>,
-    // ) -> SceneNode2 {
-    //     let tex = TextureManager::get_global_manager(|tm| tm.get_default());
-    //     let mat = MaterialManager2::get_global_manager(|mm| mm.get_default());
-    //     let object = Object2::new(polyline, 1.0, 1.0, 1.0, tex, mat);
+    /// Creates and adds a new object to this node children using a convex polyline
+    pub fn add_convex_polygon(
+        &mut self,
+        polygon: Vec<Point2<f32>>,
+        scale: Vector2<f32>,
+    ) -> SceneNode2 {
+        let mut indices = Vec::new();
 
-    //     self.add_object(scale, na::one(), object)
-    // }
+        for i in 1..polygon.len() - 1 {
+            indices.push(Point3::new(0, i as u16, i as u16 + 1));
+        }
+
+        let mesh = Mesh2::new(polygon, indices, None, false);
+        let tex = TextureManager::get_global_manager(|tm| tm.get_default());
+        let mat = MaterialManager2::get_global_manager(|mm| mm.get_default());
+        let object = Object2::new(Rc::new(RefCell::new(mesh)), 1.0, 1.0, 1.0, tex, mat);
+
+        self.add_object(scale, na::one(), object)
+    }
 
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
