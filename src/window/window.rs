@@ -14,7 +14,7 @@ use std::time::{Duration, Instant};
 
 use na::{Point2, Point3, Vector2, Vector3};
 
-use camera::{ArcBall, Camera};
+use camera::{ArcBall, Camera, Camera2, StaticCamera};
 use context::Context;
 use event::{Action, EventManager, Key, WindowEvent};
 use image::imageops;
@@ -25,7 +25,7 @@ use ncollide3d::procedural::TriMesh;
 use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, Mesh, RenderTarget, Texture, TextureManager};
-use scene::SceneNode;
+use scene::{SceneNode, SceneNode2};
 use text::{Font, TextRenderer};
 use window::{Canvas, State};
 
@@ -41,6 +41,7 @@ pub struct Window {
     canvas: Canvas,
     max_dur_per_frame: Option<Duration>,
     scene: SceneNode,
+    scene2: SceneNode2,
     light_mode: Light, // FIXME: move that to the scene graph
     background: Vector3<f32>,
     line_renderer: LineRenderer,
@@ -49,6 +50,7 @@ pub struct Window {
     framebuffer_manager: FramebufferManager,
     post_process_render_target: RenderTarget,
     curr_time: usize, // Instant,
+    camera2: Rc<RefCell<StaticCamera>>,
     camera: Rc<RefCell<ArcBall>>,
     should_close: bool,
 }
@@ -275,6 +277,31 @@ impl Window {
         TextureManager::get_global_manager(|tm| tm.add(path, name))
     }
 
+    /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
+    ///
+    /// # Arguments
+    /// * `wx` - the cube extent along the z axis
+    /// * `wy` - the cube extent along the y axis
+    pub fn add_rectangle(&mut self, wx: f32, wy: f32) -> SceneNode2 {
+        self.scene2.add_rectangle(wx, wy)
+    }
+
+    /// Adds a circle to the scene. The circle is initially centered at (0, 0, 0).
+    ///
+    /// # Arguments
+    /// * `r` - the circle radius
+    pub fn add_circle(&mut self, r: f32) -> SceneNode2 {
+        self.scene2.add_circle(r)
+    }
+
+    // /// Adds a convex polygon to the scene.
+    // ///
+    // /// # Arguments
+    // /// * `r` - the circle radius
+    // pub fn add_convex_polygon(&mut self, vertices: Vec<Point2<f32>>) -> SceneNode2 {
+    //     self.scene2.add_convex_polygon(r)
+    // }
+
     /// Returns whether this window is closed or not.
     pub fn is_closed(&self) -> bool {
         false // FIXME
@@ -325,6 +352,7 @@ impl Window {
             events: Rc::new(event_receive),
             unhandled_events: Rc::new(RefCell::new(Vec::new())),
             scene: SceneNode::new_empty(),
+            scene2: SceneNode2::new_empty(),
             light_mode: Light::Absolute(Point3::new(0.0, 10.0, 0.0)),
             background: Vector3::new(0.0, 0.0, 0.0),
             line_renderer: LineRenderer::new(),
@@ -336,6 +364,7 @@ impl Window {
             ),
             framebuffer_manager: FramebufferManager::new(),
             curr_time: 0, // Instant::now(),
+            camera2: Rc::new(RefCell::new(StaticCamera::new())),
             camera: Rc::new(RefCell::new(ArcBall::new(
                 Point3::new(0.0f32, 0.0, -1.0),
                 Point3::origin(),
@@ -521,12 +550,15 @@ impl Window {
         let mut camera = camera;
         self.handle_events(&mut camera);
 
+        let self_cam2 = self.camera2.clone(); // FIXME: this is ugly.
+        let mut bself_cam2 = self_cam2.borrow_mut();
+
         match camera {
-            Some(cam) => self.do_render_with(cam, post_processing),
+            Some(cam) => self.do_render_with(cam, &mut *bself_cam2, post_processing),
             None => {
                 let self_cam = self.camera.clone(); // FIXME: this is ugly.
                 let mut bself_cam = self_cam.borrow_mut();
-                self.do_render_with(&mut *bself_cam, post_processing)
+                self.do_render_with(&mut *bself_cam, &mut *bself_cam2, post_processing)
             }
         }
     }
@@ -534,13 +566,16 @@ impl Window {
     fn do_render_with(
         &mut self,
         camera: &mut Camera,
+        camera2: &mut Camera2,
         post_processing: Option<&mut PostProcessingEffect>,
     ) -> bool {
         // XXX: too bad we have to do this at each frame…
         let w = self.width();
         let h = self.height();
 
+        camera2.handle_event(&self.canvas, &WindowEvent::FramebufferSize(w, h));
         camera.handle_event(&self.canvas, &WindowEvent::FramebufferSize(w, h));
+        camera2.update(&self.canvas);
         camera.update(&self.canvas);
 
         match self.light_mode {
@@ -563,7 +598,10 @@ impl Window {
                 camera.start_pass(pass, &self.canvas);
                 self.render_scene(camera, pass);
             }
+
             camera.render_complete(&self.canvas);
+
+            self.render_scene2(camera2);
 
             let (znear, zfar) = camera.clip_planes();
 
@@ -630,6 +668,23 @@ impl Window {
         }
 
         self.scene.data_mut().render(pass, camera, &self.light_mode);
+    }
+
+    fn render_scene2(&mut self, camera: &mut Camera2) {
+        let ctxt = Context::get();
+        // Activate the default texture
+        verify!(ctxt.active_texture(Context::TEXTURE0));
+        // Clear the screen to black
+
+        // if self.line_renderer2.needs_rendering() {
+        //     self.line_renderer2.render(camera);
+        // }
+
+        // if self.point_renderer2.needs_rendering() {
+        //     self.point_renderer2.render(camera);
+        // }
+
+        self.scene2.data_mut().render(camera);
     }
 
     fn update_viewport(&mut self, w: f32, h: f32) {
