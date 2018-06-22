@@ -1,10 +1,9 @@
 use camera::Camera2;
 use context::Context;
-use na::{Isometry2, Matrix2, Matrix3, Point2, Point3, Vector2, Vector3};
+use na::{Isometry2, Matrix2, Matrix3, Point2, Point3, Vector2};
 use resource::Material2;
 use resource::{Effect, Mesh2, ShaderAttribute, ShaderUniform};
 use scene::ObjectData2;
-use std::ptr;
 
 #[path = "../error.rs"]
 mod error;
@@ -79,7 +78,6 @@ impl Material2 for ObjectMaterial2 {
          *
          */
         let formated_transform = model.to_homogeneous();
-        let formated_ntransform = model.rotation.to_rotation_matrix().unwrap();
         let formated_scale = Matrix2::from_diagonal(&Vector2::new(scale.x, scale.y));
 
         unsafe {
@@ -91,14 +89,9 @@ impl Material2 for ObjectMaterial2 {
 
             verify!(ctxt.active_texture(Context::TEXTURE0));
             verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&*data.texture())));
+            verify!(ctxt.disable(Context::CULL_FACE));
 
             if data.surface_rendering_active() {
-                if data.backface_culling_enabled() {
-                    verify!(ctxt.enable(Context::CULL_FACE));
-                } else {
-                    verify!(ctxt.disable(Context::CULL_FACE));
-                }
-
                 verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::FILL));
                 verify!(ctxt.draw_elements(
                     Context::TRIANGLES,
@@ -173,7 +166,7 @@ uniform mat3 proj, view, model;
 varying vec2 tex_coord_v;
 
 void main(){
-    gl_Position = proj * view * model * vec4(scale * position, 1.0);
+    gl_Position = vec4(proj * view * model * vec3(scale * position, 1.0), 1.0);
     tex_coord_v = tex_coord;
 }";
 

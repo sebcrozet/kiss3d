@@ -307,6 +307,11 @@ impl Window {
         false // FIXME
     }
 
+    /// The hidpi factor of this screen.
+    pub fn hidpi_factor(&self) -> f64 {
+        self.canvas.hidpi_factor()
+    }
+
     /// Sets the light mode. Only one light is supported.
     pub fn set_light(&mut self, pos: Light) {
         self.light_mode = pos;

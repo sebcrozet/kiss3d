@@ -1,4 +1,7 @@
 //! A resource manager to load meshes.
+use std::f32;
+
+use na::{Point2, Point3};
 
 use resource::Mesh2;
 use std::cell::RefCell;
@@ -26,10 +29,34 @@ impl MeshManager2 {
             meshes: HashMap::new(),
         };
 
-        // let _ = res.add_trimesh(procedural::unit_sphere(50, 50, true), false, "sphere");
-        // let _ = res.add_trimesh(procedural::unit_cuboid(), false, "cube");
-        // let _ = res.add_trimesh(procedural::unit_cone(50), false, "cone");
-        // let _ = res.add_trimesh(procedural::unit_cylinder(50), false, "cylinder");
+        let rect_vtx = vec![
+            Point2::new(0.5, 0.5),
+            Point2::new(-0.5, -0.5),
+            Point2::new(-0.5, 0.5),
+            Point2::new(0.5, -0.5),
+        ];
+
+        let rect_ids = vec![Point3::new(0, 1, 2), Point3::new(1, 0, 3)];
+        let rect = Mesh2::new(rect_vtx, rect_ids, None, false);
+        res.add(Rc::new(RefCell::new(rect)), "rectangle");
+
+        let mut circle_vtx = vec![Point2::origin()];
+        let mut circle_ids = Vec::new();
+        let nsamples = 50;
+
+        for i in 0..nsamples {
+            let ang = (i as f32) / (nsamples as f32) * f32::consts::PI * 2.0;
+            circle_vtx.push(Point2::new(ang.cos(), ang.sin()) * 0.5);
+            circle_ids.push(Point3::new(
+                0,
+                circle_vtx.len() as u16 - 2,
+                circle_vtx.len() as u16 - 1,
+            ));
+        }
+        circle_ids.push(Point3::new(0, circle_vtx.len() as u16 - 1, 1));
+
+        let circle = Mesh2::new(circle_vtx, circle_ids, None, false);
+        res.add(Rc::new(RefCell::new(circle)), "circle");
 
         res
     }

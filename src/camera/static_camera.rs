@@ -98,14 +98,16 @@ impl Camera for StaticCamera {
 
 impl Camera2 for StaticCamera {
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
+        let hidpi = canvas.hidpi_factor();
+
         match *event {
             WindowEvent::FramebufferSize(w, h) => {
                 self.proj2 = Matrix3::new(
-                    2.0 / (w as f32),
+                    2.0 * (hidpi as f32) / (w as f32),
                     0.0,
                     0.0,
                     0.0,
-                    2.0 / (h as f32),
+                    2.0 * (hidpi as f32) / (h as f32),
                     0.0,
                     0.0,
                     0.0,

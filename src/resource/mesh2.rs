@@ -121,7 +121,7 @@ impl Mesh2 {
 
     /// Number of points needed to draw this mesh.
     pub fn num_pts(&self) -> usize {
-        self.faces.read().unwrap().len() * 2
+        self.faces.read().unwrap().len() * 3
     }
 
     /// This mesh faces.
