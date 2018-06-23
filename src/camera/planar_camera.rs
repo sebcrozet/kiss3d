@@ -19,29 +19,26 @@ pub struct PlanarCamera {
     view: Matrix3<f32>,
     proj: Matrix3<f32>,
     scaled_proj: Matrix3<f32>,
+    inv_scaled_proj: Matrix3<f32>,
     last_cursor_pos: Vector2<f32>,
 }
 
 impl PlanarCamera {
     /// Create a new arc-ball camera.
-    pub fn new(at: Point2<f32>) -> PlanarCamera {
-        PlanarCamera::new_with_frustrum(at)
-    }
-
-    /// Creates a new arc ball camera with default sensitivity values.
-    pub fn new_with_frustrum(at: Point2<f32>) -> PlanarCamera {
+    pub fn new() -> PlanarCamera {
         let mut res = PlanarCamera {
             at: Point2::origin(),
             zoom: 1.0,
             zoom_step: 0.9,
             drag_button: Some(MouseButton::Button2),
-            view: na::zero(),
-            proj: na::zero(),
-            scaled_proj: na::zero(),
+            view: na::one(),
+            proj: na::one(),
+            scaled_proj: na::one(),
+            inv_scaled_proj: na::one(),
             last_cursor_pos: na::zero(),
         };
 
-        res.look_at(at);
+        res.update_projviews();
 
         res
     }
@@ -57,6 +54,11 @@ impl PlanarCamera {
         self.update_projviews();
     }
 
+    /// Gets the zoom of the camera.
+    pub fn zoom(&self) -> f32 {
+        self.zoom
+    }
+
     /// Sets the zoom of the camera.
     pub fn set_zoom(&mut self, zoom: f32) {
         self.zoom = zoom;
@@ -66,8 +68,9 @@ impl PlanarCamera {
     }
 
     /// Move the camera such that it is centered on a specific point.
-    pub fn look_at(&mut self, at: Point2<f32>) {
+    pub fn look_at(&mut self, at: Point2<f32>, zoom: f32) {
         self.at = at;
+        self.zoom = zoom;
         self.update_projviews();
     }
 
@@ -106,6 +109,9 @@ impl PlanarCamera {
         self.scaled_proj = self.proj;
         self.scaled_proj.m11 *= self.zoom;
         self.scaled_proj.m22 *= self.zoom;
+
+        self.inv_scaled_proj.m11 = 1.0 / self.scaled_proj.m11;
+        self.inv_scaled_proj.m22 = 1.0 / self.scaled_proj.m22;
     }
 }
 
@@ -156,4 +162,14 @@ impl Camera2 for PlanarCamera {
     }
 
     fn update(&mut self, _: &Canvas) {}
+
+    fn unproject(&self, window_coord: &Point2<f32>, size: &Vector2<f32>) -> Point2<f32> {
+        let normalized_coords = Point2::new(
+            2.0 * window_coord.x / size.x - 1.0,
+            2.0 * -window_coord.y / size.y + 1.0,
+        );
+
+        let unprojected_hom = self.inv_scaled_proj * normalized_coords.to_homogeneous();
+        Point2::from_homogeneous(unprojected_hom).unwrap() - self.at.coords
+    }
 }

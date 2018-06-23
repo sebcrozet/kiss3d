@@ -123,4 +123,6 @@ pub trait Camera2 {
         proj: &mut ShaderUniform<Matrix3<f32>>,
         view: &mut ShaderUniform<Matrix3<f32>>,
     );
+
+    fn unproject(&self, window_coord: &Point2<f32>, window_size: &Vector2<f32>) -> Point2<f32>;
 }

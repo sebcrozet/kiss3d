@@ -1,6 +1,8 @@
 use camera::{Camera, Camera2};
 use event::WindowEvent;
-use na::{self, Isometry3, Matrix2, Matrix3, Matrix4, Perspective3, Point3, Vector2, Vector3};
+use na::{
+    self, Isometry3, Matrix2, Matrix3, Matrix4, Perspective3, Point2, Point3, Vector2, Vector3,
+};
 use resource::ShaderUniform;
 use std::f32;
 use window::Canvas;
@@ -21,6 +23,7 @@ pub struct StaticCamera {
     proj: Matrix4<f32>,
     inv_proj: Matrix4<f32>,
     proj2: Matrix3<f32>,
+    inv_proj2: Matrix3<f32>,
 }
 
 impl StaticCamera {
@@ -36,6 +39,7 @@ impl StaticCamera {
             proj: na::one(),
             inv_proj: na::one(),
             proj2: na::one(),
+            inv_proj2: na::one(),
         };
 
         res
@@ -102,17 +106,15 @@ impl Camera2 for StaticCamera {
 
         match *event {
             WindowEvent::FramebufferSize(w, h) => {
-                self.proj2 = Matrix3::new(
+                let diag = Vector3::new(
                     2.0 * (hidpi as f32) / (w as f32),
-                    0.0,
-                    0.0,
-                    0.0,
                     2.0 * (hidpi as f32) / (h as f32),
-                    0.0,
-                    0.0,
-                    0.0,
                     1.0,
                 );
+                let inv_diag = Vector3::new(1.0 / diag.x, 1.0 / diag.y, 1.0);
+
+                self.proj2 = Matrix3::from_diagonal(&diag);
+                self.inv_proj2 = Matrix3::from_diagonal(&inv_diag);
             }
             _ => {}
         }
@@ -130,4 +132,14 @@ impl Camera2 for StaticCamera {
     }
 
     fn update(&mut self, _: &Canvas) {}
+
+    fn unproject(&self, window_coord: &Point2<f32>, size: &Vector2<f32>) -> Point2<f32> {
+        let normalized_coords = Point2::new(
+            2.0 * window_coord.x / size.x - 1.0,
+            2.0 * -window_coord.y / size.y + 1.0,
+        );
+
+        let unprojected_hom = self.inv_proj2 * normalized_coords.to_homogeneous();
+        Point2::from_homogeneous(unprojected_hom).unwrap()
+    }
 }

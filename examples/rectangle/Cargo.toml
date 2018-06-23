@@ -1,0 +1,8 @@
+[package]
+name = "rectangle"
+version = "0.1.0"
+authors = ["sebcrozet <developer@crozet.re>"]
+
+[dependencies]
+nalgebra = "0.15"
+kiss3d = { path = "../.." }

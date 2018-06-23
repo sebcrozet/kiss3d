@@ -166,7 +166,10 @@ uniform mat3 proj, view, model;
 varying vec2 tex_coord_v;
 
 void main(){
-    gl_Position = vec4(proj * view * model * vec3(scale * position, 1.0), 1.0);
+    vec3 projected_pos = proj * view * model * vec3(scale * position, 1.0);
+    projected_pos.z = 0.0;
+
+    gl_Position = vec4(projected_pos, 1.0);
     tex_coord_v = tex_coord;
 }";
 
