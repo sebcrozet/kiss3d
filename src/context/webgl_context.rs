@@ -13,12 +13,14 @@ use stdweb::{self, unstable::TryInto, Value};
 use na::{Matrix2, Matrix3, Matrix4};
 use resource::{GLPrimitive, PrimitiveArray};
 
+/// A WebGL 1.0 cotnext.
 #[derive(Clone)]
 pub struct WebGLContext {
     ctxt: Rc<WebGLRenderingContext>,
 }
 
 impl WebGLContext {
+    /// Initialize a new WebGL 1.0 context for the HTML canvas with id "canvas".
     pub fn new() -> Self {
         stdweb::initialize();
         let canvas: CanvasElement = web::document()

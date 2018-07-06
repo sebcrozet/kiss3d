@@ -46,11 +46,13 @@ impl Font {
         }
     }
 
+    /// The underlying rusttype font.
     #[inline]
     pub fn font(&self) -> &rusttype::Font<'static> {
         &self.font
     }
 
+    /// The unique identifier of the specified font instance.
     #[inline]
     pub fn uid(font: &Rc<Font>) -> usize {
         (*font).borrow() as *const Font as usize

@@ -126,12 +126,19 @@ impl Window {
         self.point_renderer.set_point_size(pt_size);
     }
 
+    /// Adds a 3D line to be drawn during the next render.
+    ///
+    /// The line is being drawn only during the next frame after this call.
+    /// Therefore, this call must be executed at as many frames as you want it to remain visible.
     #[inline]
     pub fn draw_line(&mut self, a: &Point3<f32>, b: &Point3<f32>, color: &Point3<f32>) {
         self.line_renderer.draw_line(*a, *b, *color);
     }
 
-    /// Adds a line to be drawn during the next frame.
+    /// Draws a 2D line to be drawn during the next render.
+    ///
+    /// The line is being drawn only during the next frame after this call.
+    /// Therefore, this call must be executed at as many frames as you want it to remain visible.
     #[inline]
     pub fn draw_planar_line(&mut self, a: &Point2<f32>, b: &Point2<f32>, color: &Point3<f32>) {
         self.planar_line_renderer.draw_line(*a, *b, *color);
@@ -519,10 +526,12 @@ impl Window {
         }
     }
 
+    /// Runs the render and event loop until the window is closed.
     pub fn render_loop<S: State>(mut self, mut state: S) {
         Canvas::render_loop(move |_| self.render_with_state(&mut state))
     }
 
+    /// Render one frame using the specified state.
     pub fn render_with_state<S: State>(&mut self, state: &mut S) -> bool {
         {
             let (camera, camera2, effect) = state.cameras_and_effect();

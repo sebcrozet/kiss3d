@@ -6,6 +6,7 @@ use resource::ShaderUniform;
 use std::f32;
 use window::Canvas;
 
+/// A 2D camera that can be zoomed and panned.
 #[derive(Clone, Debug)]
 pub struct PlanarCamera {
     at: Point2<f32>,

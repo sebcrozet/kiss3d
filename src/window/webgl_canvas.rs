@@ -31,6 +31,7 @@ struct WebGLCanvasData {
     out_events: Sender<WindowEvent>,
 }
 
+/// A canvas based on WebGL and stdweb.
 pub struct WebGLCanvas {
     data: Rc<RefCell<WebGLCanvasData>>,
     hidpi_factor: f64,

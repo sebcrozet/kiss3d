@@ -1,3 +1,5 @@
+//! Abstractions over OpenGL/WebGL contexts.
+
 pub use self::context::*;
 #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 pub use self::gl_context::GLContext;

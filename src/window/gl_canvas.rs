@@ -8,6 +8,7 @@ use glutin::{
 };
 use window::AbstractCanvas;
 
+/// A canvas based on glutin and OpenGL.
 pub struct GLCanvas {
     window: GlWindow,
     events: EventsLoop,

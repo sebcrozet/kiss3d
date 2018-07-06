@@ -8,9 +8,13 @@ use na::{Matrix2, Matrix3, Matrix4, Point2, Point3, Rotation2, Rotation3, Vector
 #[path = "../error.rs"]
 mod error;
 
+/// An array of primitive types.
 pub enum PrimitiveArray<'a> {
+    /// A array of f32.
     Float32(&'a [f32]),
+    /// A array of i32.
     Int32(&'a [i32]),
+    /// A array of u16.
     UInt16(&'a [u16]),
 }
 

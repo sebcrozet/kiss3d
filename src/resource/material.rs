@@ -22,7 +22,9 @@ pub trait Material {
     );
 }
 
+/// A material for 2D objects.
 pub trait Material2 {
+    /// Render the given planar mesh using this material.
     fn render(
         &mut self,
         transform: &Isometry2<f32>,

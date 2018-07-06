@@ -13,6 +13,7 @@ use resource::GLPrimitive;
 #[path = "../error.rs"]
 mod error;
 
+/// An OpenGL context.
 #[derive(Clone)]
 pub struct GLContext;
 
@@ -24,6 +25,7 @@ fn val<T: Copy + Zero>(val: Option<&T>) -> T {
 }
 
 impl GLContext {
+    /// Creates a new OpenGL context.
     pub fn new() -> Self {
         GLContext
     }

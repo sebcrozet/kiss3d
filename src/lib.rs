@@ -80,7 +80,7 @@ I’d love to see people improving this library for their own needs. However, ke
 #![deny(unused_parens)]
 #![deny(non_upper_case_globals)]
 #![deny(unused_qualifications)]
-#![allow(missing_docs)] // FIXME: should be denied.
+#![warn(missing_docs)] // FIXME: should be denied.
 #![warn(unused_results)]
 #![allow(unused_unsafe)] // FIXME: should be denied
 #![allow(missing_copy_implementations)]
