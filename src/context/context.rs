@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 use std::sync::{Once, ONCE_INIT};
 
 #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
@@ -5,13 +7,12 @@ use context::GLContext as ContextImpl;
 #[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 use context::WebGLContext as ContextImpl;
 
+#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
+use super::webgl::{GLenum as GLenumTy, GLintptr as GLintptrTy, GLsizeiptr as GLsizeiptrTy};
 #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 use gl::{
-    self, types::GLenum as GLenumTy, types::GLintptr as GLintptrTy,
-    types::GLsizeiptr as GLsizeiptrTy,
+    types::GLenum as GLenumTy, types::GLintptr as GLintptrTy, types::GLsizeiptr as GLsizeiptrTy,
 };
-#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
-use webgl::{self as gl, GLenum as GLenumTy, GLintptr as GLintptrTy, GLsizeiptr as GLsizeiptrTy};
 
 use na::{Matrix2, Matrix3, Matrix4};
 use resource::GLPrimitive;

@@ -5,7 +5,7 @@ use resource::{Material2, MaterialManager2, Mesh2, MeshManager2, Texture, Textur
 use scene::Object2;
 use std::cell::{Ref, RefCell, RefMut};
 use std::mem;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::rc::Rc;
 
 // XXX: once something like `fn foo(self: Rc<RefCell<SceneNode2>>)` is allowed, this extra struct

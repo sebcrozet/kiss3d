@@ -4,7 +4,6 @@ use image::{self, DynamicImage};
 use std::cell::RefCell;
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
-use std::mem;
 use std::path::Path;
 use std::rc::Rc;
 

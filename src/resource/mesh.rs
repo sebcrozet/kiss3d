@@ -3,7 +3,7 @@ use std::iter;
 use std::sync::{Arc, RwLock};
 
 use na::{self, Point2, Point3, Vector3};
-use ncollide3d::procedural::{IndexBuffer, TriMesh};
+use ncollide3d::procedural::TriMesh;
 use num::Zero;
 use resource::gpu_vector::{AllocationType, BufferType, GPUVec};
 use resource::ShaderAttribute;

@@ -4,7 +4,7 @@ extern crate nalgebra as na;
 use kiss3d::light::Light;
 use kiss3d::scene::SceneNode;
 use kiss3d::window::{State, Window};
-use na::{Translation3, UnitQuaternion, Vector3};
+use na::{UnitQuaternion, Vector3};
 
 struct AppState {
     c: SceneNode,

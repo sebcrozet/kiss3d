@@ -35,7 +35,7 @@ serde_derive = "1.0"
 rusttype     = { version = "0.6", features = [ "gpu_cache" ] }
 
 [target.'cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))'.dependencies]
-gl          = "0.6"
+gl = "0.10.0"
 glutin      = "0.17"
 
 # We repeat all three targets instead of any(target_arch = "wasm32", target_arch = "asmjs")
@@ -55,6 +55,3 @@ stdweb-derive = "0.4"
 [dev-dependencies]
 rand = "0.5"
 ncollide2d  = "0.16"
-
-[build-dependencies]
-webgl_generator = { git = "https://github.com/brendanzab/gl-rs" }

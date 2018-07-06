@@ -6,8 +6,6 @@ use na::{Point2, Point3};
 use resource::Mesh2;
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::io::Result as IoResult;
-use std::path::Path;
 use std::rc::Rc;
 
 thread_local!(static KEY_MESH_MANAGER: RefCell<MeshManager2> = RefCell::new(MeshManager2::new()));

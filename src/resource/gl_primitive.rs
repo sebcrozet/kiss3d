@@ -1,7 +1,7 @@
 //! Structures that a gpu buffer may contain.
 
-use context::{self, Context, UniformLocation};
-use std::{mem, slice};
+use context::{Context, UniformLocation};
+use std::slice;
 
 use na::{Matrix2, Matrix3, Matrix4, Point2, Point3, Rotation2, Rotation3, Vector2, Vector3};
 
@@ -486,7 +486,7 @@ unsafe impl GLPrimitive for Point2<u16> {
     }
 
     #[inline]
-    fn upload(&self, location: &UniformLocation) {
+    fn upload(&self, _: &UniformLocation) {
         unimplemented!()
     }
 }
@@ -513,7 +513,7 @@ unsafe impl GLPrimitive for Point3<u16> {
     }
 
     #[inline]
-    fn upload(&self, location: &UniformLocation) {
+    fn upload(&self, _: &UniformLocation) {
         unimplemented!()
     }
 }

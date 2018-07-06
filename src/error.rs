@@ -1,5 +1,6 @@
 #![macro_use]
 
+#[allow(unused_macros)]
 macro_rules! verify(
     ($e: expr) => {
         {
@@ -11,6 +12,7 @@ macro_rules! verify(
     }
 );
 
+#[allow(unused_macros)]
 macro_rules! checked(
     ($e: expr) => {
         {

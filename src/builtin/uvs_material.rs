@@ -5,7 +5,6 @@ use na::{Isometry3, Matrix3, Matrix4, Point2, Point3, Vector3};
 use resource::Material;
 use resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
 use scene::ObjectData;
-use std::ptr;
 
 #[path = "../error.rs"]
 mod error;

@@ -4,13 +4,10 @@
  */
 use std::cell::RefCell;
 use std::iter::repeat;
-use std::mem;
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::mpsc::{self, Receiver};
-use std::sync::{Once, ONCE_INIT};
-use std::thread;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 use na::{Point2, Point3, Vector2, Vector3};
 

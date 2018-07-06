@@ -5,7 +5,6 @@
 use na::{Point2, Point3, Vector2};
 use rusttype;
 use rusttype::gpu_cache::{Cache, CacheBuilder};
-use std::mem;
 use std::rc::Rc;
 
 use context::{Context, Texture};
@@ -151,7 +150,7 @@ impl TextRenderer {
         let ctxt = Context::get();
         self.shader.use_program();
 
-        verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::FILL));
+        let _ = verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::FILL));
         verify!(ctxt.enable(Context::BLEND));
         verify!(ctxt.blend_func(Context::SRC_ALPHA, Context::ONE_MINUS_SRC_ALPHA));
         verify!(ctxt.disable(Context::DEPTH_TEST));
@@ -183,7 +182,7 @@ impl TextRenderer {
             let font_uid = Font::uid(&context.font);
             let mut vshift = 0.0;
 
-            for (line_count, line) in text.lines().enumerate() {
+            for line in text.lines() {
                 let orig = rusttype::Point {
                     x: context.pos.x,
                     y: context.pos.y + vshift,
@@ -202,7 +201,7 @@ impl TextRenderer {
                     self.cache.queue_glyph(font_uid, gly); // FIXME: is the call to `.standalone()` costly?
                 }
 
-                self.cache.cache_queued(|rect, data| {
+                let _ = self.cache.cache_queued(|rect, data| {
                     verify!(ctxt.tex_sub_image2d(
                         Context::TEXTURE_2D,
                         0,

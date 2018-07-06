@@ -1,6 +1,6 @@
 use camera::Camera2;
-use event::{Action, Key, MouseButton, WindowEvent};
-use na::{self, Isometry3, Matrix3, Matrix4, Perspective3, Point2, Translation2, Vector2, Vector3};
+use event::{Action, MouseButton, WindowEvent};
+use na::{self, Matrix3, Point2, Translation2, Vector2};
 use num::Pow;
 use resource::ShaderUniform;
 use std::f32;

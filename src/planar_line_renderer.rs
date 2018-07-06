@@ -2,7 +2,7 @@
 
 use camera::Camera2;
 use context::Context;
-use na::{Matrix3, Matrix4, Point2, Point3};
+use na::{Matrix3, Point2, Point3};
 use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 
 #[path = "error.rs"]

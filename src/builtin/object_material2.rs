@@ -92,7 +92,7 @@ impl Material2 for ObjectMaterial2 {
             verify!(ctxt.disable(Context::CULL_FACE));
 
             if data.surface_rendering_active() {
-                verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::FILL));
+                let _ = verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::FILL));
                 verify!(ctxt.draw_elements(
                     Context::TRIANGLES,
                     mesh.num_pts() as i32,

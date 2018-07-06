@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 #[derive(Copy, Clone, PartialEq, PartialOrd, Debug, Serialize, Deserialize)]
 pub enum WindowEvent {
     Pos(i32, i32),
@@ -173,8 +175,6 @@ pub enum Key {
     Cut,
     Unknown,
 }
-pub type Scancode = u32;
-
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Serialize, Deserialize)]
 pub enum MouseButton {
     Button1,

@@ -1,13 +1,14 @@
-use std::rc::Rc;
-use std::sync::Once;
+#![allow(unused_results)]
 
-use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr};
-use stdweb::web::{self, html_element::CanvasElement, IParentNode, TypedArray};
-use stdweb::{self, unstable::TryInto, Value};
-use webgl::{
+use std::rc::Rc;
+
+use super::webgl::{
     WebGLBuffer, WebGLFramebuffer, WebGLProgram, WebGLRenderingContext, WebGLShader, WebGLTexture,
     WebGLUniformLocation,
 };
+use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr};
+use stdweb::web::{self, html_element::CanvasElement, IParentNode, TypedArray};
+use stdweb::{self, unstable::TryInto, Value};
 
 use na::{Matrix2, Matrix3, Matrix4};
 use resource::{GLPrimitive, PrimitiveArray};
@@ -504,15 +505,15 @@ impl AbstractContext for WebGLContext {
     }
 
     fn front_face(&self, mode: GLenum) {
-        self.front_face(mode)
+        self.ctxt.front_face(mode)
     }
 
     fn depth_func(&self, mode: GLenum) {
-        self.depth_func(mode)
+        self.ctxt.depth_func(mode)
     }
 
     fn cull_face(&self, mode: GLenum) {
-        self.cull_face(mode)
+        self.ctxt.cull_face(mode)
     }
 
     fn read_pixels(

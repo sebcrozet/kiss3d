@@ -1,8 +1,7 @@
 //! Wrapper for an OpenGL buffer object.
 
-use context::{self, Buffer, Context};
+use context::{Buffer, Context};
 use resource::gl_primitive::GLPrimitive;
-use std::mem;
 
 #[path = "../error.rs"]
 mod error;

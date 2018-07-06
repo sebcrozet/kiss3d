@@ -1,3 +1,5 @@
+#![allow(unused_results)]
+
 use std::cell::RefCell;
 use std::ops::DerefMut;
 use std::rc::Rc;
@@ -6,11 +8,8 @@ use std::sync::mpsc::Sender;
 use event::{Action, Key, Modifiers, MouseButton, WindowEvent};
 use stdweb::web::event as webevent;
 use stdweb::web::event::{ConcreteEvent, IEvent, IKeyboardEvent, IMouseEvent, IUiEvent};
-use stdweb::web::{
-    self, html_element::CanvasElement, EventListenerHandle, IEventTarget, IHtmlElement,
-    IParentNode, TypedArray,
-};
-use stdweb::{unstable::TryInto, Reference, ReferenceType, Value};
+use stdweb::web::{self, html_element::CanvasElement, IEventTarget, IHtmlElement, IParentNode};
+use stdweb::{unstable::TryInto, Reference};
 use window::AbstractCanvas;
 
 #[derive(Clone, Debug, PartialEq, Eq, ReferenceType)]
@@ -34,18 +33,11 @@ struct WebGLCanvasData {
 
 pub struct WebGLCanvas {
     data: Rc<RefCell<WebGLCanvasData>>,
-    listeners: Vec<EventListenerHandle>,
     hidpi_factor: f64,
 }
 
 impl AbstractCanvas for WebGLCanvas {
-    fn open(
-        title: &str,
-        hide: bool,
-        width: u32,
-        height: u32,
-        out_events: Sender<WindowEvent>,
-    ) -> Self {
+    fn open(_: &str, _: bool, _: u32, _: u32, out_events: Sender<WindowEvent>) -> Self {
         let hidpi_factor = js!{ return window.devicePixelRatio; }.try_into().unwrap();
         let canvas: CanvasElement = web::document()
             .query_selector("#canvas")
@@ -64,7 +56,7 @@ impl AbstractCanvas for WebGLCanvas {
         }));
 
         let edata = data.clone();
-        let resize = web::window().add_event_listener(move |_: webevent::ResizeEvent| {
+        let _ = web::window().add_event_listener(move |_: webevent::ResizeEvent| {
             let mut edata = edata.borrow_mut();
             let (w, h) = (
                 (edata.canvas.offset_width() as f64 * hidpi_factor) as u32,
@@ -79,7 +71,7 @@ impl AbstractCanvas for WebGLCanvas {
         });
 
         let edata = data.clone();
-        let mouse_down = web::window().add_event_listener(move |e: webevent::MouseDownEvent| {
+        let _ = web::window().add_event_listener(move |e: webevent::MouseDownEvent| {
             let mut edata = edata.borrow_mut();
             let button = translate_mouse_button(&e);
             let _ = edata.pending_events.push(WindowEvent::MouseButton(
@@ -91,7 +83,7 @@ impl AbstractCanvas for WebGLCanvas {
         });
 
         let edata = data.clone();
-        let mouse_up = web::window().add_event_listener(move |e: webevent::MouseUpEvent| {
+        let _ = web::window().add_event_listener(move |e: webevent::MouseUpEvent| {
             let mut edata = edata.borrow_mut();
             let button = translate_mouse_button(&e);
             let _ = edata.pending_events.push(WindowEvent::MouseButton(
@@ -103,7 +95,7 @@ impl AbstractCanvas for WebGLCanvas {
         });
 
         let edata = data.clone();
-        let mouse_move = web::window().add_event_listener(move |e: webevent::MouseMoveEvent| {
+        let _ = web::window().add_event_listener(move |e: webevent::MouseMoveEvent| {
             let mut edata = edata.borrow_mut();
             let _ = edata.pending_events.push(WindowEvent::CursorPos(
                 e.offset_x() as f64,
@@ -113,7 +105,7 @@ impl AbstractCanvas for WebGLCanvas {
         });
 
         let edata = data.clone();
-        let wheel = web::window().add_event_listener(move |e: WheelEvent| {
+        let _ = web::window().add_event_listener(move |e: WheelEvent| {
             let delta_x: i32 = js!(
                 return @{e.as_ref()}.deltaX;
             ).try_into()
@@ -133,7 +125,7 @@ impl AbstractCanvas for WebGLCanvas {
         });
 
         let edata = data.clone();
-        let key_down = web::window().add_event_listener(move |e: webevent::KeyDownEvent| {
+        let _ = web::window().add_event_listener(move |e: webevent::KeyDownEvent| {
             let mut edata = edata.borrow_mut();
             let key = translate_key(&e);
             let _ = edata.pending_events.push(WindowEvent::Key(
@@ -145,7 +137,7 @@ impl AbstractCanvas for WebGLCanvas {
         });
 
         let edata = data.clone();
-        let key_up = web::window().add_event_listener(move |e: webevent::KeyUpEvent| {
+        let _ = web::window().add_event_listener(move |e: webevent::KeyUpEvent| {
             let mut edata = edata.borrow_mut();
             let key = translate_key(&e);
             let _ = edata.pending_events.push(WindowEvent::Key(
@@ -156,21 +148,14 @@ impl AbstractCanvas for WebGLCanvas {
             edata.key_states[key as usize] = Action::Release;
         });
 
-        let listeners = vec![
-            resize, mouse_down, mouse_move, mouse_up, wheel, key_up, key_down,
-        ];
-
-        WebGLCanvas {
-            data,
-            listeners,
-            hidpi_factor,
-        }
+        WebGLCanvas { data, hidpi_factor }
     }
 
     fn render_loop(mut callback: impl FnMut(f64) -> bool + 'static) {
         let _ = web::window().request_animation_frame(move |t| {
-            callback(t);
-            let _ = Self::render_loop(callback);
+            if callback(t) {
+                let _ = Self::render_loop(callback);
+            }
         });
     }
 
@@ -180,7 +165,7 @@ impl AbstractCanvas for WebGLCanvas {
 
     fn poll_events(&mut self) {
         let mut data_borrow = self.data.borrow_mut();
-        let mut data = data_borrow.deref_mut();
+        let data = data_borrow.deref_mut();
 
         for e in data.pending_events.drain(..) {
             let _ = data.out_events.send(e);
@@ -198,7 +183,7 @@ impl AbstractCanvas for WebGLCanvas {
         )
     }
 
-    fn set_title(&mut self, title: &str) {
+    fn set_title(&mut self, _: &str) {
         // Not supported.
     }
 
@@ -358,11 +343,11 @@ fn translate_key<E: IKeyboardEvent>(event: &E) -> Key {
         "\\" => Key::Backslash,
         "Calculator" => Key::Calculator,
         "Capital" => Key::Capital,
-        "." => Key::Colon,
+        ":" => Key::Colon,
         "," => Key::Comma,
         "Convert" => Key::Convert,
         "Decimal" => Key::Decimal,
-        "/" => Key::Divide,
+        // "/" => Key::Divide,
         "=" => Key::Equals,
         "Grave" => Key::Grave,
         "Kana" => Key::Kana,
@@ -400,7 +385,7 @@ fn translate_key<E: IKeyboardEvent>(event: &E) -> Key {
         "/" => Key::Slash,
         "Sleep" => Key::Sleep,
         "Stop" => Key::Stop,
-        "-" => Key::Subtract,
+        // "-" => Key::Subtract,
         "Sysrq" => Key::Sysrq,
         "Tab" => Key::Tab,
         "_" => Key::Underline,

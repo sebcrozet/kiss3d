@@ -6,9 +6,6 @@ use std::rc::Rc;
 use std::sync::{Once, ONCE_INIT};
 
 use rusttype;
-use rusttype::gpu_cache::{Cache, CacheBuilder};
-
-use context::{Context, Texture};
 
 #[path = "../error.rs"]
 mod error;
@@ -29,9 +26,7 @@ impl Font {
 
     /// Loads a new ttf font from the memory.
     pub fn from_bytes(memory: &[u8]) -> Option<Rc<Font>> {
-        let ctxt = Context::get();
         let font = rusttype::Font::from_bytes(memory.to_vec()).unwrap();
-
         Some(Rc::new(Font { font }))
     }
 

@@ -1,7 +1,6 @@
 //! Data structure of a scene node.
 
 use camera::Camera2;
-use light::Light;
 use na::{Isometry2, Point2, Point3, Vector2};
 use resource::{Material2, Mesh2, Texture, TextureManager};
 use std::any::Any;

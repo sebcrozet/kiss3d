@@ -276,14 +276,14 @@ fn parse_f<'a>(
     // Four formats possible: v   v/t   v//n   v/t/n
     let mut i = 0;
     for word in ws {
-        let mut curr_ids: Vector3<u16> = Bounded::max_value();
+        let mut curr_ids: Vector3<i32> = Bounded::max_value();
 
         for (i, w) in word.split('/').enumerate() {
             if i == 0 || w.len() != 0 {
-                let idx: Result<u16, _> = FromStr::from_str(w);
+                let idx: Result<i32, _> = FromStr::from_str(w);
                 match idx {
                     Ok(id) => curr_ids[i] = id - 1,
-                    Err(e) => error(l, &format!("failed to parse `{}' as a u16: {}", w, e)[..]),
+                    Err(e) => error(l, &format!("failed to parse `{}' as a i32: {}", w, e)[..]),
                 }
             }
         }
@@ -297,11 +297,11 @@ fn parse_f<'a>(
             g.push(p2);
         }
 
-        if curr_ids.y == u16::max_value() {
+        if curr_ids.y == u16::max_value() as i32 {
             *ignore_uvs = true;
         }
 
-        if curr_ids.z == u16::max_value() {
+        if curr_ids.z == u16::max_value() as i32 {
             *ignore_normals = true;
         }
 
@@ -311,24 +311,24 @@ fn parse_f<'a>(
         let z;
 
         if curr_ids.x < 0 {
-            x = coords.len() as u16 + curr_ids.x + 1;
+            x = coords.len() as i32 + curr_ids.x + 1;
         } else {
             x = curr_ids.x;
         }
 
         if curr_ids.y < 0 {
-            y = uvs.len() as u16 + curr_ids.y + 1;
+            y = uvs.len() as i32 + curr_ids.y + 1;
         } else {
             y = curr_ids.y;
         }
 
         if curr_ids.z < 0 {
-            z = normals.len() as u16 + curr_ids.z + 1;
+            z = normals.len() as i32 + curr_ids.z + 1;
         } else {
             z = curr_ids.z;
         }
 
-        groups_ids[curr_group].push(Point3::new(x, y, z));
+        groups_ids[curr_group].push(Point3::new(x as u16, y as u16, z as u16));
 
         i = i + 1;
     }

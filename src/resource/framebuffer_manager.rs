@@ -1,7 +1,5 @@
 //! Resource manager to allocate and switch between framebuffers.
 
-use std::ptr;
-
 use context::{Context, Framebuffer, Texture};
 
 #[path = "../error.rs"]

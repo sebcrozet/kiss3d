@@ -2,16 +2,13 @@ use std::ffi::CString;
 use std::iter;
 use std::mem;
 use std::ptr;
-use std::rc::Rc;
-use std::sync::Once;
 
 use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr, GLsizeiptr};
 use gl;
-use glutin::{self, Context};
 use num::Zero;
 
 use na::{Matrix2, Matrix3, Matrix4};
-use resource::{GLPrimitive, PrimitiveArray};
+use resource::GLPrimitive;
 
 #[path = "../error.rs"]
 mod error;

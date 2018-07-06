@@ -1,8 +1,6 @@
 use camera::{Camera, Camera2};
 use event::WindowEvent;
-use na::{
-    self, Isometry3, Matrix2, Matrix3, Matrix4, Perspective3, Point2, Point3, Vector2, Vector3,
-};
+use na::{self, Isometry3, Matrix3, Matrix4, Perspective3, Point2, Point3, Vector2, Vector3};
 use resource::ShaderUniform;
 use std::f32;
 use window::Canvas;
@@ -34,15 +32,13 @@ impl StaticCamera {
 
     /// Creates a new arc ball camera with default sensitivity values.
     pub fn new_with_frustrum(fov: f32, znear: f32, zfar: f32) -> StaticCamera {
-        let mut res = StaticCamera {
+        StaticCamera {
             projection: Perspective3::new(800.0 / 600.0, fov, znear, zfar),
             proj: na::one(),
             inv_proj: na::one(),
             proj2: na::one(),
             inv_proj2: na::one(),
-        };
-
-        res
+        }
     }
 
     fn update_projviews(&mut self) {
@@ -67,7 +63,7 @@ impl Camera for StaticCamera {
         Point3::origin()
     }
 
-    fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
+    fn handle_event(&mut self, _: &Canvas, event: &WindowEvent) {
         match *event {
             WindowEvent::FramebufferSize(w, h) => {
                 self.projection.set_aspect(w as f32 / h as f32);

@@ -2,10 +2,11 @@ use std::sync::mpsc::Sender;
 
 use event::{Action, Key, Modifiers, MouseButton, WindowEvent};
 use gl;
-use glutin::{self, ContextBuilder, dpi::LogicalSize, EventsLoop, GlContext, GlRequest, GlWindow, WindowBuilder};
+use glutin::{
+    self, dpi::LogicalSize, ContextBuilder, EventsLoop, GlContext, GlRequest, GlWindow,
+    WindowBuilder,
+};
 use window::AbstractCanvas;
-
-struct GLCanvasData {}
 
 pub struct GLCanvas {
     window: GlWindow,
@@ -133,7 +134,8 @@ impl AbstractCanvas for GLCanvas {
 
     fn size(&self) -> (u32, u32) {
         let hidpi = self.window.get_hidpi_factor();
-        let logical_size = self.window
+        let logical_size = self
+            .window
             .get_inner_size()
             .expect("The window was closed.");
         logical_size.to_physical(hidpi).into()

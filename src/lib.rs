@@ -80,7 +80,7 @@ I’d love to see people improving this library for their own needs. However, ke
 #![deny(unused_parens)]
 #![deny(non_upper_case_globals)]
 #![deny(unused_qualifications)]
-#![warn(missing_docs)] // FIXME: should be denied.
+#![allow(missing_docs)] // FIXME: should be denied.
 #![warn(unused_results)]
 #![allow(unused_unsafe)] // FIXME: should be denied
 #![allow(missing_copy_implementations)]
@@ -110,13 +110,6 @@ extern crate stdweb;
 #[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 #[macro_use]
 extern crate stdweb_derive;
-// extern crate webgl_stdweb as webgl;
-
-#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
-mod webgl {
-  #![allow(dead_code, unused_parens, unused_imports)]
-  include!(concat!(env!("OUT_DIR"), "/webgl_rendering_context.rs"));
-}
 
 pub mod builtin;
 pub mod camera;
