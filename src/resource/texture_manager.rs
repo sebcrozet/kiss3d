@@ -28,7 +28,10 @@ impl Texture {
 impl Drop for Texture {
     fn drop(&mut self) {
         unsafe {
-            verify!(Context::get().delete_texture(Some(self)));
+            let ctxt = Context::get();
+            if ctxt.is_texture(Some(self)) {
+                verify!(Context::get().delete_texture(Some(self)));
+            }
         }
     }
 }

@@ -1,11 +1,8 @@
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::sync::mpsc::Sender;
 
-use context::Context;
 use event::{Action, Key, Modifiers, MouseButton, WindowEvent};
 use gl;
-use glutin::{self, ContextBuilder, EventsLoop, GlContext, GlRequest, GlWindow, WindowBuilder};
+use glutin::{self, ContextBuilder, dpi::LogicalSize, EventsLoop, GlContext, GlRequest, GlWindow, WindowBuilder};
 use window::AbstractCanvas;
 
 struct GLCanvasData {}
@@ -30,7 +27,7 @@ impl AbstractCanvas for GLCanvas {
         let events = EventsLoop::new();
         let window = WindowBuilder::new()
             .with_title(title)
-            .with_dimensions(width, height)
+            .with_dimensions(LogicalSize::new(width as f64, height as f64))
             .with_visibility(!hide);
         let context = ContextBuilder::new()
             .with_vsync(true)
@@ -70,21 +67,21 @@ impl AbstractCanvas for GLCanvas {
 
     fn poll_events(&mut self) {
         let out_events = &mut self.out_events;
-        let mut window = &mut self.window;
-        let mut button_states = &mut self.button_states;
-        let mut key_states = &mut self.key_states;
+        let window = &mut self.window;
+        let button_states = &mut self.button_states;
+        let key_states = &mut self.key_states;
 
         self.events.poll_events(|event| match event {
             glutin::Event::WindowEvent { event, .. } => match event {
                 glutin::WindowEvent::CloseRequested => {
                     let _ = out_events.send(WindowEvent::Close);
                 }
-                glutin::WindowEvent::Resized(w, h) => {
-                    if w != 0 && h != 0 {
-                        window.context().resize(w, h);
-                        window.set_inner_size(w, h);
-                        let _ = out_events.send(WindowEvent::FramebufferSize(w, h));
-                    }
+                glutin::WindowEvent::Resized(logical_size) => {
+                    let dpi_factor = window.get_hidpi_factor();
+                    let physical_size = logical_size.to_physical(dpi_factor);
+                    window.resize(physical_size);
+                    let fb_size: (u32, u32) = physical_size.into();
+                    let _ = out_events.send(WindowEvent::FramebufferSize(fb_size.0, fb_size.1));
                 }
                 glutin::WindowEvent::CursorMoved {
                     position,
@@ -93,7 +90,7 @@ impl AbstractCanvas for GLCanvas {
                 } => {
                     let modifiers = translate_modifiers(modifiers);
                     let _ =
-                        out_events.send(WindowEvent::CursorPos(position.0, position.1, modifiers));
+                        out_events.send(WindowEvent::CursorPos(position.x, position.y, modifiers));
                 }
                 glutin::WindowEvent::MouseInput {
                     state,
@@ -111,11 +108,11 @@ impl AbstractCanvas for GLCanvas {
                     delta, modifiers, ..
                 } => {
                     let (x, y) = match delta {
-                        glutin::MouseScrollDelta::LineDelta(dx, dy)
-                        | glutin::MouseScrollDelta::PixelDelta(dx, dy) => (dx, dy),
+                        glutin::MouseScrollDelta::LineDelta(dx, dy) => (dx as f64, dy as f64),
+                        glutin::MouseScrollDelta::PixelDelta(delta) => delta.into(),
                     };
                     let modifiers = translate_modifiers(modifiers);
-                    let _ = out_events.send(WindowEvent::Scroll(x as f64, y as f64, modifiers));
+                    let _ = out_events.send(WindowEvent::Scroll(x, y, modifiers));
                 }
                 glutin::WindowEvent::KeyboardInput { input, .. } => {
                     let action = translate_action(input.state);
@@ -135,13 +132,15 @@ impl AbstractCanvas for GLCanvas {
     }
 
     fn size(&self) -> (u32, u32) {
-        self.window
+        let hidpi = self.window.get_hidpi_factor();
+        let logical_size = self.window
             .get_inner_size()
-            .expect("The window was closed.")
+            .expect("The window was closed.");
+        logical_size.to_physical(hidpi).into()
     }
 
     fn hidpi_factor(&self) -> f64 {
-        self.window.hidpi_factor() as f64
+        self.window.get_hidpi_factor() as f64
     }
 
     fn set_title(&mut self, title: &str) {
@@ -304,7 +303,6 @@ fn translate_key(button: Option<glutin::VirtualKeyCode>) -> Key {
             glutin::VirtualKeyCode::LAlt => Key::LAlt,
             glutin::VirtualKeyCode::LBracket => Key::LBracket,
             glutin::VirtualKeyCode::LControl => Key::LControl,
-            glutin::VirtualKeyCode::LMenu => Key::LMenu,
             glutin::VirtualKeyCode::LShift => Key::LShift,
             glutin::VirtualKeyCode::LWin => Key::LWin,
             glutin::VirtualKeyCode::Mail => Key::Mail,
@@ -329,7 +327,6 @@ fn translate_key(button: Option<glutin::VirtualKeyCode>) -> Key {
             glutin::VirtualKeyCode::RAlt => Key::RAlt,
             glutin::VirtualKeyCode::RBracket => Key::RBracket,
             glutin::VirtualKeyCode::RControl => Key::RControl,
-            glutin::VirtualKeyCode::RMenu => Key::RMenu,
             glutin::VirtualKeyCode::RShift => Key::RShift,
             glutin::VirtualKeyCode::RWin => Key::RWin,
             glutin::VirtualKeyCode::Semicolon => Key::Semicolon,
