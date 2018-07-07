@@ -91,8 +91,10 @@ impl AbstractCanvas for GLCanvas {
                     ..
                 } => {
                     let modifiers = translate_modifiers(modifiers);
+                    let dpi_factor = window.get_hidpi_factor();
+                    let physical_pos = position.to_physical(dpi_factor);
                     let _ =
-                        out_events.send(WindowEvent::CursorPos(position.x, position.y, modifiers));
+                        out_events.send(WindowEvent::CursorPos(physical_pos.x, physical_pos.y, modifiers));
                 }
                 glutin::WindowEvent::MouseInput {
                     state,
