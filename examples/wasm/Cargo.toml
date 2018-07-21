@@ -1,0 +1,8 @@
+[package]
+name = "wasm"
+version = "0.1.0"
+authors = ["sebcrozet <developer@crozet.re>"]
+
+[dependencies]
+nalgebra = "0.16"
+kiss3d = { path = "../.." }

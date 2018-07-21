@@ -1,21 +1,40 @@
 //! Structures that a gpu buffer may contain.
 
-use std::mem;
-use gl;
-use gl::types::*;
-use na::{Point2, Point3, Vector2, Vector3, Matrix2, Matrix3, Matrix4, Rotation2, Rotation3};
+use context::{Context, UniformLocation};
+use std::slice;
+
+use na::{Matrix2, Matrix3, Matrix4, Point2, Point3, Rotation2, Rotation3, Vector2, Vector3};
 
 #[path = "../error.rs"]
 mod error;
 
+/// An array of primitive types.
+pub enum PrimitiveArray<'a> {
+    /// A array of f32.
+    Float32(&'a [f32]),
+    /// A array of i32.
+    Int32(&'a [i32]),
+    /// A array of u16.
+    UInt16(&'a [u16]),
+}
+
 /// Trait implemented by structures that can be uploaded to a uniform or contained by a gpu array.
-pub trait GLPrimitive: Copy {
-    /// The opengl primitive type of this structure content.
-    fn gl_type(_type: Option<Self>) -> GLuint;
+pub unsafe trait GLPrimitive: Copy {
+    /// The Opengl primitive type of this structure content.
+    fn gl_type() -> u32;
     /// The number of elements of type `self.gl_type()` this structure stores.
-    fn size(_type: Option<Self>) -> GLuint;
+    fn size() -> u32;
     /// Uploads the element to a gpu location.
-    fn upload(&self, location: GLuint);
+    fn upload(&self, location: &UniformLocation);
+    /// Converts an array of `Self` into an array of f32 or i32 primitives.
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
 }
 
 /*
@@ -23,299 +42,483 @@ pub trait GLPrimitive: Copy {
  * Impl for primitive types
  *
  */
-impl GLPrimitive for GLfloat {
+unsafe impl GLPrimitive for f32 {
     #[inline]
-    fn gl_type(_: Option<GLfloat>) -> GLuint {
-        gl::FLOAT
+    fn gl_type() -> u32 {
+        Context::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<GLfloat>) -> GLuint {
+    fn size() -> u32 {
         1
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform1f(location as GLint, self.clone()));
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform1f(Some(location), self.clone()));
     }
 }
 
-impl GLPrimitive for GLint {
+unsafe impl GLPrimitive for i32 {
     #[inline]
-    fn gl_type(_: Option<GLint>) -> GLuint {
-        gl::INT
+    fn gl_type() -> u32 {
+        Context::INT
     }
 
     #[inline]
-    fn size(_: Option<GLint>) -> GLuint {
+    fn size() -> u32 {
         1
     }
 
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Int32(slice::from_raw_parts(ptr, len))
+        }
+    }
+
     #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform1i(location as GLint, self.clone()));
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform1i(Some(location), self.clone()));
     }
 }
 
-impl GLPrimitive for GLuint {
-    #[inline]
-    fn gl_type(_: Option<GLuint>) -> GLuint {
-        gl::UNSIGNED_INT
-    }
+// // unsafe impl GLPrimitive for u32 {
+// //     #[inline]
+// //     fn gl_type(_: Option<u32>) -> u32 {
+// //         Context::UNSIGNED_INT
+// //     }
 
-    #[inline]
-    fn size(_: Option<GLuint>) -> GLuint {
-        1
-    }
+// //     #[inline]
+// //     fn size(_: Option<u32>) -> u32 {
+// //         1
+// //     }
 
-    #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform1ui(location as GLint, self.clone()));
-    }
-}
+// //     #[inline]
+// //     fn upload(&self, location: &UniformLocation) {
+// //         verify!(Context::get().uniform1ui(Some(location), self.clone()));
+// //     }
+// // }
 
 /*
  *
  * Impl for matrices
  *
  */
-impl GLPrimitive for Matrix2<GLfloat> {
+unsafe impl GLPrimitive for Matrix2<f32> {
     #[inline]
-    fn gl_type(_: Option<Matrix2<GLfloat>>) -> GLuint {
-        gl::FLOAT
+    fn gl_type() -> u32 {
+        Context::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Matrix2<GLfloat>>) -> GLuint {
+    fn size() -> u32 {
         4
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
+    fn flatten(array: &[Self]) -> PrimitiveArray {
         unsafe {
-            verify!(gl::UniformMatrix2fv(location as GLint, 1, gl::FALSE, mem::transmute(self)));
+            let len = array.len() * 4;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        unsafe {
+            verify!(Context::get().uniform_matrix2fv(Some(location), false, self));
         }
     }
 }
 
-impl GLPrimitive for Rotation2<GLfloat> {
+unsafe impl GLPrimitive for Rotation2<f32> {
     #[inline]
-    fn gl_type(_: Option<Rotation2<GLfloat>>) -> GLuint {
-        gl::FLOAT
+    fn gl_type() -> u32 {
+        Context::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Rotation2<GLfloat>>) -> GLuint {
+    fn size() -> u32 {
         4
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
+    fn flatten(array: &[Self]) -> PrimitiveArray {
         unsafe {
-            verify!(gl::UniformMatrix2fv(location as GLint, 1, gl::FALSE, mem::transmute(self)));
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        unsafe {
+            verify!(Context::get().uniform_matrix2fv(Some(location), false, self.matrix()));
         }
     }
 }
 
-impl GLPrimitive for Matrix3<GLfloat> {
+unsafe impl GLPrimitive for Matrix3<f32> {
     #[inline]
-    fn gl_type(_: Option<Matrix3<GLfloat>>) -> GLuint {
-        gl::FLOAT
+    fn gl_type() -> u32 {
+        Context::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Matrix3<GLfloat>>) -> GLuint {
+    fn size() -> u32 {
         9
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
+    fn flatten(array: &[Self]) -> PrimitiveArray {
         unsafe {
-            verify!(gl::UniformMatrix3fv(location as GLint, 1, gl::FALSE, mem::transmute(self)));
+            let len = array.len() * 9;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        unsafe {
+            verify!(Context::get().uniform_matrix3fv(Some(location), false, self));
         }
     }
 }
 
-impl GLPrimitive for Rotation3<GLfloat> {
+unsafe impl GLPrimitive for Rotation3<f32> {
     #[inline]
-    fn gl_type(_: Option<Rotation3<GLfloat>>) -> GLuint {
-        gl::FLOAT
+    fn gl_type() -> u32 {
+        Context::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Rotation3<GLfloat>>) -> GLuint {
+    fn size() -> u32 {
         9
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
+    fn flatten(array: &[Self]) -> PrimitiveArray {
         unsafe {
-            verify!(gl::UniformMatrix3fv(location as GLint, 1, gl::FALSE, mem::transmute(self)));
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        unsafe {
+            verify!(Context::get().uniform_matrix3fv(Some(location), false, self.matrix()));
         }
     }
 }
 
-impl GLPrimitive for Matrix4<GLfloat> {
+unsafe impl GLPrimitive for Matrix4<f32> {
     #[inline]
-    fn gl_type(_: Option<Matrix4<GLfloat>>) -> GLuint {
-        gl::FLOAT
+    fn gl_type() -> u32 {
+        Context::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Matrix4<GLfloat>>) -> GLuint {
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * 16;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
         16
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
+    fn upload(&self, location: &UniformLocation) {
         unsafe {
-            verify!(gl::UniformMatrix4fv(location as GLint, 1, gl::FALSE, mem::transmute(self)));
+            verify!(Context::get().uniform_matrix4fv(Some(location), false, self));
         }
     }
 }
+
 /*
  *
  * Impl for vectors
  *
  */
-impl GLPrimitive for Vector3<GLfloat> {
+unsafe impl GLPrimitive for Vector3<f32> {
     #[inline]
-    fn gl_type(_: Option<Vector3<GLfloat>>) -> GLuint {
-        gl::FLOAT
+    fn gl_type() -> u32 {
+        Context::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Vector3<GLfloat>>) -> GLuint {
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * 3;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
         3
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform3f(location as GLint, self.x, self.y, self.z));
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform3f(Some(location), self.x, self.y, self.z));
     }
 }
 
-impl GLPrimitive for Vector2<GLfloat> {
+unsafe impl GLPrimitive for Vector2<f32> {
     #[inline]
-    fn gl_type(_: Option<Vector2<GLfloat>>) -> GLuint {
-        gl::FLOAT
+    fn gl_type() -> u32 {
+        Context::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Vector2<GLfloat>>) -> GLuint {
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * 2;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
         2
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform2f(location as GLint, self.x, self.y));
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform2f(Some(location), self.x, self.y));
     }
 }
 
-impl GLPrimitive for Vector2<GLuint> {
-    #[inline]
-    fn gl_type(_: Option<Vector2<GLuint>>) -> GLuint {
-        gl::UNSIGNED_INT
-    }
+// unsafe impl GLPrimitive for Vector2<u32> {
+//     #[inline]
+//     fn gl_type(_: Option<Vector2<u32>>) -> u32 {
+//         Context::UNSIGNED_INT
+//     }
 
-    #[inline]
-    fn size(_: Option<Vector2<GLuint>>) -> GLuint {
-        2
-    }
+//     #[inline]
+//     fn size(_: Option<Vector2<u32>>) -> u32 {
+//         2
+//     }
 
-    #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform2ui(location as GLint, self.x, self.y));
-    }
-}
+//     #[inline]
+//     fn upload(&self, location: &UniformLocation) {
+//         verify!(Context::get().uniform2ui(Some(location), self.x, self.y));
+//     }
+// }
 
-impl GLPrimitive for Vector3<GLuint> {
-    #[inline]
-    fn gl_type(_: Option<Vector3<GLuint>>) -> GLuint {
-        gl::UNSIGNED_INT
-    }
+// unsafe impl GLPrimitive for Vector3<u32> {
+//     #[inline]
+//     fn gl_type(_: Option<Vector3<u32>>) -> u32 {
+//         Context::UNSIGNED_INT
+//     }
 
-    #[inline]
-    fn size(_: Option<Vector3<GLuint>>) -> GLuint {
-        3
-    }
+//     #[inline]
+//     fn size(_: Option<Vector3<u32>>) -> u32 {
+//         3
+//     }
 
-    #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform3ui(location as GLint, self.x, self.y, self.z));
-    }
-}
+//     #[inline]
+//     fn upload(&self, location: &UniformLocation) {
+//         verify!(Context::get().uniform3ui(Some(location), self.x, self.y, self.z));
+//     }
+// }
 
 /*
  *
  * Impl for points
  *
  */
-impl GLPrimitive for Point3<GLfloat> {
+unsafe impl GLPrimitive for Point3<f32> {
     #[inline]
-    fn gl_type(_: Option<Point3<GLfloat>>) -> GLuint {
-        gl::FLOAT
+    fn gl_type() -> u32 {
+        Context::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Point3<GLfloat>>) -> GLuint {
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
         3
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform3f(location as GLint, self.x, self.y, self.z));
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform3f(Some(location), self.x, self.y, self.z));
     }
 }
 
-impl GLPrimitive for Point2<GLfloat> {
+unsafe impl GLPrimitive for Point2<f32> {
     #[inline]
-    fn gl_type(_: Option<Point2<GLfloat>>) -> GLuint {
-        gl::FLOAT
+    fn gl_type() -> u32 {
+        Context::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<Point2<GLfloat>>) -> GLuint {
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
         2
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform2f(location as GLint, self.x, self.y));
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform2f(Some(location), self.x, self.y));
     }
 }
 
-impl GLPrimitive for Point2<GLuint> {
+unsafe impl GLPrimitive for Point3<i32> {
     #[inline]
-    fn gl_type(_: Option<Point2<GLuint>>) -> GLuint {
-        gl::UNSIGNED_INT
+    fn gl_type() -> u32 {
+        Context::INT
     }
 
     #[inline]
-    fn size(_: Option<Point2<GLuint>>) -> GLuint {
-        2
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Int32(slice::from_raw_parts(ptr as *const i32, len))
+        }
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform2ui(location as GLint, self.x, self.y));
-    }
-}
-
-impl GLPrimitive for Point3<GLuint> {
-    #[inline]
-    fn gl_type(_: Option<Point3<GLuint>>) -> GLuint {
-        gl::UNSIGNED_INT
-    }
-
-    #[inline]
-    fn size(_: Option<Point3<GLuint>>) -> GLuint {
+    fn size() -> u32 {
         3
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform3ui(location as GLint, self.x, self.y, self.z));
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform3i(Some(location), self.x, self.y, self.z));
+    }
+}
+
+unsafe impl GLPrimitive for Point2<i32> {
+    #[inline]
+    fn gl_type() -> u32 {
+        Context::INT
+    }
+
+    #[inline]
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Int32(slice::from_raw_parts(ptr as *const i32, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
+        2
+    }
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform2i(Some(location), self.x, self.y));
+    }
+}
+
+unsafe impl GLPrimitive for Point2<u16> {
+    #[inline]
+    fn gl_type() -> u32 {
+        Context::UNSIGNED_SHORT
+    }
+
+    #[inline]
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::UInt16(slice::from_raw_parts(ptr as *const u16, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
+        2
+    }
+
+    #[inline]
+    fn upload(&self, _: &UniformLocation) {
+        unimplemented!()
+    }
+}
+
+unsafe impl GLPrimitive for Point3<u16> {
+    #[inline]
+    fn gl_type() -> u32 {
+        Context::UNSIGNED_SHORT
+    }
+
+    #[inline]
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::UInt16(slice::from_raw_parts(ptr as *const u16, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
+        3
+    }
+
+    #[inline]
+    fn upload(&self, _: &UniformLocation) {
+        unimplemented!()
     }
 }
 
@@ -324,70 +527,90 @@ impl GLPrimitive for Point3<GLuint> {
  * Impl for tuples
  *
  */
-impl GLPrimitive for (GLfloat, GLfloat, GLfloat) {
+unsafe impl GLPrimitive for (f32, f32, f32) {
     #[inline]
-    fn gl_type(_: Option<(GLfloat, GLfloat, GLfloat)>) -> GLuint {
-        gl::FLOAT
+    fn gl_type() -> u32 {
+        Context::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<(GLfloat, GLfloat, GLfloat)>) -> GLuint {
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
         3
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform3f(location as GLint, self.0, self.1, self.2));
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform3f(Some(location), self.0, self.1, self.2));
     }
 }
 
-impl GLPrimitive for (GLfloat, GLfloat) {
+unsafe impl GLPrimitive for (f32, f32) {
     #[inline]
-    fn gl_type(_: Option<(GLfloat, GLfloat)>) -> GLuint {
-        gl::FLOAT
+    fn gl_type() -> u32 {
+        Context::FLOAT
     }
 
     #[inline]
-    fn size(_: Option<(GLfloat, GLfloat)>) -> GLuint {
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
         2
     }
 
     #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform2f(location as GLint, self.0, self.1));
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform2f(Some(location), self.0, self.1));
     }
 }
 
-impl GLPrimitive for (GLuint, GLuint) {
-    #[inline]
-    fn gl_type(_: Option<(GLuint, GLuint)>) -> GLuint {
-        gl::UNSIGNED_INT
-    }
+// unsafe impl GLPrimitive for (u32, u32) {
+//     #[inline]
+//     fn gl_type(_: Option<(u32, u32)>) -> u32 {
+//         Context::UNSIGNED_INT
+//     }
 
-    #[inline]
-    fn size(_: Option<(GLuint, GLuint)>) -> GLuint {
-        2
-    }
+//     #[inline]
+//     fn size(_: Option<(u32, u32)>) -> u32 {
+//         2
+//     }
 
-    #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform2ui(location as GLint, self.0, self.1));
-    }
-}
+//     #[inline]
+//     fn upload(&self, location: &UniformLocation) {
+//         verify!(Context::get().uniform2ui(Some(location), self.0, self.1));
+//     }
+// }
 
-impl GLPrimitive for (GLuint, GLuint, GLuint) {
-    #[inline]
-    fn gl_type(_: Option<(GLuint, GLuint, GLuint)>) -> GLuint {
-        gl::UNSIGNED_INT
-    }
+// unsafe impl GLPrimitive for (u32, u32, u32) {
+//     #[inline]
+//     fn gl_type(_: Option<(u32, u32, u32)>) -> u32 {
+//         Context::UNSIGNED_INT
+//     }
 
-    #[inline]
-    fn size(_: Option<(GLuint, GLuint, GLuint)>) -> GLuint {
-        3
-    }
+//     #[inline]
+//     fn size(_: Option<(u32, u32, u32)>) -> u32 {
+//         3
+//     }
 
-    #[inline]
-    fn upload(&self, location: GLuint) {
-        verify!(gl::Uniform3ui(location as GLint, self.0, self.1, self.2));
-    }
-}
+//     #[inline]
+//     fn upload(&self, location: &UniformLocation) {
+//         verify!(Context::get().uniform3ui(Some(location), self.0, self.1, self.2));
+//     }
+// }

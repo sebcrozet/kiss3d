@@ -1,10 +1,10 @@
 //! A resource manager to load materials.
 
-use std::rc::Rc;
+use builtin::{NormalsMaterial, ObjectMaterial, UvsMaterial};
+use resource::Material;
 use std::cell::RefCell;
 use std::collections::HashMap;
-use resource::Material;
-use builtin::{ObjectMaterial, NormalsMaterial, UvsMaterial};
+use std::rc::Rc;
 
 thread_local!(static KEY_MATERIAL_MANAGER: RefCell<MaterialManager> = RefCell::new(MaterialManager::new()));
 
@@ -18,7 +18,7 @@ thread_local!(static KEY_MATERIAL_MANAGER: RefCell<MaterialManager> = RefCell::n
 /// Thus, its usage is not required to load materials.
 pub struct MaterialManager {
     default_material: Rc<RefCell<Box<Material + 'static>>>,
-    materials:        HashMap<String, Rc<RefCell<Box<Material + 'static>>>>
+    materials: HashMap<String, Rc<RefCell<Box<Material + 'static>>>>,
 }
 
 impl MaterialManager {
@@ -27,18 +27,24 @@ impl MaterialManager {
         // load the default ObjectMaterial and the LineMaterial
         let mut materials = HashMap::new();
 
-        let om = Rc::new(RefCell::new(Box::new(ObjectMaterial::new()) as Box<Material + 'static>));
+        let om = Rc::new(RefCell::new(
+            Box::new(ObjectMaterial::new()) as Box<Material + 'static>
+        ));
         let _ = materials.insert("object".to_string(), om.clone());
 
-        let nm = Rc::new(RefCell::new(Box::new(NormalsMaterial::new()) as Box<Material + 'static>));
+        let nm = Rc::new(RefCell::new(
+            Box::new(NormalsMaterial::new()) as Box<Material + 'static>
+        ));
         let _ = materials.insert("normals".to_string(), nm.clone());
 
-        let um = Rc::new(RefCell::new(Box::new(UvsMaterial::new()) as Box<Material + 'static>));
+        let um = Rc::new(RefCell::new(
+            Box::new(UvsMaterial::new()) as Box<Material + 'static>
+        ));
         let _ = materials.insert("uvs".to_string(), um.clone());
 
         MaterialManager {
             default_material: om,
-            materials:        materials
+            materials: materials,
         }
     }
 

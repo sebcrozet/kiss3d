@@ -3,19 +3,19 @@ extern crate nalgebra as na;
 extern crate ncollide3d;
 extern crate rand;
 
-use std::str::FromStr;
-use std::env;
-use std::rc::Rc;
-use std::cell::RefCell;
-use std::sync::{Arc, RwLock};
-use std::path::Path;
-use std::time::Instant;
-use rand::random;
-use na::{Translation3, Vector3};
-use kiss3d::window::Window;
 use kiss3d::light::Light;
 use kiss3d::loader::obj;
 use kiss3d::resource::{AllocationType, BufferType, GPUVec, Mesh};
+use kiss3d::window::Window;
+use na::{Translation3, Vector3};
+use rand::random;
+use std::cell::RefCell;
+use std::env;
+use std::path::Path;
+use std::rc::Rc;
+use std::str::FromStr;
+use std::sync::{Arc, RwLock};
+use std::time::Instant;
 
 fn usage(exe_name: &str) {
     println!("Usage: {} obj_file scale clusters concavity", exe_name);
@@ -55,7 +55,6 @@ fn main() {
      * Convex decomposition.
      */
     let obj_path = Path::new(path);
-    // let obj_path = Path::new("/home/tortue/Downloads/models/ATST_medium.obj");
     let mtl_path = Path::new("none");
     let teapot = obj::parse_file(&obj_path, &mtl_path, "none").unwrap();
 
@@ -63,7 +62,8 @@ fn main() {
     m.set_surface_rendering_activation(false);
     // m.set_lines_width(1.0);
     let data = m.data();
-    let coords = data.object()
+    let coords = data
+        .object()
         .expect("here")
         .mesh()
         .borrow()

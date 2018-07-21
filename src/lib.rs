@@ -81,26 +81,45 @@ I’d love to see people improving this library for their own needs. However, ke
 #![deny(non_upper_case_globals)]
 #![deny(unused_qualifications)]
 #![warn(missing_docs)] // FIXME: should be denied.
-#![deny(unused_results)]
+#![warn(unused_results)]
 #![allow(unused_unsafe)] // FIXME: should be denied
 #![allow(missing_copy_implementations)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
 
-extern crate freetype;
-extern crate gl;
-extern crate glfw;
+#[macro_use]
+extern crate bitflags;
+extern crate rusttype;
+// extern crate glfw;
 extern crate image;
-extern crate libc;
+// extern crate libc;
 extern crate nalgebra as na;
 extern crate ncollide3d;
 extern crate num_traits as num;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde;
+
+#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+extern crate gl;
+#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+extern crate glutin;
+#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
+#[macro_use]
+extern crate stdweb;
+#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
+#[macro_use]
+extern crate stdweb_derive;
 
 pub mod builtin;
 pub mod camera;
+pub mod context;
 mod error;
+pub mod event;
 pub mod light;
 pub mod line_renderer;
 pub mod loader;
+pub mod planar_camera;
+pub mod planar_line_renderer;
 pub mod point_renderer;
 pub mod post_processing;
 pub mod resource;

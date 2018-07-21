@@ -1,8 +1,12 @@
-sudo: required
-services:
-  - docker
-language: native
-install:
-  - lsb_release -a
+sudo: false
+language: rust
+matrix:
+  include:
+    - name: "native"
+      rust: stable
+      env: TARGET_WASM=0
+    - name: "wasm"
+      rust: nightly
+      env: TARGET_WASM=1
 script:
-  - docker run --rm -it -v "$(pwd)":/usr/src/myapp -w /usr/src/myapp rust:stretch ./ci.sh
+  - ./ci/build.sh

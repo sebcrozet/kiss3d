@@ -1,11 +1,11 @@
-extern crate rand;
 extern crate kiss3d;
 extern crate nalgebra as na;
+extern crate rand;
 
-use rand::random;
-use na::{Vector3, Translation3, UnitQuaternion};
-use kiss3d::window::Window;
 use kiss3d::light::Light;
+use kiss3d::window::Window;
+use na::{Translation3, UnitQuaternion, Vector3};
+use rand::random;
 
 fn main() {
     let mut window = Window::new("Kiss3d: primitives");
