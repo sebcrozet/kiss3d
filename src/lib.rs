@@ -32,7 +32,7 @@ Most features are one-liners.
 
 As an example, having a red, rotating cube with the light attached to the camera is as simple as (NOTE: this will **not** compile when targeting WASM):
 
-```rust
+```no_run
 extern crate kiss3d;
 extern crate nalgebra as na;
 
@@ -58,7 +58,7 @@ fn main() {
 
 The same example, but that will compile for both WASM and native platforms is slightly more complicated because **kiss3d** must control the render loop:
 
-```rust
+```no_run
 extern crate kiss3d;
 extern crate nalgebra as na;
 
@@ -106,7 +106,7 @@ and the official package manager: [cargo](https://github.com/rust-lang/cargo).
 
 Simply add the following to your `Cargo.toml` file:
 
-```
+```text
 [dependencies]
 kiss3d = "0.16"
 ```
