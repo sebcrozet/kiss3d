@@ -1,14 +1,14 @@
-use camera::PlanarCamera;
 use event::{Action, MouseButton, WindowEvent};
 use na::{self, Matrix3, Point2, Translation2, Vector2};
 use num::Pow;
+use planar_camera::PlanarCamera;
 use resource::ShaderUniform;
 use std::f32;
 use window::Canvas;
 
 /// A 2D camera that can be zoomed and panned.
 #[derive(Clone, Debug)]
-pub struct FloatingCamera {
+pub struct Sidescroll {
     at: Point2<f32>,
     /// Distance from the camera to the `at` focus point.
     zoom: f32,
@@ -24,10 +24,10 @@ pub struct FloatingCamera {
     last_cursor_pos: Vector2<f32>,
 }
 
-impl FloatingCamera {
+impl Sidescroll {
     /// Create a new arc-ball camera.
-    pub fn new() -> FloatingCamera {
-        let mut res = FloatingCamera {
+    pub fn new() -> Sidescroll {
+        let mut res = Sidescroll {
             at: Point2::origin(),
             zoom: 1.0,
             zoom_step: 0.9,
@@ -82,12 +82,12 @@ impl FloatingCamera {
         }
     }
 
-    /// The button used to drag the FloatingCamera camera.
+    /// The button used to drag the Sidescroll camera.
     pub fn drag_button(&self) -> Option<MouseButton> {
         self.drag_button
     }
 
-    /// Set the button used to drag the FloatingCamera camera.
+    /// Set the button used to drag the Sidescroll camera.
     /// Use None to disable dragging.
     pub fn rebind_drag_button(&mut self, new_button: Option<MouseButton>) {
         self.drag_button = new_button;
@@ -116,7 +116,7 @@ impl FloatingCamera {
     }
 }
 
-impl PlanarCamera for FloatingCamera {
+impl PlanarCamera for Sidescroll {
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
         let hidpi = 1.0; // canvas.hidpi_factor();
 

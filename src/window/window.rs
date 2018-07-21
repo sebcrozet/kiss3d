@@ -11,7 +11,7 @@ use std::time::Duration;
 
 use na::{Point2, Point3, Vector2, Vector3};
 
-use camera::{ArcBall, Camera, PlanarCamera, StaticCamera};
+use camera::{ArcBall, Camera};
 use context::Context;
 use event::{Action, EventManager, Key, WindowEvent};
 use image::imageops;
@@ -19,6 +19,7 @@ use image::{ImageBuffer, Rgb};
 use light::Light;
 use line_renderer::LineRenderer;
 use ncollide3d::procedural::TriMesh;
+use planar_camera::{FixedView, PlanarCamera};
 use planar_line_renderer::PlanarLineRenderer;
 use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
@@ -49,7 +50,7 @@ pub struct Window {
     framebuffer_manager: FramebufferManager,
     post_process_render_target: RenderTarget,
     curr_time: usize, // Instant,
-    planar_camera: Rc<RefCell<StaticCamera>>,
+    planar_camera: Rc<RefCell<FixedView>>,
     camera: Rc<RefCell<ArcBall>>,
     should_close: bool,
 }
@@ -164,12 +165,18 @@ impl Window {
     }
 
     /// Removes an object from the scene.
+    #[deprecated = "Use `remove_node` instead."]
     pub fn remove(&mut self, sn: &mut SceneNode) {
+        self.remove_node(sn)
+    }
+
+    /// Removes an object from the scene.
+    pub fn remove_node(&mut self, sn: &mut SceneNode) {
         sn.unlink()
     }
 
     /// Removes a 2D object from the scene.
-    pub fn remove2(&mut self, sn: &mut PlanarSceneNode) {
+    pub fn remove_planar_node(&mut self, sn: &mut PlanarSceneNode) {
         sn.unlink()
     }
 
@@ -386,7 +393,7 @@ impl Window {
             ),
             framebuffer_manager: FramebufferManager::new(),
             curr_time: 0, // Instant::now(),
-            planar_camera: Rc::new(RefCell::new(StaticCamera::new())),
+            planar_camera: Rc::new(RefCell::new(FixedView::new())),
             camera: Rc::new(RefCell::new(ArcBall::new(
                 Point3::new(0.0f32, 0.0, -1.0),
                 Point3::origin(),
@@ -665,7 +672,7 @@ impl Window {
 
             camera.render_complete(&self.canvas);
 
-            self.render_scene2(planar_camera);
+            self.render_planar_scene(planar_camera);
 
             let (znear, zfar) = camera.clip_planes();
 
@@ -734,7 +741,7 @@ impl Window {
         self.scene.data_mut().render(pass, camera, &self.light_mode);
     }
 
-    fn render_scene2(&mut self, camera: &mut PlanarCamera) {
+    fn render_planar_scene(&mut self, camera: &mut PlanarCamera) {
         let ctxt = Context::get();
         // Activate the default texture
         verify!(ctxt.active_texture(Context::TEXTURE0));

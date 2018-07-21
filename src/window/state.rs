@@ -1,4 +1,5 @@
-use camera::{Camera, PlanarCamera};
+use camera::Camera;
+use planar_camera::PlanarCamera;
 use post_processing::PostProcessingEffect;
 use window::Window;
 

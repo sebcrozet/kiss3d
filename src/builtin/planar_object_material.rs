@@ -1,9 +1,9 @@
-use camera::PlanarCamera;
 use context::Context;
 use na::{Isometry2, Matrix2, Matrix3, Point2, Point3, Vector2};
+use planar_camera::PlanarCamera;
 use resource::PlanarMaterial;
 use resource::{Effect, PlanarMesh, ShaderAttribute, ShaderUniform};
-use scene::ObjectData2;
+use scene::PlanarObjectData;
 
 #[path = "../error.rs"]
 mod error;
@@ -59,7 +59,7 @@ impl PlanarMaterial for PlanarObjectMaterial {
         model: &Isometry2<f32>,
         scale: &Vector2<f32>,
         camera: &mut PlanarCamera,
-        data: &ObjectData2,
+        data: &PlanarObjectData,
         mesh: &mut PlanarMesh,
     ) {
         let ctxt = Context::get();

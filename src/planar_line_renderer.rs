@@ -1,8 +1,8 @@
 //! A batched line renderer.
 
-use camera::PlanarCamera;
 use context::Context;
 use na::{Matrix3, Point2, Point3};
+use planar_camera::PlanarCamera;
 use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 
 #[path = "error.rs"]

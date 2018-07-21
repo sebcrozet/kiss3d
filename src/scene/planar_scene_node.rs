@@ -1,6 +1,6 @@
 use na::{self, Isometry2, Point2, Point3, Translation2, UnitComplex, Vector2};
 
-use camera::PlanarCamera;
+use planar_camera::PlanarCamera;
 use resource::{
     PlanarMaterial, PlanarMaterialManager, PlanarMesh, PlanarMeshManager2, Texture, TextureManager,
 };

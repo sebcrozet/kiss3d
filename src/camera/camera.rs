@@ -1,5 +1,5 @@
 use event::WindowEvent;
-use na::{self, Isometry3, Matrix3, Matrix4, Point2, Point3, Point4, Vector2, Vector3};
+use na::{self, Isometry3, Matrix4, Point2, Point3, Point4, Vector2, Vector3};
 use resource::ShaderUniform;
 use window::Canvas;
 
@@ -99,30 +99,4 @@ pub trait Camera {
             na::normalize(&(unprojected_end - unprojected_begin)),
         )
     }
-}
-
-/// Trait every 2D camera must implement.
-pub trait PlanarCamera {
-    /*
-     * Event handling.
-     */
-    /// Handle a mouse event.
-    fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent);
-
-    /*
-     * Update & upload
-     */
-    /// Update the camera. This is called once at the beginning of the render loop.
-    fn update(&mut self, canvas: &Canvas);
-
-    /// Upload the camera view and projection to the gpu. This can be called multiple times on the
-    /// render loop.
-    #[inline]
-    fn upload(
-        &self,
-        proj: &mut ShaderUniform<Matrix3<f32>>,
-        view: &mut ShaderUniform<Matrix3<f32>>,
-    );
-
-    fn unproject(&self, window_coord: &Point2<f32>, window_size: &Vector2<f32>) -> Point2<f32>;
 }

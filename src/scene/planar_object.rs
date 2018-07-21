@@ -1,7 +1,7 @@
 //! Data structure of a scene node.
 
-use camera::PlanarCamera;
 use na::{Isometry2, Point2, Point3, Vector2};
+use planar_camera::PlanarCamera;
 use resource::{PlanarMaterial, PlanarMesh, Texture, TextureManager};
 use std::any::Any;
 use std::cell::RefCell;
@@ -12,7 +12,7 @@ use std::rc::Rc;
 mod error;
 
 /// Set of data identifying a scene node.
-pub struct ObjectData2 {
+pub struct PlanarObjectData {
     material: Rc<RefCell<Box<PlanarMaterial + 'static>>>,
     texture: Rc<Texture>,
     color: Point3<f32>,
@@ -23,7 +23,7 @@ pub struct ObjectData2 {
     user_data: Box<Any + 'static>,
 }
 
-impl ObjectData2 {
+impl PlanarObjectData {
     /// The texture of this object.
     #[inline]
     pub fn texture(&self) -> &Rc<Texture> {
@@ -74,8 +74,8 @@ impl ObjectData2 {
 /// This is the only interface to manipulate the object position, color, vertices and texture.
 pub struct PlanarObject {
     // FIXME: should PlanarMesh and PlanarObject be merged?
-    // (thus removing the need of ObjectData2 at all.)
-    data: ObjectData2,
+    // (thus removing the need of PlanarObjectData at all.)
+    data: PlanarObjectData,
     mesh: Rc<RefCell<PlanarMesh>>,
 }
 
@@ -90,7 +90,7 @@ impl PlanarObject {
         material: Rc<RefCell<Box<PlanarMaterial + 'static>>>,
     ) -> PlanarObject {
         let user_data = ();
-        let data = ObjectData2 {
+        let data = PlanarObjectData {
             color: Point3::new(r, g, b),
             texture: texture,
             wlines: 0.0,
@@ -125,13 +125,13 @@ impl PlanarObject {
 
     /// Gets the data of this object.
     #[inline]
-    pub fn data(&self) -> &ObjectData2 {
+    pub fn data(&self) -> &PlanarObjectData {
         &self.data
     }
 
     /// Gets the data of this object.
     #[inline]
-    pub fn data_mut(&mut self) -> &mut ObjectData2 {
+    pub fn data_mut(&mut self) -> &mut PlanarObjectData {
         &mut self.data
     }
 

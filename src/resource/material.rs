@@ -1,10 +1,11 @@
 //! Trait implemented by materials.
 
-use camera::{Camera, PlanarCamera};
+use camera::Camera;
 use light::Light;
 use na::{Isometry2, Isometry3, Vector2, Vector3};
+use planar_camera::PlanarCamera;
 use resource::{Mesh, PlanarMesh};
-use scene::{ObjectData, ObjectData2};
+use scene::{ObjectData, PlanarObjectData};
 
 /// Trait implemented by materials.
 pub trait Material {
@@ -30,7 +31,7 @@ pub trait PlanarMaterial {
         transform: &Isometry2<f32>,
         scale: &Vector2<f32>,
         camera: &mut PlanarCamera, // FIXME: replace those two arguments by
-        data: &ObjectData2,
+        data: &PlanarObjectData,
         mesh: &mut PlanarMesh,
     );
 }
