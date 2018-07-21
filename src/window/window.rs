@@ -535,14 +535,19 @@ impl Window {
 
     /// Runs the render and event loop until the window is closed.
     pub fn render_loop<S: State>(mut self, mut state: S) {
-        Canvas::render_loop(move |_| self.render_with_state(&mut state))
+        Canvas::render_loop(move |_| self.do_render_with_state(&mut state))
     }
 
     /// Render one frame using the specified state.
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     pub fn render_with_state<S: State>(&mut self, state: &mut S) -> bool {
+        self.do_render_with_state(state)
+    }
+
+    fn do_render_with_state<S: State>(&mut self, state: &mut S) -> bool {
         {
             let (camera, planar_camera, effect) = state.cameras_and_effect();
-            self.should_close = !self.render_with(camera, planar_camera, effect);
+            self.should_close = !self.do_render_with(camera, planar_camera, effect);
         }
 
         if !self.should_close {
@@ -555,6 +560,7 @@ impl Window {
     /// Renders the scene using the default camera.
     ///
     /// Returns `false` if the window should be closed.
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     pub fn render(&mut self) -> bool {
         self.render_with(None, None, None)
     }
@@ -562,6 +568,7 @@ impl Window {
     /// Render using a specific post processing effect.
     ///
     /// Returns `false` if the window should be closed.
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     pub fn render_with_effect(&mut self, effect: &mut (PostProcessingEffect)) -> bool {
         self.render_with(None, None, Some(effect))
     }
@@ -569,6 +576,7 @@ impl Window {
     /// Render using a specific camera.
     ///
     /// Returns `false` if the window should be closed.
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     pub fn render_with_camera(&mut self, camera: &mut (Camera)) -> bool {
         self.render_with(Some(camera), None, None)
     }
@@ -576,6 +584,7 @@ impl Window {
     /// Render using a specific 2D and 3D camera.
     ///
     /// Returns `false` if the window should be closed.
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     pub fn render_with_cameras(
         &mut self,
         camera: &mut Camera,
@@ -587,6 +596,7 @@ impl Window {
     /// Render using a specific camera and post processing effect.
     ///
     /// Returns `false` if the window should be closed.
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     pub fn render_with_camera_and_effect(
         &mut self,
         camera: &mut Camera,
@@ -598,6 +608,7 @@ impl Window {
     /// Render using a specific 2D and 3D camera and post processing effect.
     ///
     /// Returns `false` if the window should be closed.
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     pub fn render_with_cameras_and_effect(
         &mut self,
         camera: &mut Camera,
@@ -610,7 +621,17 @@ impl Window {
     /// Draws the scene with the given camera and post-processing effect.
     ///
     /// Returns `false` if the window should be closed.
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     pub fn render_with(
+        &mut self,
+        camera: Option<&mut Camera>,
+        planar_camera: Option<&mut PlanarCamera>,
+        post_processing: Option<&mut PostProcessingEffect>,
+    ) -> bool {
+        self.do_render_with(camera, planar_camera, post_processing)
+    }
+
+    fn do_render_with(
         &mut self,
         camera: Option<&mut Camera>,
         planar_camera: Option<&mut PlanarCamera>,
@@ -627,14 +648,16 @@ impl Window {
         let mut bself_cam = self_cam.borrow_mut();
 
         match (camera, planar_camera) {
-            (Some(cam), Some(cam2)) => self.do_render_with(cam, cam2, post_processing),
-            (None, Some(cam2)) => self.do_render_with(&mut *bself_cam, cam2, post_processing),
-            (Some(cam), None) => self.do_render_with(cam, &mut *bself_cam2, post_processing),
-            (None, None) => self.do_render_with(&mut *bself_cam, &mut *bself_cam2, post_processing),
+            (Some(cam), Some(cam2)) => self.render_single_frame(cam, cam2, post_processing),
+            (None, Some(cam2)) => self.render_single_frame(&mut *bself_cam, cam2, post_processing),
+            (Some(cam), None) => self.render_single_frame(cam, &mut *bself_cam2, post_processing),
+            (None, None) => {
+                self.render_single_frame(&mut *bself_cam, &mut *bself_cam2, post_processing)
+            }
         }
     }
 
-    fn do_render_with(
+    fn render_single_frame(
         &mut self,
         camera: &mut Camera,
         planar_camera: &mut PlanarCamera,

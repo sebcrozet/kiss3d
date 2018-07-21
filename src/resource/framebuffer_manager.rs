@@ -33,7 +33,7 @@ impl RenderTarget {
     /// Returns an opengl handle to the off-screen depth buffer.
     ///
     /// Returns `None` if the texture is off-screen.
-    #[cfg(feature = "opengl3_2")]
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     pub fn depth_id(&self) -> Option<&Texture> {
         match *self {
             RenderTarget::Screen => None,
@@ -64,7 +64,7 @@ impl RenderTarget {
                 ));
                 verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
-                if cfg!(feature = "opengl3_2") {
+                if cfg!(not(any(target_arch = "wasm32", target_arch = "asmjs"))) {
                     verify!(ctxt.bind_texture(Context::TEXTURE_2D, o.depth.as_ref()));
                     verify!(ctxt.tex_image2d(
                         Context::TEXTURE_2D,
@@ -154,7 +154,7 @@ impl FramebufferManager {
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
         /* Depth buffer */
-        if cfg!(feature = "opengl3_2") {
+        if cfg!(not(any(target_arch = "wasm32", target_arch = "asmjs"))) {
             verify!(ctxt.active_texture(Context::TEXTURE1));
             let fbo_depth = verify!(ctxt.create_texture().expect("Failed to create a texture."));
             verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&fbo_depth)));

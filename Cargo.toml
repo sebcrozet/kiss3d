@@ -24,9 +24,6 @@ include = [
 name = "kiss3d"
 path = "src/lib.rs"
 
-[features]
-opengl3_2 = [ ]
-
 [dependencies]
 libc         = "0.2"
 bitflags     = "1.0"
@@ -59,7 +56,3 @@ stdweb-derive = "0.4"
 [dev-dependencies]
 rand = "0.5"
 ncollide2d  = "0.17"
-
-[[example]]
-name = "post_processing"
-required-features = [ "opengl3_2" ]
