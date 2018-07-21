@@ -8,7 +8,7 @@ use window::Canvas;
 
 /// A 2D camera that can be zoomed and panned.
 #[derive(Clone, Debug)]
-pub struct PlanarCamera {
+pub struct FloatingCamera {
     at: Point2<f32>,
     /// Distance from the camera to the `at` focus point.
     zoom: f32,
@@ -24,10 +24,10 @@ pub struct PlanarCamera {
     last_cursor_pos: Vector2<f32>,
 }
 
-impl PlanarCamera {
+impl FloatingCamera {
     /// Create a new arc-ball camera.
-    pub fn new() -> PlanarCamera {
-        let mut res = PlanarCamera {
+    pub fn new() -> FloatingCamera {
+        let mut res = FloatingCamera {
             at: Point2::origin(),
             zoom: 1.0,
             zoom_step: 0.9,
@@ -82,12 +82,12 @@ impl PlanarCamera {
         }
     }
 
-    /// The button used to drag the PlanarCamera camera.
+    /// The button used to drag the FloatingCamera camera.
     pub fn drag_button(&self) -> Option<MouseButton> {
         self.drag_button
     }
 
-    /// Set the button used to drag the PlanarCamera camera.
+    /// Set the button used to drag the FloatingCamera camera.
     /// Use None to disable dragging.
     pub fn rebind_drag_button(&mut self, new_button: Option<MouseButton>) {
         self.drag_button = new_button;
@@ -116,7 +116,7 @@ impl PlanarCamera {
     }
 }
 
-impl PlanarCamera for PlanarCamera {
+impl PlanarCamera for FloatingCamera {
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
         let hidpi = 1.0; // canvas.hidpi_factor();
 

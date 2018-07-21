@@ -85,7 +85,6 @@ I’d love to see people improving this library for their own needs. However, ke
 #![allow(unused_unsafe)] // FIXME: should be denied
 #![allow(missing_copy_implementations)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
-#![feature(custom_attribute)]
 
 #[macro_use]
 extern crate bitflags;
