@@ -1,8 +1,6 @@
-sudo: required
-services:
-  - docker
-language: native
-install:
-  - lsb_release -a
+sudo: false
+language: rust
 script:
-  - docker run --rm -it -v "$(pwd)":/usr/src/myapp -w /usr/src/myapp rust:stretch ./ci.sh
+  - rustup target add wasm32-unknown-unknown
+  - cargo test
+  - cargo build --target wasm32-unknown-unknown
