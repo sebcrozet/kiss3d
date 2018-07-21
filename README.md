@@ -1,4 +1,4 @@
-# kiss3d
+# Kiss3d
 
 Keep It Simple, Stupid 3d graphics engine.
 
@@ -20,6 +20,7 @@ An on-line version of this documentation is available [here](http://kiss3d.org).
 ## Features
 Most features are one-liners.
 
+* WASM compatibility.
 * open a window with a default arc-ball camera and a point light.
 * a first-person camera is available too and user-defined cameras are possible.
 * display boxes, spheres, cones, cylinders, quads and lines.
@@ -28,7 +29,7 @@ Most features are one-liners.
   to do that).
 * create basic post-processing effects.
 
-As an example, having a red, rotating cube with the light attached to the camera is as simple as:
+As an example, having a red, rotating cube with the light attached to the camera is as simple as (NOTE: this will **not** compile when targeting WASM):
 
 ```rust
 extern crate kiss3d;
@@ -54,6 +55,43 @@ fn main() {
 }
 ```
 
+The same example, but that will compile for both WASM and native platforms is slightly more complicated because **kiss3d** must control the render loop:
+
+```rust
+extern crate kiss3d;
+extern crate nalgebra as na;
+
+use kiss3d::light::Light;
+use kiss3d::scene::SceneNode;
+use kiss3d::window::{State, Window};
+use na::{UnitQuaternion, Vector3};
+
+struct AppState {
+    c: SceneNode,
+    rot: UnitQuaternion<f32>,
+}
+
+impl State for AppState {
+    fn step(&mut self, _: &mut Window) {
+        self.c.prepend_to_local_rotation(&self.rot)
+    }
+}
+
+fn main() {
+    let mut window = Window::new("Kiss3d: wasm example");
+    let mut c = window.add_cube(1.0, 1.0, 1.0);
+
+    c.set_color(1.0, 0.0, 0.0);
+
+    window.set_light(Light::StickToCamera);
+
+    let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
+    let state = AppState { c, rot };
+
+    window.render_loop(state)
+}
+```
+
 Some controls are handled by default by the engine (they can be overridden by the user):
 
 * `scroll`: zoom in / zoom out.
@@ -69,7 +107,7 @@ Simply add the following to your `Cargo.toml` file:
 
 ```
 [dependencies]
-kiss3d = "0.12"
+kiss3d = "0.16"
 ```
 
 
@@ -79,4 +117,4 @@ I’d love to see people improving this library for their own needs. However, ke
 
 ## Acknowledgements
 
-Thanks to all the Rustaceans for their help, and their OpenGL/ffmpeg/stb-image/etc. bindings.
+Thanks to all the Rustaceans for their help, and their OpenGL bindings.
