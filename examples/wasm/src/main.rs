@@ -18,7 +18,7 @@ impl State for AppState {
 }
 
 fn main() {
-    let mut window = Window::new("Kiss3d: cube");
+    let mut window = Window::new("Kiss3d: wasm example");
     let mut c = window.add_cube(1.0, 1.0, 1.0);
 
     c.set_color(1.0, 0.0, 0.0);

@@ -4,13 +4,13 @@ extern crate ncollide2d;
 extern crate ncollide3d;
 extern crate rand;
 
-use std::path::Path;
+use kiss3d::light::Light;
+use kiss3d::window::Window;
 use na::{Point2, Point3, Translation3, Vector2, Vector3};
 use ncollide2d::procedural::Polyline;
-use ncollide3d::procedural::TriMesh;
 use ncollide3d::procedural::path::{ArrowheadCap, PolylinePath, PolylinePattern, StrokePattern};
-use kiss3d::window::Window;
-use kiss3d::light::Light;
+use ncollide3d::procedural::TriMesh;
+use std::path::Path;
 
 fn main() {
     let mut window = Window::new("Kiss3d: procedural");

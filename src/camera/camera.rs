@@ -102,7 +102,7 @@ pub trait Camera {
 }
 
 /// Trait every 2D camera must implement.
-pub trait Camera2 {
+pub trait PlanarCamera {
     /*
      * Event handling.
      */

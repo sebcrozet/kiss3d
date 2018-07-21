@@ -1,6 +1,6 @@
 //! A batched line renderer.
 
-use camera::Camera2;
+use camera::PlanarCamera;
 use context::Context;
 use na::{Matrix3, Point2, Point3};
 use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
@@ -64,7 +64,7 @@ impl PlanarLineRenderer {
     }
 
     /// Actually draws the lines.
-    pub fn render(&mut self, camera: &mut Camera2) {
+    pub fn render(&mut self, camera: &mut PlanarCamera) {
         if self.lines.len() == 0 {
             return;
         }

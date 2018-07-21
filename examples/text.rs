@@ -4,19 +4,17 @@ extern crate nalgebra as na;
 use kiss3d::text::Font;
 use kiss3d::window::Window;
 use na::{Point2, Point3};
-use std::path::Path;
 
 fn main() {
     let mut window = Window::new("Kiss3d: text");
-
-    let bigfont = Font::new(&Path::new("media/font/Inconsolata.otf"), 120);
-    let smallfont = Font::new(&Path::new("media/font/Inconsolata.otf"), 60);
+    let font = Font::default();
 
     while window.render() {
         window.draw_text(
             "Hello birds!",
             &Point2::origin(),
-            &bigfont,
+            120.0,
+            &font,
             &Point3::new(0.0, 1.0, 1.0),
         );
 
@@ -25,7 +23,8 @@ fn main() {
         window.draw_text(
             ascii,
             &Point2::new(0.0, 120.0),
-            &smallfont,
+            60.0,
+            &font,
             &Point3::new(1.0, 1.0, 0.0),
         );
     }

@@ -128,7 +128,7 @@ impl Material for ObjectMaterial {
 
             if data.lines_width() != 0.0 {
                 verify!(ctxt.disable(Context::CULL_FACE));
-                ctxt.line_width(data.lines_width());
+                ignore!(ctxt.line_width(data.lines_width()));
 
                 if verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::LINE)) {
                     verify!(ctxt.draw_elements(

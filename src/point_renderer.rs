@@ -16,6 +16,7 @@ pub struct PointRenderer {
     proj: ShaderUniform<Matrix4<f32>>,
     view: ShaderUniform<Matrix4<f32>>,
     points: GPUVec<Point3<f32>>,
+    point_size: f32,
 }
 
 impl PointRenderer {
@@ -32,6 +33,7 @@ impl PointRenderer {
             proj: shader.get_uniform::<Matrix4<f32>>("proj").unwrap(),
             view: shader.get_uniform::<Matrix4<f32>>("view").unwrap(),
             shader: shader,
+            point_size: 1.0,
         }
     }
 
@@ -42,7 +44,7 @@ impl PointRenderer {
 
     /// Sets the point size for the rendered points.
     pub fn set_point_size(&mut self, pt_size: f32) {
-        verify!(Context::get().point_size(pt_size));
+        self.point_size = pt_size;
     }
 
     /// Adds a line to be drawn during the next frame. Lines are not persistent between frames.
@@ -64,12 +66,13 @@ impl PointRenderer {
         self.pos.enable();
         self.color.enable();
 
-        camera.upload(pass, &mut self.view, &mut self.proj);
+        camera.upload(pass, &mut self.proj, &mut self.view);
 
         self.color.bind_sub_buffer(&mut self.points, 1, 1);
         self.pos.bind_sub_buffer(&mut self.points, 1, 0);
 
         let ctxt = Context::get();
+        verify!(ctxt.point_size(self.point_size));
         verify!(ctxt.draw_arrays(Context::POINTS, 0, (self.points.len() / 2) as i32));
 
         self.pos.disable();
@@ -90,8 +93,8 @@ const A_VERY_LONG_STRING: &'static str = "#version 100
     attribute vec3 position;
     attribute vec3 color;
     varying   vec3 Color;
-    uniform   mat4   proj;
-    uniform   mat4   view;
+    uniform   mat4 proj;
+    uniform   mat4 view;
     void main() {
         gl_Position = proj * view * vec4(position, 1.0);
         Color = color;

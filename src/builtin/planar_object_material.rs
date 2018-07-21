@@ -1,15 +1,15 @@
-use camera::Camera2;
+use camera::PlanarCamera;
 use context::Context;
 use na::{Isometry2, Matrix2, Matrix3, Point2, Point3, Vector2};
-use resource::Material2;
-use resource::{Effect, Mesh2, ShaderAttribute, ShaderUniform};
+use resource::PlanarMaterial;
+use resource::{Effect, PlanarMesh, ShaderAttribute, ShaderUniform};
 use scene::ObjectData2;
 
 #[path = "../error.rs"]
 mod error;
 
 /// The default material used to draw objects.
-pub struct ObjectMaterial2 {
+pub struct PlanarObjectMaterial {
     effect: Effect,
     pos: ShaderAttribute<Point2<f32>>,
     tex_coord: ShaderAttribute<Point2<f32>>,
@@ -20,16 +20,16 @@ pub struct ObjectMaterial2 {
     proj: ShaderUniform<Matrix3<f32>>,
 }
 
-impl ObjectMaterial2 {
-    /// Creates a new `ObjectMaterial2`.
-    pub fn new() -> ObjectMaterial2 {
+impl PlanarObjectMaterial {
+    /// Creates a new `PlanarObjectMaterial`.
+    pub fn new() -> PlanarObjectMaterial {
         // load the effect
         let mut effect = Effect::new_from_str(OBJECT_VERTEX_SRC, OBJECT_FRAGMENT_SRC);
 
         effect.use_program();
 
         // get the variables locations
-        ObjectMaterial2 {
+        PlanarObjectMaterial {
             pos: effect.get_attrib("position").unwrap(),
             tex_coord: effect.get_attrib("tex_coord").unwrap(),
             color: effect.get_uniform("color").unwrap(),
@@ -53,14 +53,14 @@ impl ObjectMaterial2 {
     }
 }
 
-impl Material2 for ObjectMaterial2 {
+impl PlanarMaterial for PlanarObjectMaterial {
     fn render(
         &mut self,
         model: &Isometry2<f32>,
         scale: &Vector2<f32>,
-        camera: &mut Camera2,
+        camera: &mut PlanarCamera,
         data: &ObjectData2,
-        mesh: &mut Mesh2,
+        mesh: &mut PlanarMesh,
     ) {
         let ctxt = Context::get();
         self.activate();
@@ -103,7 +103,7 @@ impl Material2 for ObjectMaterial2 {
 
             if data.lines_width() != 0.0 {
                 verify!(ctxt.disable(Context::CULL_FACE));
-                ctxt.line_width(data.lines_width());
+                ignore!(ctxt.line_width(data.lines_width()));
 
                 if verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::LINE)) {
                     verify!(ctxt.draw_elements(

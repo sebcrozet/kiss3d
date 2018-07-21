@@ -1,7 +1,7 @@
 //! Camera trait with some common implementations.
 
 pub use camera::arc_ball::ArcBall;
-pub use camera::camera::{Camera, Camera2};
+pub use camera::camera::{Camera, PlanarCamera};
 pub use camera::first_person::FirstPerson;
 pub use camera::first_person_stereo::FirstPersonStereo;
 pub use camera::planar_camera::PlanarCamera;

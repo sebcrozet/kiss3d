@@ -1,9 +1,9 @@
 //! Trait implemented by materials.
 
-use camera::{Camera, Camera2};
+use camera::{Camera, PlanarCamera};
 use light::Light;
 use na::{Isometry2, Isometry3, Vector2, Vector3};
-use resource::{Mesh, Mesh2};
+use resource::{Mesh, PlanarMesh};
 use scene::{ObjectData, ObjectData2};
 
 /// Trait implemented by materials.
@@ -23,14 +23,14 @@ pub trait Material {
 }
 
 /// A material for 2D objects.
-pub trait Material2 {
+pub trait PlanarMaterial {
     /// Render the given planar mesh using this material.
     fn render(
         &mut self,
         transform: &Isometry2<f32>,
         scale: &Vector2<f32>,
-        camera: &mut Camera2, // FIXME: replace those two arguments by
+        camera: &mut PlanarCamera, // FIXME: replace those two arguments by
         data: &ObjectData2,
-        mesh: &mut Mesh2,
+        mesh: &mut PlanarMesh,
     );
 }

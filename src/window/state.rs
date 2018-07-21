@@ -1,4 +1,4 @@
-use camera::{Camera, Camera2};
+use camera::{Camera, PlanarCamera};
 use post_processing::PostProcessingEffect;
 use window::Window;
 
@@ -16,7 +16,7 @@ pub trait State: 'static {
         &mut self,
     ) -> (
         Option<&mut Camera>,
-        Option<&mut Camera2>,
+        Option<&mut PlanarCamera>,
         Option<&mut PostProcessingEffect>,
     ) {
         (None, None, None)

@@ -16,7 +16,7 @@ pub enum RenderTarget {
 /// OpenGL identifiers to an off-screen buffer.
 pub struct OffscreenBuffers {
     texture: Texture,
-    depth: Texture,
+    depth: Option<Texture>,
 }
 
 impl RenderTarget {
@@ -33,10 +33,11 @@ impl RenderTarget {
     /// Returns an opengl handle to the off-screen depth buffer.
     ///
     /// Returns `None` if the texture is off-screen.
+    #[cfg(feature = "opengl3_2")]
     pub fn depth_id(&self) -> Option<&Texture> {
         match *self {
             RenderTarget::Screen => None,
-            RenderTarget::Offscreen(ref o) => Some(&o.depth),
+            RenderTarget::Offscreen(ref o) => o.depth.as_ref(),
         }
     }
 
@@ -63,18 +64,20 @@ impl RenderTarget {
                 ));
                 verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
-                verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&o.depth)));
-                // verify!(ctxt.tex_image2d(
-                //     Context::TEXTURE_2D,
-                //     0,
-                //     Context::DEPTH_COMPONENT as i32,
-                //     w as i32,
-                //     h as i32,
-                //     0,
-                //     Context::DEPTH_COMPONENT,
-                //     None
-                // ));
-                verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&o.depth)));
+                if cfg!(feature = "opengl3_2") {
+                    verify!(ctxt.bind_texture(Context::TEXTURE_2D, o.depth.as_ref()));
+                    verify!(ctxt.tex_image2d(
+                        Context::TEXTURE_2D,
+                        0,
+                        Context::DEPTH_COMPONENT as i32,
+                        w as i32,
+                        h as i32,
+                        0,
+                        Context::DEPTH_COMPONENT,
+                        None
+                    ));
+                    verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
+                }
             }
         }
     }
@@ -151,45 +154,52 @@ impl FramebufferManager {
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
         /* Depth buffer */
-        verify!(ctxt.active_texture(Context::TEXTURE1));
-        let fbo_depth = verify!(ctxt.create_texture().expect("Failed to create a texture."));
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&fbo_depth)));
-        verify!(ctxt.tex_parameteri(
-            Context::TEXTURE_2D,
-            Context::TEXTURE_MAG_FILTER,
-            Context::LINEAR as i32
-        ));
-        verify!(ctxt.tex_parameteri(
-            Context::TEXTURE_2D,
-            Context::TEXTURE_MIN_FILTER,
-            Context::LINEAR as i32
-        ));
-        verify!(ctxt.tex_parameteri(
-            Context::TEXTURE_2D,
-            Context::TEXTURE_WRAP_S,
-            Context::CLAMP_TO_EDGE as i32
-        ));
-        verify!(ctxt.tex_parameteri(
-            Context::TEXTURE_2D,
-            Context::TEXTURE_WRAP_T,
-            Context::CLAMP_TO_EDGE as i32
-        ));
-        // verify!(ctxt.tex_image2di(
-        //     Context::TEXTURE_2D,
-        //     0,
-        //     Context::DEPTH_COMPONENT as i32,
-        //     width as i32,
-        //     height as i32,
-        //     0,
-        //     Context::DEPTH_COMPONENT,
-        //     None
-        // ));
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
+        if cfg!(feature = "opengl3_2") {
+            verify!(ctxt.active_texture(Context::TEXTURE1));
+            let fbo_depth = verify!(ctxt.create_texture().expect("Failed to create a texture."));
+            verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&fbo_depth)));
+            verify!(ctxt.tex_parameteri(
+                Context::TEXTURE_2D,
+                Context::TEXTURE_MAG_FILTER,
+                Context::LINEAR as i32
+            ));
+            verify!(ctxt.tex_parameteri(
+                Context::TEXTURE_2D,
+                Context::TEXTURE_MIN_FILTER,
+                Context::LINEAR as i32
+            ));
+            verify!(ctxt.tex_parameteri(
+                Context::TEXTURE_2D,
+                Context::TEXTURE_WRAP_S,
+                Context::CLAMP_TO_EDGE as i32
+            ));
+            verify!(ctxt.tex_parameteri(
+                Context::TEXTURE_2D,
+                Context::TEXTURE_WRAP_T,
+                Context::CLAMP_TO_EDGE as i32
+            ));
+            verify!(ctxt.tex_image2di(
+                Context::TEXTURE_2D,
+                0,
+                Context::DEPTH_COMPONENT as i32,
+                width as i32,
+                height as i32,
+                0,
+                Context::DEPTH_COMPONENT,
+                None
+            ));
+            verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
-        RenderTarget::Offscreen(OffscreenBuffers {
-            texture: fbo_texture,
-            depth: fbo_depth,
-        })
+            RenderTarget::Offscreen(OffscreenBuffers {
+                texture: fbo_texture,
+                depth: Some(fbo_depth),
+            })
+        } else {
+            RenderTarget::Offscreen(OffscreenBuffers {
+                texture: fbo_texture,
+                depth: None,
+            })
+        }
     }
 
     /// Returns the render target associated with the screen.
@@ -220,7 +230,7 @@ impl FramebufferManager {
                     Context::FRAMEBUFFER,
                     Context::DEPTH_ATTACHMENT,
                     Context::TEXTURE_2D,
-                    Some(&o.depth),
+                    o.depth.as_ref(),
                     0
                 ));
             }
@@ -258,8 +268,8 @@ impl Drop for OffscreenBuffers {
         if ctxt.is_texture(Some(&self.texture)) {
             verify!(ctxt.delete_texture(Some(&self.texture)));
         }
-        if ctxt.is_texture(Some(&self.depth)) {
-            verify!(ctxt.delete_texture(Some(&self.depth)));
+        if ctxt.is_texture(self.depth.as_ref()) {
+            verify!(ctxt.delete_texture(self.depth.as_ref()));
         }
     }
 }

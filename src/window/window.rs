@@ -11,7 +11,7 @@ use std::time::Duration;
 
 use na::{Point2, Point3, Vector2, Vector3};
 
-use camera::{ArcBall, Camera, Camera2, StaticCamera};
+use camera::{ArcBall, Camera, PlanarCamera, StaticCamera};
 use context::Context;
 use event::{Action, EventManager, Key, WindowEvent};
 use image::imageops;
@@ -23,7 +23,7 @@ use planar_line_renderer::PlanarLineRenderer;
 use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, Mesh, RenderTarget, Texture, TextureManager};
-use scene::{SceneNode, SceneNode2};
+use scene::{PlanarSceneNode, SceneNode};
 use text::{Font, TextRenderer};
 use window::{Canvas, State};
 
@@ -39,7 +39,7 @@ pub struct Window {
     canvas: Canvas,
     max_dur_per_frame: Option<Duration>,
     scene: SceneNode,
-    scene2: SceneNode2,
+    scene2: PlanarSceneNode,
     light_mode: Light, // FIXME: move that to the scene graph
     background: Vector3<f32>,
     line_renderer: LineRenderer,
@@ -49,7 +49,7 @@ pub struct Window {
     framebuffer_manager: FramebufferManager,
     post_process_render_target: RenderTarget,
     curr_time: usize, // Instant,
-    camera2: Rc<RefCell<StaticCamera>>,
+    planar_camera: Rc<RefCell<StaticCamera>>,
     camera: Rc<RefCell<ArcBall>>,
     should_close: bool,
 }
@@ -169,7 +169,7 @@ impl Window {
     }
 
     /// Removes a 2D object from the scene.
-    pub fn remove2(&mut self, sn: &mut SceneNode2) {
+    pub fn remove2(&mut self, sn: &mut PlanarSceneNode) {
         sn.unlink()
     }
 
@@ -294,7 +294,7 @@ impl Window {
     /// # Arguments
     /// * `wx` - the cube extent along the z axis
     /// * `wy` - the cube extent along the y axis
-    pub fn add_rectangle(&mut self, wx: f32, wy: f32) -> SceneNode2 {
+    pub fn add_rectangle(&mut self, wx: f32, wy: f32) -> PlanarSceneNode {
         self.scene2.add_rectangle(wx, wy)
     }
 
@@ -302,7 +302,7 @@ impl Window {
     ///
     /// # Arguments
     /// * `r` - the circle radius
-    pub fn add_circle(&mut self, r: f32) -> SceneNode2 {
+    pub fn add_circle(&mut self, r: f32) -> PlanarSceneNode {
         self.scene2.add_circle(r)
     }
 
@@ -314,7 +314,7 @@ impl Window {
         &mut self,
         polygon: Vec<Point2<f32>>,
         scale: Vector2<f32>,
-    ) -> SceneNode2 {
+    ) -> PlanarSceneNode {
         self.scene2.add_convex_polygon(polygon, scale)
     }
 
@@ -373,7 +373,7 @@ impl Window {
             events: Rc::new(event_receive),
             unhandled_events: Rc::new(RefCell::new(Vec::new())),
             scene: SceneNode::new_empty(),
-            scene2: SceneNode2::new_empty(),
+            scene2: PlanarSceneNode::new_empty(),
             light_mode: Light::Absolute(Point3::new(0.0, 10.0, 0.0)),
             background: Vector3::new(0.0, 0.0, 0.0),
             line_renderer: LineRenderer::new(),
@@ -386,7 +386,7 @@ impl Window {
             ),
             framebuffer_manager: FramebufferManager::new(),
             curr_time: 0, // Instant::now(),
-            camera2: Rc::new(RefCell::new(StaticCamera::new())),
+            planar_camera: Rc::new(RefCell::new(StaticCamera::new())),
             camera: Rc::new(RefCell::new(ArcBall::new(
                 Point3::new(0.0f32, 0.0, -1.0),
                 Point3::origin(),
@@ -482,17 +482,17 @@ impl Window {
     fn handle_events(
         &mut self,
         camera: &mut Option<&mut Camera>,
-        camera2: &mut Option<&mut Camera2>,
+        planar_camera: &mut Option<&mut PlanarCamera>,
     ) {
         let unhandled_events = self.unhandled_events.clone(); // FIXME: this is very ugly.
         let events = self.events.clone(); // FIXME: this is very ugly
 
         for event in unhandled_events.borrow().iter() {
-            self.handle_event(camera, camera2, event)
+            self.handle_event(camera, planar_camera, event)
         }
 
         for event in events.try_iter() {
-            self.handle_event(camera, camera2, &event)
+            self.handle_event(camera, planar_camera, &event)
         }
 
         unhandled_events.borrow_mut().clear();
@@ -502,7 +502,7 @@ impl Window {
     fn handle_event(
         &mut self,
         camera: &mut Option<&mut Camera>,
-        camera2: &mut Option<&mut Camera2>,
+        planar_camera: &mut Option<&mut PlanarCamera>,
         event: &WindowEvent,
     ) {
         match *event {
@@ -515,7 +515,7 @@ impl Window {
             _ => {}
         }
 
-        match *camera2 {
+        match *planar_camera {
             Some(ref mut cam) => cam.handle_event(&self.canvas, event),
             None => self.camera.borrow_mut().handle_event(&self.canvas, event),
         }
@@ -534,8 +534,8 @@ impl Window {
     /// Render one frame using the specified state.
     pub fn render_with_state<S: State>(&mut self, state: &mut S) -> bool {
         {
-            let (camera, camera2, effect) = state.cameras_and_effect();
-            self.should_close = !self.render_with(camera, camera2, effect);
+            let (camera, planar_camera, effect) = state.cameras_and_effect();
+            self.should_close = !self.render_with(camera, planar_camera, effect);
         }
 
         if !self.should_close {
@@ -569,8 +569,12 @@ impl Window {
     /// Render using a specific 2D and 3D camera.
     ///
     /// Returns `false` if the window should be closed.
-    pub fn render_with_cameras(&mut self, camera: &mut Camera, camera2: &mut Camera2) -> bool {
-        self.render_with(Some(camera), Some(camera2), None)
+    pub fn render_with_cameras(
+        &mut self,
+        camera: &mut Camera,
+        planar_camera: &mut PlanarCamera,
+    ) -> bool {
+        self.render_with(Some(camera), Some(planar_camera), None)
     }
 
     /// Render using a specific camera and post processing effect.
@@ -590,10 +594,10 @@ impl Window {
     pub fn render_with_cameras_and_effect(
         &mut self,
         camera: &mut Camera,
-        camera2: &mut Camera2,
+        planar_camera: &mut PlanarCamera,
         effect: &mut PostProcessingEffect,
     ) -> bool {
-        self.render_with(Some(camera), Some(camera2), Some(effect))
+        self.render_with(Some(camera), Some(planar_camera), Some(effect))
     }
 
     /// Draws the scene with the given camera and post-processing effect.
@@ -602,20 +606,20 @@ impl Window {
     pub fn render_with(
         &mut self,
         camera: Option<&mut Camera>,
-        camera2: Option<&mut Camera2>,
+        planar_camera: Option<&mut PlanarCamera>,
         post_processing: Option<&mut PostProcessingEffect>,
     ) -> bool {
         let mut camera = camera;
-        let mut camera2 = camera2;
-        self.handle_events(&mut camera, &mut camera2);
+        let mut planar_camera = planar_camera;
+        self.handle_events(&mut camera, &mut planar_camera);
 
-        let self_cam2 = self.camera2.clone(); // FIXME: this is ugly.
+        let self_cam2 = self.planar_camera.clone(); // FIXME: this is ugly.
         let mut bself_cam2 = self_cam2.borrow_mut();
 
         let self_cam = self.camera.clone(); // FIXME: this is ugly.
         let mut bself_cam = self_cam.borrow_mut();
 
-        match (camera, camera2) {
+        match (camera, planar_camera) {
             (Some(cam), Some(cam2)) => self.do_render_with(cam, cam2, post_processing),
             (None, Some(cam2)) => self.do_render_with(&mut *bself_cam, cam2, post_processing),
             (Some(cam), None) => self.do_render_with(cam, &mut *bself_cam2, post_processing),
@@ -626,16 +630,16 @@ impl Window {
     fn do_render_with(
         &mut self,
         camera: &mut Camera,
-        camera2: &mut Camera2,
+        planar_camera: &mut PlanarCamera,
         post_processing: Option<&mut PostProcessingEffect>,
     ) -> bool {
         // XXX: too bad we have to do this at each frame…
         let w = self.width();
         let h = self.height();
 
-        camera2.handle_event(&self.canvas, &WindowEvent::FramebufferSize(w, h));
+        planar_camera.handle_event(&self.canvas, &WindowEvent::FramebufferSize(w, h));
         camera.handle_event(&self.canvas, &WindowEvent::FramebufferSize(w, h));
-        camera2.update(&self.canvas);
+        planar_camera.update(&self.canvas);
         camera.update(&self.canvas);
 
         match self.light_mode {
@@ -661,7 +665,7 @@ impl Window {
 
             camera.render_complete(&self.canvas);
 
-            self.render_scene2(camera2);
+            self.render_scene2(planar_camera);
 
             let (znear, zfar) = camera.clip_planes();
 
@@ -730,7 +734,7 @@ impl Window {
         self.scene.data_mut().render(pass, camera, &self.light_mode);
     }
 
-    fn render_scene2(&mut self, camera: &mut Camera2) {
+    fn render_scene2(&mut self, camera: &mut PlanarCamera) {
         let ctxt = Context::get();
         // Activate the default texture
         verify!(ctxt.active_texture(Context::TEXTURE0));

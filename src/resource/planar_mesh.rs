@@ -12,14 +12,14 @@ mod error;
 /// Aggregation of vertices, indices, normals and texture coordinates.
 ///
 /// It also contains the GPU location of those buffers.
-pub struct Mesh2 {
+pub struct PlanarMesh {
     coords: Arc<RwLock<GPUVec<Point2<f32>>>>,
     faces: Arc<RwLock<GPUVec<Point3<u16>>>>,
     uvs: Arc<RwLock<GPUVec<Point2<f32>>>>,
     edges: Option<Arc<RwLock<GPUVec<Point2<u16>>>>>,
 }
 
-impl Mesh2 {
+impl PlanarMesh {
     /// Creates a new mesh.
     ///
     /// If the normals and uvs are not given, they are automatically computed.
@@ -28,7 +28,7 @@ impl Mesh2 {
         faces: Vec<Point3<u16>>,
         uvs: Option<Vec<Point2<f32>>>,
         dynamic_draw: bool,
-    ) -> Mesh2 {
+    ) -> PlanarMesh {
         let uvs = match uvs {
             Some(us) => us,
             None => iter::repeat(Point2::origin()).take(coords.len()).collect(),
@@ -51,7 +51,7 @@ impl Mesh2 {
         )));
         let us = Arc::new(RwLock::new(GPUVec::new(uvs, BufferType::Array, location)));
 
-        Mesh2::new_with_gpu_vectors(cs, fs, us)
+        PlanarMesh::new_with_gpu_vectors(cs, fs, us)
     }
 
     /// Creates a new mesh. Arguments set to `None` are automatically computed.
@@ -59,8 +59,8 @@ impl Mesh2 {
         coords: Arc<RwLock<GPUVec<Point2<f32>>>>,
         faces: Arc<RwLock<GPUVec<Point3<u16>>>>,
         uvs: Arc<RwLock<GPUVec<Point2<f32>>>>,
-    ) -> Mesh2 {
-        Mesh2 {
+    ) -> PlanarMesh {
+        PlanarMesh {
             coords: coords,
             faces: faces,
             uvs: uvs,

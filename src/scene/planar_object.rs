@@ -1,8 +1,8 @@
 //! Data structure of a scene node.
 
-use camera::Camera2;
+use camera::PlanarCamera;
 use na::{Isometry2, Point2, Point3, Vector2};
-use resource::{Material2, Mesh2, Texture, TextureManager};
+use resource::{PlanarMaterial, PlanarMesh, Texture, TextureManager};
 use std::any::Any;
 use std::cell::RefCell;
 use std::path::Path;
@@ -13,7 +13,7 @@ mod error;
 
 /// Set of data identifying a scene node.
 pub struct ObjectData2 {
-    material: Rc<RefCell<Box<Material2 + 'static>>>,
+    material: Rc<RefCell<Box<PlanarMaterial + 'static>>>,
     texture: Rc<Texture>,
     color: Point3<f32>,
     wlines: f32,
@@ -72,23 +72,23 @@ impl ObjectData2 {
 /// A 3d objects on the scene.
 ///
 /// This is the only interface to manipulate the object position, color, vertices and texture.
-pub struct Object2 {
-    // FIXME: should Mesh2 and Object2 be merged?
+pub struct PlanarObject {
+    // FIXME: should PlanarMesh and PlanarObject be merged?
     // (thus removing the need of ObjectData2 at all.)
     data: ObjectData2,
-    mesh: Rc<RefCell<Mesh2>>,
+    mesh: Rc<RefCell<PlanarMesh>>,
 }
 
-impl Object2 {
+impl PlanarObject {
     #[doc(hidden)]
     pub fn new(
-        mesh: Rc<RefCell<Mesh2>>,
+        mesh: Rc<RefCell<PlanarMesh>>,
         r: f32,
         g: f32,
         b: f32,
         texture: Rc<Texture>,
-        material: Rc<RefCell<Box<Material2 + 'static>>>,
-    ) -> Object2 {
+        material: Rc<RefCell<Box<PlanarMaterial + 'static>>>,
+    ) -> PlanarObject {
         let user_data = ();
         let data = ObjectData2 {
             color: Point3::new(r, g, b),
@@ -101,14 +101,19 @@ impl Object2 {
             user_data: Box::new(user_data),
         };
 
-        Object2 {
+        PlanarObject {
             data: data,
             mesh: mesh,
         }
     }
 
     #[doc(hidden)]
-    pub fn render(&self, transform: &Isometry2<f32>, scale: &Vector2<f32>, camera: &mut Camera2) {
+    pub fn render(
+        &self,
+        transform: &Isometry2<f32>,
+        scale: &Vector2<f32>,
+        camera: &mut PlanarCamera,
+    ) {
         self.data.material.borrow_mut().render(
             transform,
             scale,
@@ -144,13 +149,13 @@ impl Object2 {
 
     /// Gets the material of this object.
     #[inline]
-    pub fn material(&self) -> Rc<RefCell<Box<Material2 + 'static>>> {
+    pub fn material(&self) -> Rc<RefCell<Box<PlanarMaterial + 'static>>> {
         self.data.material.clone()
     }
 
     /// Sets the material of this object.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material2 + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<PlanarMaterial + 'static>>>) {
         self.data.material = material;
     }
 
@@ -192,7 +197,7 @@ impl Object2 {
 
     /// This object's mesh.
     #[inline]
-    pub fn mesh(&self) -> &Rc<RefCell<Mesh2>> {
+    pub fn mesh(&self) -> &Rc<RefCell<PlanarMesh>> {
         &self.mesh
     }
 

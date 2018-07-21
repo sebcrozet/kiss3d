@@ -1,16 +1,14 @@
-extern crate gl;
 extern crate kiss3d;
 extern crate nalgebra as na;
 
-use gl::types::i32;
 use kiss3d::camera::Camera;
+use kiss3d::context::Context;
 use kiss3d::light::Light;
 use kiss3d::resource::{Effect, Material, Mesh, ShaderAttribute, ShaderUniform};
 use kiss3d::scene::ObjectData;
 use kiss3d::window::Window;
-use na::{Isometry3, Matrix3, Matrix4, Point3, UnitQuaternion, Vector3};
+use na::{Isometry3, Matrix3, Matrix4, Point3, Translation3, UnitQuaternion, Vector3};
 use std::cell::RefCell;
-use std::ptr;
 use std::rc::Rc;
 
 fn main() {
@@ -21,6 +19,7 @@ fn main() {
     ));
 
     c.set_material(material);
+    c.append_translation(&Translation3::new(0.0, 0.0, 2.0));
 
     let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
 
@@ -35,6 +34,7 @@ pub struct NormalMaterial {
     position: ShaderAttribute<Point3<f32>>,
     normal: ShaderAttribute<Vector3<f32>>,
     view: ShaderUniform<Matrix4<f32>>,
+    proj: ShaderUniform<Matrix4<f32>>,
     transform: ShaderUniform<Matrix4<f32>>,
     scale: ShaderUniform<Matrix3<f32>>,
 }
@@ -51,6 +51,7 @@ impl NormalMaterial {
             transform: shader.get_uniform("transform").unwrap(),
             scale: shader.get_uniform("scale").unwrap(),
             view: shader.get_uniform("view").unwrap(),
+            proj: shader.get_uniform("proj").unwrap(),
             shader: shader,
         }
     }
@@ -76,7 +77,7 @@ impl Material for NormalMaterial {
          * Setup camera and light.
          *
          */
-        camera.upload(pass, &mut self.view);
+        camera.upload(pass, &mut self.proj, &mut self.view);
 
         /*
          *
@@ -93,14 +94,12 @@ impl Material for NormalMaterial {
         mesh.bind_normals(&mut self.normal);
         mesh.bind_faces();
 
-        unsafe {
-            gl::DrawElements(
-                Context::TRIANGLES,
-                mesh.num_pts() as i32,
-                Context::UNSIGNED_INT,
-                ptr::null(),
-            );
-        }
+        Context::get().draw_elements(
+            Context::TRIANGLES,
+            mesh.num_pts() as i32,
+            Context::UNSIGNED_SHORT,
+            0,
+        );
 
         mesh.unbind();
 
@@ -113,13 +112,14 @@ static NORMAL_VERTEX_SRC: &'static str = "#version 100
 attribute vec3 position;
 attribute vec3 normal;
 uniform mat4 view;
+uniform mat4 proj;
 uniform mat4 transform;
 uniform mat3 scale;
 varying vec3 ls_normal;
 
 void main() {
     ls_normal   = normal;
-    gl_Position = view * transform * mat4(scale) * vec4(position, 1.0);
+    gl_Position = proj * view * transform * mat4(scale) * vec4(position, 1.0);
 }
 ";
 

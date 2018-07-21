@@ -143,11 +143,11 @@ pub fn parse(
         }
     }
 
-    if !uvs.is_empty() && ignore_uvs {
+    if uvs.is_empty() && ignore_uvs {
         println!("Warning: some texture coordinates are missing. Dropping texture coordinates infos for every vertex.");
     }
 
-    if !normals.is_empty() && ignore_normals {
+    if normals.is_empty() && ignore_normals {
         println!("Warning: some normals are missing. Dropping normals infos for every vertex.");
     }
 
@@ -297,11 +297,11 @@ fn parse_f<'a>(
             g.push(p2);
         }
 
-        if curr_ids.y == u16::max_value() as i32 {
+        if curr_ids.y == i32::max_value() as i32 {
             *ignore_uvs = true;
         }
 
-        if curr_ids.z == u16::max_value() as i32 {
+        if curr_ids.z == i32::max_value() as i32 {
             *ignore_normals = true;
         }
 
@@ -328,6 +328,7 @@ fn parse_f<'a>(
             z = curr_ids.z;
         }
 
+        assert!(x >= 0 && y >= 0 && z >= 0);
         groups_ids[curr_group].push(Point3::new(x as u16, y as u16, z as u16));
 
         i = i + 1;

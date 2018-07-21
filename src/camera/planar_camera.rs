@@ -1,4 +1,4 @@
-use camera::Camera2;
+use camera::PlanarCamera;
 use event::{Action, MouseButton, WindowEvent};
 use na::{self, Matrix3, Point2, Translation2, Vector2};
 use num::Pow;
@@ -116,7 +116,7 @@ impl PlanarCamera {
     }
 }
 
-impl Camera2 for PlanarCamera {
+impl PlanarCamera for PlanarCamera {
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
         let hidpi = 1.0; // canvas.hidpi_factor();
 

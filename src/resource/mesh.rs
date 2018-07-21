@@ -3,7 +3,7 @@ use std::iter;
 use std::sync::{Arc, RwLock};
 
 use na::{self, Point2, Point3, Vector3};
-use ncollide3d::procedural::TriMesh;
+use ncollide3d::procedural::{IndexBuffer, TriMesh};
 use num::Zero;
 use resource::gpu_vector::{AllocationType, BufferType, GPUVec};
 use resource::ShaderAttribute;
@@ -97,53 +97,82 @@ impl Mesh {
     }
 
     // XXX: The `load_to_ram` require WebGL 2.
-    // /// Creates a triangle mesh from this mesh.
-    // pub fn to_trimesh(&self) -> Option<TriMesh<f32>> {
-    //     let unload_coords = !self.coords.read().unwrap().is_on_ram();
-    //     let unload_faces = !self.faces.read().unwrap().is_on_ram();
-    //     let unload_normals = !self.normals.read().unwrap().is_on_ram();
-    //     let unload_uvs = !self.uvs.read().unwrap().is_on_ram();
+    /// Creates a triangle mesh from this mesh.
+    ///
+    /// Return `None` if the mesh data is not available on the CPU.
+    pub fn to_trimesh(&self) -> Option<TriMesh<f32>> {
+        if !self.coords.read().unwrap().is_on_ram()
+            || !self.faces.read().unwrap().is_on_ram()
+            || !self.normals.read().unwrap().is_on_ram()
+            || !self.uvs.read().unwrap().is_on_ram()
+        {
+            return None;
+        }
 
-    //     self.coords.write().unwrap().load_to_ram();
-    //     self.faces.write().unwrap().load_to_ram();
-    //     self.normals.write().unwrap().load_to_ram();
-    //     self.uvs.write().unwrap().load_to_ram();
+        let coords = self.coords.read().unwrap().to_owned();
+        let faces = self.faces.read().unwrap().to_owned();
+        let normals = self.normals.read().unwrap().to_owned();
+        let uvs = self.uvs.read().unwrap().to_owned();
 
-    //     let coords = self.coords.read().unwrap().to_owned();
-    //     let faces = self.faces.read().unwrap().to_owned();
-    //     let normals = self.normals.read().unwrap().to_owned();
-    //     let uvs = self.uvs.read().unwrap().to_owned();
+        Some(TriMesh::new(
+            coords.unwrap(),
+            normals,
+            uvs,
+            Some(IndexBuffer::Unified(
+                faces
+                    .unwrap()
+                    .into_iter()
+                    .map(|e| Point3::new(e.x as u32, e.y as u32, e.z as u32))
+                    .collect(),
+            )),
+        ))
 
-    //     if unload_coords {
-    //         self.coords.write().unwrap().unload_from_ram();
-    //     }
-    //     if unload_faces {
-    //         self.coords.write().unwrap().unload_from_ram();
-    //     }
-    //     if unload_normals {
-    //         self.coords.write().unwrap().unload_from_ram();
-    //     }
-    //     if unload_uvs {
-    //         self.coords.write().unwrap().unload_from_ram();
-    //     }
+        /*
+        let unload_coords = !self.coords.read().unwrap().is_on_ram();
+        let unload_faces = !self.faces.read().unwrap().is_on_ram();
+        let unload_normals = !self.normals.read().unwrap().is_on_ram();
+        let unload_uvs = !self.uvs.read().unwrap().is_on_ram();
 
-    //     if coords.is_none() || faces.is_none() {
-    //         None
-    //     } else {
-    //         Some(TriMesh::new(
-    //             coords.unwrap(),
-    //             normals,
-    //             uvs,
-    //             Some(IndexBuffer::Unified(
-    //                 faces
-    //                     .unwrap()
-    //                     .into_iter()
-    //                     .map(|e| Point3::new(e.x as u32, e.y as u32, e.z as u32))
-    //                     .collect(),
-    //             )),
-    //         ))
-    //     }
-    // }
+        self.coords.write().unwrap().load_to_ram();
+        self.faces.write().unwrap().load_to_ram();
+        self.normals.write().unwrap().load_to_ram();
+        self.uvs.write().unwrap().load_to_ram();
+
+        let coords = self.coords.read().unwrap().to_owned();
+        let faces = self.faces.read().unwrap().to_owned();
+        let normals = self.normals.read().unwrap().to_owned();
+        let uvs = self.uvs.read().unwrap().to_owned();
+
+        if unload_coords {
+            self.coords.write().unwrap().unload_from_ram();
+        }
+        if unload_faces {
+            self.coords.write().unwrap().unload_from_ram();
+        }
+        if unload_normals {
+            self.coords.write().unwrap().unload_from_ram();
+        }
+        if unload_uvs {
+            self.coords.write().unwrap().unload_from_ram();
+        }
+
+        if coords.is_none() || faces.is_none() {
+            None
+        } else {
+            Some(TriMesh::new(
+                coords.unwrap(),
+                normals,
+                uvs,
+                Some(IndexBuffer::Unified(
+                    faces
+                        .unwrap()
+                        .into_iter()
+                        .map(|e| Point3::new(e.x as u32, e.y as u32, e.z as u32))
+                        .collect(),
+                )),
+            ))
+        }*/
+    }
 
     /// Creates a new mesh. Arguments set to `None` are automatically computed.
     pub fn new_with_gpu_vectors(
@@ -176,7 +205,7 @@ impl Mesh {
         uvs.bind(&mut *self.uvs.write().unwrap());
     }
 
-    /// Binds this mesh vertex uvs buffer to a vertex attribute.
+    /// Binds this mesh index buffer to a vertex attribute.
     pub fn bind_faces(&mut self) {
         self.faces.write().unwrap().bind();
     }

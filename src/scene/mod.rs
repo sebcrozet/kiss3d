@@ -1,11 +1,11 @@
 //! Everything related to the scene graph.
 
 pub use self::object::{Object, ObjectData};
-pub use self::object2::{Object2, ObjectData2};
+pub use self::planar_object::{ObjectData2, PlanarObject};
+pub use self::planar_scene_node::{PlanarSceneNode, SceneNodeData2};
 pub use self::scene_node::{SceneNode, SceneNodeData};
-pub use self::scene_node2::{SceneNode2, SceneNodeData2};
 
 mod object;
-mod object2;
+mod planar_object;
+mod planar_scene_node;
 mod scene_node;
-mod scene_node2;

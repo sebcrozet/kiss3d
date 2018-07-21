@@ -3,12 +3,12 @@ use std::f32;
 
 use na::{Point2, Point3};
 
-use resource::Mesh2;
+use resource::PlanarMesh;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-thread_local!(static KEY_MESH_MANAGER: RefCell<MeshManager2> = RefCell::new(MeshManager2::new()));
+thread_local!(static KEY_MESH_MANAGER: RefCell<PlanarMeshManager2> = RefCell::new(PlanarMeshManager2::new()));
 
 /// The mesh manager.
 ///
@@ -16,14 +16,14 @@ thread_local!(static KEY_MESH_MANAGER: RefCell<MeshManager2> = RefCell::new(Mesh
 ///
 /// It keeps a cache of already-loaded meshes. Note that this is only a cache, nothing more.
 /// Thus, its usage is not required to load meshes.
-pub struct MeshManager2 {
-    meshes: HashMap<String, Rc<RefCell<Mesh2>>>,
+pub struct PlanarMeshManager2 {
+    meshes: HashMap<String, Rc<RefCell<PlanarMesh>>>,
 }
 
-impl MeshManager2 {
+impl PlanarMeshManager2 {
     /// Creates a new mesh manager.
-    pub fn new() -> MeshManager2 {
-        let mut res = MeshManager2 {
+    pub fn new() -> PlanarMeshManager2 {
+        let mut res = PlanarMeshManager2 {
             meshes: HashMap::new(),
         };
 
@@ -35,7 +35,7 @@ impl MeshManager2 {
         ];
 
         let rect_ids = vec![Point3::new(0, 1, 2), Point3::new(1, 0, 3)];
-        let rect = Mesh2::new(rect_vtx, rect_ids, None, false);
+        let rect = PlanarMesh::new(rect_vtx, rect_ids, None, false);
         res.add(Rc::new(RefCell::new(rect)), "rectangle");
 
         let mut circle_vtx = vec![Point2::origin()];
@@ -53,24 +53,24 @@ impl MeshManager2 {
         }
         circle_ids.push(Point3::new(0, circle_vtx.len() as u16 - 1, 1));
 
-        let circle = Mesh2::new(circle_vtx, circle_ids, None, false);
+        let circle = PlanarMesh::new(circle_vtx, circle_ids, None, false);
         res.add(Rc::new(RefCell::new(circle)), "circle");
 
         res
     }
 
     /// Mutably applies a function to the mesh manager.
-    pub fn get_global_manager<T, F: FnMut(&mut MeshManager2) -> T>(mut f: F) -> T {
+    pub fn get_global_manager<T, F: FnMut(&mut PlanarMeshManager2) -> T>(mut f: F) -> T {
         KEY_MESH_MANAGER.with(|manager| f(&mut *manager.borrow_mut()))
     }
 
     /// Get a mesh with the specified name. Returns `None` if the mesh is not registered.
-    pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Mesh2>>> {
+    pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<PlanarMesh>>> {
         self.meshes.get(&name.to_string()).map(|t| t.clone())
     }
 
     /// Adds a mesh with the specified name to this cache.
-    pub fn add(&mut self, mesh: Rc<RefCell<Mesh2>>, name: &str) {
+    pub fn add(&mut self, mesh: Rc<RefCell<PlanarMesh>>, name: &str) {
         let _ = self.meshes.insert(name.to_string(), mesh);
     }
 

@@ -1,4 +1,4 @@
-use camera::{Camera, Camera2};
+use camera::{Camera, PlanarCamera};
 use event::WindowEvent;
 use na::{self, Isometry3, Matrix3, Matrix4, Perspective3, Point2, Point3, Vector2, Vector3};
 use resource::ShaderUniform;
@@ -96,7 +96,7 @@ impl Camera for StaticCamera {
     fn update(&mut self, _: &Canvas) {}
 }
 
-impl Camera2 for StaticCamera {
+impl PlanarCamera for StaticCamera {
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
         let hidpi = canvas.hidpi_factor();
 

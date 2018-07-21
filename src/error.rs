@@ -13,6 +13,18 @@ macro_rules! verify(
 );
 
 #[allow(unused_macros)]
+macro_rules! ignore(
+    ($e: expr) => {
+        {
+            let res = $e;
+            #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+            { let _ = ::context::Context::get().get_error(); }
+            res
+        }
+    }
+);
+
+#[allow(unused_macros)]
 macro_rules! checked(
     ($e: expr) => {
         {

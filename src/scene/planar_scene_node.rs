@@ -1,16 +1,18 @@
 use na::{self, Isometry2, Point2, Point3, Translation2, UnitComplex, Vector2};
 
-use camera::Camera2;
-use resource::{Material2, MaterialManager2, Mesh2, MeshManager2, Texture, TextureManager};
-use scene::Object2;
+use camera::PlanarCamera;
+use resource::{
+    PlanarMaterial, PlanarMaterialManager, PlanarMesh, PlanarMeshManager2, Texture, TextureManager,
+};
+use scene::PlanarObject;
 use std::cell::{Ref, RefCell, RefMut};
 use std::mem;
 use std::path::Path;
 use std::rc::Rc;
 
-// XXX: once something like `fn foo(self: Rc<RefCell<SceneNode2>>)` is allowed, this extra struct
+// XXX: once something like `fn foo(self: Rc<RefCell<PlanarSceneNode>>)` is allowed, this extra struct
 // will not be needed any more.
-/// The datas contained by a `SceneNode2`.
+/// The datas contained by a `PlanarSceneNode`.
 pub struct SceneNodeData2 {
     local_scale: Vector2<f32>,
     local_transform: Isometry2<f32>,
@@ -18,8 +20,8 @@ pub struct SceneNodeData2 {
     world_transform: Isometry2<f32>,
     visible: bool,
     up_to_date: bool,
-    children: Vec<SceneNode2>,
-    object: Option<Object2>,
+    children: Vec<PlanarSceneNode>,
+    object: Option<PlanarObject>,
     // FIXME: use Weak pointers instead of the raw pointer.
     parent: Option<*const RefCell<SceneNodeData2>>,
 }
@@ -28,7 +30,7 @@ pub struct SceneNodeData2 {
 ///
 /// This may represent a group of other nodes, and/or contain an object that can be rendered.
 #[derive(Clone)]
-pub struct SceneNode2 {
+pub struct PlanarSceneNode {
     data: Rc<RefCell<SceneNodeData2>>,
 }
 
@@ -47,14 +49,14 @@ impl SceneNodeData2 {
     }
 
     // XXX: this exists because of a similar bug as `set_parent`.
-    fn remove_from_parent(&mut self, to_remove: &SceneNode2) {
+    fn remove_from_parent(&mut self, to_remove: &PlanarSceneNode) {
         let _ = self.parent.as_ref().map(|p| unsafe {
             let mut bp = (**p).borrow_mut();
             bp.remove(to_remove)
         });
     }
 
-    fn remove(&mut self, o: &SceneNode2) {
+    fn remove(&mut self, o: &PlanarSceneNode) {
         match self.children.iter().rposition(|e| {
             &*o.data as *const RefCell<SceneNodeData2> as usize
                 == &*e.data as *const RefCell<SceneNodeData2> as usize
@@ -66,7 +68,7 @@ impl SceneNodeData2 {
         }
     }
 
-    /// Whether this node contains an `Object2`.
+    /// Whether this node contains an `PlanarObject`.
     #[inline]
     pub fn has_object(&self) -> bool {
         self.object.is_some()
@@ -79,7 +81,7 @@ impl SceneNodeData2 {
     }
 
     /// Render the scene graph rooted by this node.
-    pub fn render(&mut self, camera: &mut Camera2) {
+    pub fn render(&mut self, camera: &mut PlanarCamera) {
         if self.visible {
             self.do_render(&na::one(), &Vector2::from_element(1.0), camera)
         }
@@ -89,7 +91,7 @@ impl SceneNodeData2 {
         &mut self,
         transform: &Isometry2<f32>,
         scale: &Vector2<f32>,
-        camera: &mut Camera2,
+        camera: &mut PlanarCamera,
     ) {
         if !self.up_to_date {
             self.up_to_date = true;
@@ -112,13 +114,13 @@ impl SceneNodeData2 {
 
     /// A reference to the object possibly contained by this node.
     #[inline]
-    pub fn object(&self) -> Option<&Object2> {
+    pub fn object(&self) -> Option<&PlanarObject> {
         self.object.as_ref()
     }
 
     /// A mutable reference to the object possibly contained by this node.
     #[inline]
-    pub fn object_mut(&mut self) -> Option<&mut Object2> {
+    pub fn object_mut(&mut self) -> Option<&mut PlanarObject> {
         self.object.as_mut()
     }
 
@@ -127,9 +129,9 @@ impl SceneNodeData2 {
     /// # Failure
     /// Fails of this node does not contains an object.
     #[inline]
-    pub fn get_object(&self) -> &Object2 {
+    pub fn get_object(&self) -> &PlanarObject {
         self.object()
-            .expect("This scene node does not contain an Object2.")
+            .expect("This scene node does not contain an PlanarObject.")
     }
 
     /// A mutable reference to the object possibly contained by this node.
@@ -137,9 +139,9 @@ impl SceneNodeData2 {
     /// # Failure
     /// Fails of this node does not contains an object.
     #[inline]
-    pub fn get_object_mut(&mut self) -> &mut Object2 {
+    pub fn get_object_mut(&mut self) -> &mut PlanarObject {
         self.object_mut()
-            .expect("This scene node does not contain an Object2.")
+            .expect("This scene node does not contain an PlanarObject.")
     }
 
     ///////////////////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HERE
@@ -155,7 +157,7 @@ impl SceneNodeData2 {
     // we are on a leaf? (to avoid the call to a closure required by the apply_to_*).
     /// Sets the material of the objects contained by this node and its children.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material2 + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<PlanarMaterial + 'static>>>) {
         self.apply_to_objects_mut(&mut |o| o.set_material(material.clone()))
     }
 
@@ -164,7 +166,7 @@ impl SceneNodeData2 {
     /// The material must already have been registered as `name`.
     #[inline]
     pub fn set_material_with_name(&mut self, name: &str) {
-        let material = MaterialManager2::get_global_manager(|tm| {
+        let material = PlanarMaterialManager::get_global_manager(|tm| {
             tm.get(name).unwrap_or_else(|| {
                 panic!("Invalid attempt to use the unregistered material: {}", name)
             })
@@ -304,7 +306,7 @@ impl SceneNodeData2 {
 
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
-    pub fn apply_to_objects_mut<F: FnMut(&mut Object2)>(&mut self, f: &mut F) {
+    pub fn apply_to_objects_mut<F: FnMut(&mut PlanarObject)>(&mut self, f: &mut F) {
         match self.object {
             Some(ref mut o) => f(o),
             None => {}
@@ -317,7 +319,7 @@ impl SceneNodeData2 {
 
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
-    pub fn apply_to_objects<F: FnMut(&Object2)>(&self, f: &mut F) {
+    pub fn apply_to_objects<F: FnMut(&PlanarObject)>(&self, f: &mut F) {
         match self.object {
             Some(ref o) => f(o),
             None => {}
@@ -516,13 +518,13 @@ impl SceneNodeData2 {
     }
 }
 
-impl SceneNode2 {
+impl PlanarSceneNode {
     /// Creates a new scene node that is not rooted.
     pub fn new(
         local_scale: Vector2<f32>,
         local_transform: Isometry2<f32>,
-        object: Option<Object2>,
-    ) -> SceneNode2 {
+        object: Option<PlanarObject>,
+    ) -> PlanarSceneNode {
         let data = SceneNodeData2 {
             local_scale: local_scale,
             local_transform: local_transform,
@@ -535,14 +537,14 @@ impl SceneNode2 {
             parent: None,
         };
 
-        SceneNode2 {
+        PlanarSceneNode {
             data: Rc::new(RefCell::new(data)),
         }
     }
 
     /// Creates a new empty, not rooted, node with identity transformations.
-    pub fn new_empty() -> SceneNode2 {
-        SceneNode2::new(Vector2::from_element(1.0), na::one(), None)
+    pub fn new_empty() -> PlanarSceneNode {
+        PlanarSceneNode::new(Vector2::from_element(1.0), na::one(), None)
     }
 
     /// Removes this node from its parent.
@@ -568,8 +570,8 @@ impl SceneNode2 {
      *
      */
     /// Adds a node without object to this node children.
-    pub fn add_group(&mut self) -> SceneNode2 {
-        let node = SceneNode2::new_empty();
+    pub fn add_group(&mut self) -> PlanarSceneNode {
+        let node = PlanarSceneNode::new_empty();
 
         self.add_child(node.clone());
 
@@ -580,7 +582,7 @@ impl SceneNode2 {
     ///
     /// # Failures:
     /// Fails if `node` already has a parent.
-    pub fn add_child(&mut self, node: SceneNode2) {
+    pub fn add_child(&mut self, node: PlanarSceneNode) {
         assert!(
             node.data().is_root(),
             "The added node must not have a parent yet."
@@ -596,9 +598,9 @@ impl SceneNode2 {
         &mut self,
         local_scale: Vector2<f32>,
         local_transform: Isometry2<f32>,
-        object: Object2,
-    ) -> SceneNode2 {
-        let node = SceneNode2::new(local_scale, local_transform, Some(object));
+        object: PlanarObject,
+    ) -> PlanarSceneNode {
+        let node = PlanarSceneNode::new(local_scale, local_transform, Some(object));
 
         self.add_child(node.clone());
 
@@ -611,7 +613,7 @@ impl SceneNode2 {
     /// # Arguments
     /// * `wx` - the rectangle extent along the z axis
     /// * `wy` - the rectangle extent along the y axis
-    pub fn add_rectangle(&mut self, wx: f32, wy: f32) -> SceneNode2 {
+    pub fn add_rectangle(&mut self, wx: f32, wy: f32) -> PlanarSceneNode {
         let res = self.add_geom_with_name("rectangle", Vector2::new(wx, wy));
 
         res.expect("Unable to load the default rectangle geometry.")
@@ -621,7 +623,7 @@ impl SceneNode2 {
     ///
     /// # Arguments
     /// * `r` - the circle radius
-    pub fn add_circle(&mut self, r: f32) -> SceneNode2 {
+    pub fn add_circle(&mut self, r: f32) -> PlanarSceneNode {
         let res = self.add_geom_with_name("circle", Vector2::new(r * 2.0, r * 2.0));
 
         res.expect("Unable to load the default circle geometry.")
@@ -632,16 +634,20 @@ impl SceneNode2 {
         &mut self,
         geometry_name: &str,
         scale: Vector2<f32>,
-    ) -> Option<SceneNode2> {
-        MeshManager2::get_global_manager(|mm| mm.get(geometry_name))
+    ) -> Option<PlanarSceneNode> {
+        PlanarMeshManager2::get_global_manager(|mm| mm.get(geometry_name))
             .map(|g| self.add_mesh(g, scale))
     }
 
     /// Creates and adds a new object to this node children using a 2D mesh.
-    pub fn add_mesh(&mut self, mesh: Rc<RefCell<Mesh2>>, scale: Vector2<f32>) -> SceneNode2 {
+    pub fn add_mesh(
+        &mut self,
+        mesh: Rc<RefCell<PlanarMesh>>,
+        scale: Vector2<f32>,
+    ) -> PlanarSceneNode {
         let tex = TextureManager::get_global_manager(|tm| tm.get_default());
-        let mat = MaterialManager2::get_global_manager(|mm| mm.get_default());
-        let object = Object2::new(mesh, 1.0, 1.0, 1.0, tex, mat);
+        let mat = PlanarMaterialManager::get_global_manager(|mm| mm.get_default());
+        let object = PlanarObject::new(mesh, 1.0, 1.0, 1.0, tex, mat);
 
         self.add_object(scale, na::one(), object)
     }
@@ -651,24 +657,24 @@ impl SceneNode2 {
         &mut self,
         polygon: Vec<Point2<f32>>,
         scale: Vector2<f32>,
-    ) -> SceneNode2 {
+    ) -> PlanarSceneNode {
         let mut indices = Vec::new();
 
         for i in 1..polygon.len() - 1 {
             indices.push(Point3::new(0, i as u16, i as u16 + 1));
         }
 
-        let mesh = Mesh2::new(polygon, indices, None, false);
+        let mesh = PlanarMesh::new(polygon, indices, None, false);
         let tex = TextureManager::get_global_manager(|tm| tm.get_default());
-        let mat = MaterialManager2::get_global_manager(|mm| mm.get_default());
-        let object = Object2::new(Rc::new(RefCell::new(mesh)), 1.0, 1.0, 1.0, tex, mat);
+        let mat = PlanarMaterialManager::get_global_manager(|mm| mm.get_default());
+        let object = PlanarObject::new(Rc::new(RefCell::new(mesh)), 1.0, 1.0, 1.0, tex, mat);
 
         self.add_object(scale, na::one(), object)
     }
 
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
-    pub fn apply_to_scene_nodes_mut<F: FnMut(&mut SceneNode2)>(&mut self, f: &mut F) {
+    pub fn apply_to_scene_nodes_mut<F: FnMut(&mut PlanarSceneNode)>(&mut self, f: &mut F) {
         f(self);
 
         for c in self.data_mut().children.iter_mut() {
@@ -678,7 +684,7 @@ impl SceneNode2 {
 
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
-    pub fn apply_to_scene_nodes<F: FnMut(&SceneNode2)>(&self, f: &mut F) {
+    pub fn apply_to_scene_nodes<F: FnMut(&PlanarSceneNode)>(&self, f: &mut F) {
         f(self);
 
         for c in self.data().children.iter() {
@@ -693,13 +699,13 @@ impl SceneNode2 {
     //
 
     /// Render the scene graph rooted by this node.
-    pub fn render(&mut self, camera: &mut Camera2) {
+    pub fn render(&mut self, camera: &mut PlanarCamera) {
         self.data_mut().render(camera)
     }
 
     /// Sets the material of the objects contained by this node and its children.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material2 + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<PlanarMaterial + 'static>>>) {
         self.data_mut().set_material(material)
     }
 
