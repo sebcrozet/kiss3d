@@ -2,7 +2,7 @@
 
 use std::rc::Rc;
 
-use super::webgl::{
+use super::webgl_bindings::{
     WebGLBuffer, WebGLFramebuffer, WebGLProgram, WebGLRenderingContext, WebGLShader, WebGLTexture,
     WebGLUniformLocation,
 };

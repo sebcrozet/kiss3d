@@ -10,6 +10,6 @@ mod context;
 #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 mod gl_context;
 #[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
-mod webgl;
+mod webgl_bindings;
 #[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 mod webgl_context;

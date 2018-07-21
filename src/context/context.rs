@@ -8,7 +8,9 @@ use context::GLContext as ContextImpl;
 use context::WebGLContext as ContextImpl;
 
 #[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
-use super::webgl::{GLenum as GLenumTy, GLintptr as GLintptrTy, GLsizeiptr as GLsizeiptrTy};
+use super::webgl_bindings::{
+    GLenum as GLenumTy, GLintptr as GLintptrTy, GLsizeiptr as GLsizeiptrTy,
+};
 #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 use gl::{
     types::GLenum as GLenumTy, types::GLintptr as GLintptrTy, types::GLsizeiptr as GLsizeiptrTy,
