@@ -13,7 +13,7 @@ use std::rc::Rc;
 // XXX: once something like `fn foo(self: Rc<RefCell<PlanarSceneNode>>)` is allowed, this extra struct
 // will not be needed any more.
 /// The datas contained by a `PlanarSceneNode`.
-pub struct SceneNodeData2 {
+pub struct PlanarSceneNodeData {
     local_scale: Vector2<f32>,
     local_transform: Isometry2<f32>,
     world_scale: Vector2<f32>,
@@ -23,7 +23,7 @@ pub struct SceneNodeData2 {
     children: Vec<PlanarSceneNode>,
     object: Option<PlanarObject>,
     // FIXME: use Weak pointers instead of the raw pointer.
-    parent: Option<*const RefCell<SceneNodeData2>>,
+    parent: Option<*const RefCell<PlanarSceneNodeData>>,
 }
 
 /// A node of the scene graph.
@@ -31,20 +31,20 @@ pub struct SceneNodeData2 {
 /// This may represent a group of other nodes, and/or contain an object that can be rendered.
 #[derive(Clone)]
 pub struct PlanarSceneNode {
-    data: Rc<RefCell<SceneNodeData2>>,
+    data: Rc<RefCell<PlanarSceneNodeData>>,
 }
 
-impl SceneNodeData2 {
+impl PlanarSceneNodeData {
     // XXX: Because `node.borrow_mut().parent = Some(self.data.downgrade())`
     // causes a weird compiler error:
     //
     // ```
-    // error: mismatched types: expected `&std::cell::RefCell<scene::scene_node::SceneNodeData2>`
+    // error: mismatched types: expected `&std::cell::RefCell<scene::scene_node::PlanarSceneNodeData>`
     // but found
-    // `std::option::Option<std::rc::Weak<std::cell::RefCell<scene::scene_node::SceneNodeData2>>>`
+    // `std::option::Option<std::rc::Weak<std::cell::RefCell<scene::scene_node::PlanarSceneNodeData>>>`
     // (expe cted &-ptr but found enum std::option::Option)
     // ```
-    fn set_parent(&mut self, parent: *const RefCell<SceneNodeData2>) {
+    fn set_parent(&mut self, parent: *const RefCell<PlanarSceneNodeData>) {
         self.parent = Some(parent);
     }
 
@@ -58,8 +58,8 @@ impl SceneNodeData2 {
 
     fn remove(&mut self, o: &PlanarSceneNode) {
         match self.children.iter().rposition(|e| {
-            &*o.data as *const RefCell<SceneNodeData2> as usize
-                == &*e.data as *const RefCell<SceneNodeData2> as usize
+            &*o.data as *const RefCell<PlanarSceneNodeData> as usize
+                == &*e.data as *const RefCell<PlanarSceneNodeData> as usize
         }) {
             Some(i) => {
                 let _ = self.children.swap_remove(i);
@@ -366,7 +366,7 @@ impl SceneNodeData2 {
     pub fn world_transformation(&self) -> Isometry2<f32> {
         // NOTE: this is to have some kind of laziness without a `&mut self`.
         unsafe {
-            let mself: &mut SceneNodeData2 = mem::transmute(self);
+            let mself: &mut PlanarSceneNodeData = mem::transmute(self);
             mself.update();
         }
         self.world_transform.clone()
@@ -381,7 +381,7 @@ impl SceneNodeData2 {
     pub fn inverse_world_transformation(&self) -> Isometry2<f32> {
         // NOTE: this is to have some kind of laziness without a `&mut self`.
         unsafe {
-            let mself: &mut SceneNodeData2 = mem::transmute(self);
+            let mself: &mut PlanarSceneNodeData = mem::transmute(self);
             mself.update();
         }
         self.local_transform.inverse()
@@ -525,7 +525,7 @@ impl PlanarSceneNode {
         local_transform: Isometry2<f32>,
         object: Option<PlanarObject>,
     ) -> PlanarSceneNode {
-        let data = SceneNodeData2 {
+        let data = PlanarSceneNodeData {
             local_scale: local_scale,
             local_transform: local_transform,
             world_transform: local_transform,
@@ -555,12 +555,12 @@ impl PlanarSceneNode {
     }
 
     /// The data of this scene node.
-    pub fn data(&self) -> Ref<SceneNodeData2> {
+    pub fn data(&self) -> Ref<PlanarSceneNodeData> {
         self.data.borrow()
     }
 
     /// The data of this scene node.
-    pub fn data_mut(&mut self) -> RefMut<SceneNodeData2> {
+    pub fn data_mut(&mut self) -> RefMut<PlanarSceneNodeData> {
         self.data.borrow_mut()
     }
 
