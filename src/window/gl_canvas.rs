@@ -93,8 +93,11 @@ impl AbstractCanvas for GLCanvas {
                     let modifiers = translate_modifiers(modifiers);
                     let dpi_factor = window.get_hidpi_factor();
                     let physical_pos = position.to_physical(dpi_factor);
-                    let _ =
-                        out_events.send(WindowEvent::CursorPos(physical_pos.x, physical_pos.y, modifiers));
+                    let _ = out_events.send(WindowEvent::CursorPos(
+                        physical_pos.x,
+                        physical_pos.y,
+                        modifiers,
+                    ));
                 }
                 glutin::WindowEvent::MouseInput {
                     state,
@@ -218,7 +221,7 @@ fn translate_key(button: Option<glutin::VirtualKeyCode>) -> Key {
             glutin::VirtualKeyCode::A => Key::A,
             glutin::VirtualKeyCode::B => Key::B,
             glutin::VirtualKeyCode::C => Key::C,
-            glutin::VirtualKeyCode::D => Key::V,
+            glutin::VirtualKeyCode::D => Key::D,
             glutin::VirtualKeyCode::E => Key::E,
             glutin::VirtualKeyCode::F => Key::F,
             glutin::VirtualKeyCode::G => Key::G,
