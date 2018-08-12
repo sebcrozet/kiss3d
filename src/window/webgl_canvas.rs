@@ -266,7 +266,7 @@ fn translate_key<E: IKeyboardEvent>(event: &E) -> Key {
         "A" | "a" => Key::A,
         "B" | "b" => Key::B,
         "C" | "c" => Key::C,
-        "D" | "d" => Key::V,
+        "D" | "d" => Key::D,
         "E" | "e" => Key::E,
         "F" | "f" => Key::F,
         "G" | "g" => Key::G,
