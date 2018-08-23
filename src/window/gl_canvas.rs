@@ -12,7 +12,7 @@ use window::AbstractCanvas;
 pub struct GLCanvas {
     window: GlWindow,
     events: EventsLoop,
-    cursor_pos: Option<(f32, f32)>,
+    cursor_pos: Option<(f64, f64)>,
     key_states: [Action; Key::Unknown as usize + 1],
     button_states: [Action; MouseButton::Button8 as usize + 1],
     out_events: Sender<WindowEvent>,
@@ -96,7 +96,7 @@ impl AbstractCanvas for GLCanvas {
                     let modifiers = translate_modifiers(modifiers);
                     let dpi_factor = window.get_hidpi_factor();
                     let physical_pos = position.to_physical(dpi_factor);
-                    *cursor_pos = Some((physical_pos.x as f32, physical_pos.y as f32));
+                    *cursor_pos = Some(physical_pos.into());
                     let _ = out_events.send(WindowEvent::CursorPos(
                         physical_pos.x,
                         physical_pos.y,
@@ -151,7 +151,7 @@ impl AbstractCanvas for GLCanvas {
         logical_size.to_physical(hidpi).into()
     }
 
-    fn cursor_pos(&self) -> Option<(f32, f32)> {
+    fn cursor_pos(&self) -> Option<(f64, f64)> {
         self.cursor_pos
     }
 

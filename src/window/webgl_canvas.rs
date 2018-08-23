@@ -51,6 +51,7 @@ impl AbstractCanvas for WebGLCanvas {
         canvas.set_height((canvas.offset_height() as f64 * hidpi_factor) as u32);
         let data = Rc::new(RefCell::new(WebGLCanvasData {
             canvas,
+            cursor_pos: None,
             key_states: [Action::Release; Key::Unknown as usize + 1],
             button_states: [Action::Release; MouseButton::Button8 as usize + 1],
             pending_events: Vec::new(),
@@ -99,7 +100,7 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let _ = web::window().add_event_listener(move |e: webevent::MouseMoveEvent| {
             let mut edata = edata.borrow_mut();
-            edata.cursor_pos = Some(e.offset_x() as f64, e.offset_y() as f64);
+            edata.cursor_pos = Some((e.offset_x() as f64, e.offset_y() as f64));
             let _ = edata.pending_events.push(WindowEvent::CursorPos(
                 e.offset_x() as f64,
                 e.offset_y() as f64,

@@ -12,6 +12,7 @@ use context::{Context, Texture};
 #[path = "../error.rs"]
 mod error;
 
+/// Wrapping parameters for a texture.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum TextureWrapping {
     /// Repeats the texture when a texture coordinate is out of bounds.

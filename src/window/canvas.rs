@@ -49,7 +49,7 @@ impl Canvas {
     ///
     /// This position may not be known if, e.g., the cursor has not been moved since the
     /// window was open.
-    pub fn cursor_pos(&self) -> Option<(f32, f32)> {
+    pub fn cursor_pos(&self) -> Option<(f64, f64)> {
         self.canvas.cursor_pos()
     }
 
@@ -96,7 +96,7 @@ pub(crate) trait AbstractCanvas {
     fn poll_events(&mut self);
     fn swap_buffers(&mut self);
     fn size(&self) -> (u32, u32);
-    fn cursor_pos(&self) -> Option<(f32, f32)>;
+    fn cursor_pos(&self) -> Option<(f64, f64)>;
     fn hidpi_factor(&self) -> f64;
 
     fn set_title(&mut self, title: &str);
