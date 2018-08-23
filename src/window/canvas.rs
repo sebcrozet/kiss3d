@@ -30,7 +30,7 @@ impl Canvas {
         CanvasImpl::render_loop(data)
     }
 
-    /// Poll all events tha occured since the last call to this method.
+    /// Poll all events tha occurred since the last call to this method.
     pub fn poll_events(&mut self) {
         self.canvas.poll_events()
     }
@@ -43,6 +43,14 @@ impl Canvas {
     /// The size of the window.
     pub fn size(&self) -> (u32, u32) {
         self.canvas.size()
+    }
+
+    /// The current position of the cursor, if known.
+    ///
+    /// This position may not be known if, e.g., the cursor has not been moved since the
+    /// window was open.
+    pub fn cursor_pos(&self) -> Option<(f32, f32)> {
+        self.canvas.cursor_pos()
     }
 
     /// The high-dpi factor.
@@ -88,6 +96,7 @@ pub(crate) trait AbstractCanvas {
     fn poll_events(&mut self);
     fn swap_buffers(&mut self);
     fn size(&self) -> (u32, u32);
+    fn cursor_pos(&self) -> Option<(f32, f32)>;
     fn hidpi_factor(&self) -> f64;
 
     fn set_title(&mut self, title: &str);

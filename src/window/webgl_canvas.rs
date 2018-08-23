@@ -25,6 +25,7 @@ impl ConcreteEvent for WheelEvent {
 
 struct WebGLCanvasData {
     canvas: CanvasElement,
+    cursor_pos: Option<(f64, f64)>,
     key_states: [Action; Key::Unknown as usize + 1],
     button_states: [Action; MouseButton::Button8 as usize + 1],
     pending_events: Vec<WindowEvent>,
@@ -98,6 +99,7 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let _ = web::window().add_event_listener(move |e: webevent::MouseMoveEvent| {
             let mut edata = edata.borrow_mut();
+            edata.cursor_pos = Some(e.offset_x() as f64, e.offset_y() as f64);
             let _ = edata.pending_events.push(WindowEvent::CursorPos(
                 e.offset_x() as f64,
                 e.offset_y() as f64,
@@ -182,6 +184,10 @@ impl AbstractCanvas for WebGLCanvas {
             self.data.borrow().canvas.offset_width() as u32,
             self.data.borrow().canvas.offset_height() as u32,
         )
+    }
+
+    fn cursor_pos(&self) -> Option<(f64, f64)> {
+        self.data.borrow().cursor_pos
     }
 
     fn set_title(&mut self, _: &str) {
