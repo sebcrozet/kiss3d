@@ -61,6 +61,7 @@ impl AbstractContextConst for GLContext {
     const TEXTURE0: u32 = gl::TEXTURE0;
     const TEXTURE1: u32 = gl::TEXTURE1;
     const REPEAT: u32 = gl::REPEAT;
+    const MIRRORED_REPEAT: u32 = gl::MIRRORED_REPEAT;
     const LINEAR_MIPMAP_LINEAR: u32 = gl::LINEAR_MIPMAP_LINEAR;
     const TRIANGLES: u32 = gl::TRIANGLES;
     const CULL_FACE: u32 = gl::CULL_FACE;

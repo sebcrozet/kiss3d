@@ -65,6 +65,7 @@ impl AbstractContextConst for WebGLContext {
     const TEXTURE0: u32 = WebGLRenderingContext::TEXTURE0;
     const TEXTURE1: u32 = WebGLRenderingContext::TEXTURE1;
     const REPEAT: u32 = WebGLRenderingContext::REPEAT;
+    const MIRRORED_REPEAT: u32 = WebGLRenderingContext::MIRRORED_REPEAT;
     const LINEAR_MIPMAP_LINEAR: u32 = WebGLRenderingContext::LINEAR_MIPMAP_LINEAR;
     const TRIANGLES: u32 = WebGLRenderingContext::TRIANGLES;
     const CULL_FACE: u32 = WebGLRenderingContext::CULL_FACE;
