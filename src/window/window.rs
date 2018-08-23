@@ -476,9 +476,16 @@ impl Window {
         EventManager::new(self.events.clone(), self.unhandled_events.clone())
     }
 
-    /// Retrueve the status of a key.
+    /// Gets the status of a key.
     pub fn get_key(&self, key: Key) -> Action {
         self.canvas.get_key(key)
+    }
+
+    /// Gets the last known position of the mouse.
+    ///
+    /// The position of the mouse is automatically updated when the mouse moves over the canvas.
+    pub fn cursor_pos(&self) -> Option<(f64, f64)> {
+        self.canvas.cursor_pos()
     }
 
     /// Poll events and pass them to a user-defined function. If the function returns `true`, the
