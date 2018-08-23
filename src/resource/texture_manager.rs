@@ -12,6 +12,27 @@ use context::{Context, Texture};
 #[path = "../error.rs"]
 mod error;
 
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
+pub enum TextureWrapping {
+    /// Repeats the texture when a texture coordinate is out of bounds.
+    Repeat,
+    /// Repeats the mirrored texture when a texture coordinate is out of bounds.
+    MirroredRepeat,
+    /// Repeats the nearest edge point texture color when a texture coordinate is out of bounds.
+    ClampToEdge,
+}
+
+impl Into<u32> for TextureWrapping {
+    #[inline]
+    fn into(self) -> u32 {
+        match self {
+            TextureWrapping::Repeat => Context::REPEAT,
+            TextureWrapping::MirroredRepeat => Context::MIRRORED_REPEAT,
+            TextureWrapping::ClampToEdge => Context::CLAMP_TO_EDGE
+        }
+    }
+}
+
 impl Texture {
     /// Allocates a new texture on the gpu. The texture is not configured.
     pub fn new() -> Rc<Texture> {
@@ -21,6 +42,30 @@ impl Texture {
                 .expect("Could not create texture.")
         );
         Rc::new(tex)
+    }
+
+    /// Sets the wrapping of this texture along the `s` texture coordinate.
+    pub fn set_wrapping_s(&mut self, wrapping: TextureWrapping) {
+        let ctxt = Context::get();
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self)));
+        let wrap: u32 = wrapping.into();
+        verify!(ctxt.tex_parameteri(
+                Context::TEXTURE_2D,
+                Context::TEXTURE_WRAP_S,
+                wrap as i32
+            ));
+    }
+
+    /// Sets the wrapping of this texture along the `t` texture coordinate.
+    pub fn set_wrapping_t(&mut self, wrapping: TextureWrapping) {
+        let ctxt = Context::get();
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self)));
+        let wrap: u32 = wrapping.into();
+        verify!(ctxt.tex_parameteri(
+                Context::TEXTURE_2D,
+                Context::TEXTURE_WRAP_T,
+                wrap as i32
+            ));
     }
 }
 

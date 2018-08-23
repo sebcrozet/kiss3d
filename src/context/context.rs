@@ -78,6 +78,7 @@ impl Context {
     pub const TEXTURE0: u32 = ContextImpl::TEXTURE0;
     pub const TEXTURE1: u32 = ContextImpl::TEXTURE1;
     pub const REPEAT: u32 = ContextImpl::REPEAT;
+    pub const MIRRORED_REPEAT: u32 = ContextImpl::MIRRORED_REPEAT;
     pub const LINEAR_MIPMAP_LINEAR: u32 = ContextImpl::LINEAR_MIPMAP_LINEAR;
     pub const TRIANGLES: u32 = ContextImpl::TRIANGLES;
     pub const CULL_FACE: u32 = ContextImpl::CULL_FACE;
@@ -505,6 +506,7 @@ pub(crate) trait AbstractContextConst {
     const TEXTURE0: u32;
     const TEXTURE1: u32;
     const REPEAT: u32;
+    const MIRRORED_REPEAT: u32;
     const LINEAR_MIPMAP_LINEAR: u32;
     const TRIANGLES: u32;
     const CULL_FACE: u32;
