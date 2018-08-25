@@ -611,7 +611,7 @@ impl PlanarSceneNode {
     /// at (0, 0).
     ///
     /// # Arguments
-    /// * `wx` - the rectangle extent along the z axis
+    /// * `wx` - the rectangle extent along the x axis
     /// * `wy` - the rectangle extent along the y axis
     pub fn add_rectangle(&mut self, wx: f32, wy: f32) -> PlanarSceneNode {
         let res = self.add_geom_with_name("rectangle", Vector2::new(wx, wy));
