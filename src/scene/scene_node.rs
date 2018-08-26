@@ -658,7 +658,7 @@ impl SceneNode {
     /// at (0, 0, 0).
     ///
     /// # Arguments
-    /// * `wx` - the cube extent along the z axis
+    /// * `wx` - the cube extent along the x axis
     /// * `wy` - the cube extent along the y axis
     /// * `wz` - the cube extent along the z axis
     pub fn add_cube(&mut self, wx: f32, wy: f32, wz: f32) -> SceneNode {

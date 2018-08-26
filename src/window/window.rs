@@ -219,7 +219,7 @@ impl Window {
     /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
     ///
     /// # Arguments
-    /// * `wx` - the cube extent along the z axis
+    /// * `wx` - the cube extent along the x axis
     /// * `wy` - the cube extent along the y axis
     /// * `wz` - the cube extent along the z axis
     pub fn add_cube(&mut self, wx: f32, wy: f32, wz: f32) -> SceneNode {
@@ -299,7 +299,7 @@ impl Window {
     /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
     ///
     /// # Arguments
-    /// * `wx` - the cube extent along the z axis
+    /// * `wx` - the cube extent along the x axis
     /// * `wy` - the cube extent along the y axis
     pub fn add_rectangle(&mut self, wx: f32, wy: f32) -> PlanarSceneNode {
         self.scene2.add_rectangle(wx, wy)
