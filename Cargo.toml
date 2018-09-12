@@ -44,15 +44,15 @@ glutin = "0.17"
 # to avoid https://github.com/koute/stdweb/issues/135
 [target.wasm32-unknown-unknown.dependencies]
 stdweb = "0.4"
-stdweb-derive = "0.4"
+stdweb-derive = "0.5"
 
 [target.wasm32-unknown-emscripten.dependencies]
 stdweb = "0.4"
-stdweb-derive = "0.4"
+stdweb-derive = "0.5"
 
 [target.asmjs-unknown-emscripten.dependencies]
 stdweb = "0.4"
-stdweb-derive = "0.4"
+stdweb-derive = "0.5"
 
 [dev-dependencies]
 rand = "0.5"
