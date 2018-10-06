@@ -164,8 +164,30 @@ impl TextureManager {
         }
     }
 
+    /// Allocates a new texture read from a `DynamicImage` object.
+    /// 
+    /// If a texture with same name exists, nothing is created and the old texture is returned.
+    pub fn add_image(&mut self, dynamic_image: DynamicImage, name: &str) -> Rc<Texture> {
+        self.textures
+        .entry(name.to_string())
+        .or_insert_with(|| TextureManager::load_texture_into_context(dynamic_image).unwrap())
+        .clone()
+    }
+
+    /// Allocates a new texture and tries to decode it from bytes array
+    /// Panics if unable to do so
+    /// If a texture with same name exists, nothing is created and the old texture is returned.
+    pub fn add_image_from_memory(&mut self, image_data: &[u8], name: &str) -> Rc<Texture> {
+        self.add_image(image::load_from_memory(image_data).expect("Invalid data"), name)
+    }
+
     /// Allocates a new texture read from a file.
-    fn load_texture(path: &Path) -> Rc<Texture> {
+    fn load_texture_from_file(path: &Path) -> Rc<Texture> {
+        TextureManager::load_texture_into_context(image::open(path).unwrap())
+        .expect(path.to_str().unwrap())
+    }
+
+    fn load_texture_into_context(dynamic_image: DynamicImage) -> Result<Rc<Texture>, &'static str> {
         let ctxt = Context::get();
         let tex = Texture::new();
 
@@ -173,7 +195,7 @@ impl TextureManager {
             verify!(ctxt.active_texture(Context::TEXTURE0));
             verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&*tex)));
 
-            match image::open(path).unwrap() {
+            match dynamic_image {
                 DynamicImage::ImageRgb8(image) => {
                     verify!(ctxt.tex_image2d(
                         Context::TEXTURE_2D,
@@ -199,10 +221,7 @@ impl TextureManager {
                     ));
                 }
                 _ => {
-                    panic!(
-                        "Failed to load texture {}, unsuported pixel format.",
-                        path.to_str().unwrap()
-                    );
+                    return Err("Failed to load texture, unsuported pixel format.");
                 }
             }
 
@@ -227,8 +246,7 @@ impl TextureManager {
                 Context::LINEAR as i32
             ));
         }
-
-        tex
+        Ok(tex)
     }
 
     /// Allocates a new texture read from a file. If a texture with same name exists, nothing is
@@ -236,7 +254,7 @@ impl TextureManager {
     pub fn add(&mut self, path: &Path, name: &str) -> Rc<Texture> {
         self.textures
             .entry(name.to_string())
-            .or_insert_with(|| TextureManager::load_texture(path))
+            .or_insert_with(|| TextureManager::load_texture_from_file(path))
             .clone()
     }
 }
