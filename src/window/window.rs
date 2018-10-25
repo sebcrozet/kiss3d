@@ -296,7 +296,7 @@ impl Window {
         TextureManager::get_global_manager(|tm| tm.add(path, name))
     }
 
-    /// Adds a cube to the scene. The cube is initially axis-aligned and centered at (0, 0, 0).
+    /// Adds a rectangle to the scene. The rectangle is initially axis-aligned and centered at (0, 0, 0).
     ///
     /// # Arguments
     /// * `wx` - the cube extent along the x axis
