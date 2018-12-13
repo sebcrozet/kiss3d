@@ -5,6 +5,7 @@ use event::{Action, Key, MouseButton, WindowEvent};
 use window::GLCanvas as CanvasImpl;
 #[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 use window::WebGLCanvas as CanvasImpl;
+use image::{GenericImage, Pixel};
 
 /// An abstract structure representing a window for native applications, and a canvas for web applications.
 pub struct Canvas {
@@ -63,6 +64,15 @@ impl Canvas {
         self.canvas.set_title(title)
     }
 
+    /// Set the window icon. On wasm this does nothing.
+    ///
+    /// ```rust
+    /// window.set_icon(image::open("foo.ico")?);
+    /// ```
+    pub fn set_icon(&mut self, icon: impl GenericImage<Pixel = impl Pixel<Subpixel = u8>>) {
+        self.canvas.set_icon(icon)
+    }
+
     /// Hide the window.
     pub fn hide(&mut self) {
         self.canvas.hide()
@@ -100,6 +110,7 @@ pub(crate) trait AbstractCanvas {
     fn hidpi_factor(&self) -> f64;
 
     fn set_title(&mut self, title: &str);
+    fn set_icon(&mut self, icon: impl GenericImage<Pixel = impl Pixel<Subpixel = u8>>);
     fn hide(&mut self);
     fn show(&mut self);
 

@@ -7,6 +7,7 @@ use glutin::{
     WindowBuilder,
 };
 use window::AbstractCanvas;
+use image::{GenericImage, Pixel};
 
 /// A canvas based on glutin and OpenGL.
 pub struct GLCanvas {
@@ -161,6 +162,16 @@ impl AbstractCanvas for GLCanvas {
 
     fn set_title(&mut self, title: &str) {
         self.window.set_title(title)
+    }
+
+    fn set_icon(&mut self, icon: impl GenericImage<Pixel = impl Pixel<Subpixel = u8>>) {
+        let (width, height) = icon.dimensions();
+        let mut rgba = Vec::with_capacity((width * height) as usize * 4);
+        for (_, _, pixel) in icon.pixels() {
+            rgba.extend_from_slice(&pixel.to_rgba().data);
+        }
+        let icon = glutin::Icon::from_rgba(rgba, width, height).unwrap();
+        self.window.set_window_icon(Some(icon))
     }
 
     fn hide(&mut self) {
