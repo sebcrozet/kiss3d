@@ -64,11 +64,7 @@ impl Canvas {
         self.canvas.set_title(title)
     }
 
-    /// Set the window icon. On wasm this does nothing.
-    ///
-    /// ```rust
-    /// window.set_icon(image::open("foo.ico")?);
-    /// ```
+    /// Set the window icon. See `Window::set_icon` for details.
     pub fn set_icon(&mut self, icon: impl GenericImage<Pixel = impl Pixel<Subpixel = u8>>) {
         self.canvas.set_icon(icon)
     }
