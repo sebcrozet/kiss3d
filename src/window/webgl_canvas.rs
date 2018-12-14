@@ -11,6 +11,7 @@ use stdweb::web::event::{ConcreteEvent, IEvent, IKeyboardEvent, IMouseEvent, IUi
 use stdweb::web::{self, html_element::CanvasElement, IEventTarget, IHtmlElement, IParentNode};
 use stdweb::{unstable::TryInto, Reference};
 use window::AbstractCanvas;
+use image::{GenericImage, Pixel};
 
 #[derive(Clone, Debug, PartialEq, Eq, ReferenceType)]
 #[reference(instance_of = "Event")] // TODO: Better type check.
@@ -192,6 +193,10 @@ impl AbstractCanvas for WebGLCanvas {
     }
 
     fn set_title(&mut self, _: &str) {
+        // Not supported.
+    }
+
+    fn set_icon(&mut self, icon: impl GenericImage<Pixel = impl Pixel<Subpixel = u8>>) {
         // Not supported.
     }
 

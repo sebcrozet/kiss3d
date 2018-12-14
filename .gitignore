@@ -5,6 +5,7 @@
 *.dSYM
 *.dylib
 cargo.lock
+Cargo.lock
 target
 bin/camera
 bin/cube

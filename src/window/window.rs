@@ -27,6 +27,7 @@ use resource::{FramebufferManager, Mesh, RenderTarget, Texture, TextureManager};
 use scene::{PlanarSceneNode, SceneNode};
 use text::{Font, TextRenderer};
 use window::{Canvas, State};
+use image::{GenericImage, Pixel};
 
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
@@ -93,6 +94,23 @@ impl Window {
     /// Set window title
     pub fn set_title(&mut self, title: &str) {
         self.canvas.set_title(title)
+    }
+
+    /// Set the window icon. On wasm this does nothing.
+    ///
+    /// ```rust,should_panic
+    /// # extern crate kiss3d;
+    /// # extern crate image;
+    /// # use kiss3d::window::Window;
+    ///
+    /// # fn main() -> Result<(), image::ImageError> {
+    /// #    let mut window = Window::new("");
+    /// window.set_icon(image::open("foo.ico")?);
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn set_icon(&mut self, icon: impl GenericImage<Pixel = impl Pixel<Subpixel = u8>>) {
+        self.canvas.set_icon(icon)
     }
 
     /// Closes the window.
