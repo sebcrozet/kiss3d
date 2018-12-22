@@ -2,13 +2,14 @@ use na::{self, Isometry2, Point2, Point3, Translation2, UnitComplex, Vector2};
 
 use planar_camera::PlanarCamera;
 use resource::{
-    PlanarMaterial, PlanarMaterialManager, PlanarMesh, PlanarMeshManager2, Texture, TextureManager,
+    PlanarMaterial, PlanarMaterialManager, PlanarMesh, PlanarMeshManager, Texture, TextureManager,
 };
 use scene::PlanarObject;
 use std::cell::{Ref, RefCell, RefMut};
 use std::mem;
 use std::path::Path;
 use std::rc::Rc;
+use std::f32;
 
 // XXX: once something like `fn foo(self: Rc<RefCell<PlanarSceneNode>>)` is allowed, this extra struct
 // will not be needed any more.
@@ -643,13 +644,61 @@ impl PlanarSceneNode {
         res.expect("Unable to load the default circle geometry.")
     }
 
+    /// Adds a 2D capsule as a children of this node. The capsule is initially centered at (0, 0).
+    ///
+    /// # Arguments
+    /// * `r` - the circle radius
+    pub fn add_capsule(&mut self, r: f32, h: f32) -> PlanarSceneNode {
+        let name = format!("capsule_{}_{}", r, h);
+
+        let mesh = PlanarMeshManager::get_global_manager(|mm| {
+            if let Some(geom) = mm.get(&name) {
+                geom
+            } else {
+                // Create the capsule geometry.
+                let mut capsule_vtx = vec![Point2::origin()];
+                let mut capsule_ids = Vec::new();
+                let nsamples = 50;
+
+                for i in 0..=nsamples {
+                    let ang = (i as f32) / (nsamples as f32) * f32::consts::PI;
+                    capsule_vtx.push(Point2::new(ang.cos() * r, ang.sin() * r + h / 2.0));
+                    capsule_ids.push(Point3::new(
+                        0,
+                        capsule_vtx.len() as u16 - 2,
+                        capsule_vtx.len() as u16 - 1,
+                    ));
+                }
+
+                for i in nsamples..=nsamples * 2 {
+                    let ang = (i as f32) / (nsamples as f32) * f32::consts::PI;
+                    capsule_vtx.push(Point2::new(ang.cos() * r, ang.sin() * r - h / 2.0));
+                    capsule_ids.push(Point3::new(
+                        0,
+                        capsule_vtx.len() as u16 - 2,
+                        capsule_vtx.len() as u16 - 1,
+                    ));
+                }
+
+                capsule_ids.push(Point3::new(0, capsule_vtx.len() as u16 - 1, 1));
+
+                let capsule = PlanarMesh::new(capsule_vtx, capsule_ids, None, false);
+                let mesh = Rc::new(RefCell::new(capsule));
+                mm.add(mesh.clone(), &name);
+                mesh
+            }
+        });
+
+        self.add_mesh(mesh, Vector2::repeat(1.0))
+    }
+
     /// Creates and adds a new object using the geometry registered as `geometry_name`.
     pub fn add_geom_with_name(
         &mut self,
         geometry_name: &str,
         scale: Vector2<f32>,
     ) -> Option<PlanarSceneNode> {
-        PlanarMeshManager2::get_global_manager(|mm| mm.get(geometry_name))
+        PlanarMeshManager::get_global_manager(|mm| mm.get(geometry_name))
             .map(|g| self.add_mesh(g, scale))
     }
 

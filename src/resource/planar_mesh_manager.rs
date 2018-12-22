@@ -8,7 +8,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-thread_local!(static KEY_MESH_MANAGER: RefCell<PlanarMeshManager2> = RefCell::new(PlanarMeshManager2::new()));
+thread_local!(static KEY_MESH_MANAGER: RefCell<PlanarMeshManager> = RefCell::new(PlanarMeshManager::new()));
 
 /// The mesh manager.
 ///
@@ -16,17 +16,20 @@ thread_local!(static KEY_MESH_MANAGER: RefCell<PlanarMeshManager2> = RefCell::ne
 ///
 /// It keeps a cache of already-loaded meshes. Note that this is only a cache, nothing more.
 /// Thus, its usage is not required to load meshes.
-pub struct PlanarMeshManager2 {
+pub struct PlanarMeshManager {
     meshes: HashMap<String, Rc<RefCell<PlanarMesh>>>,
 }
 
-impl PlanarMeshManager2 {
+impl PlanarMeshManager {
     /// Creates a new mesh manager.
-    pub fn new() -> PlanarMeshManager2 {
-        let mut res = PlanarMeshManager2 {
+    pub fn new() -> PlanarMeshManager {
+        let mut res = PlanarMeshManager {
             meshes: HashMap::new(),
         };
 
+        /*
+         * Rectangle geometry.
+         */
         let rect_vtx = vec![
             Point2::new(0.5, 0.5),
             Point2::new(-0.5, -0.5),
@@ -38,6 +41,9 @@ impl PlanarMeshManager2 {
         let rect = PlanarMesh::new(rect_vtx, rect_ids, None, false);
         res.add(Rc::new(RefCell::new(rect)), "rectangle");
 
+        /*
+         * Circle geometry.
+         */
         let mut circle_vtx = vec![Point2::origin()];
         let mut circle_ids = Vec::new();
         let nsamples = 50;
@@ -60,7 +66,7 @@ impl PlanarMeshManager2 {
     }
 
     /// Mutably applies a function to the mesh manager.
-    pub fn get_global_manager<T, F: FnMut(&mut PlanarMeshManager2) -> T>(mut f: F) -> T {
+    pub fn get_global_manager<T, F: FnMut(&mut PlanarMeshManager) -> T>(mut f: F) -> T {
         KEY_MESH_MANAGER.with(|manager| f(&mut *manager.borrow_mut()))
     }
 
