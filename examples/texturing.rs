@@ -18,12 +18,12 @@ fn main() {
 
     let mut c = window.add_cube(1.0, 1.0, 1.0);
     c.set_color(1.0, 0.0, 0.0);
-    c.set_texture_from_file(&Path::new("media/kitten.png"), "kitten");
+    c.set_texture_from_file(&Path::new("./examples/media/kitten.png"), "kitten");
 
     let mut r = window.add_rectangle(100.0, 100.0);
     r.append_translation(&Translation2::new(-100.0, -100.0));
     r.set_color(0.0, 0.0, 1.0);
-    r.set_texture_from_memory(include_bytes!("media/kitten.png"), "kitten_mem");
+    r.set_texture_from_memory(include_bytes!("./media/kitten.png"), "kitten_mem");
 
     r.modify_uvs(&mut |points|{
         for(i, p) in points.iter_mut().enumerate() {
