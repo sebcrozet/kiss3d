@@ -183,7 +183,7 @@ impl Window {
     }
 
     /// Removes an object from the scene.
-    #[deprecated = "Use `remove_node` instead."]
+    #[deprecated(note = "Use `remove_node` instead.")]
     pub fn remove(&mut self, sn: &mut SceneNode) {
         self.remove_node(sn)
     }
