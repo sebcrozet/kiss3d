@@ -31,13 +31,13 @@ bitflags     = "1.0"
 num-traits   = "0.2"
 nalgebra     = "0.16"
 ncollide3d   = "0.17"
-image        = "0.19"
+image        = "0.20"
 serde        = "1.0"
 serde_derive = "1.0"
-rusttype     = { version = "0.6", features = [ "gpu_cache" ] }
+rusttype     = { version = "0.7", features = [ "gpu_cache" ] }
 
 [target.'cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))'.dependencies]
-gl = "0.10.0"
+gl = "0.11"
 glutin = "0.19"
 
 # We repeat all three targets instead of any(target_arch = "wasm32", target_arch = "asmjs")
@@ -55,5 +55,5 @@ stdweb = "0.4"
 stdweb-derive = "0.5"
 
 [dev-dependencies]
-rand = "0.5"
+rand = "0.6"
 ncollide2d  = "0.17"
