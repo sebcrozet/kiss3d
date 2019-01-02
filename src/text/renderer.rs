@@ -4,7 +4,7 @@
 
 use na::{Point2, Point3, Vector2};
 use rusttype;
-use rusttype::gpu_cache::{Cache, CacheBuilder};
+use rusttype::gpu_cache::Cache;
 use std::rc::Rc;
 
 use context::{Context, Texture};
