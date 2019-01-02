@@ -55,5 +55,5 @@ stdweb = "0.4"
 stdweb-derive = "0.5"
 
 [dev-dependencies]
-rand = "0.6"
+rand = "0.5"
 ncollide2d  = "0.17"
