@@ -57,9 +57,10 @@ impl TextRenderer {
         /* We're using 1 byte alignment buffering. */
         verify!(ctxt.pixel_storei(Context::UNPACK_ALIGNMENT, 1));
 
-        let texture = verify!(ctxt
-            .create_texture()
-            .expect("Font texture creation failed."));
+        let texture = verify!(
+            ctxt.create_texture()
+                .expect("Font texture creation failed.")
+        );
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&texture)));
         verify!(ctxt.tex_image2d(
             Context::TEXTURE_2D,
