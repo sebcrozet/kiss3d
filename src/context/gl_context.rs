@@ -55,6 +55,7 @@ impl AbstractContextConst for GLContext {
     const TEXTURE_MIN_FILTER: u32 = gl::TEXTURE_MIN_FILTER;
     const TEXTURE_MAG_FILTER: u32 = gl::TEXTURE_MAG_FILTER;
     const LINEAR: u32 = gl::LINEAR;
+    const NEAREST: u32 = gl::NEAREST;
     const CLAMP_TO_EDGE: u32 = gl::CLAMP_TO_EDGE;
     const RGB: u32 = gl::RGB;
     const RGBA: u32 = gl::RGBA;
