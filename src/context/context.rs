@@ -72,6 +72,7 @@ impl Context {
     pub const TEXTURE_MIN_FILTER: u32 = ContextImpl::TEXTURE_MIN_FILTER;
     pub const TEXTURE_MAG_FILTER: u32 = ContextImpl::TEXTURE_MAG_FILTER;
     pub const LINEAR: u32 = ContextImpl::LINEAR;
+    pub const NEAREST: u32 = ContextImpl::NEAREST;
     pub const CLAMP_TO_EDGE: u32 = ContextImpl::CLAMP_TO_EDGE;
     pub const RGB: u32 = ContextImpl::RGB;
     pub const RGBA: u32 = ContextImpl::RGBA;
@@ -500,6 +501,7 @@ pub(crate) trait AbstractContextConst {
     const TEXTURE_MIN_FILTER: u32;
     const TEXTURE_MAG_FILTER: u32;
     const LINEAR: u32;
+    const NEAREST: u32;
     const CLAMP_TO_EDGE: u32;
     const RGB: u32;
     const RGBA: u32;
