@@ -4,7 +4,7 @@
 
 use na::{Point2, Point3, Vector2};
 use rusttype;
-use rusttype::gpu_cache::{Cache, CacheBuilder};
+use rusttype::gpu_cache::Cache;
 use std::rc::Rc;
 
 use context::{Context, Texture};
@@ -45,11 +45,9 @@ impl TextRenderer {
         //
         let atlas_width = 1024;
         let atlas_height = 1024;
-        let cache = CacheBuilder {
-            width: atlas_width,
-            height: atlas_height,
-            ..CacheBuilder::default()
-        }.build();
+        let cache = Cache::builder()
+            .dimensions(atlas_width, atlas_height)
+            .build();
 
         //
         // Create texture.
