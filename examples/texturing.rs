@@ -6,13 +6,6 @@ use na::{Vector3, UnitComplex, UnitQuaternion, Translation2};
 use kiss3d::window::Window;
 use kiss3d::light::Light;
 
-const RECTANGLE_UVS: [[f32; 2]; 4] = [
-        [0.0, 0.0],
-        [1.0, 1.0],
-        [0.0, 1.0],
-        [1.0, 0.0],
-    ];
-
 fn main() {
     let mut window = Window::new("Kiss3d: texturing");
 
@@ -24,13 +17,6 @@ fn main() {
     r.append_translation(&Translation2::new(-100.0, -100.0));
     r.set_color(0.0, 0.0, 1.0);
     r.set_texture_from_memory(include_bytes!("./media/kitten.png"), "kitten_mem");
-
-    r.modify_uvs(&mut |points|{
-        for(i, p) in points.iter_mut().enumerate() {
-            p[0] = RECTANGLE_UVS[i][0];
-            p[1] = RECTANGLE_UVS[i][1];
-        }
-    });
 
     window.set_light(Light::StickToCamera);
 
