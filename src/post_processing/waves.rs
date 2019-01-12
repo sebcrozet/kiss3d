@@ -4,6 +4,8 @@
 // useless for anybody else.
 // This is inspired _a lot_ by: http://en.wikibooks.org/wiki/Opengl::Programming/Post-Processing
 
+use std::f32;
+
 use na::Vector2;
 
 use context::Context;
@@ -70,7 +72,7 @@ impl PostProcessingEffect for Waves {
          */
         self.shader.use_program();
 
-        let move_amount = self.time * 2.0 * 3.14159 * 0.75; // 3/4 of a wave cycle per second
+        let move_amount = self.time * 2.0 * f32::consts::PI * 0.75; // 3/4 of a wave cycle per second
 
         self.offset.upload(&move_amount);
 

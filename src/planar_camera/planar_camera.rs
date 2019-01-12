@@ -19,7 +19,6 @@ pub trait PlanarCamera {
 
     /// Upload the camera view and projection to the gpu. This can be called multiple times on the
     /// render loop.
-    #[inline]
     fn upload(
         &self,
         proj: &mut ShaderUniform<Matrix3<f32>>,
