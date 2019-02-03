@@ -389,7 +389,7 @@ impl SceneNodeData {
     pub fn reorient(&mut self, eye: &Point3<f32>, at: &Point3<f32>, up: &Vector3<f32>) {
         self.invalidate();
         // FIXME: multiply by the parent's world transform?
-        self.local_transform = Isometry3::new_observer_frame(eye, at, up)
+        self.local_transform = Isometry3::face_towards(eye, at, up)
     }
 
     /// This node local transformation.

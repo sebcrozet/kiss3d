@@ -313,7 +313,7 @@ impl Mesh {
             let normal;
 
             if !cross.is_zero() {
-                normal = na::normalize(&cross)
+                normal = cross.normalize()
             } else {
                 normal = cross
             }

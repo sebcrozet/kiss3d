@@ -97,7 +97,7 @@ pub fn parse(
             Some(w) => {
                 if w.len() != 0 && w.as_bytes()[0] != ('#' as u8) {
                     match w {
-                        "v" => coords.push(Point3::from_coordinates(parse_v_or_vn(l, words))),
+                        "v" => coords.push(Point3::from(parse_v_or_vn(l, words))),
                         "vn" => if !ignore_normals {
                             normals.push(parse_v_or_vn(l, words))
                         },
