@@ -328,6 +328,7 @@ impl FirstPerson {
         self.update_projviews();
     }
 
+    /// Sets the Up vector of this camera.
     #[inline]
     pub fn set_up_axis(&mut self, up_axis: Vector3<f32>) {
         self.up_axis = up_axis;

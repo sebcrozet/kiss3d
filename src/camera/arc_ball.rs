@@ -230,6 +230,7 @@ impl ArcBall {
         self.inverse_proj_view = self.proj_view.try_inverse().unwrap();
     }
 
+    /// Sets the up vector of this camera.
     #[inline]
     pub fn set_up_axis(&mut self, up_axis: Vector3<f32>) {
         self.up_axis = up_axis;
