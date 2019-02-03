@@ -25,6 +25,10 @@ pub struct ArcBall {
     pitch: f32,
     /// Distance from the camera to the `at` focus point.
     dist: f32,
+    /// Minimum distance from the camera to the `at` focus point.
+    min_dist: f32,
+    /// Maximum distance from the camera to the `at` focus point.
+    max_dist: f32,
 
     /// Increment of the yaw per unit mouse movement. The default value is 0.005.
     yaw_step: f32,
@@ -64,6 +68,8 @@ impl ArcBall {
             yaw: 0.0,
             pitch: 0.0,
             dist: 0.0,
+            min_dist: 0.00001,
+            max_dist: std::f32::MAX,
             yaw_step: 0.005,
             pitch_step: 0.005,
             dist_step: 40.0,
@@ -134,6 +140,26 @@ impl ArcBall {
         self.update_projviews();
     }
 
+    /// The minimum distance from the camera position to its view point.
+    pub fn min_dist(&self) -> f32 {
+        self.min_dist
+    }
+
+    /// Set the minimum distance from the camera position to its view point.
+    pub fn set_min_dist(&mut self, min_dist: f32) {
+        self.min_dist = min_dist;
+    }
+
+    /// The maximum distance from the camera position to its view point.
+    pub fn max_dist(&self) -> f32 {
+        self.max_dist
+    }
+
+    /// Set the maximum distance from the camera position to its view point.
+    pub fn set_max_dist(&mut self, max_dist: f32) {
+        self.max_dist = max_dist;
+    }
+
     /// Move and orient the camera such that it looks at a specific point.
     pub fn look_at(&mut self, eye: Point3<f32>, at: Point3<f32>) {
         let dist = na::norm(&(eye - at));
@@ -151,8 +177,12 @@ impl ArcBall {
 
     /// Transformation applied by the camera without perspective.
     fn update_restrictions(&mut self) {
-        if self.dist < 0.00001 {
-            self.dist = 0.00001
+        if self.dist < self.min_dist {
+            self.dist = self.min_dist
+        }
+
+        if self.dist > self.max_dist {
+            self.dist = self.max_dist
         }
 
         if self.pitch <= 0.01 {
