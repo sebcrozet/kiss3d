@@ -59,6 +59,7 @@ impl AbstractContextConst for WebGLContext {
     const TEXTURE_MIN_FILTER: u32 = WebGLRenderingContext::TEXTURE_MIN_FILTER;
     const TEXTURE_MAG_FILTER: u32 = WebGLRenderingContext::TEXTURE_MAG_FILTER;
     const LINEAR: u32 = WebGLRenderingContext::LINEAR;
+    const NEAREST: u32 = WebGLRenderingContext::NEAREST;
     const CLAMP_TO_EDGE: u32 = WebGLRenderingContext::CLAMP_TO_EDGE;
     const RGB: u32 = WebGLRenderingContext::RGB;
     const RGBA: u32 = WebGLRenderingContext::RGBA;

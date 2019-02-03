@@ -36,9 +36,15 @@ impl PlanarMeshManager {
             Point2::new(-0.5, 0.5),
             Point2::new(0.5, -0.5),
         ];
+        let rect_uvs = vec![
+            Point2::new(1.0, 0.0),
+            Point2::new(0.0, 1.0),
+            Point2::new(0.0, 0.0),
+            Point2::new(1.0, 1.0),
+        ];
 
         let rect_ids = vec![Point3::new(0, 1, 2), Point3::new(1, 0, 3)];
-        let rect = PlanarMesh::new(rect_vtx, rect_ids, None, false);
+        let rect = PlanarMesh::new(rect_vtx, rect_ids, Some(rect_uvs), false);
         res.add(Rc::new(RefCell::new(rect)), "rectangle");
 
         /*
