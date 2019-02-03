@@ -122,7 +122,7 @@ impl FirstPerson {
 
     /// Changes the orientation and position of the camera to look at the specified point.
     pub fn look_at(&mut self, eye: Point3<f32>, at: Point3<f32>) {
-        let dist = na::norm(&(eye - at));
+        let dist = (eye - at).norm();
 
         let pitch = ((at.y - eye.y) / dist).acos();
         let yaw = (at.z - eye.z).atan2(at.x - eye.x);
@@ -239,8 +239,8 @@ impl FirstPerson {
     #[doc(hidden)]
     pub fn handle_right_button_displacement(&mut self, dpos: &Vector2<f32>) {
         let at = self.at();
-        let dir = na::normalize(&(at - self.eye));
-        let tangent = na::normalize(&Vector3::y().cross(&dir));
+        let dir = (at - self.eye).normalize();
+        let tangent = Vector3::y().cross(&dir).normalize();
         let bitangent = dir.cross(&tangent);
 
         self.eye = self.eye + tangent * (0.01 * dpos.x / 10.0) + bitangent * (0.01 * dpos.y / 10.0);
@@ -270,7 +270,7 @@ impl FirstPerson {
 
     /// The direction this camera is looking at.
     pub fn eye_dir(&self) -> Vector3<f32> {
-        na::normalize(&(self.at() - self.eye))
+        (self.at() - self.eye).normalize()
     }
 
     /// The direction this camera is being moved by the keyboard keys for a given set of key states.
@@ -300,7 +300,7 @@ impl FirstPerson {
         if movement.is_zero() {
             movement
         } else {
-            na::normalize(&movement)
+            movement.normalize()
         }
     }
 
@@ -328,6 +328,7 @@ impl FirstPerson {
         self.update_projviews();
     }
 
+    /// Sets the Up vector of this camera.
     #[inline]
     pub fn set_up_axis(&mut self, up_axis: Vector3<f32>) {
         self.up_axis = up_axis;
@@ -336,7 +337,7 @@ impl FirstPerson {
 
     /// The camera observer local frame.
     fn observer_frame(&self) -> Isometry3<f32> {
-        Isometry3::new_observer_frame(&self.eye, &self.at(), &Vector3::y())
+        Isometry3::face_towards(&self.eye, &self.at(), &Vector3::y())
     }
 }
 
@@ -411,7 +412,7 @@ impl Camera for FirstPerson {
         let dir = self.move_dir(up, down, right, left);
 
         let move_amount = dir * self.move_step;
-        self.translate_mut(&Translation3::from_vector(move_amount));
+        self.translate_mut(&Translation3::from(move_amount));
     }
 }
 

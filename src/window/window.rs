@@ -7,7 +7,8 @@ use std::iter::repeat;
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::mpsc::{self, Receiver};
-use std::time::Duration;
+use std::time::{Duration, Instant};
+use std::thread;
 
 use na::{Point2, Point3, Vector2, Vector3};
 
@@ -50,7 +51,8 @@ pub struct Window {
     text_renderer: TextRenderer,
     framebuffer_manager: FramebufferManager,
     post_process_render_target: RenderTarget,
-    curr_time: usize, // Instant,
+    #[cfg(not(target_arch = "wasm32"))]
+    curr_time: Instant,
     planar_camera: Rc<RefCell<FixedView>>,
     camera: Rc<RefCell<ArcBall>>,
     should_close: bool,
@@ -281,10 +283,20 @@ impl Window {
     /// principal axis aligned with the `y` axis.
     ///
     /// # Arguments
-    /// * `h` - the capsule height
     /// * `r` - the capsule caps radius
+    /// * `h` - the capsule height
     pub fn add_capsule(&mut self, r: f32, h: f32) -> SceneNode {
         self.scene.add_capsule(r, h)
+    }
+
+    /// Adds a 2D capsule to the scene. The capsule is initially centered at (0, 0) and has its
+    /// principal axis aligned with the `y` axis.
+    ///
+    /// # Arguments
+    /// * `r` - the capsule caps radius
+    /// * `h` - the capsule height
+    pub fn add_planar_capsule(&mut self, r: f32, h: f32) -> PlanarSceneNode {
+        self.scene2.add_capsule(r, h)
     }
 
     /// Adds a double-sided quad to the scene. The quad is initially centered at (0, 0, 0). The
@@ -415,7 +427,8 @@ impl Window {
                 height as usize,
             ),
             framebuffer_manager: FramebufferManager::new(),
-            curr_time: 0, // Instant::now(),
+            #[cfg(not(target_arch = "wasm32"))]
+            curr_time: Instant::now(),
             planar_camera: Rc::new(RefCell::new(FixedView::new())),
             camera: Rc::new(RefCell::new(ArcBall::new(
                 Point3::new(0.0f32, 0.0, -1.0),
@@ -753,19 +766,20 @@ impl Window {
             // We are done: swap buffers
             self.canvas.swap_buffers();
 
-            // Limit the fps if needed.
-            /*
-            match self.max_dur_per_frame {
-                None => {}
-                Some(dur) => {
+
+            #[cfg(not(target_arch = "wasm32"))]
+            {
+                // Limit the fps if needed.
+                if let Some(dur) = self.max_dur_per_frame {
                     let elapsed = self.curr_time.elapsed();
                     if elapsed < dur {
                         thread::sleep(dur - elapsed);
                     }
                 }
-            }*/
 
-            self.curr_time = 0; // Instant::now();
+                self.curr_time = Instant::now();
+            }
+
 
             // self.transparent_objects.clear();
             // self.opaque_objects.clear();

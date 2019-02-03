@@ -11,7 +11,7 @@ pub use resource::mesh::Mesh;
 pub use resource::mesh_manager::MeshManager;
 pub use resource::planar_material_manager::PlanarMaterialManager;
 pub use resource::planar_mesh::PlanarMesh;
-pub use resource::planar_mesh_manager::PlanarMeshManager2;
+pub use resource::planar_mesh_manager::PlanarMeshManager;
 pub use resource::texture_manager::{TextureManager, TextureWrapping};
 
 mod effect;

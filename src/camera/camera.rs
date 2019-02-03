@@ -1,5 +1,5 @@
 use event::WindowEvent;
-use na::{self, Isometry3, Matrix4, Point2, Point3, Point4, Vector2, Vector3};
+use na::{Isometry3, Matrix4, Point2, Point3, Point4, Vector2, Vector3};
 use resource::ShaderUniform;
 use window::Canvas;
 
@@ -95,7 +95,7 @@ pub trait Camera {
 
         (
             unprojected_begin,
-            na::normalize(&(unprojected_end - unprojected_begin)),
+            (unprojected_end - unprojected_begin).normalize(),
         )
     }
 }

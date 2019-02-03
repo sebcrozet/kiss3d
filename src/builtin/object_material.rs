@@ -96,7 +96,7 @@ impl Material for ObjectMaterial {
          *
          */
         let formated_transform = transform.to_homogeneous();
-        let formated_ntransform = transform.rotation.to_rotation_matrix().unwrap();
+        let formated_ntransform = transform.rotation.to_rotation_matrix().into_inner();
         let formated_scale = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
 
         unsafe {

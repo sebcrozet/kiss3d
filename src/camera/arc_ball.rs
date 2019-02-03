@@ -162,7 +162,7 @@ impl ArcBall {
 
     /// Move and orient the camera such that it looks at a specific point.
     pub fn look_at(&mut self, eye: Point3<f32>, at: Point3<f32>) {
-        let dist = na::norm(&(eye - at));
+        let dist = (eye - at).norm();
         let pitch = ((eye.y - at.y) / dist).acos();
         let yaw = (eye.z - at.z).atan2(eye.x - at.x);
 
@@ -238,8 +238,8 @@ impl ArcBall {
 
     fn handle_right_button_displacement(&mut self, dpos: &Vector2<f32>) {
         let eye = self.eye();
-        let dir = na::normalize(&(self.at - eye));
-        let tangent = na::normalize(&Vector3::y().cross(&dir));
+        let dir = (self.at - eye).normalize();
+        let tangent = Vector3::y().cross(&dir).normalize();
         let bitangent = dir.cross(&tangent);
         let mult = self.dist / 1000.0;
 
@@ -260,6 +260,7 @@ impl ArcBall {
         self.inverse_proj_view = self.proj_view.try_inverse().unwrap();
     }
 
+    /// Sets the up vector of this camera.
     #[inline]
     pub fn set_up_axis(&mut self, up_axis: Vector3<f32>) {
         self.up_axis = up_axis;

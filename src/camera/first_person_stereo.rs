@@ -91,7 +91,7 @@ impl FirstPersonStereo {
 
     /// Changes the orientation and position of the camera to look at the specified point.
     pub fn look_at(&mut self, eye: Point3<f32>, at: Point3<f32>) {
-        let dist = na::norm(&(eye - at));
+        let dist = (eye - at).norm();
 
         let pitch = ((at.y - eye.y) / dist).acos();
         let yaw = (at.z - eye.z).atan2(at.x - eye.x);
@@ -134,8 +134,8 @@ impl FirstPersonStereo {
     fn update_eyes_location(&mut self) {
         // left and right are on a line perpendicular to both up and the target
         // up is always y
-        let dir = na::normalize(&(self.at() - self.eye));
-        let tangent = na::normalize(&Vector3::y().cross(&dir));
+        let dir = (self.at() - self.eye).normalize();
+        let tangent = Vector3::y().cross(&dir).normalize();
         self.eye_left = self.eye - tangent * (self.ipd / 2.0);
         self.eye_right = self.eye + tangent * (self.ipd / 2.0);
         //println(fmt!("eye_left = %f,%f,%f", self.eye_left.x as float, self.eye_left.y as float, self.eye_left.z as float));
@@ -146,8 +146,8 @@ impl FirstPersonStereo {
     #[doc(hidden)]
     pub fn handle_right_button_displacement(&mut self, dpos: &Vector2<f32>) {
         let at = self.at();
-        let dir = na::normalize(&(at - self.eye));
-        let tangent = na::normalize(&Vector3::y().cross(&dir));
+        let dir = (at - self.eye).normalize();
+        let tangent = Vector3::y().cross(&dir).normalize();
         let bitangent = dir.cross(&tangent);
 
         self.eye = self.eye + tangent * (0.01 * dpos.x / 10.0) + bitangent * (0.01 * dpos.y / 10.0);
