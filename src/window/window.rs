@@ -51,6 +51,7 @@ pub struct Window {
     text_renderer: TextRenderer,
     framebuffer_manager: FramebufferManager,
     post_process_render_target: RenderTarget,
+    #[cfg(not(target_arch = "wasm32"))]
     curr_time: Instant,
     planar_camera: Rc<RefCell<FixedView>>,
     camera: Rc<RefCell<ArcBall>>,
@@ -421,6 +422,7 @@ impl Window {
                 height as usize,
             ),
             framebuffer_manager: FramebufferManager::new(),
+            #[cfg(not(target_arch = "wasm32"))]
             curr_time: Instant::now(),
             planar_camera: Rc::new(RefCell::new(FixedView::new())),
             camera: Rc::new(RefCell::new(ArcBall::new(
@@ -759,16 +761,20 @@ impl Window {
             // We are done: swap buffers
             self.canvas.swap_buffers();
 
-            // Limit the fps if needed.
-            if let Some(dur) = self.max_dur_per_frame {
-                let elapsed = self.curr_time.elapsed();
-                if elapsed < dur {
-                    thread::sleep(dur - elapsed);
+
+            #[cfg(not(target_arch = "wasm32"))]
+            {
+                // Limit the fps if needed.
+                if let Some(dur) = self.max_dur_per_frame {
+                    let elapsed = self.curr_time.elapsed();
+                    if elapsed < dur {
+                        thread::sleep(dur - elapsed);
+                    }
                 }
+
+                self.curr_time = Instant::now();
             }
 
-
-            self.curr_time = Instant::now();
 
             // self.transparent_objects.clear();
             // self.opaque_objects.clear();
