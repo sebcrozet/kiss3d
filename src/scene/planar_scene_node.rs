@@ -279,6 +279,7 @@ impl PlanarSceneNodeData {
     ///
     /// # Arguments
     ///   * `path` - relative path of the texture on the disk
+    ///   * `name` - &str identifier to store this texture under
     #[inline]
     pub fn set_texture_from_file(&mut self, path: &Path, name: &str) {
         let texture = TextureManager::get_global_manager(|tm| tm.add(path, name));
@@ -292,6 +293,7 @@ impl PlanarSceneNodeData {
     ///
     /// # Arguments
     ///   * `path` - relative path of the texture on the disk
+    ///   * `image_data` - slice of bytes containing encoded image
     ///   * `name` - &str identifier to store this texture under
     #[inline]
     pub fn set_texture_from_memory(&mut self, image_data: &[u8], name: &str) {

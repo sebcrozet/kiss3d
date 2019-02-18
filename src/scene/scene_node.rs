@@ -316,9 +316,25 @@ impl SceneNodeData {
     ///
     /// # Arguments
     ///   * `path` - relative path of the texture on the disk
+    ///   * `name` - &str identifier to store this texture under
     #[inline]
     pub fn set_texture_from_file(&mut self, path: &Path, name: &str) {
         let texture = TextureManager::get_global_manager(|tm| tm.add(path, name));
+
+        self.set_texture(texture)
+    }
+
+    /// Sets the texture of the objects contained by this node and its children.
+    ///
+    /// The texture is loaded from a byte slice and registered by the global `TextureManager`.
+    ///
+    /// # Arguments
+    ///   * `path` - relative path of the texture on the disk
+    ///   * `image_data` - slice of bytes containing encoded image
+    ///   * `name` - &str identifier to store this texture under
+    #[inline]
+    pub fn set_texture_from_memory(&mut self, image_data: &[u8], name: &str) {
+        let texture = TextureManager::get_global_manager(|tm| tm.add_image_from_memory(image_data, name));
 
         self.set_texture(texture)
     }
@@ -1014,6 +1030,18 @@ impl SceneNode {
     #[inline]
     pub fn set_texture_from_file(&mut self, path: &Path, name: &str) {
         self.data_mut().set_texture_from_file(path, name)
+    }
+
+    /// Sets the texture of the objects contained by this node and its children.
+    ///
+    /// The texture is loaded from a file and registered by the global `TextureManager`.
+    ///
+    /// # Arguments
+    ///   * `image_data` - slice of bytes containing encoded image
+    ///   * `name` - &str to identify this texture in `TextureManager`
+
+    pub fn set_texture_from_memory(&mut self, image_data: &[u8], name: &str) {
+        self.data_mut().set_texture_from_memory(image_data, name)
     }
 
     /// Sets the texture of the objects contained by this node and its children.
