@@ -34,6 +34,10 @@ pub struct ArcBall {
     yaw_step: f32,
     /// Increment of the pitch per unit mouse movement. The default value is 0.005.
     pitch_step: f32,
+    /// Minimum pitch of the camera.
+    min_pitch: f32,
+    /// Maximum pitch ofthe camera.
+    max_pitch: f32,
     /// Increment of the distance per unit scrolling. The default value is 40.0.
     dist_step: f32,
     rotate_button: Option<MouseButton>,
@@ -72,6 +76,8 @@ impl ArcBall {
             max_dist: std::f32::MAX,
             yaw_step: 0.005,
             pitch_step: 0.005,
+            min_pitch: 0.01,
+            max_pitch: std::f32::consts::PI - 0.01,
             dist_step: 40.0,
             rotate_button: Some(MouseButton::Button1),
             drag_button: Some(MouseButton::Button2),
@@ -125,6 +131,26 @@ impl ArcBall {
 
         self.update_restrictions();
         self.update_projviews();
+    }
+
+    /// The minimum pitch of the camera.
+    pub fn min_pitch(&self) -> f32 {
+        self.min_pitch
+    }
+
+    /// Set the minimum pitch of the camera.
+    pub fn set_min_pitch(&mut self, min_pitch: f32) {
+        self.min_pitch = min_pitch;
+    }
+
+    /// The maximum pitch of the camera.
+    pub fn max_pitch(&self) -> f32 {
+        self.max_pitch
+    }
+
+    /// Set the maximum pitch of the camera.
+    pub fn set_max_pitch(&mut self, max_pitch: f32) {
+        self.max_pitch = max_pitch;
     }
 
     /// The distance from the camera position to its view point.
@@ -185,13 +211,12 @@ impl ArcBall {
             self.dist = self.max_dist
         }
 
-        if self.pitch <= 0.01 {
-            self.pitch = 0.01
+        if self.pitch <= self.min_pitch {
+            self.pitch = self.min_pitch
         }
 
-        let _pi: f32 = f32::consts::PI;
-        if self.pitch > _pi - 0.01 {
-            self.pitch = _pi - 0.01
+        if self.pitch > self.max_pitch {
+            self.pitch = self.max_pitch
         }
     }
 
