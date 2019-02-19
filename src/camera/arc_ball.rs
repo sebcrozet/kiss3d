@@ -290,7 +290,6 @@ impl ArcBall {
     pub fn set_up_axis(&mut self, up_axis: Vector3<f32>) {
         self.up_axis = up_axis;
     }
-
 }
 
 impl Camera for ArcBall {
@@ -299,7 +298,7 @@ impl Camera for ArcBall {
     }
 
     fn view_transform(&self) -> Isometry3<f32> {
-        Isometry3::look_at_rh(&self.eye(), &self.at,  &self.up_axis)
+        Isometry3::look_at_rh(&self.eye(), &self.at, &self.up_axis)
     }
 
     fn eye(&self) -> Point3<f32> {
