@@ -18,11 +18,10 @@ use event::{Action, EventManager, Key, WindowEvent};
 use image::imageops;
 use image::{ImageBuffer, Rgb};
 use light::Light;
-use line_renderer::LineRenderer;
+use renderer::{Renderer, PointRenderer, LineRenderer};
 use ncollide3d::procedural::TriMesh;
 use planar_camera::{FixedView, PlanarCamera};
 use planar_line_renderer::PlanarLineRenderer;
-use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, Mesh, PlanarMesh, RenderTarget, Texture, TextureManager};
 use scene::{PlanarSceneNode, SceneNode};
@@ -589,8 +588,8 @@ impl Window {
 
     fn do_render_with_state<S: State>(&mut self, state: &mut S) -> bool {
         {
-            let (camera, planar_camera, effect) = state.cameras_and_effect();
-            self.should_close = !self.do_render_with(camera, planar_camera, effect);
+            let (camera, planar_camera, renderer, effect) = state.cameras_and_effect_and_renderer();
+            self.should_close = !self.do_render_with(camera, planar_camera, renderer, effect);
         }
 
         if !self.should_close {
@@ -671,13 +670,15 @@ impl Window {
         planar_camera: Option<&mut PlanarCamera>,
         post_processing: Option<&mut PostProcessingEffect>,
     ) -> bool {
-        self.do_render_with(camera, planar_camera, post_processing)
+        // FIXME: for backward-compatibility, we don't accept any custom renderer here.
+        self.do_render_with(camera, planar_camera, None, post_processing)
     }
 
     fn do_render_with(
         &mut self,
         camera: Option<&mut Camera>,
         planar_camera: Option<&mut PlanarCamera>,
+        renderer: Option<&mut Renderer>,
         post_processing: Option<&mut PostProcessingEffect>,
     ) -> bool {
         let mut camera = camera;
@@ -691,11 +692,11 @@ impl Window {
         let mut bself_cam = self_cam.borrow_mut();
 
         match (camera, planar_camera) {
-            (Some(cam), Some(cam2)) => self.render_single_frame(cam, cam2, post_processing),
-            (None, Some(cam2)) => self.render_single_frame(&mut *bself_cam, cam2, post_processing),
-            (Some(cam), None) => self.render_single_frame(cam, &mut *bself_cam2, post_processing),
+            (Some(cam), Some(cam2)) => self.render_single_frame(cam, cam2, renderer, post_processing),
+            (None, Some(cam2)) => self.render_single_frame(&mut *bself_cam, cam2, renderer, post_processing),
+            (Some(cam), None) => self.render_single_frame(cam, &mut *bself_cam2, renderer, post_processing),
             (None, None) => {
-                self.render_single_frame(&mut *bself_cam, &mut *bself_cam2, post_processing)
+                self.render_single_frame(&mut *bself_cam, &mut *bself_cam2, renderer, post_processing)
             }
         }
     }
@@ -704,6 +705,7 @@ impl Window {
         &mut self,
         camera: &mut Camera,
         planar_camera: &mut PlanarCamera,
+        mut renderer: Option<&mut Renderer>,
         post_processing: Option<&mut PostProcessingEffect>,
     ) -> bool {
         // XXX: too bad we have to do this at each frame…
@@ -734,6 +736,10 @@ impl Window {
             for pass in 0usize..camera.num_passes() {
                 camera.start_pass(pass, &self.canvas);
                 self.render_scene(camera, pass);
+
+                if let Some(ref mut renderer) = renderer {
+                    renderer.render(pass, camera)
+                }
             }
 
             camera.render_complete(&self.canvas);
@@ -797,14 +803,8 @@ impl Window {
         verify!(ctxt.clear(Context::COLOR_BUFFER_BIT));
         verify!(ctxt.clear(Context::DEPTH_BUFFER_BIT));
 
-        if self.line_renderer.needs_rendering() {
-            self.line_renderer.render(pass, camera);
-        }
-
-        if self.point_renderer.needs_rendering() {
-            self.point_renderer.render(pass, camera);
-        }
-
+        self.line_renderer.render(pass, camera);
+        self.point_renderer.render(pass, camera);
         self.scene.data_mut().render(pass, camera, &self.light_mode);
     }
 
