@@ -154,17 +154,22 @@ extern crate stdweb;
 #[macro_use]
 extern crate stdweb_derive;
 
+
+#[deprecated(note = "Use the `renderer` module instead.")]
+pub use renderer::line_renderer;
+#[deprecated(note = "Use the `renderer` module instead.")]
+pub use renderer::point_renderer;
+
 pub mod builtin;
 pub mod camera;
 pub mod context;
 mod error;
 pub mod event;
 pub mod light;
-pub mod line_renderer;
 pub mod loader;
 pub mod planar_camera;
 pub mod planar_line_renderer;
-pub mod point_renderer;
+pub mod renderer;
 pub mod post_processing;
 pub mod resource;
 pub mod scene;
