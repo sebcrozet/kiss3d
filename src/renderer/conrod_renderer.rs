@@ -150,7 +150,7 @@ impl ConrodRenderer {
     pub fn render(&mut self, width: f32, height: f32, hidpi_factor: f32) {
         // NOTE: this seems necessary for WASM.
         if !self.resized_once {
-            self.ui.handle_event(conrod::event::Input::Resize(width as f64, height as f64));
+            self.ui.handle_event(conrod::event::Input::Resize(width as f64 / hidpi_factor as f64, height as f64 / hidpi_factor as f64));
             self.resized_once = true;
         }
 
@@ -384,7 +384,7 @@ uniform vec2 window_size;
 varying vec4 v_color;
 
 void main(){
-    gl_Position = vec4(position / window_size, 0.0, 1.0);
+    gl_Position = vec4(position / window_size * 2.0, 0.0, 1.0);
     v_color = color;
 }";
 
@@ -415,7 +415,7 @@ varying vec2 v_uvs;
 varying vec4 v_color;
 
 void main() {
-    gl_Position = vec4((pos.x / window_size.x - 1.0), (1.0 - pos.y / window_size.y), 0.0, 1.0);
+    gl_Position = vec4((pos.x / window_size.x - 0.5) * 2.0, (0.5 - pos.y / window_size.y) * 2.0, 0.0, 1.0);
     v_uvs       = uvs;
     v_color     = color;
 }

@@ -585,16 +585,16 @@ impl Window {
         }
 
         #[cfg(feature = "conrod")]
-        fn window_event_to_conrod_input(event: WindowEvent, size: Vector2<u32>, _hidpi: f64) -> Option<conrod::event::Input> {
+        fn window_event_to_conrod_input(event: WindowEvent, size: Vector2<u32>, hidpi: f64) -> Option<conrod::event::Input> {
             use conrod::event::Input;
             use conrod::input::{Motion, MouseButton, Button, Key as CKey};
 
             let transform_coords = |x: f64, y: f64| {
-                (x - size.x as f64 / 2.0, -(y - size.y as f64 / 2.0))
+                ((x - size.x as f64 / 2.0) / hidpi, -(y - size.y as f64 / 2.0) / hidpi)
             };
 
             match event {
-                WindowEvent::FramebufferSize(w, h) => Some(Input::Resize(w as f64, h as f64)),
+                WindowEvent::FramebufferSize(w, h) => Some(Input::Resize(w as f64 / hidpi, h as f64 / hidpi)),
                 WindowEvent::Focus(focus) => Some(Input::Focus(focus)),
                 WindowEvent::CursorPos(x, y, _) => {
                     let (x, y) = transform_coords(x, y);
