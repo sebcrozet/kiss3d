@@ -3,6 +3,7 @@ extern crate nalgebra as na;
 #[macro_use]
 extern crate conrod_core as conrod;
 
+use std::path::Path;
 use conrod::color::Color;
 use conrod::position::Positionable;
 
@@ -22,7 +23,10 @@ fn main() {
 //    widget_ids!(struct Ids { button, text });
     let ids = Ids::new(window.conrod_ui_mut().widget_id_generator());
     window.conrod_ui_mut().theme = theme();
-    let mut app = DemoApp::new();
+    window.add_texture(&Path::new("./examples/media/kitten.png"), "cat");
+    let cat_texture = window.conrod_texture_id("cat").unwrap();
+
+    let mut app = DemoApp::new(cat_texture);
 
     // Render loop.
     while window.render() {
@@ -102,7 +106,7 @@ widget_ids! {
         circle,
         // Image.
         image_title,
-//        rust_logo,
+        cat,
         // Button, XyPad, Toggle.
         button_title,
         button,
@@ -127,18 +131,18 @@ pub struct DemoApp {
     ball_xy: conrod::Point,
     ball_color: conrod::Color,
     sine_frequency: f32,
-//    rust_logo: conrod::image::Id,
+    cat: conrod::image::Id,
 }
 
 
 impl DemoApp {
     /// Simple constructor for the `DemoApp`.
-    pub fn new(/*rust_logo: conrod::image::Id*/) -> Self {
+    pub fn new(cat: conrod::image::Id) -> Self {
         DemoApp {
             ball_xy: [0.0, 0.0],
             ball_color: conrod::color::WHITE,
             sine_frequency: 1.0,
-//            rust_logo: rust_logo,
+            cat,
         }
     }
 }
@@ -266,11 +270,11 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
         .set(ids.image_title, ui);
 
     const LOGO_SIDE: conrod::Scalar = 144.0;
-//    widget::Image::new(app.rust_logo)
-//        .w_h(LOGO_SIDE, LOGO_SIDE)
-//        .down(60.0)
-//        .align_middle_x_of(ids.canvas)
-//        .set(ids.rust_logo, ui);
+    widget::Image::new(app.cat)
+        .w_h(LOGO_SIDE, LOGO_SIDE)
+        .down(60.0)
+        .align_middle_x_of(ids.canvas)
+        .set(ids.cat, ui);
 
 
     /////////////////////////////////
@@ -279,7 +283,7 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
 
 
     widget::Text::new("Button, XYPad and Toggle")
-//        .down_from(ids.rust_logo, 60.0)
+        .down_from(ids.cat, 60.0)
         .align_middle_x_of(ids.canvas)
         .font_size(SUBTITLE_SIZE)
         .set(ids.button_title, ui);

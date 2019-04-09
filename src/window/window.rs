@@ -9,6 +9,7 @@ use std::rc::Rc;
 use std::sync::mpsc::{self, Receiver};
 use std::time::Duration;
 use std::thread;
+use std::collections::HashMap;
 
 use instant::Instant;
 use na::{Point2, Point3, Vector2, Vector3};
@@ -35,6 +36,22 @@ use renderer::ConrodRenderer;
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
 
+struct ConrodContext {
+    renderer: ConrodRenderer,
+    textures: conrod::image::Map<(Rc<Texture>, (u32, u32))>,
+    texture_ids: HashMap<String, conrod::image::Id>
+}
+
+impl ConrodContext {
+    fn new(width: f64, height: f64) -> Self {
+        Self {
+            renderer: ConrodRenderer::new(width, height),
+            textures: conrod::image::Map::new(),
+            texture_ids: HashMap::new()
+        }
+    }
+}
+
 /// Structure representing a window and a 3D scene.
 ///
 /// This is the main interface with the 3d engine.
@@ -51,8 +68,6 @@ pub struct Window {
     planar_line_renderer: PlanarLineRenderer,
     point_renderer: PointRenderer,
     text_renderer: TextRenderer,
-    #[cfg(feature = "conrod")]
-    conrod_renderer: ConrodRenderer,
     framebuffer_manager: FramebufferManager,
     post_process_render_target: RenderTarget,
     #[cfg(not(target_arch = "wasm32"))]
@@ -60,6 +75,9 @@ pub struct Window {
     planar_camera: Rc<RefCell<FixedView>>,
     camera: Rc<RefCell<ArcBall>>,
     should_close: bool,
+    #[cfg(feature = "conrod")]
+    conrod_context: ConrodContext,
+
 }
 
 impl Window {
@@ -330,7 +348,7 @@ impl Window {
             .add_quad_with_vertices(vertices, nhpoints, nvpoints)
     }
 
-    #[doc(hidden)]
+    /// Load a texture fro a file and return a reference to it.
     pub fn add_texture(&mut self, path: &Path, name: &str) -> Rc<Texture> {
         TextureManager::get_global_manager(|tm| tm.add(path, name))
     }
@@ -382,13 +400,22 @@ impl Window {
     /// Retrieve a mutable reference to the UI based on Conrod.
     #[cfg(feature = "conrod")]
     pub fn conrod_ui_mut(&mut self) -> &mut conrod::Ui {
-        self.conrod_renderer.ui_mut()
+        self.conrod_context.renderer.ui_mut()
+    }
+
+    /// Attributes a conrod ID to the given texture and returns it if it exists.
+    #[cfg(feature = "conrod")]
+    pub fn conrod_texture_id(&mut self, name: &str) -> Option<conrod::image::Id> {
+        let tex = TextureManager::get_global_manager(|tm| tm.get_with_size(name))?;
+        let textures = &mut self.conrod_context.textures;
+        Some(*self.conrod_context.texture_ids.entry(name.to_string())
+            .or_insert_with(|| textures.insert(tex)))
     }
 
     /// Retrieve a reference to the UI based on Conrod.
     #[cfg(feature = "conrod")]
     pub fn conrod_ui(&self) -> &conrod::Ui {
-        self.conrod_renderer.ui()
+        self.conrod_context.renderer.ui()
     }
 
 
@@ -440,7 +467,7 @@ impl Window {
             point_renderer: PointRenderer::new(),
             text_renderer: TextRenderer::new(),
             #[cfg(feature = "conrod")]
-            conrod_renderer: ConrodRenderer::new(width as f64, height as f64),
+            conrod_context: ConrodContext::new(width as f64, height as f64),
             post_process_render_target: FramebufferManager::new_render_target(
                 width as usize,
                 height as usize,
@@ -964,7 +991,8 @@ impl Window {
 
             self.text_renderer.render(w as f32, h as f32);
             #[cfg(feature = "conrod")]
-            self.conrod_renderer.render(w as f32, h as f32, self.canvas.hidpi_factor() as f32);
+            self.conrod_context.renderer.render(
+                w as f32, h as f32, self.canvas.hidpi_factor() as f32, &self.conrod_context.textures);
 
             // We are done: swap buffers
             self.canvas.swap_buffers();

@@ -4,6 +4,8 @@
 
 //! A batched point renderer.
 
+use std::collections::HashMap;
+use std::rc::Rc;
 use context::{Context, Texture};
 use na::{Vector2, Point3, Point2, Point4};
 use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
@@ -17,7 +19,7 @@ mod error;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 enum RenderMode {
-    Image,
+    Image { color: Point4<f32>, texture: conrod::image::Id },
     Shape,
     Text { color: Point4<f32> },
     Unknown
@@ -37,6 +39,12 @@ pub struct ConrodRenderer {
     text_pos: ShaderAttribute<Point2<f32>>,
     text_uvs: ShaderAttribute<Point2<f32>>,
     text_texture: ShaderUniform<i32>,
+    image_shader: Effect,
+    image_window_size: ShaderUniform<Vector2<f32>>,
+    image_color: ShaderUniform<Point4<f32>>,
+    image_pos: ShaderAttribute<Point2<f32>>,
+    image_uvs: ShaderAttribute<Point2<f32>>,
+    image_texture: ShaderUniform<i32>,
     points: GPUVec<f32>,
     indices: GPUVec<Point3<u16>>,
     cache: GlyphCache<'static>,
@@ -52,6 +60,7 @@ impl ConrodRenderer {
         //
         let triangle_shader = Effect::new_from_str(TRIANGLES_VERTEX_SRC, TRIANGLES_FRAGMENT_SRC);
         let text_shader = Effect::new_from_str(TEXT_VERTEX_SRC, TEXT_FRAGMENT_SRC);
+        let image_shader = Effect::new_from_str(IMAGE_VERTEX_SRC, IMAGE_FRAGMENT_SRC);
 
         //
         // Initialize UI with the default font.
@@ -130,6 +139,12 @@ impl ConrodRenderer {
             text_uvs: text_shader.get_attrib("uvs").unwrap(),
             text_texture: text_shader.get_uniform("tex0").unwrap(),
             text_shader,
+            image_window_size: image_shader.get_uniform::<Vector2<f32>>("window_size").unwrap(),
+            image_color: image_shader.get_uniform::<Point4<f32>>("color").unwrap(),
+            image_pos: image_shader.get_attrib("pos").unwrap(),
+            image_uvs: image_shader.get_attrib("uvs").unwrap(),
+            image_texture: image_shader.get_uniform("tex0").unwrap(),
+            image_shader,
             cache,
             texture,
             resized_once: false,
@@ -147,7 +162,7 @@ impl ConrodRenderer {
     }
 
     /// Actually draws the points.
-    pub fn render(&mut self, width: f32, height: f32, hidpi_factor: f32) {
+    pub fn render(&mut self, width: f32, height: f32, hidpi_factor: f32, texture_map: &conrod::image::Map<(Rc<Texture>, (u32, u32))>) {
         // NOTE: this seems necessary for WASM.
         if !self.resized_once {
             self.ui.handle_event(conrod::event::Input::Resize(width as f64 / hidpi_factor as f64, height as f64 / hidpi_factor as f64));
@@ -174,7 +189,10 @@ impl ConrodRenderer {
                     PrimitiveKind::TrianglesSingleColor {..} => mode != RenderMode::Shape,
                     PrimitiveKind::TrianglesMultiColor {..} => mode != RenderMode::Shape,
                     PrimitiveKind::Rectangle {..} => mode != RenderMode::Shape,
-                    PrimitiveKind::Image {..} => mode != RenderMode::Image,
+                    PrimitiveKind::Image { color, image_id, .. } => {
+                        let rgba = color.unwrap_or(conrod::color::WHITE).to_rgb();
+                        mode != RenderMode::Image { color: Point4::new(rgba.0, rgba.1, rgba.2, rgba.3), texture: image_id }
+                    },
                     PrimitiveKind::Text { color, ..} => {
                         let rgba = color.to_rgb();
                         mode != RenderMode::Text { color: Point4::new(rgba.0, rgba.1, rgba.2, rgba.3) }
@@ -212,21 +230,36 @@ impl ConrodRenderer {
                         self.text_pos.enable();
                         self.text_uvs.enable();
                         self.text_texture.upload(&0);
-//                        console!(log, format!("Text color: {}", color));
-//                        println!("Text color: {}", color);
                         self.text_color.upload(&color);
                         self.text_window_size.upload(&Vector2::new(width, height));
                         verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self.texture)));
                         unsafe { self.text_pos.bind_sub_buffer_generic(&mut self.points, 3, 0) };
                         unsafe { self.text_uvs.bind_sub_buffer_generic(&mut self.points, 3, 2) };
-//                    self.color.upload(&context.color);
 
                         verify!(ctxt.draw_arrays(Context::TRIANGLES, 0, (self.points.len() / 4) as i32));
 
                         self.text_pos.disable();
                         self.text_uvs.disable();
                     }
-                    RenderMode::Image => {}
+                    RenderMode::Image { color, texture } => {
+                        if let Some(texture) = texture_map.get(&texture) {
+                            self.image_shader.use_program();
+                            self.image_pos.enable();
+                            self.image_uvs.enable();
+
+                            self.image_texture.upload(&0);
+                            self.image_color.upload(&color);
+                            self.image_window_size.upload(&Vector2::new(width, height));
+                            verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&texture.0)));
+                            unsafe { self.image_pos.bind_sub_buffer_generic(&mut self.points, 3, 0) };
+                            unsafe { self.image_uvs.bind_sub_buffer_generic(&mut self.points, 3, 2) };
+
+                            verify!(ctxt.draw_arrays(Context::TRIANGLES, 0, (self.points.len() / 4) as i32));
+
+                            self.image_pos.disable();
+                            self.image_uvs.disable();
+                        }
+                    }
                     RenderMode::Unknown => {}
                 }
 
@@ -295,7 +328,45 @@ impl ConrodRenderer {
                         vid += 3;
                     }
                 },
-                PrimitiveKind::Image { .. } => {}
+                PrimitiveKind::Image { image_id, color, source_rect } => {
+                    if let Some(texture) = texture_map.get(&image_id) {
+                        let color = color.unwrap_or(conrod::color::WHITE).to_rgb();
+                        mode = RenderMode::Image {
+                            color: Point4::new(color.0, color.1, color.2, color.3),
+                            texture: image_id
+                        };
+
+                        let min_px = primitive.rect.x.start as f32 * hidpi_factor;
+                        let min_py = primitive.rect.y.start as f32 * hidpi_factor;
+                        let max_px = primitive.rect.x.end as f32 * hidpi_factor;
+                        let max_py = primitive.rect.y.end as f32 * hidpi_factor;
+
+                        let w = (texture.1).0 as f64;
+                        let h = (texture.1).1 as f64;
+                        let mut tex = source_rect.unwrap_or(
+                            conrod::position::Rect::from_corners([0.0, 0.0], [w, h]));
+                        tex.x.start /= w;
+                        tex.x.end /= w;
+                        // Because opengl textures are loaded upside down.
+                        tex.y.start = (h - tex.y.start) / h;
+                        tex.y.end = (h - tex.y.end) / h;
+
+                        vertices.extend_from_slice(&[
+                            min_px, min_py,
+                            tex.x.start as f32, tex.y.start as f32,
+                            min_px, max_py,
+                            tex.x.start as f32, tex.y.end as f32,
+                            max_px, min_py,
+                            tex.x.end as f32, tex.y.start as f32,
+                            max_px, min_py,
+                            tex.x.end as f32, tex.y.start as f32,
+                            min_px, max_py,
+                            tex.x.start as f32, tex.y.end as f32,
+                            max_px, max_py,
+                            tex.x.end as f32, tex.y.end as f32,
+                        ]);
+                    }
+                }
                 PrimitiveKind::Other(_) => {}
                 PrimitiveKind::Text { color, text, font_id } => {
                     let rgba = color.to_rgb();
@@ -437,5 +508,44 @@ varying vec4 v_color;
 
 void main() {
     gl_FragColor = vec4(v_color.rgb, v_color.a * texture2D(tex0, v_uvs).r);
+}
+";
+
+
+const IMAGE_VERTEX_SRC: &'static str = "
+#version 100
+
+uniform vec2 window_size;
+uniform vec4 color;
+
+attribute vec2 pos;
+attribute vec2 uvs;
+
+varying vec2 v_uvs;
+varying vec4 v_color;
+
+void main() {
+    gl_Position = vec4(pos / window_size * 2.0, 0.0, 1.0);
+    v_uvs       = uvs;
+    v_color     = color;
+}
+";
+
+const IMAGE_FRAGMENT_SRC: &'static str = "
+#version 100
+
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+   precision highp float;
+#else
+   precision mediump float;
+#endif
+
+uniform sampler2D tex0;
+
+varying vec2 v_uvs;
+varying vec4 v_color;
+
+void main() {
+    gl_FragColor = texture2D(tex0, v_uvs) * v_color;
 }
 ";
