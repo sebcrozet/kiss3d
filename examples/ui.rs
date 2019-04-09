@@ -1,16 +1,26 @@
+#[macro_use]
 extern crate kiss3d;
 extern crate nalgebra as na;
-#[macro_use]
-extern crate conrod_core as conrod;
 
 use std::path::Path;
-use conrod::color::Color;
-use conrod::position::Positionable;
 
 use na::{Vector3, UnitQuaternion};
 use kiss3d::window::Window;
 use kiss3d::light::Light;
+#[cfg(feature = "conrod")]
+use kiss3d::conrod;
+#[cfg(feature = "conrod")]
+use kiss3d::conrod::color::Color;
+#[cfg(feature = "conrod")]
+use kiss3d::conrod::position::Positionable;
 
+#[cfg(not(feature = "conrod"))]
+fn main() {
+    panic!("The 'conrod' feature must be enabled for this example to work.")
+}
+
+
+#[cfg(feature = "conrod")]
 fn main() {
     let mut window = Window::new("Kiss3d: UI");
     window.set_background_color(1.0, 1.0, 1.0);
@@ -60,6 +70,7 @@ fn main() {
  *
  */
 /// A set of reasonable stylistic defaults that works for the `gui` below.
+#[cfg(feature = "conrod")]
 pub fn theme() -> conrod::Theme {
     use conrod::position::{Align, Direction, Padding, Position, Relative};
     conrod::Theme {
@@ -83,6 +94,7 @@ pub fn theme() -> conrod::Theme {
 }
 
 // Generate a unique `WidgetId` for each widget.
+#[cfg(feature = "conrod")]
 widget_ids! {
     pub struct Ids {
         // The scrollable canvas.
@@ -127,6 +139,7 @@ pub const WIN_W: u32 = 600;
 pub const WIN_H: u32 = 420;
 
 /// A demonstration of some application state we want to control with a conrod GUI.
+#[cfg(feature = "conrod")]
 pub struct DemoApp {
     ball_xy: conrod::Point,
     ball_color: conrod::Color,
@@ -134,7 +147,7 @@ pub struct DemoApp {
     cat: conrod::image::Id,
 }
 
-
+#[cfg(feature = "conrod")]
 impl DemoApp {
     /// Simple constructor for the `DemoApp`.
     pub fn new(cat: conrod::image::Id) -> Self {
@@ -149,6 +162,7 @@ impl DemoApp {
 
 
 /// Instantiate a GUI demonstrating every widget available in conrod.
+#[cfg(feature = "conrod")]
 pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
     use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget};
     use std::iter::once;
