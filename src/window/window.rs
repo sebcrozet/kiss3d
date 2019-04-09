@@ -36,12 +36,14 @@ use renderer::ConrodRenderer;
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
 
+#[cfg(feature = "conrod")]
 struct ConrodContext {
     renderer: ConrodRenderer,
     textures: conrod::image::Map<(Rc<Texture>, (u32, u32))>,
     texture_ids: HashMap<String, conrod::image::Id>
 }
 
+#[cfg(feature = "conrod")]
 impl ConrodContext {
     fn new(width: f64, height: f64) -> Self {
         Self {
