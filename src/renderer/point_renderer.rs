@@ -33,7 +33,7 @@ impl PointRenderer {
             color: shader.get_attrib::<Point3<f32>>("color").unwrap(),
             proj: shader.get_uniform::<Matrix4<f32>>("proj").unwrap(),
             view: shader.get_uniform::<Matrix4<f32>>("view").unwrap(),
-            shader: shader,
+            shader,
             point_size: 1.0,
         }
     }

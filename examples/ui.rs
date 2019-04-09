@@ -1,59 +1,52 @@
-#[macro_use]
 extern crate kiss3d;
 extern crate nalgebra as na;
 #[macro_use]
-extern crate stdweb;
+extern crate conrod_core as conrod;
 
-use kiss3d::conrod::widget::{Button, button::Style, Widget, Text};
-use kiss3d::conrod::color::{Color, Colorable};
-use kiss3d::conrod::position::{Sizeable, Positionable};
-use kiss3d::conrod::Labelable;
+use conrod::color::Color;
+use conrod::position::Positionable;
 
+use na::{Vector3, UnitQuaternion};
+use kiss3d::window::Window;
 use kiss3d::light::Light;
-use kiss3d::scene::SceneNode;
-use kiss3d::window::{State, Window};
-use kiss3d::conrod;
-use na::{UnitQuaternion, Vector3};
-
-struct AppState {
-    c: SceneNode,
-    rot: UnitQuaternion<f32>,
-    ids: Ids,
-    app: DemoApp,
-}
-
-impl State for AppState {
-    fn step(&mut self, window: &mut Window) {
-        for event in window.conrod_ui().widget_input(self.ids.button).events() {
-            console!(log, format!("Found event: {:?}", event))
-        }
-
-        let mut ui = window.conrod_ui_mut().set_widgets();
-        gui(&mut ui, &self.ids, &mut self.app)
-    }
-}
 
 fn main() {
-    let mut window = Window::new("Kiss3d: wasm example");
+    let mut window = Window::new("Kiss3d: UI");
     window.set_background_color(1.0, 1.0, 1.0);
     let mut c = window.add_cube(0.1, 0.1, 0.1);
-
     c.set_color(1.0, 0.0, 0.0);
 
     window.set_light(Light::StickToCamera);
 
-    let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
-
-
-    // Generate the widget identifiers.
+//    // Generate the widget identifiers.
+//    widget_ids!(struct Ids { button, text });
     let ids = Ids::new(window.conrod_ui_mut().widget_id_generator());
-    let app = DemoApp::new();
     window.conrod_ui_mut().theme = theme();
+    let mut app = DemoApp::new();
 
+    // Render loop.
+    while window.render() {
+        let mut ui = window.conrod_ui_mut().set_widgets();
 
-    let state = AppState { c, rot, ids, app };
-
-    window.render_loop(state)
+        gui(&mut ui, &ids, &mut app)
+//        Text::new("Hello")
+//            .x_y(0.0, 0.0)
+//            .font_size(100)
+//            .color(Color::Rgba(0.0, 1.0, 0.0, 0.2))
+//            .set(ids.title, &mut ui);
+//
+//        for event in Button::new()
+//            .label("hello")
+//            .w_h(400.0, 100.0)
+//            .x_y(0.0, 0.0)
+//            .center_justify_label()
+//            .color(Color::Rgba(0.0, 0.0, 1.0, 0.2))
+//            .hover_color(Color::Rgba(0.0, 1.0, 0.0, 0.2))
+//            .press_color(Color::Rgba(1.0, 0.0, 0.0, 0.2))
+//            .set(ids.introduction, &mut ui) {
+//            c.set_color(rand::random(), rand::random(), rand::random());
+//        }
+    }
 }
 
 

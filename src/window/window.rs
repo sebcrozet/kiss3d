@@ -7,9 +7,10 @@ use std::iter::repeat;
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::mpsc::{self, Receiver};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use std::thread;
 
+use instant::Instant;
 use na::{Point2, Point3, Vector2, Vector3};
 
 use camera::{ArcBall, Camera};
@@ -28,6 +29,8 @@ use scene::{PlanarSceneNode, SceneNode};
 use text::{Font, TextRenderer};
 use window::{Canvas, State};
 use image::{GenericImage, Pixel};
+#[cfg(feature = "conrod")]
+use renderer::ConrodRenderer;
 
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
@@ -48,6 +51,8 @@ pub struct Window {
     planar_line_renderer: PlanarLineRenderer,
     point_renderer: PointRenderer,
     text_renderer: TextRenderer,
+    #[cfg(feature = "conrod")]
+    conrod_renderer: ConrodRenderer,
     framebuffer_manager: FramebufferManager,
     post_process_render_target: RenderTarget,
     #[cfg(not(target_arch = "wasm32"))]
@@ -374,7 +379,20 @@ impl Window {
         self.light_mode = pos;
     }
 
-    /// Opens a window, hide it then calls a user-defined procedure.
+    /// Retrieve a mutable reference to the UI based on Conrod.
+    #[cfg(feature = "conrod")]
+    pub fn conrod_ui_mut(&mut self) -> &mut conrod::Ui {
+        self.conrod_renderer.ui_mut()
+    }
+
+    /// Retrieve a reference to the UI based on Conrod.
+    #[cfg(feature = "conrod")]
+    pub fn conrod_ui(&self) -> &conrod::Ui {
+        self.conrod_renderer.ui()
+    }
+
+
+        /// Opens a window, hide it then calls a user-defined procedure.
     ///
     /// # Arguments
     /// * `title` - the window title
@@ -421,6 +439,8 @@ impl Window {
             planar_line_renderer: PlanarLineRenderer::new(),
             point_renderer: PointRenderer::new(),
             text_renderer: TextRenderer::new(),
+            #[cfg(feature = "conrod")]
+            conrod_renderer: ConrodRenderer::new(width as f64, height as f64),
             post_process_render_target: FramebufferManager::new_render_target(
                 width as usize,
                 height as usize,
@@ -562,6 +582,181 @@ impl Window {
                 self.update_viewport(w as f32, h as f32);
             }
             _ => {}
+        }
+
+        #[cfg(feature = "conrod")]
+        fn window_event_to_conrod_input(event: WindowEvent, size: Vector2<u32>, _hidpi: f64) -> Option<conrod::event::Input> {
+            use conrod::event::Input;
+            use conrod::input::{Motion, MouseButton, Button, Key as CKey};
+
+            let transform_coords = |x: f64, y: f64| {
+                (x - size.x as f64 / 2.0, -(y - size.y as f64 / 2.0))
+            };
+
+            match event {
+                WindowEvent::FramebufferSize(w, h) => Some(Input::Resize(w as f64, h as f64)),
+                WindowEvent::Focus(focus) => Some(Input::Focus(focus)),
+                WindowEvent::CursorPos(x, y, _) => {
+                    let (x, y) = transform_coords(x, y);
+                    Some(Input::Motion(Motion::MouseCursor { x, y }))
+                },
+                WindowEvent::Scroll(x, y, _) => {
+                    Some(Input::Motion(Motion::Scroll { x, y: -y }))
+                }
+                WindowEvent::MouseButton(button, action, _) => {
+                    let button = match button {
+                        crate::event::MouseButton::Button1 => MouseButton::Left,
+                        crate::event::MouseButton::Button2 => MouseButton::Right,
+                        crate::event::MouseButton::Button3 => MouseButton::Middle,
+                        crate::event::MouseButton::Button4 => MouseButton::X1,
+                        crate::event::MouseButton::Button5 => MouseButton::X2,
+                        crate::event::MouseButton::Button6 => MouseButton::Button6,
+                        crate::event::MouseButton::Button7 => MouseButton::Button7,
+                        crate::event::MouseButton::Button8 => MouseButton::Button8,
+                    };
+
+                    match action {
+                        Action::Press => Some(Input::Press(Button::Mouse(button))),
+                        Action::Release => Some(Input::Release(Button::Mouse(button))),
+                    }
+                }
+                WindowEvent::Key(key, action, _) => {
+                    let key = match key {
+                        Key::Key1 => CKey::D1,
+                        Key::Key2 => CKey::D2,
+                        Key::Key3 => CKey::D3,
+                        Key::Key4 => CKey::D4,
+                        Key::Key5 => CKey::D5,
+                        Key::Key6 => CKey::D6,
+                        Key::Key7 => CKey::D7,
+                        Key::Key8 => CKey::D8,
+                        Key::Key9 => CKey::D9,
+                        Key::Key0 => CKey::D0,
+                        Key::A => CKey::A,
+                        Key::B => CKey::B,
+                        Key::C => CKey::C,
+                        Key::D => CKey::D,
+                        Key::E => CKey::E,
+                        Key::F => CKey::F,
+                        Key::G => CKey::G,
+                        Key::H => CKey::H,
+                        Key::I => CKey::I,
+                        Key::J => CKey::J,
+                        Key::K => CKey::K,
+                        Key::L => CKey::L,
+                        Key::M => CKey::M,
+                        Key::N => CKey::N,
+                        Key::O => CKey::O,
+                        Key::P => CKey::P,
+                        Key::Q => CKey::Q,
+                        Key::R => CKey::R,
+                        Key::S => CKey::S,
+                        Key::T => CKey::T,
+                        Key::U => CKey::U,
+                        Key::V => CKey::V,
+                        Key::W => CKey::W,
+                        Key::X => CKey::X,
+                        Key::Y => CKey::Y,
+                        Key::Z => CKey::Z,
+                        Key::Escape => CKey::Escape,
+                        Key::F1 => CKey::F1,
+                        Key::F2 => CKey::F2,
+                        Key::F3 => CKey::F3,
+                        Key::F4 => CKey::F4,
+                        Key::F5 => CKey::F5,
+                        Key::F6 => CKey::F6,
+                        Key::F7 => CKey::F7,
+                        Key::F8 => CKey::F8,
+                        Key::F9 => CKey::F9,
+                        Key::F10 => CKey::F10,
+                        Key::F11 => CKey::F11,
+                        Key::F12 => CKey::F12,
+                        Key::F13 => CKey::F13,
+                        Key::F14 => CKey::F14,
+                        Key::F15 => CKey::F15,
+                        Key::F16 => CKey::F16,
+                        Key::F17 => CKey::F17,
+                        Key::F18 => CKey::F18,
+                        Key::F19 => CKey::F19,
+                        Key::F20 => CKey::F20,
+                        Key::F21 => CKey::F21,
+                        Key::F22 => CKey::F22,
+                        Key::F23 => CKey::F23,
+                        Key::F24 => CKey::F24,
+                        Key::Pause => CKey::Pause,
+                        Key::Insert => CKey::Insert,
+                        Key::Home => CKey::Home,
+                        Key::Delete => CKey::Delete,
+                        Key::End => CKey::End,
+                        Key::PageDown => CKey::PageDown,
+                        Key::PageUp => CKey::PageUp,
+                        Key::Left => CKey::Left,
+                        Key::Up => CKey::Up,
+                        Key::Right => CKey::Right,
+                        Key::Down => CKey::Down,
+                        Key::Return => CKey::Return,
+                        Key::Space => CKey::Space,
+                        Key::Caret => CKey::Caret,
+                        Key::Numpad0 => CKey::NumPad0,
+                        Key::Numpad1 => CKey::NumPad1,
+                        Key::Numpad2 => CKey::NumPad2,
+                        Key::Numpad3 => CKey::NumPad3,
+                        Key::Numpad4 => CKey::NumPad4,
+                        Key::Numpad5 => CKey::NumPad5,
+                        Key::Numpad6 => CKey::NumPad6,
+                        Key::Numpad7 => CKey::NumPad7,
+                        Key::Numpad8 => CKey::NumPad8,
+                        Key::Numpad9 => CKey::NumPad9,
+                        Key::Add => CKey::Plus,
+                        Key::At => CKey::At,
+                        Key::Backslash => CKey::Backslash,
+                        Key::Calculator => CKey::Calculator,
+                        Key::Colon => CKey::Colon,
+                        Key::Comma => CKey::Comma,
+                        Key::Equals => CKey::Equals,
+                        Key::LBracket => CKey::LeftBracket,
+                        Key::LControl => CKey::LCtrl,
+                        Key::LShift => CKey::LShift,
+                        Key::Mail => CKey::Mail,
+                        Key::MediaSelect => CKey::MediaSelect,
+                        Key::Minus => CKey::Minus,
+                        Key::Mute => CKey::Mute,
+                        Key::NumpadComma => CKey::NumPadComma,
+                        Key::NumpadEnter => CKey::NumPadEnter,
+                        Key::NumpadEquals => CKey::NumPadEquals,
+                        Key::Period => CKey::Period,
+                        Key::Power => CKey::Power,
+                        Key::RAlt => CKey::RAlt,
+                        Key::RBracket => CKey::RightBracket,
+                        Key::RControl => CKey::RCtrl,
+                        Key::RShift => CKey::RShift,
+                        Key::Semicolon => CKey::Semicolon,
+                        Key::Slash => CKey::Slash,
+                        Key::Sleep => CKey::Sleep,
+                        Key::Stop => CKey::Stop,
+                        Key::Tab => CKey::Tab,
+                        Key::VolumeDown => CKey::VolumeDown,
+                        Key::VolumeUp => CKey::VolumeUp,
+                        Key::Copy => CKey::Copy,
+                        Key::Paste => CKey::Paste,
+                        Key::Cut => CKey::Cut,
+                        _ => CKey::Unknown
+                    };
+
+                    match action {
+                        Action::Press => Some(Input::Press(Button::Keyboard(key))),
+                        Action::Release => Some(Input::Release(Button::Keyboard(key))),
+                    }
+                }
+                _ => None
+            }
+        }
+
+        #[cfg(feature = "conrod")]
+        {
+            if let Some(input) = window_event_to_conrod_input(*event, self.size(), self.hidpi_factor()) {
+                self.conrod_ui_mut().handle_event(input);
+            }
         }
 
         match *planar_camera {
@@ -768,6 +963,8 @@ impl Window {
             }
 
             self.text_renderer.render(w as f32, h as f32);
+            #[cfg(feature = "conrod")]
+            self.conrod_renderer.render(w as f32, h as f32, self.canvas.hidpi_factor() as f32);
 
             // We are done: swap buffers
             self.canvas.swap_buffers();

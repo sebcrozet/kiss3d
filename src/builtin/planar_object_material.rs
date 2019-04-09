@@ -173,8 +173,6 @@ void main(){
     tex_coord_v = tex_coord;
 }";
 
-// phong-like lighting (heavily) inspired
-// http://www.mathematik.uni-marburg.de/~thormae/lectures/graphics1/code/WebGLShaderLightMat/ShaderLightMat.html
 const ANOTHER_VERY_LONG_STRING: &'static str = "#version 100
 #ifdef GL_FRAGMENT_PRECISION_HIGH
    precision highp float;
