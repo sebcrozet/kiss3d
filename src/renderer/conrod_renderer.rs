@@ -318,10 +318,11 @@ impl ConrodRenderer {
                     mode = RenderMode::Shape;
 
                     for triangle in triangles {
+                        let ((a, ca), (b, cb), (c, cc)) = (triangle.0[0], triangle.0[1], triangle.0[2]);
                         vertices.extend_from_slice(&[
-                            triangle.0[0].0[0] as f32 * hidpi_factor, triangle.0[0].0[1] as f32 * hidpi_factor, (triangle.0[0].1).0, (triangle.0[0].1).1, (triangle.0[0].1).2,
-                            triangle.0[1].0[0] as f32 * hidpi_factor, triangle.0[1].0[1] as f32 * hidpi_factor, (triangle.0[1].1).0, (triangle.0[1].1).1, (triangle.0[1].1).2,
-                            triangle.0[2].0[0] as f32 * hidpi_factor, triangle.0[2].0[1] as f32 * hidpi_factor, (triangle.0[2].1).0, (triangle.0[2].1).1, (triangle.0[2].1).2,
+                            a[0] as f32 * hidpi_factor, a[1] as f32 * hidpi_factor, ca.0, ca.1, ca.2, ca.3,
+                            b[0] as f32 * hidpi_factor, b[1] as f32 * hidpi_factor, cb.0, cb.1, cb.2, cb.3,
+                            c[0] as f32 * hidpi_factor, c[1] as f32 * hidpi_factor, cc.0, cc.1, cc.2, cc.3,
                         ]);
                         indices.push(Point3::new(vid + 0, vid + 1, vid + 2));
 
