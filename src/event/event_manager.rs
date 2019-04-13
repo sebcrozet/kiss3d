@@ -28,9 +28,9 @@ impl<'a> Event<'a> {
     #[inline]
     fn new(value: WindowEvent, inhibitor: &RefCell<Vec<WindowEvent>>) -> Event {
         Event {
-            value: value,
+            value,
             inhibited: false,
-            inhibitor: inhibitor,
+            inhibitor,
         }
     }
 }
@@ -48,8 +48,8 @@ impl<'a> Events<'a> {
         inhibitor: &'a RefCell<Vec<WindowEvent>>,
     ) -> Events<'a> {
         Events {
-            stream: stream,
-            inhibitor: inhibitor,
+            stream,
+            inhibitor,
         }
     }
 }
@@ -82,8 +82,8 @@ impl EventManager {
         inhibitor: Rc<RefCell<Vec<WindowEvent>>>,
     ) -> EventManager {
         EventManager {
-            events: events,
-            inhibitor: inhibitor,
+            events,
+            inhibitor,
         }
     }
 

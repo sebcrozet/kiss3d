@@ -572,18 +572,14 @@ impl Window {
         self.canvas.cursor_pos()
     }
 
-    /// Poll events and pass them to a user-defined function. If the function returns `true`, the
-    /// default engine event handler (camera, framebuffer size, etc.) is executed, if it returns
-    /// `false`, the default engine event handler is not executed. Return `false` if you want to
-    /// override the default engine behaviour.
     #[inline]
     fn handle_events(
         &mut self,
         camera: &mut Option<&mut Camera>,
         planar_camera: &mut Option<&mut PlanarCamera>,
     ) {
-        let unhandled_events = self.unhandled_events.clone(); // FIXME: this is very ugly.
-        let events = self.events.clone(); // FIXME: this is very ugly
+        let unhandled_events = self.unhandled_events.clone(); // FIXME: could we avoid the clone?
+        let events = self.events.clone(); // FIXME: could we avoid the clone?
 
         for event in unhandled_events.borrow().iter() {
             self.handle_event(camera, planar_camera, event)
