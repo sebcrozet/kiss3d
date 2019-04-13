@@ -1,8 +1,4 @@
-
-
-
-
-//! A batched point renderer.
+//! A renderer for Conrod primitives.
 
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -12,6 +8,7 @@ use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, Shad
 use text::Font;
 use conrod::{Ui, render::PrimitiveKind};
 use conrod::text::GlyphCache;
+use conrod::position::Rect;
 use rusttype::gpu_cache::Cache;
 
 #[path = "../error.rs"]
@@ -172,6 +169,7 @@ impl ConrodRenderer {
         let mut primitives = self.ui.draw();
         let ctxt = Context::get();
         let mut mode = RenderMode::Unknown;
+        let mut curr_scizzor = Rect::from_corners([0.0, 0.0], [0.0, 0.0]);
 
         let mut vid = 0;
 
@@ -181,10 +179,27 @@ impl ConrodRenderer {
         verify!(ctxt.blend_func(Context::SRC_ALPHA, Context::ONE_MINUS_SRC_ALPHA));
         verify!(ctxt.disable(Context::DEPTH_TEST));
 
+
+        let rect_to_gl_rect = |rect: Rect| {
+            let (w, h) = rect.w_h();
+            let l = rect.left() as f32 * hidpi_factor + width / 2.0;
+            let b = rect.bottom() as f32 * hidpi_factor + height / 2.0;
+            let w = w as f32 * hidpi_factor;
+            let h = h as f32 * hidpi_factor;
+
+            (
+                l.max(0.0),
+                b.max(0.0),
+                w.min(width),
+                h.min(height),
+            )
+        };
+
         loop {
             let primitive = primitives.next();
 
             let render = if let Some(ref primitive) = primitive {
+                curr_scizzor != primitive.scizzor ||
                 match primitive.kind {
                     PrimitiveKind::TrianglesSingleColor {..} => mode != RenderMode::Shape,
                     PrimitiveKind::TrianglesMultiColor {..} => mode != RenderMode::Shape,
@@ -204,6 +219,9 @@ impl ConrodRenderer {
             };
 
             if render {
+                println!("scissor: {:?}", curr_scizzor.x_y_w_h());
+                let (x, y, w, h) = rect_to_gl_rect(curr_scizzor);
+                ctxt.scissor(x as i32, y as i32, w as i32, h as i32);
                 match mode {
                     RenderMode::Shape => {
                         self.triangle_shader.use_program();
@@ -276,6 +294,8 @@ impl ConrodRenderer {
             let primitive = primitive.unwrap();
             let vertices = self.points.data_mut().as_mut().unwrap();
             let indices = self.indices.data_mut().as_mut().unwrap();
+            curr_scizzor = primitive.scizzor;
+
             match primitive.kind {
                 PrimitiveKind::Rectangle { color } => {
                     mode = RenderMode::Shape;
@@ -444,6 +464,7 @@ impl ConrodRenderer {
 
         verify!(ctxt.enable(Context::DEPTH_TEST));
         verify!(ctxt.disable(Context::BLEND));
+        ctxt.scissor(0, 0, width as i32, height as i32);
     }
 }
 
