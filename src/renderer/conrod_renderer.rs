@@ -178,6 +178,7 @@ impl ConrodRenderer {
         verify!(ctxt.enable(Context::BLEND));
         verify!(ctxt.blend_func(Context::SRC_ALPHA, Context::ONE_MINUS_SRC_ALPHA));
         verify!(ctxt.disable(Context::DEPTH_TEST));
+        verify!(ctxt.enable(Context::SCISSOR_TEST));
 
 
         let rect_to_gl_rect = |rect: Rect| {
@@ -219,7 +220,6 @@ impl ConrodRenderer {
             };
 
             if render {
-                println!("scissor: {:?}", curr_scizzor.x_y_w_h());
                 let (x, y, w, h) = rect_to_gl_rect(curr_scizzor);
                 ctxt.scissor(x as i32, y as i32, w as i32, h as i32);
                 match mode {
