@@ -178,8 +178,9 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
     const TITLE: &'static str = "All Widgets";
     widget::Canvas::new()
         .pad(MARGIN)
+        .align_bottom()
+        .h(300.0)
         .scroll_kids_vertically()
-//        .color(conrod::Color::Rgba(0.5, 0.5, 0.5, 0.2))
         .set(ids.canvas, ui);
 
 
@@ -192,11 +193,7 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
     // introduction to the example.
     widget::Text::new(TITLE).font_size(TITLE_SIZE).mid_top_of(ids.canvas).set(ids.title, ui);
     const INTRODUCTION: &'static str =
-        "This example aims to demonstrate all widgets that are provided by conrod.\
-        \n\nThe widget that you are currently looking at is the Text widget. The Text widget \
-        is one of several special \"primitive\" widget types which are used to construct \
-        all other widget types. These types are \"special\" in the sense that conrod knows \
-        how to render them via `conrod::render::Primitive`s.\
+        "This example aims to demonstrate some widgets that are provided by conrod.\
         \n\nScroll down to see more widgets!";
     widget::Text::new(INTRODUCTION)
         .padded_w_of(ids.canvas, MARGIN)

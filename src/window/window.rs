@@ -783,8 +783,25 @@ impl Window {
 
         #[cfg(feature = "conrod")]
         {
-            if let Some(input) = window_event_to_conrod_input(*event, self.size(), self.hidpi_factor()) {
-                self.conrod_ui_mut().handle_event(input);
+            let (size, hidpi) = (self.size(), self.hidpi_factor());
+            let conrod_ui = self.conrod_ui_mut();
+            if let Some(input) = window_event_to_conrod_input(*event, size, hidpi) {
+                conrod_ui.handle_event(input);
+            }
+
+            let state = &conrod_ui.global_input().current;
+            let window_id = Some(conrod_ui.window);
+
+            if event.is_keyboard_event() &&
+                state.widget_capturing_keyboard.is_some() &&
+                state.widget_capturing_keyboard != window_id {
+                return;
+            }
+
+            if event.is_mouse_event() &&
+                state.widget_capturing_mouse.is_some() &&
+                state.widget_capturing_mouse != window_id {
+                return;
             }
         }
 

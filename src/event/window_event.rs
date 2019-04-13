@@ -18,6 +18,25 @@ pub enum WindowEvent {
     CharModifiers(char, Modifiers),
 }
 
+impl WindowEvent {
+    /// Tests if this event is related to the keyboard.
+    pub fn is_keyboard_event(&self) -> bool {
+        match self {
+            WindowEvent::Key(..) | WindowEvent::Char(..) | WindowEvent::CharModifiers(..) => true,
+            _ => false
+        }
+    }
+
+    /// Tests if this event is related to the mouse.
+    pub fn is_mouse_event(&self) -> bool {
+        match self {
+            WindowEvent::MouseButton(..) | WindowEvent::CursorPos(..) |
+            WindowEvent::CursorEnter(..) | WindowEvent::Scroll(..) => true,
+            _ => false
+        }
+    }
+}
+
 // NOTE: list of keys inspired from glutin.
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Serialize, Deserialize)]
 pub enum Key {
