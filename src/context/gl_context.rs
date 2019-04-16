@@ -180,7 +180,7 @@ impl AbstractContext for GLContext {
             gl::BufferData(
                 target,
                 (data.len() * mem::size_of::<T>()) as GLsizeiptr,
-                mem::transmute(&data[0]),
+                data.as_ptr() as *const std::ffi::c_void,
                 usage,
             )
         }
@@ -192,7 +192,7 @@ impl AbstractContext for GLContext {
                 target,
                 offset,
                 (data.len() * mem::size_of::<T>()) as GLsizeiptr,
-                mem::transmute(&data[0]),
+                data.as_ptr() as *const std::ffi::c_void,
             )
         }
     }
