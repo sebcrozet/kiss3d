@@ -420,8 +420,30 @@ impl Window {
         self.conrod_context.renderer.ui()
     }
 
+    /// Returns `true` if the mouse is currently interacting with a Conrod widget.
+    #[cfg(feature = "conrod")]
+    pub fn is_conrod_ui_capturing_mouse(&self) -> bool {
+        let ui = self.conrod_ui();
+        let state = &ui.global_input().current;
+        let window_id = Some(ui.window);
 
-        /// Opens a window, hide it then calls a user-defined procedure.
+        state.widget_capturing_mouse.is_some() &&
+            state.widget_capturing_mouse != window_id
+    }
+
+    /// Returns `true` if the keyboard is currently interacting with a Conrod widget.
+    #[cfg(feature = "conrod")]
+    pub fn is_conrod_ui_capturing_keyboard(&self) -> bool {
+        let ui = self.conrod_ui();
+        let state = &ui.global_input().current;
+        let window_id = Some(ui.window);
+
+        state.widget_capturing_keyboard.is_some() &&
+            state.widget_capturing_keyboard != window_id
+    }
+
+
+    /// Opens a window, hide it then calls a user-defined procedure.
     ///
     /// # Arguments
     /// * `title` - the window title
