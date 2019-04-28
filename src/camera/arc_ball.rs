@@ -1,5 +1,5 @@
 use camera::Camera;
-use event::{Action, Key, MouseButton, WindowEvent};
+use event::{Action, Key, MouseButton, WindowEvent, Modifiers};
 use na::{self, Isometry3, Matrix4, Perspective3, Point3, Vector2, Vector3};
 use resource::ShaderUniform;
 use std::f32;
@@ -41,7 +41,9 @@ pub struct ArcBall {
     /// Increment of the distance per unit scrolling. The default value is 40.0.
     dist_step: f32,
     rotate_button: Option<MouseButton>,
+    rotate_modifiers: Option<Modifiers>,
     drag_button: Option<MouseButton>,
+    drag_modifiers: Option<Modifiers>,
     reset_key: Option<Key>,
 
     projection: Perspective3<f32>,
@@ -80,7 +82,9 @@ impl ArcBall {
             max_pitch: std::f32::consts::PI - 0.01,
             dist_step: 40.0,
             rotate_button: Some(MouseButton::Button1),
+            rotate_modifiers: None,
             drag_button: Some(MouseButton::Button2),
+            drag_modifiers: None,
             reset_key: Some(Key::Return),
             projection: Perspective3::new(800.0 / 600.0, fov, znear, zfar),
             view: na::zero(),
@@ -231,6 +235,34 @@ impl ArcBall {
         self.rotate_button = new_button;
     }
 
+    /// Modifiers that must be pressed for the camera rotation to occur.
+    pub fn rotate_modifiers(&self) -> Option<Modifiers> {
+        self.rotate_modifiers
+    }
+
+    /// Sets the modifiers that must be pressed for the camera rotation to occur.
+    ///
+    /// If this is set to `None`, then pressing any modifier will not prevent rotation from occurring.
+    /// If this is different from `None` then rotation will occur only if the exact specified set of modifiers is pressed.
+    /// In particular, if this is set to `Some(Modifiers::empty())` then, rotation will occur only of no modifier is pressed.
+    pub fn set_rotate_modifiers(&mut self, modifiers: Option<Modifiers>) {
+        self.rotate_modifiers = modifiers
+    }
+
+    /// Modifiers that must be pressed for the camera drag to occur.
+    pub fn drag_modifiers(&self) -> Option<Modifiers> {
+        self.drag_modifiers
+    }
+
+    /// Sets the modifiers that must be pressed for the camera drag to occur.
+    ///
+    /// If this is set to `None`, then pressing any modifier will not prevent dragging from occurring.
+    /// If this is different from `None` then drag will occur only if the exact specified set of modifiers is pressed.
+    /// In particular, if this is set to `Some(Modifiers::empty())` then, drag will occur only of no modifier is pressed.
+    pub fn set_drag_modifiers(&mut self, modifiers: Option<Modifiers>) {
+        self.drag_modifiers = modifiers
+    }
+
     /// The button used to drag the ArcBall camera.
     pub fn drag_button(&self) -> Option<MouseButton> {
         self.drag_button
@@ -311,18 +343,20 @@ impl Camera for ArcBall {
 
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
         match *event {
-            WindowEvent::CursorPos(x, y, _) => {
+            WindowEvent::CursorPos(x, y, modifiers) => {
                 let curr_pos = Vector2::new(x as f32, y as f32);
 
                 if let Some(rotate_button) = self.rotate_button {
-                    if canvas.get_mouse_button(rotate_button) == Action::Press {
+                    if canvas.get_mouse_button(rotate_button) == Action::Press &&
+                        self.rotate_modifiers.map(|m| m == modifiers).unwrap_or(true) {
                         let dpos = curr_pos - self.last_cursor_pos;
                         self.handle_left_button_displacement(&dpos)
                     }
                 }
 
                 if let Some(drag_button) = self.drag_button {
-                    if canvas.get_mouse_button(drag_button) == Action::Press {
+                    if canvas.get_mouse_button(drag_button) == Action::Press &&
+                        self.drag_modifiers.map(|m| m == modifiers).unwrap_or(true) {
                         let dpos = curr_pos - self.last_cursor_pos;
                         self.handle_right_button_displacement(&dpos)
                     }
