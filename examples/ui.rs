@@ -29,8 +29,7 @@ fn main() {
 
     window.set_light(Light::StickToCamera);
 
-//    // Generate the widget identifiers.
-//    widget_ids!(struct Ids { button, text });
+    // Generate the widget identifiers.
     let ids = Ids::new(window.conrod_ui_mut().widget_id_generator());
     window.conrod_ui_mut().theme = theme();
     window.add_texture(&Path::new("./examples/media/kitten.png"), "cat");
@@ -41,25 +40,7 @@ fn main() {
     // Render loop.
     while window.render() {
         let mut ui = window.conrod_ui_mut().set_widgets();
-
         gui(&mut ui, &ids, &mut app)
-//        Text::new("Hello")
-//            .x_y(0.0, 0.0)
-//            .font_size(100)
-//            .color(Color::Rgba(0.0, 1.0, 0.0, 0.2))
-//            .set(ids.title, &mut ui);
-//
-//        for event in Button::new()
-//            .label("hello")
-//            .w_h(400.0, 100.0)
-//            .x_y(0.0, 0.0)
-//            .center_justify_label()
-//            .color(Color::Rgba(0.0, 0.0, 1.0, 0.2))
-//            .hover_color(Color::Rgba(0.0, 1.0, 0.0, 0.2))
-//            .press_color(Color::Rgba(1.0, 0.0, 0.0, 0.2))
-//            .set(ids.introduction, &mut ui) {
-//            c.set_color(rand::random(), rand::random(), rand::random());
-//        }
     }
 }
 
