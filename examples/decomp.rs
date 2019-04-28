@@ -1,3 +1,4 @@
+extern crate instant;
 extern crate kiss3d;
 extern crate nalgebra as na;
 extern crate ncollide3d;
@@ -15,7 +16,7 @@ use std::path::Path;
 use std::rc::Rc;
 use std::str::FromStr;
 use std::sync::{Arc, RwLock};
-use std::time::Instant;
+use instant::Instant;
 
 fn usage(exe_name: &str) {
     println!("Usage: {} obj_file scale clusters concavity", exe_name);

@@ -138,6 +138,10 @@ impl AbstractContext for WebGLContext {
             .uniform_matrix4fv(location, transpose, m.as_slice())
     }
 
+    fn uniform4f(&self, location: Option<&Self::UniformLocation>, x: f32, y: f32, z: f32, w: f32) {
+        self.ctxt.uniform4f(location, x, y, z, w)
+    }
+
     fn uniform3f(&self, location: Option<&Self::UniformLocation>, x: f32, y: f32, z: f32) {
         self.ctxt.uniform3f(location, x, y, z)
     }

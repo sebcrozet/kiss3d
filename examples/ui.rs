@@ -1,59 +1,47 @@
 #[macro_use]
 extern crate kiss3d;
 extern crate nalgebra as na;
-#[macro_use]
-extern crate stdweb;
 
-use kiss3d::conrod::widget::{Button, button::Style, Widget, Text};
-use kiss3d::conrod::color::{Color, Colorable};
-use kiss3d::conrod::position::{Sizeable, Positionable};
-use kiss3d::conrod::Labelable;
+use std::path::Path;
 
+use na::{Vector3, UnitQuaternion};
+use kiss3d::window::Window;
 use kiss3d::light::Light;
-use kiss3d::scene::SceneNode;
-use kiss3d::window::{State, Window};
+#[cfg(feature = "conrod")]
 use kiss3d::conrod;
-use na::{UnitQuaternion, Vector3};
+#[cfg(feature = "conrod")]
+use kiss3d::conrod::color::Color;
+#[cfg(feature = "conrod")]
+use kiss3d::conrod::position::Positionable;
 
-struct AppState {
-    c: SceneNode,
-    rot: UnitQuaternion<f32>,
-    ids: Ids,
-    app: DemoApp,
-}
-
-impl State for AppState {
-    fn step(&mut self, window: &mut Window) {
-        for event in window.conrod_ui().widget_input(self.ids.button).events() {
-            console!(log, format!("Found event: {:?}", event))
-        }
-
-        let mut ui = window.conrod_ui_mut().set_widgets();
-        gui(&mut ui, &self.ids, &mut self.app)
-    }
-}
-
+#[cfg(not(feature = "conrod"))]
 fn main() {
-    let mut window = Window::new("Kiss3d: wasm example");
+    panic!("The 'conrod' feature must be enabled for this example to work.")
+}
+
+
+#[cfg(feature = "conrod")]
+fn main() {
+    let mut window = Window::new("Kiss3d: UI");
     window.set_background_color(1.0, 1.0, 1.0);
     let mut c = window.add_cube(0.1, 0.1, 0.1);
-
     c.set_color(1.0, 0.0, 0.0);
 
     window.set_light(Light::StickToCamera);
 
-    let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
-
-
     // Generate the widget identifiers.
     let ids = Ids::new(window.conrod_ui_mut().widget_id_generator());
-    let app = DemoApp::new();
     window.conrod_ui_mut().theme = theme();
+    window.add_texture(&Path::new("./examples/media/kitten.png"), "cat");
+    let cat_texture = window.conrod_texture_id("cat").unwrap();
 
+    let mut app = DemoApp::new(cat_texture);
 
-    let state = AppState { c, rot, ids, app };
-
-    window.render_loop(state)
+    // Render loop.
+    while window.render() {
+        let mut ui = window.conrod_ui_mut().set_widgets();
+        gui(&mut ui, &ids, &mut app)
+    }
 }
 
 
@@ -63,6 +51,7 @@ fn main() {
  *
  */
 /// A set of reasonable stylistic defaults that works for the `gui` below.
+#[cfg(feature = "conrod")]
 pub fn theme() -> conrod::Theme {
     use conrod::position::{Align, Direction, Padding, Position, Relative};
     conrod::Theme {
@@ -86,6 +75,7 @@ pub fn theme() -> conrod::Theme {
 }
 
 // Generate a unique `WidgetId` for each widget.
+#[cfg(feature = "conrod")]
 widget_ids! {
     pub struct Ids {
         // The scrollable canvas.
@@ -109,7 +99,7 @@ widget_ids! {
         circle,
         // Image.
         image_title,
-//        rust_logo,
+        cat,
         // Button, XyPad, Toggle.
         button_title,
         button,
@@ -130,28 +120,30 @@ pub const WIN_W: u32 = 600;
 pub const WIN_H: u32 = 420;
 
 /// A demonstration of some application state we want to control with a conrod GUI.
+#[cfg(feature = "conrod")]
 pub struct DemoApp {
     ball_xy: conrod::Point,
     ball_color: conrod::Color,
     sine_frequency: f32,
-//    rust_logo: conrod::image::Id,
+    cat: conrod::image::Id,
 }
 
-
+#[cfg(feature = "conrod")]
 impl DemoApp {
     /// Simple constructor for the `DemoApp`.
-    pub fn new(/*rust_logo: conrod::image::Id*/) -> Self {
+    pub fn new(cat: conrod::image::Id) -> Self {
         DemoApp {
             ball_xy: [0.0, 0.0],
             ball_color: conrod::color::WHITE,
             sine_frequency: 1.0,
-//            rust_logo: rust_logo,
+            cat,
         }
     }
 }
 
 
 /// Instantiate a GUI demonstrating every widget available in conrod.
+#[cfg(feature = "conrod")]
 pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
     use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget};
     use std::iter::once;
@@ -167,8 +159,9 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
     const TITLE: &'static str = "All Widgets";
     widget::Canvas::new()
         .pad(MARGIN)
+        .align_bottom()
+        .h(300.0)
         .scroll_kids_vertically()
-//        .color(conrod::Color::Rgba(0.5, 0.5, 0.5, 0.2))
         .set(ids.canvas, ui);
 
 
@@ -181,11 +174,7 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
     // introduction to the example.
     widget::Text::new(TITLE).font_size(TITLE_SIZE).mid_top_of(ids.canvas).set(ids.title, ui);
     const INTRODUCTION: &'static str =
-        "This example aims to demonstrate all widgets that are provided by conrod.\
-        \n\nThe widget that you are currently looking at is the Text widget. The Text widget \
-        is one of several special \"primitive\" widget types which are used to construct \
-        all other widget types. These types are \"special\" in the sense that conrod knows \
-        how to render them via `conrod::render::Primitive`s.\
+        "This example aims to demonstrate some widgets that are provided by conrod.\
         \n\nScroll down to see more widgets!";
     widget::Text::new(INTRODUCTION)
         .padded_w_of(ids.canvas, MARGIN)
@@ -273,11 +262,11 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
         .set(ids.image_title, ui);
 
     const LOGO_SIDE: conrod::Scalar = 144.0;
-//    widget::Image::new(app.rust_logo)
-//        .w_h(LOGO_SIDE, LOGO_SIDE)
-//        .down(60.0)
-//        .align_middle_x_of(ids.canvas)
-//        .set(ids.rust_logo, ui);
+    widget::Image::new(app.cat)
+        .w_h(LOGO_SIDE, LOGO_SIDE)
+        .down(60.0)
+        .align_middle_x_of(ids.canvas)
+        .set(ids.cat, ui);
 
 
     /////////////////////////////////
@@ -286,7 +275,7 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
 
 
     widget::Text::new("Button, XYPad and Toggle")
-//        .down_from(ids.rust_logo, 60.0)
+        .down_from(ids.cat, 60.0)
         .align_middle_x_of(ids.canvas)
         .font_size(SUBTITLE_SIZE)
         .set(ids.button_title, ui);

@@ -148,6 +148,13 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
 
     /// Binds this attribute to non contiguous parts of a gpu vector.
     pub fn bind_sub_buffer(&mut self, vector: &mut GPUVec<T>, strides: usize, start_index: usize) {
+        unsafe { self.bind_sub_buffer_generic(vector, strides, start_index)}
+    }
+
+    /// Binds this attribute to non contiguous parts of a gpu vector.
+    ///
+    /// The type of the provided GPU buffer is not forced to match the type of this attribute.
+    pub unsafe fn bind_sub_buffer_generic<T2: GLPrimitive>(&mut self, vector: &mut GPUVec<T2>, strides: usize, start_index: usize) {
         vector.bind();
 
         verify!(Context::get().vertex_attrib_pointer(
@@ -155,8 +162,8 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
             T::size() as i32,
             T::gl_type(),
             false,
-            ((strides + 1) * mem::size_of::<T>()) as i32,
-            (start_index * mem::size_of::<T>()) as GLintptr
+            ((strides + 1) * mem::size_of::<T2>()) as i32,
+            (start_index * mem::size_of::<T2>()) as GLintptr
         ));
     }
 }

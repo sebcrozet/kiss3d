@@ -7,9 +7,11 @@ use std::iter::repeat;
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::mpsc::{self, Receiver};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use std::thread;
+use std::collections::HashMap;
 
+use instant::Instant;
 use na::{Point2, Point3, Vector2, Vector3};
 
 use camera::{ArcBall, Camera};
@@ -18,20 +20,39 @@ use event::{Action, EventManager, Key, WindowEvent};
 use image::imageops;
 use image::{ImageBuffer, Rgb};
 use light::Light;
-use line_renderer::LineRenderer;
+use renderer::{Renderer, PointRenderer, LineRenderer};
 use ncollide3d::procedural::TriMesh;
 use planar_camera::{FixedView, PlanarCamera};
 use planar_line_renderer::PlanarLineRenderer;
-use point_renderer::PointRenderer;
 use post_processing::PostProcessingEffect;
 use resource::{FramebufferManager, Mesh, PlanarMesh, RenderTarget, Texture, TextureManager};
 use scene::{PlanarSceneNode, SceneNode};
 use text::{Font, TextRenderer};
 use window::{Canvas, State};
 use image::{GenericImage, Pixel};
+#[cfg(feature = "conrod")]
+use renderer::ConrodRenderer;
 
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
+
+#[cfg(feature = "conrod")]
+struct ConrodContext {
+    renderer: ConrodRenderer,
+    textures: conrod::image::Map<(Rc<Texture>, (u32, u32))>,
+    texture_ids: HashMap<String, conrod::image::Id>
+}
+
+#[cfg(feature = "conrod")]
+impl ConrodContext {
+    fn new(width: f64, height: f64) -> Self {
+        Self {
+            renderer: ConrodRenderer::new(width, height),
+            textures: conrod::image::Map::new(),
+            texture_ids: HashMap::new()
+        }
+    }
+}
 
 /// Structure representing a window and a 3D scene.
 ///
@@ -56,6 +77,9 @@ pub struct Window {
     planar_camera: Rc<RefCell<FixedView>>,
     camera: Rc<RefCell<ArcBall>>,
     should_close: bool,
+    #[cfg(feature = "conrod")]
+    conrod_context: ConrodContext,
+
 }
 
 impl Window {
@@ -326,7 +350,7 @@ impl Window {
             .add_quad_with_vertices(vertices, nhpoints, nvpoints)
     }
 
-    #[doc(hidden)]
+    /// Load a texture fro a file and return a reference to it.
     pub fn add_texture(&mut self, path: &Path, name: &str) -> Rc<Texture> {
         TextureManager::get_global_manager(|tm| tm.add(path, name))
     }
@@ -375,6 +399,50 @@ impl Window {
         self.light_mode = pos;
     }
 
+    /// Retrieve a mutable reference to the UI based on Conrod.
+    #[cfg(feature = "conrod")]
+    pub fn conrod_ui_mut(&mut self) -> &mut conrod::Ui {
+        self.conrod_context.renderer.ui_mut()
+    }
+
+    /// Attributes a conrod ID to the given texture and returns it if it exists.
+    #[cfg(feature = "conrod")]
+    pub fn conrod_texture_id(&mut self, name: &str) -> Option<conrod::image::Id> {
+        let tex = TextureManager::get_global_manager(|tm| tm.get_with_size(name))?;
+        let textures = &mut self.conrod_context.textures;
+        Some(*self.conrod_context.texture_ids.entry(name.to_string())
+            .or_insert_with(|| textures.insert(tex)))
+    }
+
+    /// Retrieve a reference to the UI based on Conrod.
+    #[cfg(feature = "conrod")]
+    pub fn conrod_ui(&self) -> &conrod::Ui {
+        self.conrod_context.renderer.ui()
+    }
+
+    /// Returns `true` if the mouse is currently interacting with a Conrod widget.
+    #[cfg(feature = "conrod")]
+    pub fn is_conrod_ui_capturing_mouse(&self) -> bool {
+        let ui = self.conrod_ui();
+        let state = &ui.global_input().current;
+        let window_id = Some(ui.window);
+
+        state.widget_capturing_mouse.is_some() &&
+            state.widget_capturing_mouse != window_id
+    }
+
+    /// Returns `true` if the keyboard is currently interacting with a Conrod widget.
+    #[cfg(feature = "conrod")]
+    pub fn is_conrod_ui_capturing_keyboard(&self) -> bool {
+        let ui = self.conrod_ui();
+        let state = &ui.global_input().current;
+        let window_id = Some(ui.window);
+
+        state.widget_capturing_keyboard.is_some() &&
+            state.widget_capturing_keyboard != window_id
+    }
+
+
     /// Opens a window, hide it then calls a user-defined procedure.
     ///
     /// # Arguments
@@ -422,6 +490,8 @@ impl Window {
             planar_line_renderer: PlanarLineRenderer::new(),
             point_renderer: PointRenderer::new(),
             text_renderer: TextRenderer::new(),
+            #[cfg(feature = "conrod")]
+            conrod_context: ConrodContext::new(width as f64, height as f64),
             post_process_render_target: FramebufferManager::new_render_target(
                 width as usize,
                 height as usize,
@@ -524,18 +594,14 @@ impl Window {
         self.canvas.cursor_pos()
     }
 
-    /// Poll events and pass them to a user-defined function. If the function returns `true`, the
-    /// default engine event handler (camera, framebuffer size, etc.) is executed, if it returns
-    /// `false`, the default engine event handler is not executed. Return `false` if you want to
-    /// override the default engine behaviour.
     #[inline]
     fn handle_events(
         &mut self,
         camera: &mut Option<&mut Camera>,
         planar_camera: &mut Option<&mut PlanarCamera>,
     ) {
-        let unhandled_events = self.unhandled_events.clone(); // FIXME: this is very ugly.
-        let events = self.events.clone(); // FIXME: this is very ugly
+        let unhandled_events = self.unhandled_events.clone(); // FIXME: could we avoid the clone?
+        let events = self.events.clone(); // FIXME: could we avoid the clone?
 
         for event in unhandled_events.borrow().iter() {
             self.handle_event(camera, planar_camera, event)
@@ -565,6 +631,198 @@ impl Window {
             _ => {}
         }
 
+        #[cfg(feature = "conrod")]
+        fn window_event_to_conrod_input(event: WindowEvent, size: Vector2<u32>, hidpi: f64) -> Option<conrod::event::Input> {
+            use conrod::event::Input;
+            use conrod::input::{Motion, MouseButton, Button, Key as CKey};
+
+            let transform_coords = |x: f64, y: f64| {
+                ((x - size.x as f64 / 2.0) / hidpi, -(y - size.y as f64 / 2.0) / hidpi)
+            };
+
+            match event {
+                WindowEvent::FramebufferSize(w, h) => Some(Input::Resize(w as f64 / hidpi, h as f64 / hidpi)),
+                WindowEvent::Focus(focus) => Some(Input::Focus(focus)),
+                WindowEvent::CursorPos(x, y, _) => {
+                    let (x, y) = transform_coords(x, y);
+                    Some(Input::Motion(Motion::MouseCursor { x, y }))
+                },
+                WindowEvent::Scroll(x, y, _) => {
+                    Some(Input::Motion(Motion::Scroll { x, y: -y }))
+                }
+                WindowEvent::MouseButton(button, action, _) => {
+                    let button = match button {
+                        crate::event::MouseButton::Button1 => MouseButton::Left,
+                        crate::event::MouseButton::Button2 => MouseButton::Right,
+                        crate::event::MouseButton::Button3 => MouseButton::Middle,
+                        crate::event::MouseButton::Button4 => MouseButton::X1,
+                        crate::event::MouseButton::Button5 => MouseButton::X2,
+                        crate::event::MouseButton::Button6 => MouseButton::Button6,
+                        crate::event::MouseButton::Button7 => MouseButton::Button7,
+                        crate::event::MouseButton::Button8 => MouseButton::Button8,
+                    };
+
+                    match action {
+                        Action::Press => Some(Input::Press(Button::Mouse(button))),
+                        Action::Release => Some(Input::Release(Button::Mouse(button))),
+                    }
+                }
+                WindowEvent::Key(key, action, _) => {
+                    let key = match key {
+                        Key::Key1 => CKey::D1,
+                        Key::Key2 => CKey::D2,
+                        Key::Key3 => CKey::D3,
+                        Key::Key4 => CKey::D4,
+                        Key::Key5 => CKey::D5,
+                        Key::Key6 => CKey::D6,
+                        Key::Key7 => CKey::D7,
+                        Key::Key8 => CKey::D8,
+                        Key::Key9 => CKey::D9,
+                        Key::Key0 => CKey::D0,
+                        Key::A => CKey::A,
+                        Key::B => CKey::B,
+                        Key::C => CKey::C,
+                        Key::D => CKey::D,
+                        Key::E => CKey::E,
+                        Key::F => CKey::F,
+                        Key::G => CKey::G,
+                        Key::H => CKey::H,
+                        Key::I => CKey::I,
+                        Key::J => CKey::J,
+                        Key::K => CKey::K,
+                        Key::L => CKey::L,
+                        Key::M => CKey::M,
+                        Key::N => CKey::N,
+                        Key::O => CKey::O,
+                        Key::P => CKey::P,
+                        Key::Q => CKey::Q,
+                        Key::R => CKey::R,
+                        Key::S => CKey::S,
+                        Key::T => CKey::T,
+                        Key::U => CKey::U,
+                        Key::V => CKey::V,
+                        Key::W => CKey::W,
+                        Key::X => CKey::X,
+                        Key::Y => CKey::Y,
+                        Key::Z => CKey::Z,
+                        Key::Escape => CKey::Escape,
+                        Key::F1 => CKey::F1,
+                        Key::F2 => CKey::F2,
+                        Key::F3 => CKey::F3,
+                        Key::F4 => CKey::F4,
+                        Key::F5 => CKey::F5,
+                        Key::F6 => CKey::F6,
+                        Key::F7 => CKey::F7,
+                        Key::F8 => CKey::F8,
+                        Key::F9 => CKey::F9,
+                        Key::F10 => CKey::F10,
+                        Key::F11 => CKey::F11,
+                        Key::F12 => CKey::F12,
+                        Key::F13 => CKey::F13,
+                        Key::F14 => CKey::F14,
+                        Key::F15 => CKey::F15,
+                        Key::F16 => CKey::F16,
+                        Key::F17 => CKey::F17,
+                        Key::F18 => CKey::F18,
+                        Key::F19 => CKey::F19,
+                        Key::F20 => CKey::F20,
+                        Key::F21 => CKey::F21,
+                        Key::F22 => CKey::F22,
+                        Key::F23 => CKey::F23,
+                        Key::F24 => CKey::F24,
+                        Key::Pause => CKey::Pause,
+                        Key::Insert => CKey::Insert,
+                        Key::Home => CKey::Home,
+                        Key::Delete => CKey::Delete,
+                        Key::End => CKey::End,
+                        Key::PageDown => CKey::PageDown,
+                        Key::PageUp => CKey::PageUp,
+                        Key::Left => CKey::Left,
+                        Key::Up => CKey::Up,
+                        Key::Right => CKey::Right,
+                        Key::Down => CKey::Down,
+                        Key::Return => CKey::Return,
+                        Key::Space => CKey::Space,
+                        Key::Caret => CKey::Caret,
+                        Key::Numpad0 => CKey::NumPad0,
+                        Key::Numpad1 => CKey::NumPad1,
+                        Key::Numpad2 => CKey::NumPad2,
+                        Key::Numpad3 => CKey::NumPad3,
+                        Key::Numpad4 => CKey::NumPad4,
+                        Key::Numpad5 => CKey::NumPad5,
+                        Key::Numpad6 => CKey::NumPad6,
+                        Key::Numpad7 => CKey::NumPad7,
+                        Key::Numpad8 => CKey::NumPad8,
+                        Key::Numpad9 => CKey::NumPad9,
+                        Key::Add => CKey::Plus,
+                        Key::At => CKey::At,
+                        Key::Backslash => CKey::Backslash,
+                        Key::Calculator => CKey::Calculator,
+                        Key::Colon => CKey::Colon,
+                        Key::Comma => CKey::Comma,
+                        Key::Equals => CKey::Equals,
+                        Key::LBracket => CKey::LeftBracket,
+                        Key::LControl => CKey::LCtrl,
+                        Key::LShift => CKey::LShift,
+                        Key::Mail => CKey::Mail,
+                        Key::MediaSelect => CKey::MediaSelect,
+                        Key::Minus => CKey::Minus,
+                        Key::Mute => CKey::Mute,
+                        Key::NumpadComma => CKey::NumPadComma,
+                        Key::NumpadEnter => CKey::NumPadEnter,
+                        Key::NumpadEquals => CKey::NumPadEquals,
+                        Key::Period => CKey::Period,
+                        Key::Power => CKey::Power,
+                        Key::RAlt => CKey::RAlt,
+                        Key::RBracket => CKey::RightBracket,
+                        Key::RControl => CKey::RCtrl,
+                        Key::RShift => CKey::RShift,
+                        Key::Semicolon => CKey::Semicolon,
+                        Key::Slash => CKey::Slash,
+                        Key::Sleep => CKey::Sleep,
+                        Key::Stop => CKey::Stop,
+                        Key::Tab => CKey::Tab,
+                        Key::VolumeDown => CKey::VolumeDown,
+                        Key::VolumeUp => CKey::VolumeUp,
+                        Key::Copy => CKey::Copy,
+                        Key::Paste => CKey::Paste,
+                        Key::Cut => CKey::Cut,
+                        _ => CKey::Unknown
+                    };
+
+                    match action {
+                        Action::Press => Some(Input::Press(Button::Keyboard(key))),
+                        Action::Release => Some(Input::Release(Button::Keyboard(key))),
+                    }
+                }
+                _ => None
+            }
+        }
+
+        #[cfg(feature = "conrod")]
+        {
+            let (size, hidpi) = (self.size(), self.hidpi_factor());
+            let conrod_ui = self.conrod_ui_mut();
+            if let Some(input) = window_event_to_conrod_input(*event, size, hidpi) {
+                conrod_ui.handle_event(input);
+            }
+
+            let state = &conrod_ui.global_input().current;
+            let window_id = Some(conrod_ui.window);
+
+            if event.is_keyboard_event() &&
+                state.widget_capturing_keyboard.is_some() &&
+                state.widget_capturing_keyboard != window_id {
+                return;
+            }
+
+            if event.is_mouse_event() &&
+                state.widget_capturing_mouse.is_some() &&
+                state.widget_capturing_mouse != window_id {
+                return;
+            }
+        }
+
         match *planar_camera {
             Some(ref mut cam) => cam.handle_event(&self.canvas, event),
             None => self.camera.borrow_mut().handle_event(&self.canvas, event),
@@ -589,8 +847,8 @@ impl Window {
 
     fn do_render_with_state<S: State>(&mut self, state: &mut S) -> bool {
         {
-            let (camera, planar_camera, effect) = state.cameras_and_effect();
-            self.should_close = !self.do_render_with(camera, planar_camera, effect);
+            let (camera, planar_camera, renderer, effect) = state.cameras_and_effect_and_renderer();
+            self.should_close = !self.do_render_with(camera, planar_camera, renderer, effect);
         }
 
         if !self.should_close {
@@ -671,13 +929,15 @@ impl Window {
         planar_camera: Option<&mut PlanarCamera>,
         post_processing: Option<&mut PostProcessingEffect>,
     ) -> bool {
-        self.do_render_with(camera, planar_camera, post_processing)
+        // FIXME: for backward-compatibility, we don't accept any custom renderer here.
+        self.do_render_with(camera, planar_camera, None, post_processing)
     }
 
     fn do_render_with(
         &mut self,
         camera: Option<&mut Camera>,
         planar_camera: Option<&mut PlanarCamera>,
+        renderer: Option<&mut Renderer>,
         post_processing: Option<&mut PostProcessingEffect>,
     ) -> bool {
         let mut camera = camera;
@@ -691,11 +951,11 @@ impl Window {
         let mut bself_cam = self_cam.borrow_mut();
 
         match (camera, planar_camera) {
-            (Some(cam), Some(cam2)) => self.render_single_frame(cam, cam2, post_processing),
-            (None, Some(cam2)) => self.render_single_frame(&mut *bself_cam, cam2, post_processing),
-            (Some(cam), None) => self.render_single_frame(cam, &mut *bself_cam2, post_processing),
+            (Some(cam), Some(cam2)) => self.render_single_frame(cam, cam2, renderer, post_processing),
+            (None, Some(cam2)) => self.render_single_frame(&mut *bself_cam, cam2, renderer, post_processing),
+            (Some(cam), None) => self.render_single_frame(cam, &mut *bself_cam2, renderer, post_processing),
             (None, None) => {
-                self.render_single_frame(&mut *bself_cam, &mut *bself_cam2, post_processing)
+                self.render_single_frame(&mut *bself_cam, &mut *bself_cam2, renderer, post_processing)
             }
         }
     }
@@ -704,6 +964,7 @@ impl Window {
         &mut self,
         camera: &mut Camera,
         planar_camera: &mut PlanarCamera,
+        mut renderer: Option<&mut Renderer>,
         post_processing: Option<&mut PostProcessingEffect>,
     ) -> bool {
         // XXX: too bad we have to do this at each frame…
@@ -734,6 +995,10 @@ impl Window {
             for pass in 0usize..camera.num_passes() {
                 camera.start_pass(pass, &self.canvas);
                 self.render_scene(camera, pass);
+
+                if let Some(ref mut renderer) = renderer {
+                    renderer.render(pass, camera)
+                }
             }
 
             camera.render_complete(&self.canvas);
@@ -762,6 +1027,9 @@ impl Window {
             }
 
             self.text_renderer.render(w as f32, h as f32);
+            #[cfg(feature = "conrod")]
+            self.conrod_context.renderer.render(
+                w as f32, h as f32, self.canvas.hidpi_factor() as f32, &self.conrod_context.textures);
 
             // We are done: swap buffers
             self.canvas.swap_buffers();
@@ -797,14 +1065,8 @@ impl Window {
         verify!(ctxt.clear(Context::COLOR_BUFFER_BIT));
         verify!(ctxt.clear(Context::DEPTH_BUFFER_BIT));
 
-        if self.line_renderer.needs_rendering() {
-            self.line_renderer.render(pass, camera);
-        }
-
-        if self.point_renderer.needs_rendering() {
-            self.point_renderer.render(pass, camera);
-        }
-
+        self.line_renderer.render(pass, camera);
+        self.point_renderer.render(pass, camera);
         self.scene.data_mut().render(pass, camera, &self.light_mode);
     }
 

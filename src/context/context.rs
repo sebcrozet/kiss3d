@@ -155,6 +155,10 @@ impl Context {
             .uniform_matrix4fv(location.map(|e| &e.0), transpose, m)
     }
 
+    pub fn uniform4f(&self, location: Option<&UniformLocation>, x: f32, y: f32, z: f32, w: f32) {
+        self.ctxt.uniform4f(location.map(|e| &e.0), x, y, z, w)
+    }
+
     pub fn uniform3f(&self, location: Option<&UniformLocation>, x: f32, y: f32, z: f32) {
         self.ctxt.uniform3f(location.map(|e| &e.0), x, y, z)
     }
@@ -563,6 +567,7 @@ pub(crate) trait AbstractContext {
         transpose: bool,
         m: &Matrix4<f32>,
     );
+    fn uniform4f(&self, location: Option<&Self::UniformLocation>, x: f32, y: f32, z: f32, w: f32);
     fn uniform3f(&self, location: Option<&Self::UniformLocation>, x: f32, y: f32, z: f32);
     fn uniform2f(&self, location: Option<&Self::UniformLocation>, x: f32, y: f32);
     fn uniform1f(&self, location: Option<&Self::UniformLocation>, x: f32);

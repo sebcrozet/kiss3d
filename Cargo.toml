@@ -25,6 +25,10 @@ include = [
 name = "kiss3d"
 path = "src/lib.rs"
 
+[features]
+conrod = [ "kiss3d_conrod" ]
+
+
 [dependencies]
 libc         = "0.2"
 bitflags     = "1.0"
@@ -35,6 +39,8 @@ image        = "0.21"
 serde        = "1.0"
 serde_derive = "1.0"
 rusttype     = { version = "0.7", features = [ "gpu_cache" ] }
+instant      = { version = "0.1", features = [ "stdweb" ]}
+kiss3d_conrod = { version = "0.63", features = [ "stdweb" ], optional = true }
 
 [target.'cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))'.dependencies]
 gl = "0.11"
@@ -56,4 +62,4 @@ stdweb-derive = "0.5"
 
 [dev-dependencies]
 rand = "0.6"
-ncollide2d  = "0.19"
+ncollide2d = "0.19"

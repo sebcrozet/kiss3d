@@ -101,10 +101,10 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let _ = web::window().add_event_listener(move |e: webevent::MouseMoveEvent| {
             let mut edata = edata.borrow_mut();
-            edata.cursor_pos = Some((e.offset_x() as f64, e.offset_y() as f64));
+            edata.cursor_pos = Some((e.offset_x() as f64 * hidpi_factor, e.offset_y() as f64 * hidpi_factor));
             let _ = edata.pending_events.push(WindowEvent::CursorPos(
-                e.offset_x() as f64,
-                e.offset_y() as f64,
+                e.offset_x() as f64 * hidpi_factor,
+                e.offset_y() as f64 * hidpi_factor,
                 translate_mouse_modifiers(&e),
             ));
         });
@@ -124,7 +124,7 @@ impl AbstractCanvas for WebGLCanvas {
             let mut edata = edata.borrow_mut();
             let _ = edata.pending_events.push(WindowEvent::Scroll(
                 delta_x as f64,
-                delta_y as f64,
+                -delta_y as f64,
                 translate_mouse_modifiers(&e),
             ));
         });
@@ -182,9 +182,10 @@ impl AbstractCanvas for WebGLCanvas {
     }
 
     fn size(&self) -> (u32, u32) {
+        let hidpi_factor = self.hidpi_factor();
         (
-            self.data.borrow().canvas.offset_width() as u32,
-            self.data.borrow().canvas.offset_height() as u32,
+            (self.data.borrow().canvas.offset_width() as f64 * hidpi_factor) as u32,
+            (self.data.borrow().canvas.offset_height() as f64 * hidpi_factor) as u32,
         )
     }
 

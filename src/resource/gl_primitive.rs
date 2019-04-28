@@ -3,7 +3,7 @@
 use context::{Context, UniformLocation};
 use std::slice;
 
-use na::{Matrix2, Matrix3, Matrix4, Point2, Point3, Rotation2, Rotation3, Vector2, Vector3};
+use na::{Matrix2, Matrix3, Matrix4, Point2, Point3, Point4, Rotation2, Rotation3, Vector2, Vector3, Vector4};
 
 #[path = "../error.rs"]
 mod error;
@@ -267,6 +267,33 @@ unsafe impl GLPrimitive for Matrix4<f32> {
  * Impl for vectors
  *
  */
+unsafe impl GLPrimitive for Vector4<f32> {
+    #[inline]
+    fn gl_type() -> u32 {
+        Context::FLOAT
+    }
+
+    #[inline]
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * 4;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
+        4
+    }
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform4f(Some(location), self.x, self.y, self.z, self.w));
+    }
+}
+
 unsafe impl GLPrimitive for Vector3<f32> {
     #[inline]
     fn gl_type() -> u32 {
@@ -360,6 +387,33 @@ unsafe impl GLPrimitive for Vector2<f32> {
  * Impl for points
  *
  */
+unsafe impl GLPrimitive for Point4<f32> {
+    #[inline]
+    fn gl_type() -> u32 {
+        Context::FLOAT
+    }
+
+    #[inline]
+    fn flatten(array: &[Self]) -> PrimitiveArray {
+        unsafe {
+            let len = array.len() * Self::size() as usize;
+            let ptr = array.as_ptr();
+
+            PrimitiveArray::Float32(slice::from_raw_parts(ptr as *const f32, len))
+        }
+    }
+
+    #[inline]
+    fn size() -> u32 {
+        4
+    }
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform4f(Some(location), self.x, self.y, self.z, self.w));
+    }
+}
+
 unsafe impl GLPrimitive for Point3<f32> {
     #[inline]
     fn gl_type() -> u32 {

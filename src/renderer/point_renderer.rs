@@ -4,8 +4,9 @@ use camera::Camera;
 use context::Context;
 use na::{Matrix4, Point3};
 use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
+use renderer::Renderer;
 
-#[path = "error.rs"]
+#[path = "../error.rs"]
 mod error;
 
 /// Structure which manages the display of short-living points.
@@ -32,7 +33,7 @@ impl PointRenderer {
             color: shader.get_attrib::<Point3<f32>>("color").unwrap(),
             proj: shader.get_uniform::<Matrix4<f32>>("proj").unwrap(),
             view: shader.get_uniform::<Matrix4<f32>>("view").unwrap(),
-            shader: shader,
+            shader,
             point_size: 1.0,
         }
     }
@@ -55,9 +56,11 @@ impl PointRenderer {
             points.push(color);
         }
     }
+}
 
+impl Renderer for PointRenderer {
     /// Actually draws the points.
-    pub fn render(&mut self, pass: usize, camera: &mut Camera) {
+    fn render(&mut self, pass: usize, camera: &mut Camera) {
         if self.points.len() == 0 {
             return;
         }

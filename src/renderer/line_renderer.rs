@@ -4,8 +4,9 @@ use camera::Camera;
 use context::Context;
 use na::{Matrix4, Point3};
 use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
+use renderer::Renderer;
 
-#[path = "error.rs"]
+#[path = "../error.rs"]
 mod error;
 
 /// Structure which manages the display of short-living lines.
@@ -58,9 +59,11 @@ impl LineRenderer {
             lines.push(color);
         }
     }
+}
 
+impl Renderer for LineRenderer {
     /// Actually draws the lines.
-    pub fn render(&mut self, pass: usize, camera: &mut Camera) {
+    fn render(&mut self, pass: usize, camera: &mut Camera) {
         if self.lines.len() == 0 {
             return;
         }

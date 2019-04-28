@@ -129,6 +129,10 @@ impl AbstractContext for GLContext {
         unsafe { gl::UniformMatrix4fv(val(location), 1, transpose as u8, mem::transmute(m)) }
     }
 
+    fn uniform4f(&self, location: Option<&Self::UniformLocation>, x: f32, y: f32, z: f32, w: f32) {
+        unsafe { gl::Uniform4f(val(location), x, y, z, w) }
+    }
+
     fn uniform3f(&self, location: Option<&Self::UniformLocation>, x: f32, y: f32, z: f32) {
         unsafe { gl::Uniform3f(val(location), x, y, z) }
     }
@@ -176,7 +180,7 @@ impl AbstractContext for GLContext {
             gl::BufferData(
                 target,
                 (data.len() * mem::size_of::<T>()) as GLsizeiptr,
-                mem::transmute(&data[0]),
+                data.as_ptr() as *const std::ffi::c_void,
                 usage,
             )
         }
@@ -188,7 +192,7 @@ impl AbstractContext for GLContext {
                 target,
                 offset,
                 (data.len() * mem::size_of::<T>()) as GLsizeiptr,
-                mem::transmute(&data[0]),
+                data.as_ptr() as *const std::ffi::c_void,
             )
         }
     }

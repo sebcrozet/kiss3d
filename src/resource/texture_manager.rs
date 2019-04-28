@@ -88,7 +88,7 @@ thread_local!(static KEY_TEXTURE_MANAGER: RefCell<TextureManager> = RefCell::new
 /// It keeps a cache of already-loaded textures, and can load new textures.
 pub struct TextureManager {
     default_texture: Rc<Texture>,
-    textures: HashMap<String, Rc<Texture>>,
+    textures: HashMap<String, (Rc<Texture>, (u32, u32))>,
 }
 
 impl TextureManager {
@@ -151,7 +151,12 @@ impl TextureManager {
 
     /// Get a texture with the specified name. Returns `None` if the texture is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<Texture>> {
-        self.textures.get(&name.to_string()).map(|t| t.clone())
+        self.textures.get(&name.to_string()).map(|t| t.0.clone())
+    }
+
+    /// Get a texture (and its size) with the specified name. Returns `None` if the texture is not registered.
+    pub fn get_with_size(&mut self, name: &str) -> Option<(Rc<Texture>, (u32, u32))> {
+        self.textures.get(&name.to_string()).map(|t| (t.0.clone(), t.1))
     }
 
     /// Allocates a new texture that is not yet configured.
@@ -159,8 +164,8 @@ impl TextureManager {
     /// If a texture with same name exists, nothing is created and the old texture is returned.
     pub fn add_empty(&mut self, name: &str) -> Rc<Texture> {
         match self.textures.entry(name.to_string()) {
-            Entry::Occupied(entry) => entry.into_mut().clone(),
-            Entry::Vacant(entry) => entry.insert(Texture::new()).clone(),
+            Entry::Occupied(entry) => entry.into_mut().0.clone(),
+            Entry::Vacant(entry) => entry.insert((Texture::new(), (0, 0))).0.clone(),
         }
     }
 
@@ -171,7 +176,7 @@ impl TextureManager {
         self.textures
         .entry(name.to_string())
         .or_insert_with(|| TextureManager::load_texture_into_context(dynamic_image).unwrap())
-        .clone()
+        .0.clone()
     }
 
     /// Allocates a new texture and tries to decode it from bytes array
@@ -182,14 +187,16 @@ impl TextureManager {
     }
 
     /// Allocates a new texture read from a file.
-    fn load_texture_from_file(path: &Path) -> Rc<Texture> {
+    fn load_texture_from_file(path: &Path) -> (Rc<Texture>, (u32, u32)) {
         TextureManager::load_texture_into_context(image::open(path).unwrap())
         .expect(path.to_str().unwrap())
     }
 
-    fn load_texture_into_context(dynamic_image: DynamicImage) -> Result<Rc<Texture>, &'static str> {
+    fn load_texture_into_context(dynamic_image: DynamicImage) -> Result<(Rc<Texture>, (u32, u32)), &'static str> {
         let ctxt = Context::get();
         let tex = Texture::new();
+        let width;
+        let height;
 
         unsafe {
             verify!(ctxt.active_texture(Context::TEXTURE0));
@@ -197,6 +204,9 @@ impl TextureManager {
 
             match dynamic_image {
                 DynamicImage::ImageRgb8(image) => {
+                    width = image.width();
+                    height = image.height();
+
                     verify!(ctxt.tex_image2d(
                         Context::TEXTURE_2D,
                         0,
@@ -209,6 +219,9 @@ impl TextureManager {
                     ));
                 }
                 DynamicImage::ImageRgba8(image) => {
+                    width = image.width();
+                    height = image.height();
+
                     verify!(ctxt.tex_image2d(
                         Context::TEXTURE_2D,
                         0,
@@ -246,7 +259,7 @@ impl TextureManager {
                 Context::LINEAR as i32
             ));
         }
-        Ok(tex)
+        Ok((tex, (width, height)))
     }
 
     /// Allocates a new texture read from a file. If a texture with same name exists, nothing is
@@ -255,6 +268,6 @@ impl TextureManager {
         self.textures
             .entry(name.to_string())
             .or_insert_with(|| TextureManager::load_texture_from_file(path))
-            .clone()
+            .0.clone()
     }
 }
