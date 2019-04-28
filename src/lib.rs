@@ -133,9 +133,7 @@ Thanks to all the Rustaceans for their help, and their OpenGL bindings.
 #[macro_use]
 extern crate bitflags;
 extern crate rusttype;
-// extern crate glfw;
 extern crate image;
-// extern crate libc;
 extern crate nalgebra as na;
 extern crate ncollide3d;
 extern crate num_traits as num;
@@ -155,7 +153,7 @@ extern crate stdweb;
 extern crate stdweb_derive;
 extern crate instant;
 #[cfg(feature = "conrod")]
-pub extern crate conrod_core as conrod;
+pub extern crate kiss3d_conrod as conrod;
 #[cfg(feature = "conrod")]
 pub use conrod::widget_ids;
 
