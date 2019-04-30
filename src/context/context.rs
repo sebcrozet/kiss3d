@@ -199,11 +199,15 @@ impl Context {
         self.ctxt.is_buffer(buffer.map(|e| &e.0))
     }
 
+    pub fn buffer_data_uninitialized(&self, target: GLenum, len: usize, usage: GLenum) {
+        self.ctxt.buffer_data_uninitialized(target, len, usage)
+    }
+
     pub fn buffer_data<T: GLPrimitive>(&self, target: GLenum, data: &[T], usage: GLenum) {
         self.ctxt.buffer_data(target, data, usage)
     }
 
-    pub fn buffer_sub_data<T: GLPrimitive>(&self, target: GLenum, offset: GLintptr, data: &[T]) {
+    pub fn buffer_sub_data<T: GLPrimitive>(&self, target: GLenum, offset: u32, data: &[T]) {
         self.ctxt.buffer_sub_data(target, offset, data)
     }
 
@@ -579,8 +583,9 @@ pub(crate) trait AbstractContext {
     fn delete_buffer(&self, buffer: Option<&Self::Buffer>);
     fn is_buffer(&self, buffer: Option<&Self::Buffer>) -> bool;
     fn bind_buffer(&self, target: GLenum, buffer: Option<&Self::Buffer>);
+    fn buffer_data_uninitialized(&self, target: GLenum, len: usize, usage: GLenum);
     fn buffer_data<T: GLPrimitive>(&self, target: GLenum, data: &[T], usage: GLenum);
-    fn buffer_sub_data<T: GLPrimitive>(&self, target: GLenum, offset: GLintptr, data: &[T]);
+    fn buffer_sub_data<T: GLPrimitive>(&self, target: GLenum, offset: u32, data: &[T]);
 
     fn create_shader(&self, type_: GLenum) -> Option<Self::Shader>;
     fn create_program(&self) -> Option<Self::Program>;

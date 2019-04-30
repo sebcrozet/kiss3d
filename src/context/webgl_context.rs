@@ -6,7 +6,7 @@ use super::webgl_bindings::{
     WebGLBuffer, WebGLFramebuffer, WebGLProgram, WebGLRenderingContext, WebGLShader, WebGLTexture,
     WebGLUniformLocation,
 };
-use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr};
+use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr, GLsizeiptr};
 use stdweb::web::{self, html_element::CanvasElement, IParentNode, TypedArray};
 use stdweb::{self, unstable::TryInto, Value};
 
@@ -182,6 +182,10 @@ impl AbstractContext for WebGLContext {
         self.ctxt.is_buffer(buffer)
     }
 
+    fn buffer_data_uninitialized(&self, target: GLenum, len: usize, usage: GLenum) {
+        self.ctxt.buffer_data(target, len as GLsizeiptr, usage)
+    }
+
     fn buffer_data<T: GLPrimitive>(&self, target: GLenum, data: &[T], usage: GLenum) {
         match T::flatten(data) {
             PrimitiveArray::Float32(arr) => {
@@ -199,19 +203,19 @@ impl AbstractContext for WebGLContext {
         }
     }
 
-    fn buffer_sub_data<T: GLPrimitive>(&self, target: GLenum, offset: GLintptr, data: &[T]) {
+    fn buffer_sub_data<T: GLPrimitive>(&self, target: GLenum, offset: u32, data: &[T]) {
         match T::flatten(data) {
             PrimitiveArray::Float32(arr) => {
                 let abuf = TypedArray::<f32>::from(arr);
-                self.ctxt.buffer_sub_data(target, offset, &abuf.buffer())
+                self.ctxt.buffer_sub_data(target, offset as GLintptr, &abuf.buffer())
             }
             PrimitiveArray::Int32(arr) => {
                 let abuf = TypedArray::<i32>::from(arr);
-                self.ctxt.buffer_sub_data(target, offset, &abuf.buffer())
+                self.ctxt.buffer_sub_data(target, offset as GLintptr, &abuf.buffer())
             }
             PrimitiveArray::UInt16(arr) => {
                 let abuf = TypedArray::<u16>::from(arr);
-                self.ctxt.buffer_sub_data(target, offset, &abuf.buffer())
+                self.ctxt.buffer_sub_data(target, offset as GLintptr, &abuf.buffer())
             }
         }
     }
