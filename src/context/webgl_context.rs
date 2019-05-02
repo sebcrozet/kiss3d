@@ -29,7 +29,11 @@ impl WebGLContext {
             .unwrap()
             .try_into()
             .unwrap();
-        let web_ctxt: WebGLRenderingContext = canvas.get_context().unwrap();
+        // We disable alpha for the backbuffer so we get a behavior closer to OpenGL.
+        // See https://webglfundamentals.org/webgl/lessons/webgl-and-alpha.html
+        let web_ctxt: WebGLRenderingContext = js!(
+            return @{canvas}.getContext("webgl", { alpha: false });
+        ).try_into().unwrap();
         let ctxt = Rc::new(web_ctxt);
         WebGLContext { ctxt }
     }

@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["sebcrozet <developer@crozet.re>"]
 
 [dependencies]
-nalgebra = "0.17"
+nalgebra = "0.18"
 kiss3d = { path = "../..", features = [ "conrod" ] }
 stdweb = "0.4"
 rand = { version = "0.6", features = [ "stdweb" ] }
