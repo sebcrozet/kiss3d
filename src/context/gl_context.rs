@@ -175,6 +175,17 @@ impl AbstractContext for GLContext {
         unsafe { gl::IsBuffer(val(buffer)) != 0 }
     }
 
+    fn buffer_data_uninitialized(&self, target: GLenum, len: usize, usage: GLenum) {
+        unsafe {
+            gl::BufferData(
+                target,
+                len as GLsizeiptr,
+                ptr::null(),
+                usage,
+            )
+        }
+    }
+
     fn buffer_data<T: GLPrimitive>(&self, target: GLenum, data: &[T], usage: GLenum) {
         unsafe {
             gl::BufferData(
@@ -186,11 +197,11 @@ impl AbstractContext for GLContext {
         }
     }
 
-    fn buffer_sub_data<T: GLPrimitive>(&self, target: GLenum, offset: GLintptr, data: &[T]) {
+    fn buffer_sub_data<T: GLPrimitive>(&self, target: GLenum, offset: u32, data: &[T]) {
         unsafe {
             gl::BufferSubData(
                 target,
-                offset,
+                offset as GLintptr,
                 (data.len() * mem::size_of::<T>()) as GLsizeiptr,
                 data.as_ptr() as *const std::ffi::c_void,
             )
@@ -388,7 +399,7 @@ impl AbstractContext for GLContext {
                     border,
                     format,
                     Self::UNSIGNED_BYTE,
-                    mem::transmute(&pixels[0]),
+                    pixels.as_ptr() as *const std::ffi::c_void,
                 )
             },
             None => unsafe {
