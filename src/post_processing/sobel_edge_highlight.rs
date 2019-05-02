@@ -11,7 +11,7 @@ use resource::{
 #[path = "../error.rs"]
 mod error;
 
-/// Post processing effect which turns everything in grayscales.
+/// Post processing effect which draws detected edges on top of the original buffer.
 pub struct SobelEdgeHighlight {
     shiftx: f32,
     shifty: f32,
