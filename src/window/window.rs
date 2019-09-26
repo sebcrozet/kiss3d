@@ -350,7 +350,7 @@ impl Window {
             .add_quad_with_vertices(vertices, nhpoints, nvpoints)
     }
 
-    /// Load a texture fro a file and return a reference to it.
+    /// Load a texture from a file and return a reference to it.
     pub fn add_texture(&mut self, path: &Path, name: &str) -> Rc<Texture> {
         TextureManager::get_global_manager(|tm| tm.add(path, name))
     }
@@ -965,7 +965,7 @@ impl Window {
         camera: &mut Camera,
         planar_camera: &mut PlanarCamera,
         mut renderer: Option<&mut Renderer>,
-        post_processing: Option<&mut PostProcessingEffect>,
+        mut post_processing: Option<&mut PostProcessingEffect>,
     ) -> bool {
         // XXX: too bad we have to do this at each frame…
         let w = self.width();
@@ -981,77 +981,70 @@ impl Window {
             _ => {}
         }
 
-        {
-            let mut post_processing = post_processing;
-            if post_processing.is_some() {
-                // if we need post-processing, render to our own frame buffer
-                self.framebuffer_manager
-                    .select(&self.post_process_render_target);
-            } else {
-                self.framebuffer_manager
-                    .select(&FramebufferManager::screen());
-            }
-
-            for pass in 0usize..camera.num_passes() {
-                camera.start_pass(pass, &self.canvas);
-                self.render_scene(camera, pass);
-
-                if let Some(ref mut renderer) = renderer {
-                    renderer.render(pass, camera)
-                }
-            }
-
-            camera.render_complete(&self.canvas);
-
-            self.render_planar_scene(planar_camera);
-
-            let (znear, zfar) = camera.clip_planes();
-
-            // FIXME: remove this completely?
-            // swatch off the wireframe mode for post processing and text rendering.
-            // if self.wireframe_mode {
-            //     verify!(gl::PolygonMode(Context::FRONT_AND_BACK, Context::FILL));
-            // }
-
-            match post_processing {
-                Some(ref mut p) => {
-                    // switch back to the screen framebuffer …
-                    self.framebuffer_manager
-                        .select(&FramebufferManager::screen());
-                    // … and execute the post-process
-                    // FIXME: use the real time value instead of 0.016!
-                    p.update(0.016, w as f32, h as f32, znear, zfar);
-                    p.draw(&self.post_process_render_target);
-                }
-                None => {}
-            }
-
-            self.text_renderer.render(w as f32, h as f32);
-            #[cfg(feature = "conrod")]
-            self.conrod_context.renderer.render(
-                w as f32, h as f32, self.canvas.hidpi_factor() as f32, &self.conrod_context.textures);
-
-            // We are done: swap buffers
-            self.canvas.swap_buffers();
-
-
-            #[cfg(not(target_arch = "wasm32"))]
-            {
-                // Limit the fps if needed.
-                if let Some(dur) = self.max_dur_per_frame {
-                    let elapsed = self.curr_time.elapsed();
-                    if elapsed < dur {
-                        thread::sleep(dur - elapsed);
-                    }
-                }
-
-                self.curr_time = Instant::now();
-            }
-
-
-            // self.transparent_objects.clear();
-            // self.opaque_objects.clear();
+        if post_processing.is_some() {
+            // if we need post-processing, render to our own frame buffer
+            self.framebuffer_manager
+                .select(&self.post_process_render_target);
+        } else {
+            self.framebuffer_manager
+                .select(&FramebufferManager::screen());
         }
+
+        for pass in 0usize..camera.num_passes() {
+            camera.start_pass(pass, &self.canvas);
+            self.render_scene(camera, pass);
+
+            if let Some(ref mut renderer) = renderer {
+                renderer.render(pass, camera)
+            }
+        }
+
+        camera.render_complete(&self.canvas);
+
+        self.render_planar_scene(planar_camera);
+
+        let (znear, zfar) = camera.clip_planes();
+
+        // FIXME: remove this completely?
+        // swatch off the wireframe mode for post processing and text rendering.
+        // if self.wireframe_mode {
+        //     verify!(gl::PolygonMode(Context::FRONT_AND_BACK, Context::FILL));
+        // }
+
+        if let Some(ref mut p) = post_processing {
+            // switch back to the screen framebuffer …
+            self.framebuffer_manager.select(&FramebufferManager::screen());
+            // … and execute the post-process
+            // FIXME: use the real time value instead of 0.016!
+            p.update(0.016, w as f32, h as f32, znear, zfar);
+            p.draw(&self.post_process_render_target);
+        }
+
+        self.text_renderer.render(w as f32, h as f32);
+        #[cfg(feature = "conrod")]
+        self.conrod_context.renderer.render(
+            w as f32, h as f32, self.canvas.hidpi_factor() as f32, &self.conrod_context.textures);
+
+        // We are done: swap buffers
+        self.canvas.swap_buffers();
+
+
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            // Limit the fps if needed.
+            if let Some(dur) = self.max_dur_per_frame {
+                let elapsed = self.curr_time.elapsed();
+                if elapsed < dur {
+                    thread::sleep(dur - elapsed);
+                }
+            }
+
+            self.curr_time = Instant::now();
+        }
+
+
+        // self.transparent_objects.clear();
+        // self.opaque_objects.clear();
 
         !self.should_close()
     }
