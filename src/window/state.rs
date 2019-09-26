@@ -19,19 +19,19 @@ pub trait State: 'static {
     fn cameras_and_effect(
         &mut self,
     ) -> (
-        Option<&mut Camera>,
-        Option<&mut PlanarCamera>,
-        Option<&mut PostProcessingEffect>,
+        Option<&mut dyn Camera>,
+        Option<&mut dyn PlanarCamera>,
+        Option<&mut dyn PostProcessingEffect>,
     ) {
         (None, None, None)
     }
 
     /// Method called at each render loop to retrieve the cameras, custom renderer, and post-processing effect to be used for the next render.
     fn cameras_and_effect_and_renderer(&mut self) -> (
-        Option<&mut Camera>,
-        Option<&mut PlanarCamera>,
-        Option<&mut Renderer>,
-        Option<&mut PostProcessingEffect>,
+        Option<&mut dyn Camera>,
+        Option<&mut dyn PlanarCamera>,
+        Option<&mut dyn Renderer>,
+        Option<&mut dyn PostProcessingEffect>,
     ) {
         #[allow(deprecated)]
         let res = self.cameras_and_effect(); // For backward-compatibility.

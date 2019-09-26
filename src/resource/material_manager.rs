@@ -17,8 +17,8 @@ thread_local!(static KEY_MATERIAL_MANAGER: RefCell<MaterialManager> = RefCell::n
 /// It keeps a cache of already-loaded materials. Note that this is only a cache, nothing more.
 /// Thus, its usage is not required to load materials.
 pub struct MaterialManager {
-    default_material: Rc<RefCell<Box<Material + 'static>>>,
-    materials: HashMap<String, Rc<RefCell<Box<Material + 'static>>>>,
+    default_material: Rc<RefCell<Box<dyn Material + 'static>>>,
+    materials: HashMap<String, Rc<RefCell<Box<dyn Material + 'static>>>>,
 }
 
 impl MaterialManager {
@@ -28,17 +28,17 @@ impl MaterialManager {
         let mut materials = HashMap::new();
 
         let om = Rc::new(RefCell::new(
-            Box::new(ObjectMaterial::new()) as Box<Material + 'static>
+            Box::new(ObjectMaterial::new()) as Box<dyn Material + 'static>
         ));
         let _ = materials.insert("object".to_string(), om.clone());
 
         let nm = Rc::new(RefCell::new(
-            Box::new(NormalsMaterial::new()) as Box<Material + 'static>
+            Box::new(NormalsMaterial::new()) as Box<dyn Material + 'static>
         ));
         let _ = materials.insert("normals".to_string(), nm.clone());
 
         let um = Rc::new(RefCell::new(
-            Box::new(UvsMaterial::new()) as Box<Material + 'static>
+            Box::new(UvsMaterial::new()) as Box<dyn Material + 'static>
         ));
         let _ = materials.insert("uvs".to_string(), um.clone());
 
@@ -54,17 +54,17 @@ impl MaterialManager {
     }
 
     /// Gets the default material to draw objects.
-    pub fn get_default(&self) -> Rc<RefCell<Box<Material + 'static>>> {
+    pub fn get_default(&self) -> Rc<RefCell<Box<dyn Material + 'static>>> {
         self.default_material.clone()
     }
 
     /// Get a material with the specified name. Returns `None` if the material is not registered.
-    pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Box<Material + 'static>>>> {
+    pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Box<dyn Material + 'static>>>> {
         self.materials.get(&name.to_string()).map(|t| t.clone())
     }
 
     /// Adds a material with the specified name to this cache.
-    pub fn add(&mut self, material: Rc<RefCell<Box<Material + 'static>>>, name: &str) {
+    pub fn add(&mut self, material: Rc<RefCell<Box<dyn Material + 'static>>>, name: &str) {
         let _ = self.materials.insert(name.to_string(), material);
     }
 

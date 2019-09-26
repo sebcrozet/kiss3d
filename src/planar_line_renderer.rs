@@ -64,7 +64,7 @@ impl PlanarLineRenderer {
     }
 
     /// Actually draws the lines.
-    pub fn render(&mut self, camera: &mut PlanarCamera) {
+    pub fn render(&mut self, camera: &mut dyn PlanarCamera) {
         if self.lines.len() == 0 {
             return;
         }

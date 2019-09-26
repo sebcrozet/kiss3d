@@ -63,7 +63,7 @@ impl LineRenderer {
 
 impl Renderer for LineRenderer {
     /// Actually draws the lines.
-    fn render(&mut self, pass: usize, camera: &mut Camera) {
+    fn render(&mut self, pass: usize, camera: &mut dyn Camera) {
         if self.lines.len() == 0 {
             return;
         }

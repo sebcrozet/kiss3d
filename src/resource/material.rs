@@ -16,7 +16,7 @@ pub trait Material {
         pass: usize,
         transform: &Isometry3<f32>,
         scale: &Vector3<f32>,
-        camera: &mut Camera, // FIXME: replace those two arguments by
+        camera: &mut dyn Camera, // FIXME: replace those two arguments by
         light: &Light,       // a structure with all environment datas
         data: &ObjectData,
         mesh: &mut Mesh,
@@ -30,7 +30,7 @@ pub trait PlanarMaterial {
         &mut self,
         transform: &Isometry2<f32>,
         scale: &Vector2<f32>,
-        camera: &mut PlanarCamera, // FIXME: replace those two arguments by
+        camera: &mut dyn PlanarCamera, // FIXME: replace those two arguments by
         data: &PlanarObjectData,
         mesh: &mut PlanarMesh,
     );
