@@ -68,7 +68,7 @@ impl Material for ObjectMaterial {
         pass: usize,
         transform: &Isometry3<f32>,
         scale: &Vector3<f32>,
-        camera: &mut Camera,
+        camera: &mut dyn Camera,
         light: &Light,
         data: &ObjectData,
         mesh: &mut Mesh,

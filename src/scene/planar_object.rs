@@ -13,14 +13,14 @@ mod error;
 
 /// Set of data identifying a scene node.
 pub struct PlanarObjectData {
-    material: Rc<RefCell<Box<PlanarMaterial + 'static>>>,
+    material: Rc<RefCell<Box<dyn PlanarMaterial + 'static>>>,
     texture: Rc<Texture>,
     color: Point3<f32>,
     wlines: f32,
     wpoints: f32,
     draw_surface: bool,
     cull: bool,
-    user_data: Box<Any + 'static>,
+    user_data: Box<dyn Any + 'static>,
 }
 
 impl PlanarObjectData {
@@ -64,7 +64,7 @@ impl PlanarObjectData {
     ///
     /// Use dynamic typing capabilities of the `Any` type to recover the actual data.
     #[inline]
-    pub fn user_data(&self) -> &Any {
+    pub fn user_data(&self) -> &dyn Any {
         &*self.user_data
     }
 }
@@ -87,7 +87,7 @@ impl PlanarObject {
         g: f32,
         b: f32,
         texture: Rc<Texture>,
-        material: Rc<RefCell<Box<PlanarMaterial + 'static>>>,
+        material: Rc<RefCell<Box<dyn PlanarMaterial + 'static>>>,
     ) -> PlanarObject {
         let user_data = ();
         let data = PlanarObjectData {
@@ -112,7 +112,7 @@ impl PlanarObject {
         &self,
         transform: &Isometry2<f32>,
         scale: &Vector2<f32>,
-        camera: &mut PlanarCamera,
+        camera: &mut dyn PlanarCamera,
     ) {
         self.data.material.borrow_mut().render(
             transform,
@@ -143,19 +143,19 @@ impl PlanarObject {
 
     /// Attaches user-defined data to this object.
     #[inline]
-    pub fn set_user_data(&mut self, user_data: Box<Any + 'static>) {
+    pub fn set_user_data(&mut self, user_data: Box<dyn Any + 'static>) {
         self.data.user_data = user_data;
     }
 
     /// Gets the material of this object.
     #[inline]
-    pub fn material(&self) -> Rc<RefCell<Box<PlanarMaterial + 'static>>> {
+    pub fn material(&self) -> Rc<RefCell<Box<dyn PlanarMaterial + 'static>>> {
         self.data.material.clone()
     }
 
     /// Sets the material of this object.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<PlanarMaterial + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<dyn PlanarMaterial + 'static>>>) {
         self.data.material = material;
     }
 

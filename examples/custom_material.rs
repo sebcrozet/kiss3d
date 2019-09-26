@@ -15,7 +15,7 @@ fn main() {
     let mut window = Window::new("Kiss3d: custom_material");
     let mut c = window.add_sphere(1.0);
     let material = Rc::new(RefCell::new(
-        Box::new(NormalMaterial::new()) as Box<Material + 'static>
+        Box::new(NormalMaterial::new()) as Box<dyn Material + 'static>
     ));
 
     c.set_material(material);
@@ -63,7 +63,7 @@ impl Material for NormalMaterial {
         pass: usize,
         transform: &Isometry3<f32>,
         scale: &Vector3<f32>,
-        camera: &mut Camera,
+        camera: &mut dyn Camera,
         _: &Light,
         _: &ObjectData,
         mesh: &mut Mesh,

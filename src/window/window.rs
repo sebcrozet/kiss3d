@@ -9,7 +9,7 @@ use std::rc::Rc;
 use std::sync::mpsc::{self, Receiver};
 use std::time::Duration;
 use std::thread;
-use std::collections::HashMap;
+
 
 use instant::Instant;
 use na::{Point2, Point3, Vector2, Vector3};
@@ -597,8 +597,8 @@ impl Window {
     #[inline]
     fn handle_events(
         &mut self,
-        camera: &mut Option<&mut Camera>,
-        planar_camera: &mut Option<&mut PlanarCamera>,
+        camera: &mut Option<&mut dyn Camera>,
+        planar_camera: &mut Option<&mut dyn PlanarCamera>,
     ) {
         let unhandled_events = self.unhandled_events.clone(); // FIXME: could we avoid the clone?
         let events = self.events.clone(); // FIXME: could we avoid the clone?
@@ -617,8 +617,8 @@ impl Window {
 
     fn handle_event(
         &mut self,
-        camera: &mut Option<&mut Camera>,
-        planar_camera: &mut Option<&mut PlanarCamera>,
+        camera: &mut Option<&mut dyn Camera>,
+        planar_camera: &mut Option<&mut dyn PlanarCamera>,
         event: &WindowEvent,
     ) {
         match *event {
@@ -870,7 +870,7 @@ impl Window {
     ///
     /// Returns `false` if the window should be closed.
     #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
-    pub fn render_with_effect(&mut self, effect: &mut (PostProcessingEffect)) -> bool {
+    pub fn render_with_effect(&mut self, effect: &mut (dyn PostProcessingEffect)) -> bool {
         self.render_with(None, None, Some(effect))
     }
 
@@ -878,7 +878,7 @@ impl Window {
     ///
     /// Returns `false` if the window should be closed.
     #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
-    pub fn render_with_camera(&mut self, camera: &mut (Camera)) -> bool {
+    pub fn render_with_camera(&mut self, camera: &mut (dyn Camera)) -> bool {
         self.render_with(Some(camera), None, None)
     }
 
@@ -888,8 +888,8 @@ impl Window {
     #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     pub fn render_with_cameras(
         &mut self,
-        camera: &mut Camera,
-        planar_camera: &mut PlanarCamera,
+        camera: &mut dyn Camera,
+        planar_camera: &mut dyn PlanarCamera,
     ) -> bool {
         self.render_with(Some(camera), Some(planar_camera), None)
     }
@@ -900,8 +900,8 @@ impl Window {
     #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     pub fn render_with_camera_and_effect(
         &mut self,
-        camera: &mut Camera,
-        effect: &mut PostProcessingEffect,
+        camera: &mut dyn Camera,
+        effect: &mut dyn PostProcessingEffect,
     ) -> bool {
         self.render_with(Some(camera), None, Some(effect))
     }
@@ -912,9 +912,9 @@ impl Window {
     #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     pub fn render_with_cameras_and_effect(
         &mut self,
-        camera: &mut Camera,
-        planar_camera: &mut PlanarCamera,
-        effect: &mut PostProcessingEffect,
+        camera: &mut dyn Camera,
+        planar_camera: &mut dyn PlanarCamera,
+        effect: &mut dyn PostProcessingEffect,
     ) -> bool {
         self.render_with(Some(camera), Some(planar_camera), Some(effect))
     }
@@ -925,9 +925,9 @@ impl Window {
     #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
     pub fn render_with(
         &mut self,
-        camera: Option<&mut Camera>,
-        planar_camera: Option<&mut PlanarCamera>,
-        post_processing: Option<&mut PostProcessingEffect>,
+        camera: Option<&mut dyn Camera>,
+        planar_camera: Option<&mut dyn PlanarCamera>,
+        post_processing: Option<&mut dyn PostProcessingEffect>,
     ) -> bool {
         // FIXME: for backward-compatibility, we don't accept any custom renderer here.
         self.do_render_with(camera, planar_camera, None, post_processing)
@@ -935,10 +935,10 @@ impl Window {
 
     fn do_render_with(
         &mut self,
-        camera: Option<&mut Camera>,
-        planar_camera: Option<&mut PlanarCamera>,
-        renderer: Option<&mut Renderer>,
-        post_processing: Option<&mut PostProcessingEffect>,
+        camera: Option<&mut dyn Camera>,
+        planar_camera: Option<&mut dyn PlanarCamera>,
+        renderer: Option<&mut dyn Renderer>,
+        post_processing: Option<&mut dyn PostProcessingEffect>,
     ) -> bool {
         let mut camera = camera;
         let mut planar_camera = planar_camera;
@@ -962,10 +962,10 @@ impl Window {
 
     fn render_single_frame(
         &mut self,
-        camera: &mut Camera,
-        planar_camera: &mut PlanarCamera,
-        mut renderer: Option<&mut Renderer>,
-        mut post_processing: Option<&mut PostProcessingEffect>,
+        camera: &mut dyn Camera,
+        planar_camera: &mut dyn PlanarCamera,
+        mut renderer: Option<&mut dyn Renderer>,
+        mut post_processing: Option<&mut dyn PostProcessingEffect>,
     ) -> bool {
         // XXX: too bad we have to do this at each frame…
         let w = self.width();
@@ -1049,7 +1049,7 @@ impl Window {
         !self.should_close()
     }
 
-    fn render_scene(&mut self, camera: &mut Camera, pass: usize) {
+    fn render_scene(&mut self, camera: &mut dyn Camera, pass: usize) {
         let ctxt = Context::get();
         // Activate the default texture
         verify!(ctxt.active_texture(Context::TEXTURE0));
@@ -1063,7 +1063,7 @@ impl Window {
         self.scene.data_mut().render(pass, camera, &self.light_mode);
     }
 
-    fn render_planar_scene(&mut self, camera: &mut PlanarCamera) {
+    fn render_planar_scene(&mut self, camera: &mut dyn PlanarCamera) {
         let ctxt = Context::get();
         // Activate the default texture
         verify!(ctxt.active_texture(Context::TEXTURE0));

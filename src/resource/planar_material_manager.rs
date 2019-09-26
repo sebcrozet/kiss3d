@@ -17,8 +17,8 @@ thread_local!(static KEY_MATERIAL_MANAGER: RefCell<PlanarMaterialManager> = RefC
 /// It keeps a cache of already-loaded materials. Note that this is only a cache, nothing more.
 /// Thus, its usage is not required to load materials.
 pub struct PlanarMaterialManager {
-    default_material: Rc<RefCell<Box<PlanarMaterial + 'static>>>,
-    materials: HashMap<String, Rc<RefCell<Box<PlanarMaterial + 'static>>>>,
+    default_material: Rc<RefCell<Box<dyn PlanarMaterial + 'static>>>,
+    materials: HashMap<String, Rc<RefCell<Box<dyn PlanarMaterial + 'static>>>>,
 }
 
 impl PlanarMaterialManager {
@@ -28,7 +28,7 @@ impl PlanarMaterialManager {
         let mut materials = HashMap::new();
 
         let om = Rc::new(RefCell::new(
-            Box::new(PlanarObjectMaterial::new()) as Box<PlanarMaterial + 'static>
+            Box::new(PlanarObjectMaterial::new()) as Box<dyn PlanarMaterial + 'static>
         ));
         let _ = materials.insert("object".to_string(), om.clone());
 
@@ -44,17 +44,17 @@ impl PlanarMaterialManager {
     }
 
     /// Gets the default material to draw objects.
-    pub fn get_default(&self) -> Rc<RefCell<Box<PlanarMaterial + 'static>>> {
+    pub fn get_default(&self) -> Rc<RefCell<Box<dyn PlanarMaterial + 'static>>> {
         self.default_material.clone()
     }
 
     /// Get a material with the specified name. Returns `None` if the material is not registered.
-    pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Box<PlanarMaterial + 'static>>>> {
+    pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Box<dyn PlanarMaterial + 'static>>>> {
         self.materials.get(&name.to_string()).map(|t| t.clone())
     }
 
     /// Adds a material with the specified name to this cache.
-    pub fn add(&mut self, material: Rc<RefCell<Box<PlanarMaterial + 'static>>>, name: &str) {
+    pub fn add(&mut self, material: Rc<RefCell<Box<dyn PlanarMaterial + 'static>>>, name: &str) {
         let _ = self.materials.insert(name.to_string(), material);
     }
 

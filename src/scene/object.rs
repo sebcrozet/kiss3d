@@ -14,14 +14,14 @@ mod error;
 
 /// Set of data identifying a scene node.
 pub struct ObjectData {
-    material: Rc<RefCell<Box<Material + 'static>>>,
+    material: Rc<RefCell<Box<dyn Material + 'static>>>,
     texture: Rc<Texture>,
     color: Point3<f32>,
     wlines: f32,
     wpoints: f32,
     draw_surface: bool,
     cull: bool,
-    user_data: Box<Any + 'static>,
+    user_data: Box<dyn Any + 'static>,
 }
 
 impl ObjectData {
@@ -65,7 +65,7 @@ impl ObjectData {
     ///
     /// Use dynamic typing capabilities of the `Any` type to recover the actual data.
     #[inline]
-    pub fn user_data(&self) -> &Any {
+    pub fn user_data(&self) -> &dyn Any {
         &*self.user_data
     }
 }
@@ -88,7 +88,7 @@ impl Object {
         g: f32,
         b: f32,
         texture: Rc<Texture>,
-        material: Rc<RefCell<Box<Material + 'static>>>,
+        material: Rc<RefCell<Box<dyn Material + 'static>>>,
     ) -> Object {
         let user_data = ();
         let data = ObjectData {
@@ -114,7 +114,7 @@ impl Object {
         transform: &Isometry3<f32>,
         scale: &Vector3<f32>,
         pass: usize,
-        camera: &mut Camera,
+        camera: &mut dyn Camera,
         light: &Light,
     ) {
         self.data.material.borrow_mut().render(
@@ -148,19 +148,19 @@ impl Object {
 
     /// Attaches user-defined data to this object.
     #[inline]
-    pub fn set_user_data(&mut self, user_data: Box<Any + 'static>) {
+    pub fn set_user_data(&mut self, user_data: Box<dyn Any + 'static>) {
         self.data.user_data = user_data;
     }
 
     /// Gets the material of this object.
     #[inline]
-    pub fn material(&self) -> Rc<RefCell<Box<Material + 'static>>> {
+    pub fn material(&self) -> Rc<RefCell<Box<dyn Material + 'static>>> {
         self.data.material.clone()
     }
 
     /// Sets the material of this object.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<dyn Material + 'static>>>) {
         self.data.material = material;
     }
 

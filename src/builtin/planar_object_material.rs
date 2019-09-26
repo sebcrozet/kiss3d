@@ -58,7 +58,7 @@ impl PlanarMaterial for PlanarObjectMaterial {
         &mut self,
         model: &Isometry2<f32>,
         scale: &Vector2<f32>,
-        camera: &mut PlanarCamera,
+        camera: &mut dyn PlanarCamera,
         data: &PlanarObjectData,
         mesh: &mut PlanarMesh,
     ) {

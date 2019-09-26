@@ -82,7 +82,7 @@ impl SceneNodeData {
     }
 
     /// Render the scene graph rooted by this node.
-    pub fn render(&mut self, pass: usize, camera: &mut Camera, light: &Light) {
+    pub fn render(&mut self, pass: usize, camera: &mut dyn Camera, light: &Light) {
         if self.visible {
             self.do_render(&na::one(), &Vector3::from_element(1.0), pass, camera, light)
         }
@@ -93,7 +93,7 @@ impl SceneNodeData {
         transform: &Isometry3<f32>,
         scale: &Vector3<f32>,
         pass: usize,
-        camera: &mut Camera,
+        camera: &mut dyn Camera,
         light: &Light,
     ) {
         if !self.up_to_date {
@@ -172,7 +172,7 @@ impl SceneNodeData {
     // we are on a leaf? (to avoid the call to a closure required by the apply_to_*).
     /// Sets the material of the objects contained by this node and its children.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<dyn Material + 'static>>>) {
         self.apply_to_objects_mut(&mut |o| o.set_material(material.clone()))
     }
 
@@ -885,13 +885,13 @@ impl SceneNode {
     //
 
     /// Render the scene graph rooted by this node.
-    pub fn render(&mut self, pass: usize, camera: &mut Camera, light: &Light) {
+    pub fn render(&mut self, pass: usize, camera: &mut dyn Camera, light: &Light) {
         self.data_mut().render(pass, camera, light)
     }
 
     /// Sets the material of the objects contained by this node and its children.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<Material + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<dyn Material + 'static>>>) {
         self.data_mut().set_material(material)
     }
 

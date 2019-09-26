@@ -82,7 +82,7 @@ impl PlanarSceneNodeData {
     }
 
     /// Render the scene graph rooted by this node.
-    pub fn render(&mut self, camera: &mut PlanarCamera) {
+    pub fn render(&mut self, camera: &mut dyn PlanarCamera) {
         if self.visible {
             self.do_render(&na::one(), &Vector2::from_element(1.0), camera)
         }
@@ -92,7 +92,7 @@ impl PlanarSceneNodeData {
         &mut self,
         transform: &Isometry2<f32>,
         scale: &Vector2<f32>,
-        camera: &mut PlanarCamera,
+        camera: &mut dyn PlanarCamera,
     ) {
         if !self.up_to_date {
             self.up_to_date = true;
@@ -158,7 +158,7 @@ impl PlanarSceneNodeData {
     // we are on a leaf? (to avoid the call to a closure required by the apply_to_*).
     /// Sets the material of the objects contained by this node and its children.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<PlanarMaterial + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<dyn PlanarMaterial + 'static>>>) {
         self.apply_to_objects_mut(&mut |o| o.set_material(material.clone()))
     }
 
@@ -764,13 +764,13 @@ impl PlanarSceneNode {
     //
 
     /// Render the scene graph rooted by this node.
-    pub fn render(&mut self, camera: &mut PlanarCamera) {
+    pub fn render(&mut self, camera: &mut dyn PlanarCamera) {
         self.data_mut().render(camera)
     }
 
     /// Sets the material of the objects contained by this node and its children.
     #[inline]
-    pub fn set_material(&mut self, material: Rc<RefCell<Box<PlanarMaterial + 'static>>>) {
+    pub fn set_material(&mut self, material: Rc<RefCell<Box<dyn PlanarMaterial + 'static>>>) {
         self.data_mut().set_material(material)
     }
 

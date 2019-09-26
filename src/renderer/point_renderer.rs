@@ -60,7 +60,7 @@ impl PointRenderer {
 
 impl Renderer for PointRenderer {
     /// Actually draws the points.
-    fn render(&mut self, pass: usize, camera: &mut Camera) {
+    fn render(&mut self, pass: usize, camera: &mut dyn Camera) {
         if self.points.len() == 0 {
             return;
         }

@@ -45,7 +45,7 @@ impl Material for UvsMaterial {
         pass: usize,
         transform: &Isometry3<f32>,
         scale: &Vector3<f32>,
-        camera: &mut Camera,
+        camera: &mut dyn Camera,
         _: &Light,
         data: &ObjectData,
         mesh: &mut Mesh,
