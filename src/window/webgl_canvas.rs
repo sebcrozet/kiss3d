@@ -10,7 +10,7 @@ use stdweb::web::event as webevent;
 use stdweb::web::event::{ConcreteEvent, IEvent, IKeyboardEvent, IMouseEvent, IUiEvent};
 use stdweb::web::{self, html_element::CanvasElement, IEventTarget, IHtmlElement, IParentNode};
 use stdweb::{unstable::TryInto, Reference};
-use window::AbstractCanvas;
+use window::{AbstractCanvas, CanvasSetup};
 use image::{GenericImage, Pixel};
 
 #[derive(Clone, Debug, PartialEq, Eq, ReferenceType)]
@@ -40,7 +40,7 @@ pub struct WebGLCanvas {
 }
 
 impl AbstractCanvas for WebGLCanvas {
-    fn open(_: &str, _: bool, _: u32, _: u32, out_events: Sender<WindowEvent>) -> Self {
+    fn open(_: &str, _: bool, _: u32, _: u32, setup: Option<CanvasSetup>, out_events: Sender<WindowEvent>) -> Self {
         let hidpi_factor = js!{ return window.devicePixelRatio; }.try_into().unwrap();
         let canvas: CanvasElement = web::document()
             .query_selector("#canvas")
