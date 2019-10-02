@@ -477,7 +477,7 @@ impl Window {
     // FIXME: make this pub?
     fn do_new(title: &str, hide: bool, width: u32, height: u32, setup: Option<CanvasSetup>) -> Window {
         let (event_send, event_receive) = mpsc::channel();
-        let canvas = Canvas::open(title, hide, width, height, setup,event_send);
+        let canvas = Canvas::open(title, hide, width, height, setup, event_send);
 
         init_gl();
 
