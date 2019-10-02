@@ -32,6 +32,7 @@ use window::{Canvas, State};
 use image::{GenericImage, Pixel};
 #[cfg(feature = "conrod")]
 use renderer::ConrodRenderer;
+use window::canvas::CanvasSetup;
 
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
@@ -448,7 +449,7 @@ impl Window {
     /// # Arguments
     /// * `title` - the window title
     pub fn new_hidden(title: &str) -> Window {
-        Window::do_new(title, true, DEFAULT_WIDTH, DEFAULT_HEIGHT)
+        Window::do_new(title, true, DEFAULT_WIDTH, DEFAULT_HEIGHT, None)
     }
 
     /// Opens a window then calls a user-defined procedure.
@@ -456,7 +457,7 @@ impl Window {
     /// # Arguments
     /// * `title` - the window title
     pub fn new(title: &str) -> Window {
-        Window::do_new(title, false, DEFAULT_WIDTH, DEFAULT_HEIGHT)
+        Window::do_new(title, false, DEFAULT_WIDTH, DEFAULT_HEIGHT, None)
     }
 
     /// Opens a window with a custom size then calls a user-defined procedure.
@@ -466,13 +467,17 @@ impl Window {
     /// * `width` - the window width.
     /// * `height` - the window height.
     pub fn new_with_size(title: &str, width: u32, height: u32) -> Window {
-        Window::do_new(title, false, width, height)
+        Window::do_new(title, false, width, height, None)
+    }
+
+    pub fn new_with_setup(title: &str, width: u32, height: u32, setup: CanvasSetup) -> Window {
+        Window::do_new(title, false, width, height, Some(setup))
     }
 
     // FIXME: make this pub?
-    fn do_new(title: &str, hide: bool, width: u32, height: u32) -> Window {
+    fn do_new(title: &str, hide: bool, width: u32, height: u32, setup: Option<CanvasSetup>) -> Window {
         let (event_send, event_receive) = mpsc::channel();
-        let canvas = Canvas::open(title, hide, width, height, event_send);
+        let canvas = Canvas::open(title, hide, width, height, setup,event_send);
 
         init_gl();
 

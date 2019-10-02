@@ -7,6 +7,45 @@ use window::GLCanvas as CanvasImpl;
 use window::WebGLCanvas as CanvasImpl;
 use image::{GenericImage, Pixel};
 
+/// The possible number of samples for multisample anti-aliasing.
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum NumSamples {
+    /// Multisampling disabled.
+    Zero = 0,
+    /// One sample
+    One = 1,
+    /// Two samples
+    Two = 2,
+    /// Four samples
+    Four = 4,
+    /// Eight samples
+    Eight = 8,
+    /// Sixteen samples
+    Sixteen = 16,
+}
+
+impl NumSamples {
+    /// Create a `NumSamples` from a number.
+    /// Returns `None` if `i` is invalid.
+    pub fn from_u32(i: u32) -> Option<NumSamples> {
+        match i {
+            0 => Some(NumSamples::Zero),
+            1 => Some(NumSamples::One),
+            2 => Some(NumSamples::Two),
+            4 => Some(NumSamples::Four),
+            8 => Some(NumSamples::Eight),
+            16 => Some(NumSamples::Sixteen),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct CanvasSetup {
+    pub vsync: bool,
+    pub samples: NumSamples
+}
+
 /// An abstract structure representing a window for native applications, and a canvas for web applications.
 pub struct Canvas {
     canvas: CanvasImpl,
@@ -19,10 +58,11 @@ impl Canvas {
         hide: bool,
         width: u32,
         height: u32,
+        canvas_setup: Option<CanvasSetup>,
         out_events: Sender<WindowEvent>,
     ) -> Self {
         Canvas {
-            canvas: CanvasImpl::open(title, hide, width, height, out_events),
+            canvas: CanvasImpl::open(title, hide, width, height, canvas_setup, out_events),
         }
     }
 
@@ -96,6 +136,7 @@ pub(crate) trait AbstractCanvas {
         hide: bool,
         width: u32,
         height: u32,
+        window_setup: Option<CanvasSetup>,
         out_events: Sender<WindowEvent>,
     ) -> Self;
     fn render_loop(data: impl FnMut(f64) -> bool + 'static);
