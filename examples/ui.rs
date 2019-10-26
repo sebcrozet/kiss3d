@@ -12,6 +12,14 @@ use kiss3d::conrod;
 use kiss3d::conrod::color::Color;
 #[cfg(feature = "conrod")]
 use kiss3d::conrod::position::Positionable;
+#[cfg(feature = "conrod")]
+use kiss3d::conrod::widget_ids;
+#[cfg(feature = "conrod")]
+use kiss3d::light::Light;
+#[cfg(feature = "conrod")]
+use kiss3d::window::Window;
+#[cfg(feature = "conrod")]
+use std::path::Path;
 
 #[cfg(not(feature = "conrod"))]
 fn main() {
