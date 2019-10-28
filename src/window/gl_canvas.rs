@@ -7,6 +7,7 @@ use glutin::{
     WindowBuilder,
 };
 use window::AbstractCanvas;
+use window::canvas::{CanvasSetup, NumSamples};
 use image::{GenericImage, Pixel};
 
 /// A canvas based on glutin and OpenGL.
@@ -26,6 +27,7 @@ impl AbstractCanvas for GLCanvas {
         hide: bool,
         width: u32,
         height: u32,
+        canvas_setup: Option<CanvasSetup>,
         out_events: Sender<WindowEvent>,
     ) -> Self {
         let events = EventsLoop::new();
@@ -33,8 +35,10 @@ impl AbstractCanvas for GLCanvas {
             .with_title(title)
             .with_dimensions(LogicalSize::new(width as f64, height as f64))
             .with_visibility(!hide);
+        let canvas_setup = canvas_setup.unwrap_or(CanvasSetup { vsync: true, samples: NumSamples::Zero });
         let context = ContextBuilder::new()
-            .with_vsync(true)
+            .with_vsync(canvas_setup.vsync)
+            .with_multisampling(canvas_setup.samples as u16)
             .with_gl(GlRequest::GlThenGles {
                 opengl_version: (3, 2),
                 opengles_version: (2, 0),
