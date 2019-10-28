@@ -34,6 +34,9 @@ use image::{GenericImage, Pixel};
 use renderer::ConrodRenderer;
 use window::canvas::CanvasSetup;
 
+#[cfg(feature = "conrod")]
+use std::collections::HashMap;
+
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
 
