@@ -17,6 +17,7 @@ pub struct ObjectData {
     material: Rc<RefCell<Box<dyn Material + 'static>>>,
     texture: Rc<Texture>,
     color: Point3<f32>,
+    lines_color: Option<Point3<f32>>,
     wlines: f32,
     wpoints: f32,
     draw_surface: bool,
@@ -41,6 +42,12 @@ impl ObjectData {
     #[inline]
     pub fn lines_width(&self) -> f32 {
         self.wlines
+    }
+
+    /// The width of the lines draw for this object.
+    #[inline]
+    pub fn lines_color(&self) -> Option<&Point3<f32>> {
+        self.lines_color.as_ref()
     }
 
     /// The size of the points draw for this object.
@@ -93,18 +100,19 @@ impl Object {
         let user_data = ();
         let data = ObjectData {
             color: Point3::new(r, g, b),
-            texture: texture,
+            lines_color: None,
+            texture,
             wlines: 0.0,
             wpoints: 0.0,
             draw_surface: true,
             cull: true,
-            material: material,
+            material,
             user_data: Box::new(user_data),
         };
 
         Object {
-            data: data,
-            mesh: mesh,
+            data,
+            mesh,
         }
     }
 
@@ -174,6 +182,18 @@ impl Object {
     #[inline]
     pub fn lines_width(&self) -> f32 {
         self.data.wlines
+    }
+
+    /// Sets the width of the lines drawn for this object.
+    #[inline]
+    pub fn set_lines_color(&mut self, color: Option<Point3<f32>>) {
+        self.data.lines_color = color
+    }
+
+    /// Returns the width of the lines drawn for this object.
+    #[inline]
+    pub fn lines_color(&self) -> Option<Point3<f32>> {
+        self.data.lines_color
     }
 
     /// Sets the size of the points drawn for this object.

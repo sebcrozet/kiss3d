@@ -103,7 +103,6 @@ impl Material for ObjectMaterial {
             self.transform.upload(&formated_transform);
             self.ntransform.upload(&formated_ntransform);
             self.scale.upload(&formated_scale);
-            self.color.upload(data.color());
 
             mesh.bind(&mut self.pos, &mut self.normal, &mut self.tex_coord);
 
@@ -111,6 +110,8 @@ impl Material for ObjectMaterial {
             verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&*data.texture())));
 
             if data.surface_rendering_active() {
+                self.color.upload(data.color());
+
                 if data.backface_culling_enabled() {
                     verify!(ctxt.enable(Context::CULL_FACE));
                 } else {
@@ -127,6 +128,8 @@ impl Material for ObjectMaterial {
             }
 
             if data.lines_width() != 0.0 {
+                self.color.upload(data.lines_color().unwrap_or(data.color()));
+
                 verify!(ctxt.disable(Context::CULL_FACE));
                 ignore!(ctxt.line_width(data.lines_width()));
 
@@ -150,6 +153,8 @@ impl Material for ObjectMaterial {
             }
 
             if data.points_size() != 0.0 {
+                self.color.upload(data.color());
+
                 verify!(ctxt.disable(Context::CULL_FACE));
                 ctxt.point_size(data.points_size());
                 if verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::POINT)) {

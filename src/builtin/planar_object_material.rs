@@ -83,7 +83,6 @@ impl PlanarMaterial for PlanarObjectMaterial {
         unsafe {
             self.model.upload(&formated_transform);
             self.scale.upload(&formated_scale);
-            self.color.upload(data.color());
 
             mesh.bind(&mut self.pos, &mut self.tex_coord);
 
@@ -92,6 +91,8 @@ impl PlanarMaterial for PlanarObjectMaterial {
             verify!(ctxt.disable(Context::CULL_FACE));
 
             if data.surface_rendering_active() {
+                self.color.upload(data.color());
+
                 let _ = verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::FILL));
                 verify!(ctxt.draw_elements(
                     Context::TRIANGLES,
@@ -102,6 +103,8 @@ impl PlanarMaterial for PlanarObjectMaterial {
             }
 
             if data.lines_width() != 0.0 {
+                self.color.upload(data.lines_color().unwrap_or(data.color()));
+
                 verify!(ctxt.disable(Context::CULL_FACE));
                 ignore!(ctxt.line_width(data.lines_width()));
 
@@ -121,10 +124,13 @@ impl PlanarMaterial for PlanarObjectMaterial {
                         0
                     ));
                 }
+
                 ctxt.line_width(1.0);
             }
 
             if data.points_size() != 0.0 {
+                self.color.upload(data.color());
+
                 verify!(ctxt.disable(Context::CULL_FACE));
                 ctxt.point_size(data.points_size());
                 if verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::POINT)) {

@@ -196,6 +196,12 @@ impl SceneNodeData {
         self.apply_to_objects_mut(&mut |o| o.set_lines_width(width))
     }
 
+    /// Sets the color of the lines drawn for the objects contained by this node and its children.
+    #[inline]
+    pub fn set_lines_color(&mut self, color: Option<Point3<f32>>) {
+        self.apply_to_objects_mut(&mut |o| o.set_lines_color(color))
+    }
+
     /// Sets the size of the points drawn for the objects contained by this node and its children.
     #[inline]
     pub fn set_points_size(&mut self, size: f32) {
@@ -905,6 +911,12 @@ impl SceneNode {
     #[inline]
     pub fn set_lines_width(&mut self, width: f32) {
         self.data_mut().set_lines_width(width)
+    }
+
+    /// Sets the color of the lines drawn for the objects contained by this node and its children.
+    #[inline]
+    pub fn set_lines_color(&mut self, color: Option<Point3<f32>>) {
+        self.data_mut().set_lines_color(color)
     }
 
     /// Sets the size of the points drawn for the objects contained by this node and its children.
