@@ -235,6 +235,13 @@ impl Window {
         self.scene.add_group()
     }
 
+    /// Adds a 2D group to the scene.
+    ///
+    /// A group is a node not containing any object.
+    pub fn add_planar_group(&mut self) -> PlanarSceneNode {
+        self.scene2.add_group()
+    }
+
     /// Adds an obj model to the scene.
     ///
     /// # Arguments
