@@ -172,7 +172,7 @@ impl AbstractCanvas for GLCanvas {
         let (width, height) = icon.dimensions();
         let mut rgba = Vec::with_capacity((width * height) as usize * 4);
         for (_, _, pixel) in icon.pixels() {
-            rgba.extend_from_slice(&pixel.to_rgba().data);
+            rgba.extend_from_slice(&pixel.to_rgba().0);
         }
         let icon = glutin::Icon::from_rgba(rgba, width, height).unwrap();
         self.window.set_window_icon(Some(icon))

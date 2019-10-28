@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::rc::Rc;
-use std::sync::{Once, ONCE_INIT};
+use std::sync::Once;
 
 use rusttype;
 
@@ -34,7 +34,7 @@ impl Font {
     pub fn default() -> Rc<Font> {
         const DATA: &'static [u8] = include_bytes!("WorkSans-Regular.ttf");
         static mut DEFAULT_FONT_SINGLETON: Option<Rc<Font>> = None;
-        static INIT: Once = ONCE_INIT;
+        static INIT: Once = Once::new();
 
         unsafe {
             INIT.call_once(|| {

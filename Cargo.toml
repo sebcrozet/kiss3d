@@ -31,19 +31,19 @@ conrod = [ "kiss3d_conrod" ]
 
 [dependencies]
 libc         = "0.2"
-bitflags     = "1.0"
+bitflags     = "1.2"
 num-traits   = "0.2"
-nalgebra     = "0.18"
-ncollide3d   = "0.20"
-image        = "0.21"
+nalgebra     = "0.19"
+ncollide3d   = "0.21"
+image        = "0.22"
 serde        = "1.0"
 serde_derive = "1.0"
-rusttype     = { version = "0.7", features = [ "gpu_cache" ] }
+rusttype     = { version = "0.8", features = [ "gpu_cache" ] }
 instant      = { version = "0.1", features = [ "stdweb" ]}
 kiss3d_conrod = { version = "0.63", features = [ "stdweb" ], optional = true }
 
 [target.'cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))'.dependencies]
-gl = "0.11"
+gl = "0.14"
 glutin = "0.19"
 
 # We repeat all three targets instead of any(target_arch = "wasm32", target_arch = "asmjs")
@@ -61,5 +61,5 @@ stdweb = "0.4"
 stdweb-derive = "0.5"
 
 [dev-dependencies]
-rand = "0.6"
-ncollide2d = "0.20"
+rand = "0.7"
+ncollide2d = "0.21"

@@ -1,6 +1,6 @@
 #![allow(missing_docs)]
 
-use std::sync::{Once, ONCE_INIT};
+use std::sync::Once;
 
 #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 use context::GLContext as ContextImpl;
@@ -108,7 +108,7 @@ impl Context {
 
     pub fn get() -> Context {
         static mut CONTEXT_SINGLETON: Option<Context> = None;
-        static INIT: Once = ONCE_INIT;
+        static INIT: Once = Once::new();
 
         unsafe {
             INIT.call_once(|| {
