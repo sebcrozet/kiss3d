@@ -12,6 +12,8 @@ autoexamples = true
 
 include = [
     "src/**/*.rs",
+    "src/**/*.frag",
+    "src/**/*.vert",
     "src/text/*.ttf",
     "examples/**/*.rs",
     "examples/media",
