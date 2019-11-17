@@ -109,6 +109,11 @@ impl Canvas {
         self.canvas.set_icon(icon)
     }
 
+    /// Set the cursor grabbing behaviour.
+    pub fn set_cursor_grab(&self, grab: bool) {
+        self.canvas.set_cursor_grab(grab);
+    }
+
     /// Hide the window.
     pub fn hide(&mut self) {
         self.canvas.hide()
@@ -148,6 +153,7 @@ pub(crate) trait AbstractCanvas {
 
     fn set_title(&mut self, title: &str);
     fn set_icon(&mut self, icon: impl GenericImage<Pixel = impl Pixel<Subpixel = u8>>);
+    fn set_cursor_grab(&self, grab: bool);
     fn hide(&mut self);
     fn show(&mut self);
 

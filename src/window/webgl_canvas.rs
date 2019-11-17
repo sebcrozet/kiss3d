@@ -201,6 +201,10 @@ impl AbstractCanvas for WebGLCanvas {
         // Not supported.
     }
 
+    fn set_cursor_grab(&self, grab: bool) {
+        // Not supported.
+    }
+
     fn hide(&mut self) {
         // Not supported.
     }
