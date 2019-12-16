@@ -143,6 +143,14 @@ impl Window {
         self.canvas.set_icon(icon)
     }
 
+    /// Set the cursor grabbing behaviour.
+    ///
+    /// If cursor grabbing is on, the cursor is prevented from leaving the window.
+    /// Does nothing on web platforms.
+    pub fn set_cursor_grab(&self, grab: bool) {
+        self.canvas.set_cursor_grab(grab);
+    }
+
     /// Closes the window.
     #[inline]
     pub fn close(&mut self) {

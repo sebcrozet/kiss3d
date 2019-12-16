@@ -178,6 +178,10 @@ impl AbstractCanvas for GLCanvas {
         self.window.set_window_icon(Some(icon))
     }
 
+    fn set_cursor_grab(&self, grab: bool) {
+        let _ = self.window.window().grab_cursor(grab);
+    }
+
     fn hide(&mut self) {
         self.window.hide()
     }
