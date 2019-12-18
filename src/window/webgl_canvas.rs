@@ -111,20 +111,20 @@ impl AbstractCanvas for WebGLCanvas {
 
         let edata = data.clone();
         let _ = web::window().add_event_listener(move |e: WheelEvent| {
-            let delta_x: i32 = js!(
+            let delta_x: f64 = js!(
                 return @{e.as_ref()}.deltaX;
             ).try_into()
                 .ok()
-                .unwrap_or(0);
-            let delta_y: i32 = js!(
+                .unwrap_or(0.0);
+            let delta_y: f64 = js!(
                 return @{e.as_ref()}.deltaY;
             ).try_into()
                 .ok()
-                .unwrap_or(0);
+                .unwrap_or(0.0);
             let mut edata = edata.borrow_mut();
             let _ = edata.pending_events.push(WindowEvent::Scroll(
-                delta_x as f64,
-                -delta_y as f64,
+                delta_x / 10.0,
+                -delta_y / 10.0,
                 translate_mouse_modifiers(&e),
             ));
         });
