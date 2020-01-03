@@ -765,6 +765,7 @@ impl Window {
                         Key::Right => CKey::Right,
                         Key::Down => CKey::Down,
                         Key::Return => CKey::Return,
+                        Key::Back => CKey::Backspace,
                         Key::Space => CKey::Space,
                         Key::Caret => CKey::Caret,
                         Key::Numpad0 => CKey::NumPad0,
@@ -816,6 +817,14 @@ impl Window {
                     match action {
                         Action::Press => Some(Input::Press(Button::Keyboard(key))),
                         Action::Release => Some(Input::Release(Button::Keyboard(key))),
+                    }
+                }
+                WindowEvent::Char(c) => {
+                    if c < ' ' {
+                        None
+
+                    } else {
+                        Some(Input::Text(c.to_string()))
                     }
                 }
                 _ => None

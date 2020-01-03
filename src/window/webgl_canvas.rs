@@ -138,6 +138,7 @@ impl AbstractCanvas for WebGLCanvas {
                 Action::Press,
                 translate_key_modifiers(&e),
             ));
+            let _ = edata.pending_events.push(WindowEvent::Char(translate_char(&e)));
             edata.key_states[key as usize] = Action::Press;
         });
 
@@ -264,6 +265,14 @@ fn translate_mouse_button<E: IMouseEvent>(event: &E) -> MouseButton {
         webevent::MouseButton::Wheel => MouseButton::Button3,
         webevent::MouseButton::Button4 => MouseButton::Button4,
         webevent::MouseButton::Button5 => MouseButton::Button5,
+    }
+}
+
+fn translate_char<E: IKeyboardEvent>(event: &E) -> char {
+    let key = event.key();
+    match key.len() {
+        1 => key.chars().nth(0).unwrap_or(' '),
+        _ => ' '
     }
 }
 
