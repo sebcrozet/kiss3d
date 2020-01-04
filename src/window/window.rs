@@ -112,6 +112,7 @@ impl Window {
         Vector2::new(w, h)
     }
 
+
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
     #[inline]
     pub fn set_framerate_limit(&mut self, fps: Option<u64>) {
@@ -149,6 +150,16 @@ impl Window {
     /// Does nothing on web platforms.
     pub fn set_cursor_grab(&self, grab: bool) {
         self.canvas.set_cursor_grab(grab);
+    }
+
+    #[inline]
+    pub fn set_cursor_position(&self, x: f64, y: f64) {
+        self.canvas.set_cursor_position(x, y);
+    }
+
+    #[inline]
+    pub fn hide_cursor(&self, hide: bool) {
+        self.canvas.hide_cursor(hide);
     }
 
     /// Closes the window.
