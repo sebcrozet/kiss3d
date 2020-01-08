@@ -16,6 +16,7 @@ pub enum WindowEvent {
     Key(Key, Action, Modifiers),
     Char(char),
     CharModifiers(char, Modifiers),
+    Touch(u64, f64, f64, TouchAction, Modifiers),
 }
 
 impl WindowEvent {
@@ -32,6 +33,14 @@ impl WindowEvent {
         match self {
             WindowEvent::MouseButton(..) | WindowEvent::CursorPos(..) |
             WindowEvent::CursorEnter(..) | WindowEvent::Scroll(..) => true,
+            _ => false
+        }
+    }
+
+    /// Tests if this event is related to the touch.
+    pub fn is_touch_event(&self) -> bool {
+        match self {
+            WindowEvent::Touch(..) => true,
             _ => false
         }
     }
@@ -219,6 +228,14 @@ pub enum MouseButton {
 pub enum Action {
     Release,
     Press,
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Serialize, Deserialize)]
+pub enum TouchAction {
+    Start,
+    End,
+    Move,
+    Cancel,
 }
 
 bitflags! {
