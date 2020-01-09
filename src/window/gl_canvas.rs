@@ -1,10 +1,10 @@
 use std::sync::mpsc::Sender;
 
-use event::{Action, Key, Modifiers, MouseButton, WindowEvent};
+use event::{Action, Key, Modifiers, MouseButton, WindowEvent, TouchAction};
 use gl;
 use glutin::{
     self, dpi::LogicalSize, ContextBuilder, EventsLoop, GlContext, GlRequest, GlWindow,
-    WindowBuilder,
+    WindowBuilder, TouchPhase
 };
 use window::AbstractCanvas;
 use window::canvas::{CanvasSetup, NumSamples};
@@ -119,6 +119,22 @@ impl AbstractCanvas for GLCanvas {
                     let modifiers = translate_modifiers(modifiers);
                     button_states[button as usize] = action;
                     let _ = out_events.send(WindowEvent::MouseButton(button, action, modifiers));
+                }
+                glutin::WindowEvent::Touch(touch) => {
+                    let action = match touch.phase {
+                        TouchPhase::Started => TouchAction::Start,
+                        TouchPhase::Ended => TouchAction::End,
+                        TouchPhase::Moved => TouchAction::Move,
+                        TouchPhase::Cancelled => TouchAction::Cancel
+                    };
+
+                    let _ = out_events.send(WindowEvent::Touch(
+                        touch.id,
+                        touch.location.x,
+                        touch.location.y,
+                        action,
+                        Modifiers::empty(),
+                    ));
                 }
                 glutin::WindowEvent::MouseWheel {
                     delta, modifiers, ..
