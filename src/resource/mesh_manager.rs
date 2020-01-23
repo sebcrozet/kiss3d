@@ -30,6 +30,7 @@ impl MeshManager {
             meshes: HashMap::new(),
         };
 
+        //log::info!("meshManager");
         let _ = res.add_trimesh(procedural::unit_sphere(50, 50, true), false, "sphere");
         let _ = res.add_trimesh(procedural::unit_cuboid(), false, "cube");
         let _ = res.add_trimesh(procedural::unit_cone(50), false, "cone");

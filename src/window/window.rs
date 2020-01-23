@@ -8,9 +8,9 @@ use std::path::Path;
 use std::rc::Rc;
 use std::sync::mpsc::{self, Receiver};
 use std::time::Duration;
+#[cfg(not(feature="web_sys"))]
 use std::thread;
-
-
+#[cfg(not(feature="web_sys"))]
 use instant::Instant;
 use na::{Point2, Point3, Vector2, Vector3};
 

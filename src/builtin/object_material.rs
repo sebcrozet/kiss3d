@@ -73,6 +73,7 @@ impl Material for ObjectMaterial {
         data: &ObjectData,
         mesh: &mut Mesh,
     ) {
+        //log::info!("objectmaterial render {:?} num_pts {:}", pass, mesh.num_pts());
         let ctxt = Context::get();
         self.activate();
 

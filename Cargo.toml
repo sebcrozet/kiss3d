@@ -28,8 +28,9 @@ name = "kiss3d"
 path = "src/lib.rs"
 
 [features]
-conrod = [ "kiss3d_conrod" ]
-
+#default = ["web_sys"]
+#conrod = [ "kiss3d_conrod" ]
+web_sys = [ "web-sys" ]
 
 [dependencies]
 libc         = "0.2"
@@ -41,8 +42,13 @@ image        = "0.22"
 serde        = "1.0"
 serde_derive = "1.0"
 rusttype     = { version = "0.8", features = [ "gpu_cache" ] }
-instant      = { version = "0.1", features = [ "stdweb" ]}
-kiss3d_conrod = { version = "0.64", features = [ "stdweb" ], optional = true }
+instant      = { version = "0.1", features = [ "wasm-bindgen" ]}
+wasm-bindgen = "0.2.58"
+node-sys = "0.4.0"
+web_logger = "0.2.0"
+log = "0.4.8"
+#kiss3d_conrod = { version = "0.64", features = [ "stdweb" ], optional = true }
+#kiss3d_conrod = { version = "0.64", features = [ "stdweb" ], optional = true }
 
 [target.'cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))'.dependencies]
 gl = "0.14"
@@ -65,3 +71,80 @@ stdweb-derive = "0.5"
 [dev-dependencies]
 rand = "0.7"
 ncollide2d = "0.21"
+
+[dependencies.glow]
+version = "0.4.0"
+git = "https://github.com/grovesNL/glow.git"
+rev = "302daa7c9e9942cf2758ba37ded5957149859b1e"
+
+[dependencies.web-sys]
+version = "0.3.35"
+optional = true
+features = [
+	'Document',
+	'Element',
+	'HtmlElement',
+	'HtmlCanvasElement',
+	'WebGlBuffer',
+	'WebGlRenderingContext',
+	'WebGl2RenderingContext',
+	'WebGlProgram',
+	'WebGlShader',
+	'Window',
+	'CssStyleDeclaration',
+	'MouseEvent',
+	'UiEvent',
+	'EventTarget',
+	'TouchEvent',
+	'Event',
+
+  "WebGlActiveInfo",
+  "WebGlBuffer",
+  "WebGlFramebuffer",
+  "WebGlProgram",
+  "WebGlRenderbuffer",
+  "WebGlRenderingContext",
+  "WebGl2RenderingContext",
+  "WebGlSampler",
+  "WebGlShader",
+  "WebGlSync",
+  "WebGlTexture",
+  "WebGlUniformLocation",
+  "WebGlVertexArrayObject",
+  "Window",
+
+  "AngleInstancedArrays",
+  "ExtBlendMinmax",
+  "ExtColorBufferFloat",
+  "ExtColorBufferHalfFloat",
+  "ExtDisjointTimerQuery",
+  "ExtFragDepth",
+  "ExtShaderTextureLod",
+  "ExtSRgb",
+  "ExtTextureFilterAnisotropic",
+  "OesElementIndexUint",
+  "OesStandardDerivatives",
+  "OesTextureFloat",
+  "OesTextureFloatLinear",
+  "OesTextureHalfFloat",
+  "OesTextureHalfFloatLinear",
+  "OesVertexArrayObject",
+  "WebglColorBufferFloat",
+  "WebglCompressedTextureAstc",
+  "WebglCompressedTextureEtc",
+  "WebglCompressedTextureEtc1",
+  "WebglCompressedTexturePvrtc",
+  "WebglCompressedTextureS3tc",
+  "WebglCompressedTextureS3tcSrgb",
+  "WebglDebugRendererInfo",
+  "WebglDebugShaders",
+  "WebglDepthTexture",
+  "WebglDrawBuffers",
+  "WebglLoseContext",
+
+	"HtmlImageElement",
+	"WebGlContextAttributes",
+
+	"console",
+]
+

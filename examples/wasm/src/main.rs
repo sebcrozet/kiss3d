@@ -1,44 +1,69 @@
 #[macro_use]
 extern crate kiss3d;
 extern crate nalgebra as na;
-#[macro_use]
-extern crate stdweb;
+//#[macro_use]
+//extern crate stdweb;
 
-use kiss3d::conrod::widget::{Button, button::Style, Widget, Text};
+/*use kiss3d::conrod::widget::{Button, button::Style, Widget, Text};
 use kiss3d::conrod::color::{Color, Colorable};
 use kiss3d::conrod::position::{Sizeable, Positionable};
-use kiss3d::conrod::Labelable;
+use kiss3d::conrod::Labelable;*/
 
 use kiss3d::light::Light;
 use kiss3d::scene::SceneNode;
 use kiss3d::window::{State, Window};
-use kiss3d::conrod;
+//use kiss3d::conrod;
 use na::{UnitQuaternion, Vector3};
 
 struct AppState {
     c: SceneNode,
     rot: UnitQuaternion<f32>,
-    ids: Ids,
+    //ids: Ids,
     app: DemoApp,
+    font: std::rc::Rc<kiss3d::text::Font>,
 }
 
 impl State for AppState {
     fn step(&mut self, window: &mut Window) {
-        for event in window.conrod_ui().widget_input(self.ids.button).events() {
-            console!(log, format!("Found event: {:?}", event))
-        }
+        //for event in window.conrod_ui().widget_input(self.ids.button).events() {
+        //    console!(log, format!("Found event: {:?}", event))
+        //}
 
-        let mut ui = window.conrod_ui_mut().set_widgets();
-        gui(&mut ui, &self.ids, &mut self.app)
+        //let mut ui = window.conrod_ui_mut().set_widgets();
+        //gui(&mut ui, &self.ids, &mut self.app)
+    
+        self.c.prepend_to_local_rotation(&self.rot);
+
+        window.draw_text(
+            "Hello birds!",
+            &na::Point2::origin(),
+            120.0,
+            &self.font,
+            &na::Point3::new(0.0, 1.0, 1.0),
+        );
+
+        let ascii = " !\"#$%&'`()*+,-_./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^abcdefghijklmnopqrstuvwxyz{|}~";
+
+        window.draw_text(
+            ascii,
+            &na::Point2::new(0.0, 120.0),
+            60.0,
+            &self.font,
+            &na::Point3::new(1.0, 1.0, 0.0),
+        );
     }
 }
 
 fn main() {
     let mut window = Window::new("Kiss3d: wasm example");
-    window.set_background_color(1.0, 1.0, 1.0);
+    window.set_background_color(0.0, 0.0, 1.0);
     let mut c = window.add_cube(0.1, 0.1, 0.1);
-
     c.set_color(1.0, 0.0, 0.0);
+
+    let mut c = window.add_cube(0.1, 0.1, 0.1);
+    c.set_color(0.0, 1.0, 0.0);
+    c.append_translation(&na::Translation3::new(0.2, 0.0, 0.0));
+    c.set_local_scale(0.05, 0.05, 0.05);
 
     window.set_light(Light::StickToCamera);
 
@@ -46,12 +71,14 @@ fn main() {
 
 
     // Generate the widget identifiers.
-    let ids = Ids::new(window.conrod_ui_mut().widget_id_generator());
+    //let ids = Ids::new(window.conrod_ui_mut().widget_id_generator());
     let app = DemoApp::new();
-    window.conrod_ui_mut().theme = theme();
+    //window.conrod_ui_mut().theme = theme();
 
 
-    let state = AppState { c, rot, ids, app };
+    let font = kiss3d::text::Font::default();
+
+    let state = AppState { c, rot, app , font};
 
     window.render_loop(state)
 }
@@ -63,7 +90,8 @@ fn main() {
  *
  */
 /// A set of reasonable stylistic defaults that works for the `gui` below.
-pub fn theme() -> conrod::Theme {
+
+/*pub fn theme() -> conrod::Theme {
     use conrod::position::{Align, Direction, Padding, Position, Relative};
     conrod::Theme {
         name: "Demo Theme".to_string(),
@@ -124,15 +152,15 @@ widget_ids! {
         canvas_scrollbar,
     }
 }
-
+*/
 
 pub const WIN_W: u32 = 600;
 pub const WIN_H: u32 = 420;
 
 /// A demonstration of some application state we want to control with a conrod GUI.
 pub struct DemoApp {
-    ball_xy: conrod::Point,
-    ball_color: conrod::Color,
+    //ball_xy: conrod::Point,
+    //ball_color: conrod::Color,
     sine_frequency: f32,
 //    rust_logo: conrod::image::Id,
 }
@@ -142,8 +170,8 @@ impl DemoApp {
     /// Simple constructor for the `DemoApp`.
     pub fn new(/*rust_logo: conrod::image::Id*/) -> Self {
         DemoApp {
-            ball_xy: [0.0, 0.0],
-            ball_color: conrod::color::WHITE,
+            //ball_xy: [0.0, 0.0],
+            //ball_color: conrod::color::WHITE,
             sine_frequency: 1.0,
 //            rust_logo: rust_logo,
         }
@@ -151,6 +179,7 @@ impl DemoApp {
 }
 
 
+/*
 /// Instantiate a GUI demonstrating every widget available in conrod.
 pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
     use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget};
@@ -388,3 +417,15 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
 
     widget::Scrollbar::y_axis(ids.canvas).auto_hide(true).set(ids.canvas_scrollbar, ui);
 }
+*/
+
+extern crate wasm_bindgen;
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
+pub fn test1() -> i32 {
+    web_logger::init();
+    main();
+    234
+}
+

@@ -192,6 +192,7 @@ impl Mesh {
 
     /// Binds this mesh vertex coordinates buffer to a vertex attribute.
     pub fn bind_coords(&mut self, coords: &mut ShaderAttribute<Point3<f32>>) {
+        //log::info!("bind_coords len {:}", self.coords.read().unwrap().len());
         coords.bind(&mut *self.coords.write().unwrap());
     }
 
@@ -207,6 +208,7 @@ impl Mesh {
 
     /// Binds this mesh index buffer to a vertex attribute.
     pub fn bind_faces(&mut self) {
+        //log::info!("bind_faces len {:}", self.faces.read().unwrap().len());
         self.faces.write().unwrap().bind();
     }
 

@@ -63,6 +63,8 @@ impl<T: GLPrimitive> GPUVec<T> {
     /// Returns `true` if this vector is already uploaded to the GPU.
     #[inline]
     pub fn is_on_gpu(&self) -> bool {
+        //log::info!("is_on_gpu: {:?}", self.buffer.is_some());
+        //log::info!("is_on_gpu: {:?}", self.buffer.as_ref().unwrap().0);
         self.buffer.is_some()
     }
 
@@ -85,7 +87,9 @@ impl<T: GLPrimitive> GPUVec<T> {
     /// If the vector is not available on RAM or already loaded to the GPU, nothing will happen.
     #[inline]
     pub fn load_to_gpu(&mut self) {
+        //log::info!("gpu: load_to_gpu");
         if !self.is_on_gpu() {
+            //log::info!("gpu: not is_on_gpu");
             let buf_type = self.buf_type;
             let alloc_type = self.alloc_type;
             let len = &mut self.len;
@@ -95,6 +99,7 @@ impl<T: GLPrimitive> GPUVec<T> {
                 (d.len(), upload_array(&d[..], buf_type, alloc_type))
             });
         } else if self.trash() {
+            //log::info!("gpu: else trash");
             for d in self.data.iter() {
                 self.len = d.len();
 
@@ -112,6 +117,7 @@ impl<T: GLPrimitive> GPUVec<T> {
     /// This does not associate this buffer with any shader attribute.
     #[inline]
     pub fn bind(&mut self) {
+        //log::info!("gpu: bind, data {:?}", self.data.as_ref().unwrap_or(&vec!()).len());
         self.load_to_gpu();
 
         let buffer = self.buffer.as_ref().map(|e| &e.1);
@@ -121,6 +127,7 @@ impl<T: GLPrimitive> GPUVec<T> {
     /// Unbind this vector to the corresponding gpu buffer.
     #[inline]
     pub fn unbind(&mut self) {
+        //log::info!("gpu: unbind");
         if self.is_on_gpu() {
             verify!(Context::get().bind_buffer(self.buf_type.to_gl(), None));
         }
@@ -227,6 +234,7 @@ pub fn upload_array<T: GLPrimitive>(
     buf_type: BufferType,
     allocation_type: AllocationType,
 ) -> Buffer {
+    //log::info!("gpu: upload_array");
     // Upload values of vertices
     let buf = verify!(
         Context::get()
@@ -264,6 +272,7 @@ pub fn update_buffer<T: GLPrimitive>(
     gpu_allocation_type: AllocationType,
 ) -> usize {
     unsafe {
+        //log::info!("gpu_vector: update_buffer arr {:?} gblen {:?}", arr.len(), gpu_buf_len);
         let ctxt = Context::get();
 
         verify!(ctxt.bind_buffer(gpu_buf_type.to_gl(), Some(gpu_buf)));

@@ -130,6 +130,17 @@ Thanks to all the Rustaceans for their help, and their OpenGL bindings.
 #![allow(missing_copy_implementations)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
 
+#[cfg(feature="web_sys")]
+extern crate web_sys;
+#[cfg(feature="web_sys")]
+#[macro_use] extern crate wasm_bindgen;
+#[cfg(feature="web_sys")]
+#[macro_use] extern crate glow;
+#[cfg(feature="web_sys")]
+extern crate log;
+#[cfg(feature="web_sys")]
+extern crate web_logger;
+
 #[macro_use]
 extern crate bitflags;
 extern crate rusttype;
