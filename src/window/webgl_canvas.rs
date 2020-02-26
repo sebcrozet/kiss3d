@@ -31,25 +31,30 @@ struct WebGLCanvasData {
     button_states: [Action; MouseButton::Button8 as usize + 1],
     pending_events: Vec<WindowEvent>,
     out_events: Sender<WindowEvent>,
+    hidpi_factor: f64,
 }
 
 /// A canvas based on WebGL and stdweb.
 pub struct WebGLCanvas {
     data: Rc<RefCell<WebGLCanvasData>>,
-    hidpi_factor: f64,
 }
 
 impl AbstractCanvas for WebGLCanvas {
     fn open(_: &str, _: bool, _: u32, _: u32, setup: Option<CanvasSetup>, out_events: Sender<WindowEvent>) -> Self {
-        let hidpi_factor = js!{ return window.devicePixelRatio; }.try_into().unwrap();
+        fn get_hidpi_factor() -> f64 {
+            (js! { return window.devicePixelRatio; })
+                .try_into()
+                .unwrap()
+        }
+        let initial_hidpi_factor = get_hidpi_factor();
         let canvas: CanvasElement = web::document()
             .query_selector("#canvas")
             .expect("No canvas found.")
             .unwrap()
             .try_into()
             .unwrap();
-        canvas.set_width((canvas.offset_width() as f64 * hidpi_factor) as u32);
-        canvas.set_height((canvas.offset_height() as f64 * hidpi_factor) as u32);
+        canvas.set_width((canvas.offset_width() as f64 * initial_hidpi_factor) as u32);
+        canvas.set_height((canvas.offset_height() as f64 * initial_hidpi_factor) as u32);
         let data = Rc::new(RefCell::new(WebGLCanvasData {
             canvas,
             cursor_pos: None,
@@ -57,11 +62,18 @@ impl AbstractCanvas for WebGLCanvas {
             button_states: [Action::Release; MouseButton::Button8 as usize + 1],
             pending_events: Vec::new(),
             out_events,
+            hidpi_factor: initial_hidpi_factor,
         }));
 
         let edata = data.clone();
         let _ = web::window().add_event_listener(move |_: webevent::ResizeEvent| {
             let mut edata = edata.borrow_mut();
+            // Here we update the hidpi factor with the assumption that a resize
+            // event will always be triggered whenever window.devicePixelRatio
+            // changes. This is the easiest way to detect a change of the hidpi
+            // factor.
+            let hidpi_factor = get_hidpi_factor();
+            edata.hidpi_factor = hidpi_factor;
             let (w, h) = (
                 (edata.canvas.offset_width() as f64 * hidpi_factor) as u32,
                 (edata.canvas.offset_height() as f64 * hidpi_factor) as u32,
@@ -101,6 +113,7 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let _ = web::window().add_event_listener(move |e: webevent::MouseMoveEvent| {
             let mut edata = edata.borrow_mut();
+            let hidpi_factor = edata.hidpi_factor;
             edata.cursor_pos = Some((e.offset_x() as f64 * hidpi_factor, e.offset_y() as f64 * hidpi_factor));
             let _ = edata.pending_events.push(WindowEvent::CursorPos(
                 e.offset_x() as f64 * hidpi_factor,
@@ -153,7 +166,7 @@ impl AbstractCanvas for WebGLCanvas {
             edata.key_states[key as usize] = Action::Release;
         });
 
-        WebGLCanvas { data, hidpi_factor }
+        WebGLCanvas { data }
     }
 
     fn render_loop(mut callback: impl FnMut(f64) -> bool + 'static) {
@@ -165,7 +178,7 @@ impl AbstractCanvas for WebGLCanvas {
     }
 
     fn hidpi_factor(&self) -> f64 {
-        self.hidpi_factor
+        self.data.borrow().hidpi_factor
     }
 
     fn poll_events(&mut self) {
