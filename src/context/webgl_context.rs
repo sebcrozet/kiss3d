@@ -53,7 +53,7 @@ impl AbstractContextConst for WebGLContext {
     const FRAGMENT_SHADER: u32 = WebGLRenderingContext::FRAGMENT_SHADER;
     const COMPILE_STATUS: u32 = WebGLRenderingContext::COMPILE_STATUS;
     const FRAMEBUFFER: u32 = WebGLRenderingContext::FRAMEBUFFER;
-    const RENDERBUFFER: u32 = WebGLRenderingContext::RENDERBUFFER,
+    const RENDERBUFFER: u32 = WebGLRenderingContext::RENDERBUFFER;
     const DEPTH_ATTACHMENT: u32 = WebGLRenderingContext::DEPTH_ATTACHMENT;
     const COLOR_ATTACHMENT0: u32 = WebGLRenderingContext::COLOR_ATTACHMENT0;
     const TEXTURE_2D: u32 = WebGLRenderingContext::TEXTURE_2D;
@@ -499,7 +499,7 @@ impl AbstractContext for WebGLContext {
     }
 
     fn bind_renderbuffer(&self, buffer: Option<&Self::Renderbuffer>) {
-        self.ctxt.bind_renderbuffer(buffer)
+        self.ctxt.bind_renderbuffer(Self::RENDERBUFFER, buffer)
     }
 
     fn renderbuffer_storage(&self, internal_format: GLenum, width: i32, height: i32) {
@@ -507,7 +507,7 @@ impl AbstractContext for WebGLContext {
     }
 
     fn framebuffer_renderbuffer(&self, attachment: GLenum, renderbuffer: Option<&Self::Renderbuffer>) {
-        self.ctxt.framebuffer_renderbuffer(Self::RENDERBUFFER, attachment, Self::RENDERBUFFER, renderbuffer)
+        self.ctxt.framebuffer_renderbuffer(Self::FRAMEBUFFER, attachment, Self::RENDERBUFFER, renderbuffer)
     }
 
     fn enable(&self, cap: GLenum) {

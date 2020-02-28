@@ -400,7 +400,7 @@ impl AbstractContext for GLContext {
     }
 
     fn framebuffer_renderbuffer(&self, attachment: GLenum, renderbuffer: Option<&Self::Renderbuffer>) {
-        unsafe { gl::FramebufferRenderbuffer(Self::RENDERBUFFER, attachment, Self::RENDERBUFFER, val(renderbuffer)) }
+        unsafe { gl::FramebufferRenderbuffer(Self::FRAMEBUFFER, attachment, Self::RENDERBUFFER, val(renderbuffer)) }
     }
 
     fn bind_texture(&self, target: GLenum, texture: Option<&Self::Texture>) {
