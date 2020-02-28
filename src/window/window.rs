@@ -518,6 +518,7 @@ impl Window {
             post_process_render_target: FramebufferManager::new_render_target(
                 width as usize,
                 height as usize,
+                true,
             ),
             framebuffer_manager: FramebufferManager::new(),
             #[cfg(not(target_arch = "wasm32"))]

@@ -100,7 +100,7 @@ impl PostProcessingEffect for SobelEdgeHighlight {
         self.gl_fbo_texture.upload(&0);
 
         verify!(ctxt.active_texture(Context::TEXTURE1));
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, target.depth_id()));
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, target.depth_id().and_then(|id| id.as_ref().left())));
 
         self.gl_fbo_depth.upload(&1);
 

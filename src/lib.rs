@@ -136,6 +136,7 @@ extern crate rusttype;
 extern crate image;
 extern crate nalgebra as na;
 extern crate ncollide3d;
+extern crate either;
 extern crate num_traits as num;
 #[macro_use]
 extern crate serde_derive;

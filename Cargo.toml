@@ -32,6 +32,7 @@ conrod = [ "kiss3d_conrod" ]
 
 
 [dependencies]
+either       = "1"
 libc         = "0.2"
 bitflags     = "1.2"
 num-traits   = "0.2"
