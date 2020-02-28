@@ -1,6 +1,6 @@
 //! Resource manager to allocate and switch between framebuffers.
 
-use context::{Context, Framebuffer, Texture, Renderbuffer};
+use context::{Context, Framebuffer, Renderbuffer, Texture};
 use either::Either;
 
 #[path = "../error.rs"]
@@ -82,7 +82,12 @@ impl RenderTarget {
                     }
                     Either::Right(renderbuffer) => {
                         verify!(ctxt.bind_renderbuffer(Some(renderbuffer)));
-                        verify!(ctxt.renderbuffer_storage(Context::DEPTH_COMPONENT, w as i32, h as i32));
+                        verify!(ctxt.renderbuffer_storage(
+                            Context::DEPTH_COMPONENT16,
+                            w as i32,
+                            h as i32
+                        ));
+                        verify!(ctxt.bind_renderbuffer(None));
                     }
                 }
             }
@@ -118,15 +123,18 @@ impl FramebufferManager {
 
     /// Creates a new render target. A render target is the combination of a color buffer and a
     /// depth buffer.
-    pub fn new_render_target(width: usize, height: usize, create_depth_texture: bool) -> RenderTarget {
+    pub fn new_render_target(
+        width: usize,
+        height: usize,
+        create_depth_texture: bool,
+    ) -> RenderTarget {
         let ctxt = Context::get();
 
         /* Texture */
         verify!(ctxt.active_texture(Context::TEXTURE0));
-        let fbo_texture = verify!(
-            ctxt.create_texture()
-                .expect("Failde to create framebuffer object texture.")
-        );
+        let fbo_texture = verify!(ctxt
+            .create_texture()
+            .expect("Failde to create framebuffer object texture."));
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&fbo_texture)));
         verify!(ctxt.tex_parameteri(
             Context::TEXTURE_2D,
@@ -203,9 +211,16 @@ impl FramebufferManager {
             })
         } else {
             // Create a renderbuffer instead of the texture for the depth.
-            let renderbuffer = verify!(ctxt.create_renderbuffer()).expect("Failed to create a renderbuffer.");
+            let renderbuffer =
+                verify!(ctxt.create_renderbuffer()).expect("Failed to create a renderbuffer.");
             verify!(ctxt.bind_renderbuffer(Some(&renderbuffer)));
-            verify!(ctxt.renderbuffer_storage(Context::DEPTH_COMPONENT16, width as i32, height as i32));
+            verify!(ctxt.renderbuffer_storage(
+                Context::DEPTH_COMPONENT16,
+                width as i32,
+                height as i32
+            ));
+            verify!(ctxt.bind_renderbuffer(None));
+
             RenderTarget::Offscreen(OffscreenBuffers {
                 texture: fbo_texture,
                 depth: Either::Right(renderbuffer),
@@ -248,12 +263,8 @@ impl FramebufferManager {
                             0
                         ));
                     }
-                    Either::Right(renderbuffer) => {
-                        verify!(ctxt.framebuffer_renderbuffer(
-                            Context::DEPTH_ATTACHMENT,
-                            Some(renderbuffer),
-                        ))
-                    }
+                    Either::Right(renderbuffer) => verify!(ctxt
+                        .framebuffer_renderbuffer(Context::DEPTH_ATTACHMENT, Some(renderbuffer))),
                 }
             }
         }
@@ -303,6 +314,5 @@ impl Drop for OffscreenBuffers {
                 }
             }
         }
-
     }
 }
