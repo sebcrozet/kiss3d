@@ -107,7 +107,7 @@ Simply add the following to your `Cargo.toml` file:
 
 ```
 [dependencies]
-kiss3d = "0.21"
+kiss3d = "0.23"
 ```
 
 
