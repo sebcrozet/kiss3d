@@ -1,15 +1,15 @@
 //! A resource manager to load meshes.
 
-use std::io::Result as IoResult;
-use std::rc::Rc;
+use loader::mtl::MtlMaterial;
+use loader::obj;
+use ncollide3d::procedural;
+use ncollide3d::procedural::TriMesh;
+use resource::Mesh;
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::io::Result as IoResult;
 use std::path::Path;
-use ncollide3d::procedural::TriMesh;
-use ncollide3d::procedural;
-use resource::Mesh;
-use loader::obj;
-use loader::mtl::MtlMaterial;
+use std::rc::Rc;
 
 thread_local!(static KEY_MESH_MANAGER: RefCell<MeshManager> = RefCell::new(MeshManager::new()));
 

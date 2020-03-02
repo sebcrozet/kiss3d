@@ -98,9 +98,11 @@ pub fn parse(
                 if w.len() != 0 && w.as_bytes()[0] != ('#' as u8) {
                     match w {
                         "v" => coords.push(Point3::from(parse_v_or_vn(l, words))),
-                        "vn" => if !ignore_normals {
-                            normals.push(parse_v_or_vn(l, words))
-                        },
+                        "vn" => {
+                            if !ignore_normals {
+                                normals.push(parse_v_or_vn(l, words))
+                            }
+                        }
                         "f" => parse_f(
                             l,
                             words,
@@ -112,9 +114,11 @@ pub fn parse(
                             &mut groups_ids,
                             curr_group,
                         ),
-                        "vt" => if !ignore_uvs {
-                            uvs.push(parse_vt(l, words))
-                        },
+                        "vt" => {
+                            if !ignore_uvs {
+                                uvs.push(parse_vt(l, words))
+                            }
+                        }
                         "g" => {
                             curr_group = parse_g(l, words, basename, &mut groups, &mut groups_ids);
                             let _ = curr_mtl
@@ -230,9 +234,11 @@ fn parse_mtllib<'a>(
     let ms = mtl::parse_file(&path);
 
     match ms {
-        Ok(ms) => for m in ms.into_iter() {
-            let _ = mtllib.insert(m.name.to_string(), m);
-        },
+        Ok(ms) => {
+            for m in ms.into_iter() {
+                let _ = mtllib.insert(m.name.to_string(), m);
+            }
+        }
         Err(err) => warn(l, &format!("{}", err)[..]),
     }
 }

@@ -3,8 +3,8 @@
 use std::rc::Rc;
 
 use super::webgl_bindings::{
-    WebGLBuffer, WebGLFramebuffer, WebGLProgram, WebGLRenderingContext, WebGLShader, WebGLTexture,
-    WebGLUniformLocation, WebGLRenderbuffer,
+    WebGLBuffer, WebGLFramebuffer, WebGLProgram, WebGLRenderbuffer, WebGLRenderingContext,
+    WebGLShader, WebGLTexture, WebGLUniformLocation,
 };
 use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr, GLsizeiptr};
 use stdweb::web::{self, html_element::CanvasElement, IParentNode, TypedArray};
@@ -33,7 +33,9 @@ impl WebGLContext {
         // See https://webglfundamentals.org/webgl/lessons/webgl-and-alpha.html
         let web_ctxt: WebGLRenderingContext = js!(
             return @{canvas}.getContext("webgl", { alpha: false });
-        ).try_into().unwrap();
+        )
+        .try_into()
+        .unwrap();
         let ctxt = Rc::new(web_ctxt);
         WebGLContext { ctxt }
     }
@@ -214,15 +216,18 @@ impl AbstractContext for WebGLContext {
         match T::flatten(data) {
             PrimitiveArray::Float32(arr) => {
                 let abuf = TypedArray::<f32>::from(arr);
-                self.ctxt.buffer_sub_data(target, offset as GLintptr, &abuf.buffer())
+                self.ctxt
+                    .buffer_sub_data(target, offset as GLintptr, &abuf.buffer())
             }
             PrimitiveArray::Int32(arr) => {
                 let abuf = TypedArray::<i32>::from(arr);
-                self.ctxt.buffer_sub_data(target, offset as GLintptr, &abuf.buffer())
+                self.ctxt
+                    .buffer_sub_data(target, offset as GLintptr, &abuf.buffer())
             }
             PrimitiveArray::UInt16(arr) => {
                 let abuf = TypedArray::<u16>::from(arr);
-                self.ctxt.buffer_sub_data(target, offset as GLintptr, &abuf.buffer())
+                self.ctxt
+                    .buffer_sub_data(target, offset as GLintptr, &abuf.buffer())
             }
         }
     }
@@ -503,11 +508,21 @@ impl AbstractContext for WebGLContext {
     }
 
     fn renderbuffer_storage(&self, internal_format: GLenum, width: i32, height: i32) {
-        self.ctxt.renderbuffer_storage(Self::RENDERBUFFER, internal_format, width, height)
+        self.ctxt
+            .renderbuffer_storage(Self::RENDERBUFFER, internal_format, width, height)
     }
 
-    fn framebuffer_renderbuffer(&self, attachment: GLenum, renderbuffer: Option<&Self::Renderbuffer>) {
-        self.ctxt.framebuffer_renderbuffer(Self::FRAMEBUFFER, attachment, Self::RENDERBUFFER, renderbuffer)
+    fn framebuffer_renderbuffer(
+        &self,
+        attachment: GLenum,
+        renderbuffer: Option<&Self::Renderbuffer>,
+    ) {
+        self.ctxt.framebuffer_renderbuffer(
+            Self::FRAMEBUFFER,
+            attachment,
+            Self::RENDERBUFFER,
+            renderbuffer,
+        )
     }
 
     fn enable(&self, cap: GLenum) {

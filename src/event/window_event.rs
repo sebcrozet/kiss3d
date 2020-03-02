@@ -24,16 +24,18 @@ impl WindowEvent {
     pub fn is_keyboard_event(&self) -> bool {
         match self {
             WindowEvent::Key(..) | WindowEvent::Char(..) | WindowEvent::CharModifiers(..) => true,
-            _ => false
+            _ => false,
         }
     }
 
     /// Tests if this event is related to the mouse.
     pub fn is_mouse_event(&self) -> bool {
         match self {
-            WindowEvent::MouseButton(..) | WindowEvent::CursorPos(..) |
-            WindowEvent::CursorEnter(..) | WindowEvent::Scroll(..) => true,
-            _ => false
+            WindowEvent::MouseButton(..)
+            | WindowEvent::CursorPos(..)
+            | WindowEvent::CursorEnter(..)
+            | WindowEvent::Scroll(..) => true,
+            _ => false,
         }
     }
 
@@ -41,7 +43,7 @@ impl WindowEvent {
     pub fn is_touch_event(&self) -> bool {
         match self {
             WindowEvent::Touch(..) => true,
-            _ => false
+            _ => false,
         }
     }
 }

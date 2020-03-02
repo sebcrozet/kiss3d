@@ -1,17 +1,17 @@
-extern crate rand;
 extern crate kiss3d;
 extern crate nalgebra as na;
+extern crate rand;
 
-use rand::random;
-use na::{Vector3, Translation3, UnitQuaternion};
-use kiss3d::window::Window;
 use kiss3d::light::Light;
+use kiss3d::window::Window;
+use na::{Translation3, UnitQuaternion, Vector3};
+use rand::random;
 
 fn main() {
     let mut window = Window::new("Kiss3d: primitives_scale");
 
     // NOTE: scaling is not possible.
-    for i in 0usize .. 11 {
+    for i in 0usize..11 {
         let dim: f32 = random::<f32>() / 2.0;
         let dim2 = dim / 2.0;
 

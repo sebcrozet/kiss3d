@@ -109,10 +109,7 @@ impl PlanarObject {
             user_data: Box::new(user_data),
         };
 
-        PlanarObject {
-            data,
-            mesh,
-        }
+        PlanarObject { data, mesh }
     }
 
     #[doc(hidden)]

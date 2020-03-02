@@ -350,11 +350,17 @@ impl Context {
     }
 
     pub fn renderbuffer_storage(&self, internal_format: GLenum, width: i32, height: i32) {
-        self.ctxt.renderbuffer_storage(internal_format, width, height)
+        self.ctxt
+            .renderbuffer_storage(internal_format, width, height)
     }
 
-    pub fn framebuffer_renderbuffer(&self, attachment: GLenum, renderbuffer: Option<&Renderbuffer>) {
-        self.ctxt.framebuffer_renderbuffer(attachment, renderbuffer.map(|b| &b.0))
+    pub fn framebuffer_renderbuffer(
+        &self,
+        attachment: GLenum,
+        renderbuffer: Option<&Renderbuffer>,
+    ) {
+        self.ctxt
+            .framebuffer_renderbuffer(attachment, renderbuffer.map(|b| &b.0))
     }
 
     pub fn bind_texture(&self, target: GLenum, texture: Option<&Texture>) {
@@ -669,7 +675,11 @@ pub(crate) trait AbstractContext {
     fn delete_renderbuffer(&self, buffer: Option<&Self::Renderbuffer>);
     fn bind_renderbuffer(&self, buffer: Option<&Self::Renderbuffer>);
     fn renderbuffer_storage(&self, internal_format: GLenum, width: i32, height: i32);
-    fn framebuffer_renderbuffer(&self, attachment: GLenum, renderbuffer: Option<&Self::Renderbuffer>);
+    fn framebuffer_renderbuffer(
+        &self,
+        attachment: GLenum,
+        renderbuffer: Option<&Self::Renderbuffer>,
+    );
 
     fn bind_texture(&self, target: GLenum, texture: Option<&Self::Texture>);
     fn tex_image2d(

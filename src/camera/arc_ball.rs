@@ -1,5 +1,5 @@
 use camera::Camera;
-use event::{Action, Key, MouseButton, WindowEvent, Modifiers};
+use event::{Action, Key, Modifiers, MouseButton, WindowEvent};
 use na::{self, Isometry3, Matrix4, Perspective3, Point3, Vector2, Vector3};
 use resource::ShaderUniform;
 use std::f32;
@@ -382,16 +382,21 @@ impl Camera for ArcBall {
                 let curr_pos = Vector2::new(x as f32, y as f32);
 
                 if let Some(rotate_button) = self.rotate_button {
-                    if canvas.get_mouse_button(rotate_button) == Action::Press &&
-                        self.rotate_modifiers.map(|m| m == modifiers).unwrap_or(true) {
+                    if canvas.get_mouse_button(rotate_button) == Action::Press
+                        && self
+                            .rotate_modifiers
+                            .map(|m| m == modifiers)
+                            .unwrap_or(true)
+                    {
                         let dpos = curr_pos - self.last_cursor_pos;
                         self.handle_left_button_displacement(&dpos)
                     }
                 }
 
                 if let Some(drag_button) = self.drag_button {
-                    if canvas.get_mouse_button(drag_button) == Action::Press &&
-                        self.drag_modifiers.map(|m| m == modifiers).unwrap_or(true) {
+                    if canvas.get_mouse_button(drag_button) == Action::Press
+                        && self.drag_modifiers.map(|m| m == modifiers).unwrap_or(true)
+                    {
                         let dpos = curr_pos - self.last_cursor_pos;
                         self.handle_right_button_displacement(&dpos)
                     }

@@ -228,11 +228,9 @@ pub fn upload_array<T: GLPrimitive>(
     allocation_type: AllocationType,
 ) -> Buffer {
     // Upload values of vertices
-    let buf = verify!(
-        Context::get()
-            .create_buffer()
-            .expect("Could not create GPU buffer.")
-    );
+    let buf = verify!(Context::get()
+        .create_buffer()
+        .expect("Could not create GPU buffer."));
     let _ = update_buffer(arr, 0, &buf, buf_type, allocation_type);
     buf
 }

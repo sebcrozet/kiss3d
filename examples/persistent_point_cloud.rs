@@ -1,16 +1,17 @@
 extern crate kiss3d;
 extern crate nalgebra as na;
 
-use kiss3d::resource::{Effect, ShaderAttribute, ShaderUniform, GPUVec,
-                       BufferType, AllocationType};
+use kiss3d::camera::Camera;
 use kiss3d::context::Context;
 use kiss3d::planar_camera::PlanarCamera;
-use kiss3d::renderer::Renderer;
 use kiss3d::post_processing::PostProcessingEffect;
-use kiss3d::window::{Window, State};
-use kiss3d::camera::Camera;
-use na::{Point2, Point3, Vector3, Matrix4};
+use kiss3d::renderer::Renderer;
+use kiss3d::resource::{
+    AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform,
+};
 use kiss3d::text::Font;
+use kiss3d::window::{State, Window};
+use na::{Matrix4, Point2, Point3, Vector3};
 
 // Custom renderers are used to allow rendering objects that are not necessarily
 // represented as meshes. In this example, we will render a large, growing, point cloud
@@ -20,7 +21,6 @@ use kiss3d::text::Font;
 // handled by the `State` trait instead of a `while window.render()`
 // like other examples.
 
-
 struct AppState {
     point_cloud_renderer: PointCloudRenderer,
 }
@@ -28,7 +28,9 @@ struct AppState {
 impl State for AppState {
     // Return the custom renderer that will be called at each
     // render loop.
-    fn cameras_and_effect_and_renderer(&mut self) -> (
+    fn cameras_and_effect_and_renderer(
+        &mut self,
+    ) -> (
         Option<&mut dyn Camera>,
         Option<&mut dyn PlanarCamera>,
         Option<&mut dyn Renderer>,
@@ -42,25 +44,33 @@ impl State for AppState {
             // Add some random points to the point cloud.
             for _ in 0..1_000 {
                 let random: Point3<f32> = rand::random();
-                self.point_cloud_renderer.push( (random - Vector3::repeat(0.5)) * 0.5, rand::random());
+                self.point_cloud_renderer
+                    .push((random - Vector3::repeat(0.5)) * 0.5, rand::random());
             }
         }
 
-        let num_points_text = format!("Number of points: {}", self.point_cloud_renderer.num_points());
-        window.draw_text(&num_points_text, &Point2::new(0.0, 20.0), 60.0, &Font::default(), &Point3::new(1.0, 1.0, 1.0));
+        let num_points_text = format!(
+            "Number of points: {}",
+            self.point_cloud_renderer.num_points()
+        );
+        window.draw_text(
+            &num_points_text,
+            &Point2::new(0.0, 20.0),
+            60.0,
+            &Font::default(),
+            &Point3::new(1.0, 1.0, 1.0),
+        );
     }
 }
 
 fn main() {
     let window = Window::new("Kiss3d: persistent_point_cloud");
     let app = AppState {
-        point_cloud_renderer: PointCloudRenderer::new(4.0)
+        point_cloud_renderer: PointCloudRenderer::new(4.0),
     };
 
     window.render_loop(app)
 }
-
-
 
 /// Structure which manages the display of long-living points.
 struct PointCloudRenderer {

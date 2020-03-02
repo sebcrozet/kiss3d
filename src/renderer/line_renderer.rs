@@ -3,8 +3,8 @@
 use camera::Camera;
 use context::Context;
 use na::{Matrix4, Point3};
-use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 use renderer::Renderer;
+use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 
 #[path = "../error.rs"]
 mod error;

@@ -1,9 +1,9 @@
 extern crate kiss3d;
 extern crate nalgebra as na;
 
-use na::Point3;
-use kiss3d::window::Window;
 use kiss3d::light::Light;
+use kiss3d::window::Window;
+use na::Point3;
 
 fn main() {
     let mut window = Window::new("Kiss3d: lines");

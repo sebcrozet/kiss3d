@@ -110,10 +110,7 @@ impl Object {
             user_data: Box::new(user_data),
         };
 
-        Object {
-            data,
-            mesh,
-        }
+        Object { data, mesh }
     }
 
     #[doc(hidden)]

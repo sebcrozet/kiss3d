@@ -17,7 +17,7 @@ pub trait Material {
         transform: &Isometry3<f32>,
         scale: &Vector3<f32>,
         camera: &mut dyn Camera, // FIXME: replace those two arguments by
-        light: &Light,       // a structure with all environment datas
+        light: &Light,           // a structure with all environment datas
         data: &ObjectData,
         mesh: &mut Mesh,
     );

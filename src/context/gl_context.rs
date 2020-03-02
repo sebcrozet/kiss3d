@@ -179,14 +179,7 @@ impl AbstractContext for GLContext {
     }
 
     fn buffer_data_uninitialized(&self, target: GLenum, len: usize, usage: GLenum) {
-        unsafe {
-            gl::BufferData(
-                target,
-                len as GLsizeiptr,
-                ptr::null(),
-                usage,
-            )
-        }
+        unsafe { gl::BufferData(target, len as GLsizeiptr, ptr::null(), usage) }
     }
 
     fn buffer_data<T: GLPrimitive>(&self, target: GLenum, data: &[T], usage: GLenum) {
@@ -376,7 +369,6 @@ impl AbstractContext for GLContext {
         unsafe { gl::FramebufferTexture2D(target, attachment, textarget, val(texture), level) }
     }
 
-
     fn create_renderbuffer(&self) -> Option<Self::Renderbuffer> {
         let mut res = 0;
         unsafe { gl::GenRenderbuffers(1, &mut res) };
@@ -399,8 +391,19 @@ impl AbstractContext for GLContext {
         unsafe { gl::RenderbufferStorage(Self::RENDERBUFFER, internal_format, width, height) }
     }
 
-    fn framebuffer_renderbuffer(&self, attachment: GLenum, renderbuffer: Option<&Self::Renderbuffer>) {
-        unsafe { gl::FramebufferRenderbuffer(Self::FRAMEBUFFER, attachment, Self::RENDERBUFFER, val(renderbuffer)) }
+    fn framebuffer_renderbuffer(
+        &self,
+        attachment: GLenum,
+        renderbuffer: Option<&Self::Renderbuffer>,
+    ) {
+        unsafe {
+            gl::FramebufferRenderbuffer(
+                Self::FRAMEBUFFER,
+                attachment,
+                Self::RENDERBUFFER,
+                val(renderbuffer),
+            )
+        }
     }
 
     fn bind_texture(&self, target: GLenum, texture: Option<&Self::Texture>) {

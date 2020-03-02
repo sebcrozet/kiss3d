@@ -7,31 +7,32 @@ use na::Vector2;
 /// A ttf glyph.
 pub struct Glyph {
     #[doc(hidden)]
-    pub tex:        Vector2<f32>,
+    pub tex: Vector2<f32>,
     #[doc(hidden)]
-    pub advance:    Vector2<f32>,
+    pub advance: Vector2<f32>,
     #[doc(hidden)]
     pub dimensions: Vector2<f32>,
     #[doc(hidden)]
-    pub offset:     Vector2<f32>,
+    pub offset: Vector2<f32>,
     #[doc(hidden)]
-    pub buffer:     Vec<u8>
+    pub buffer: Vec<u8>,
 }
 
 impl Glyph {
     /// Creates a new empty glyph.
-    pub fn new(tex:        Vector2<f32>,
-               advance:    Vector2<f32>,
-               dimensions: Vector2<f32>,
-               offset:     Vector2<f32>,
-               buffer:     Vec<u8>)
-               -> Glyph {
+    pub fn new(
+        tex: Vector2<f32>,
+        advance: Vector2<f32>,
+        dimensions: Vector2<f32>,
+        offset: Vector2<f32>,
+        buffer: Vec<u8>,
+    ) -> Glyph {
         Glyph {
-            tex:        tex,
-            advance:    advance,
+            tex: tex,
+            advance: advance,
             dimensions: dimensions,
-            offset:     offset,
-            buffer:     buffer
+            offset: offset,
+            buffer: buffer,
         }
     }
 }

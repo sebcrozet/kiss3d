@@ -6,10 +6,10 @@ use resource::{
 };
 use scene::PlanarObject;
 use std::cell::{Ref, RefCell, RefMut};
+use std::f32;
 use std::mem;
 use std::path::Path;
 use std::rc::Rc;
-use std::f32;
 
 // XXX: once something like `fn foo(self: Rc<RefCell<PlanarSceneNode>>)` is allowed, this extra struct
 // will not be needed any more.
@@ -303,7 +303,8 @@ impl PlanarSceneNodeData {
     ///   * `name` - &str identifier to store this texture under
     #[inline]
     pub fn set_texture_from_memory(&mut self, image_data: &[u8], name: &str) {
-        let texture = TextureManager::get_global_manager(|tm| tm.add_image_from_memory(image_data, name));
+        let texture =
+            TextureManager::get_global_manager(|tm| tm.add_image_from_memory(image_data, name));
 
         self.set_texture(texture)
     }
