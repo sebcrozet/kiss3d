@@ -25,7 +25,7 @@ jobs:
           command: cargo build --verbose -p kiss3d;
       - run:
            name: test kiss3d
-           command: cargo test;
+           command: cargo check --examples;
   build-wasm:
     executor: rust-executor
     steps:
