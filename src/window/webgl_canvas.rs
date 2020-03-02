@@ -137,6 +137,7 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let _ = web::window().add_event_listener(move |e: webevent::TouchStart| {
             let mut edata = edata.borrow_mut();
+            let hidpi_factor = edata.hidpi_factor;
             for t in e.changed_touches() {
                 let _ = edata.pending_events.push(WindowEvent::Touch(
                     t.identifier() as u64,
@@ -151,6 +152,7 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let _ = web::window().add_event_listener(move |e: webevent::TouchEnd| {
             let mut edata = edata.borrow_mut();
+            let hidpi_factor = edata.hidpi_factor;
             for t in e.changed_touches() {
                 let _ = edata.pending_events.push(WindowEvent::Touch(
                     t.identifier() as u64,
@@ -165,6 +167,7 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let _ = web::window().add_event_listener(move |e: webevent::TouchCancel| {
             let mut edata = edata.borrow_mut();
+            let hidpi_factor = edata.hidpi_factor;
             for t in e.changed_touches() {
                 let _ = edata.pending_events.push(WindowEvent::Touch(
                     t.identifier() as u64,
@@ -179,6 +182,7 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let _ = web::window().add_event_listener(move |e: webevent::TouchMove| {
             let mut edata = edata.borrow_mut();
+            let hidpi_factor = edata.hidpi_factor;
 
             for t in e.changed_touches() {
                 edata.cursor_pos = Some((
