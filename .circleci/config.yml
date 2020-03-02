@@ -1,0 +1,51 @@
+version: 2.1
+
+executors:
+  rust-executor:
+    docker:
+      - image: rust:latest
+
+jobs:
+  check-fmt:
+    executor: rust-executor
+    steps:
+      - checkout
+      - run:
+          name: install rustfmt
+          command: rustup component add rustfmt
+      - run:
+          name: check formatting
+          command: cargo fmt -- --check
+  build-native:
+    executor: rust-executor
+    steps:
+      - checkout
+      - run:
+          name: build kiss3d
+          command: cargo build --verbose -p kiss3d;
+      - run:
+           name: test kiss3d
+           command: cargo check --examples;
+  build-wasm:
+    executor: rust-executor
+    steps:
+      - checkout
+      - run:
+          name: install cargo-web
+          command: cargo install -f cargo-web;
+      - run:
+          name: build kiss3d
+          command: cargo web build --verbose --target wasm32-unknown-unknown -p kiss3d;
+
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - check-fmt
+      - build-native:
+          requires:
+            - check-fmt
+      - build-wasm:
+          requires:
+            - check-fmt

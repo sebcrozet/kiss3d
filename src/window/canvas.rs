@@ -1,11 +1,11 @@
 use std::sync::mpsc::Sender;
 
 use event::{Action, Key, MouseButton, WindowEvent};
+use image::{GenericImage, Pixel};
 #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 use window::GLCanvas as CanvasImpl;
 #[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 use window::WebGLCanvas as CanvasImpl;
-use image::{GenericImage, Pixel};
 
 /// The possible number of samples for multisample anti-aliasing.
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -43,7 +43,7 @@ impl NumSamples {
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct CanvasSetup {
     pub vsync: bool,
-    pub samples: NumSamples
+    pub samples: NumSamples,
 }
 
 /// An abstract structure representing a window for native applications, and a canvas for web applications.

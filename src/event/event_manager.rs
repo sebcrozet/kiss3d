@@ -47,10 +47,7 @@ impl<'a> Events<'a> {
         stream: TryIter<'a, WindowEvent>,
         inhibitor: &'a RefCell<Vec<WindowEvent>>,
     ) -> Events<'a> {
-        Events {
-            stream,
-            inhibitor,
-        }
+        Events { stream, inhibitor }
     }
 }
 
@@ -81,10 +78,7 @@ impl EventManager {
         events: Rc<Receiver<WindowEvent>>,
         inhibitor: Rc<RefCell<Vec<WindowEvent>>>,
     ) -> EventManager {
-        EventManager {
-            events,
-            inhibitor,
-        }
+        EventManager { events, inhibitor }
     }
 
     /// Gets an iterator to the glfw events already collected.

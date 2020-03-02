@@ -128,7 +128,8 @@ impl Material for ObjectMaterial {
             }
 
             if data.lines_width() != 0.0 {
-                self.color.upload(data.lines_color().unwrap_or(data.color()));
+                self.color
+                    .upload(data.lines_color().unwrap_or(data.color()));
 
                 verify!(ctxt.disable(Context::CULL_FACE));
                 ignore!(ctxt.line_width(data.lines_width()));

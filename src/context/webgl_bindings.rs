@@ -2541,7 +2541,8 @@ impl RenderingContext for WebGLRenderingContext {
     fn from_canvas(canvas: &CanvasElement) -> Result<Self, ConversionError> {
         js!(
             return @{canvas}.getContext("webgl");
-        ).try_into()
+        )
+        .try_into()
     }
 }
 

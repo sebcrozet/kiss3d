@@ -30,6 +30,7 @@ pub struct Buffer(<ContextImpl as AbstractContext>::Buffer);
 pub struct Program(<ContextImpl as AbstractContext>::Program);
 pub struct Shader(<ContextImpl as AbstractContext>::Shader);
 pub struct Framebuffer(<ContextImpl as AbstractContext>::Framebuffer);
+pub struct Renderbuffer(<ContextImpl as AbstractContext>::Renderbuffer);
 pub struct Texture(<ContextImpl as AbstractContext>::Texture);
 
 impl Drop for Buffer {
@@ -62,10 +63,12 @@ impl Context {
     pub const FRAGMENT_SHADER: u32 = ContextImpl::FRAGMENT_SHADER;
     pub const COMPILE_STATUS: u32 = ContextImpl::COMPILE_STATUS;
     pub const FRAMEBUFFER: u32 = ContextImpl::FRAMEBUFFER;
+    pub const RENDERBUFFER: u32 = ContextImpl::RENDERBUFFER;
     pub const DEPTH_ATTACHMENT: u32 = ContextImpl::DEPTH_ATTACHMENT;
     pub const COLOR_ATTACHMENT0: u32 = ContextImpl::COLOR_ATTACHMENT0;
     pub const TEXTURE_2D: u32 = ContextImpl::TEXTURE_2D;
     pub const DEPTH_COMPONENT: u32 = ContextImpl::DEPTH_COMPONENT;
+    pub const DEPTH_COMPONENT16: u32 = ContextImpl::DEPTH_COMPONENT16;
     pub const UNSIGNED_BYTE: u32 = ContextImpl::UNSIGNED_BYTE;
     pub const TEXTURE_WRAP_S: u32 = ContextImpl::TEXTURE_WRAP_S;
     pub const TEXTURE_WRAP_T: u32 = ContextImpl::TEXTURE_WRAP_T;
@@ -330,6 +333,36 @@ impl Context {
             .framebuffer_texture2d(target, attachment, textarget, texture.map(|e| &e.0), level)
     }
 
+    pub fn create_renderbuffer(&self) -> Option<Renderbuffer> {
+        self.ctxt.create_renderbuffer().map(|b| Renderbuffer(b))
+    }
+
+    pub fn delete_renderbuffer(&self, buffer: Option<&Renderbuffer>) {
+        self.ctxt.delete_renderbuffer(buffer.map(|b| &b.0))
+    }
+
+    pub fn is_renderbuffer(&self, buffer: Option<&Renderbuffer>) -> bool {
+        self.ctxt.is_renderbuffer(buffer.map(|b| &b.0))
+    }
+
+    pub fn bind_renderbuffer(&self, buffer: Option<&Renderbuffer>) {
+        self.ctxt.bind_renderbuffer(buffer.map(|b| &b.0))
+    }
+
+    pub fn renderbuffer_storage(&self, internal_format: GLenum, width: i32, height: i32) {
+        self.ctxt
+            .renderbuffer_storage(internal_format, width, height)
+    }
+
+    pub fn framebuffer_renderbuffer(
+        &self,
+        attachment: GLenum,
+        renderbuffer: Option<&Renderbuffer>,
+    ) {
+        self.ctxt
+            .framebuffer_renderbuffer(attachment, renderbuffer.map(|b| &b.0))
+    }
+
     pub fn bind_texture(&self, target: GLenum, texture: Option<&Texture>) {
         self.ctxt.bind_texture(target, texture.map(|e| &e.0))
     }
@@ -499,10 +532,12 @@ pub(crate) trait AbstractContextConst {
     const FRAGMENT_SHADER: u32;
     const COMPILE_STATUS: u32;
     const FRAMEBUFFER: u32;
+    const RENDERBUFFER: u32;
     const DEPTH_ATTACHMENT: u32;
     const COLOR_ATTACHMENT0: u32;
     const TEXTURE_2D: u32;
     const DEPTH_COMPONENT: u32;
+    const DEPTH_COMPONENT16: u32;
     const UNSIGNED_BYTE: u32;
     const TEXTURE_WRAP_S: u32;
     const TEXTURE_WRAP_T: u32;
@@ -551,6 +586,7 @@ pub(crate) trait AbstractContext {
     type Program;
     type Texture;
     type Framebuffer;
+    type Renderbuffer;
 
     fn get_error(&self) -> GLenum;
     fn uniform_matrix2fv(
@@ -633,6 +669,18 @@ pub(crate) trait AbstractContext {
         texture: Option<&Self::Texture>,
         level: i32,
     );
+
+    fn create_renderbuffer(&self) -> Option<Self::Renderbuffer>;
+    fn is_renderbuffer(&self, buffer: Option<&Self::Renderbuffer>) -> bool;
+    fn delete_renderbuffer(&self, buffer: Option<&Self::Renderbuffer>);
+    fn bind_renderbuffer(&self, buffer: Option<&Self::Renderbuffer>);
+    fn renderbuffer_storage(&self, internal_format: GLenum, width: i32, height: i32);
+    fn framebuffer_renderbuffer(
+        &self,
+        attachment: GLenum,
+        renderbuffer: Option<&Self::Renderbuffer>,
+    );
+
     fn bind_texture(&self, target: GLenum, texture: Option<&Self::Texture>);
     fn tex_image2d(
         &self,

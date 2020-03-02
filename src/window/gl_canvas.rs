@@ -1,14 +1,14 @@
 use std::sync::mpsc::Sender;
 
-use event::{Action, Key, Modifiers, MouseButton, WindowEvent};
+use event::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent};
 use gl;
 use glutin::{
-    self, dpi::LogicalSize, ContextBuilder, EventsLoop, GlContext, GlRequest, GlWindow,
+    self, dpi::LogicalSize, ContextBuilder, EventsLoop, GlContext, GlRequest, GlWindow, TouchPhase,
     WindowBuilder,
 };
-use window::AbstractCanvas;
-use window::canvas::{CanvasSetup, NumSamples};
 use image::{GenericImage, Pixel};
+use window::canvas::{CanvasSetup, NumSamples};
+use window::AbstractCanvas;
 
 /// A canvas based on glutin and OpenGL.
 pub struct GLCanvas {
@@ -35,7 +35,10 @@ impl AbstractCanvas for GLCanvas {
             .with_title(title)
             .with_dimensions(LogicalSize::new(width as f64, height as f64))
             .with_visibility(!hide);
-        let canvas_setup = canvas_setup.unwrap_or(CanvasSetup { vsync: true, samples: NumSamples::Zero });
+        let canvas_setup = canvas_setup.unwrap_or(CanvasSetup {
+            vsync: true,
+            samples: NumSamples::Zero,
+        });
         let context = ContextBuilder::new()
             .with_vsync(canvas_setup.vsync)
             .with_multisampling(canvas_setup.samples as u16)
@@ -119,6 +122,22 @@ impl AbstractCanvas for GLCanvas {
                     let modifiers = translate_modifiers(modifiers);
                     button_states[button as usize] = action;
                     let _ = out_events.send(WindowEvent::MouseButton(button, action, modifiers));
+                }
+                glutin::WindowEvent::Touch(touch) => {
+                    let action = match touch.phase {
+                        TouchPhase::Started => TouchAction::Start,
+                        TouchPhase::Ended => TouchAction::End,
+                        TouchPhase::Moved => TouchAction::Move,
+                        TouchPhase::Cancelled => TouchAction::Cancel,
+                    };
+
+                    let _ = out_events.send(WindowEvent::Touch(
+                        touch.id,
+                        touch.location.x,
+                        touch.location.y,
+                        action,
+                        Modifiers::empty(),
+                    ));
                 }
                 glutin::WindowEvent::MouseWheel {
                     delta, modifiers, ..

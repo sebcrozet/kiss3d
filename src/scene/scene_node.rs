@@ -340,7 +340,8 @@ impl SceneNodeData {
     ///   * `name` - &str identifier to store this texture under
     #[inline]
     pub fn set_texture_from_memory(&mut self, image_data: &[u8], name: &str) {
-        let texture = TextureManager::get_global_manager(|tm| tm.add_image_from_memory(image_data, name));
+        let texture =
+            TextureManager::get_global_manager(|tm| tm.add_image_from_memory(image_data, name));
 
         self.set_texture(texture)
     }

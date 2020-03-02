@@ -7,9 +7,8 @@ use std::iter::repeat;
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::mpsc::{self, Receiver};
-use std::time::Duration;
 use std::thread;
-
+use std::time::Duration;
 
 use instant::Instant;
 use na::{Point2, Point3, Vector2, Vector3};
@@ -18,21 +17,21 @@ use camera::{ArcBall, Camera};
 use context::Context;
 use event::{Action, EventManager, Key, WindowEvent};
 use image::imageops;
+use image::{GenericImage, Pixel};
 use image::{ImageBuffer, Rgb};
 use light::Light;
-use renderer::{Renderer, PointRenderer, LineRenderer};
 use ncollide3d::procedural::TriMesh;
 use planar_camera::{FixedView, PlanarCamera};
 use planar_line_renderer::PlanarLineRenderer;
 use post_processing::PostProcessingEffect;
+#[cfg(feature = "conrod")]
+use renderer::ConrodRenderer;
+use renderer::{LineRenderer, PointRenderer, Renderer};
 use resource::{FramebufferManager, Mesh, PlanarMesh, RenderTarget, Texture, TextureManager};
 use scene::{PlanarSceneNode, SceneNode};
 use text::{Font, TextRenderer};
-use window::{Canvas, State};
-use image::{GenericImage, Pixel};
-#[cfg(feature = "conrod")]
-use renderer::ConrodRenderer;
 use window::canvas::CanvasSetup;
+use window::{Canvas, State};
 
 #[cfg(feature = "conrod")]
 use std::collections::HashMap;
@@ -44,7 +43,7 @@ static DEFAULT_HEIGHT: u32 = 600u32;
 struct ConrodContext {
     renderer: ConrodRenderer,
     textures: conrod::image::Map<(Rc<Texture>, (u32, u32))>,
-    texture_ids: HashMap<String, conrod::image::Id>
+    texture_ids: HashMap<String, conrod::image::Id>,
 }
 
 #[cfg(feature = "conrod")]
@@ -53,7 +52,7 @@ impl ConrodContext {
         Self {
             renderer: ConrodRenderer::new(width, height),
             textures: conrod::image::Map::new(),
-            texture_ids: HashMap::new()
+            texture_ids: HashMap::new(),
         }
     }
 }
@@ -83,7 +82,6 @@ pub struct Window {
     should_close: bool,
     #[cfg(feature = "conrod")]
     conrod_context: ConrodContext,
-
 }
 
 impl Window {
@@ -265,7 +263,11 @@ impl Window {
     }
 
     /// Adds an unnamed planar mesh to the scene.
-    pub fn add_planar_mesh(&mut self, mesh: Rc<RefCell<PlanarMesh>>, scale: Vector2<f32>) -> PlanarSceneNode {
+    pub fn add_planar_mesh(
+        &mut self,
+        mesh: Rc<RefCell<PlanarMesh>>,
+        scale: Vector2<f32>,
+    ) -> PlanarSceneNode {
         self.scene2.add_mesh(mesh, scale)
     }
 
@@ -429,8 +431,13 @@ impl Window {
     pub fn conrod_texture_id(&mut self, name: &str) -> Option<conrod::image::Id> {
         let tex = TextureManager::get_global_manager(|tm| tm.get_with_size(name))?;
         let textures = &mut self.conrod_context.textures;
-        Some(*self.conrod_context.texture_ids.entry(name.to_string())
-            .or_insert_with(|| textures.insert(tex)))
+        Some(
+            *self
+                .conrod_context
+                .texture_ids
+                .entry(name.to_string())
+                .or_insert_with(|| textures.insert(tex)),
+        )
     }
 
     /// Retrieve a reference to the UI based on Conrod.
@@ -446,8 +453,7 @@ impl Window {
         let state = &ui.global_input().current;
         let window_id = Some(ui.window);
 
-        state.widget_capturing_mouse.is_some() &&
-            state.widget_capturing_mouse != window_id
+        state.widget_capturing_mouse.is_some() && state.widget_capturing_mouse != window_id
     }
 
     /// Returns `true` if the keyboard is currently interacting with a Conrod widget.
@@ -457,10 +463,8 @@ impl Window {
         let state = &ui.global_input().current;
         let window_id = Some(ui.window);
 
-        state.widget_capturing_keyboard.is_some() &&
-            state.widget_capturing_keyboard != window_id
+        state.widget_capturing_keyboard.is_some() && state.widget_capturing_keyboard != window_id
     }
-
 
     /// Opens a window, hide it then calls a user-defined procedure.
     ///
@@ -493,7 +497,13 @@ impl Window {
     }
 
     // FIXME: make this pub?
-    fn do_new(title: &str, hide: bool, width: u32, height: u32, setup: Option<CanvasSetup>) -> Window {
+    fn do_new(
+        title: &str,
+        hide: bool,
+        width: u32,
+        height: u32,
+        setup: Option<CanvasSetup>,
+    ) -> Window {
         let (event_send, event_receive) = mpsc::channel();
         let canvas = Canvas::open(title, hide, width, height, setup, event_send);
 
@@ -518,6 +528,7 @@ impl Window {
             post_process_render_target: FramebufferManager::new_render_target(
                 width as usize,
                 height as usize,
+                true,
             ),
             framebuffer_manager: FramebufferManager::new(),
             #[cfg(not(target_arch = "wasm32"))]
@@ -655,24 +666,31 @@ impl Window {
         }
 
         #[cfg(feature = "conrod")]
-        fn window_event_to_conrod_input(event: WindowEvent, size: Vector2<u32>, hidpi: f64) -> Option<conrod::event::Input> {
+        fn window_event_to_conrod_input(
+            event: WindowEvent,
+            size: Vector2<u32>,
+            hidpi: f64,
+        ) -> Option<conrod::event::Input> {
             use conrod::event::Input;
-            use conrod::input::{Motion, MouseButton, Button, Key as CKey};
+            use conrod::input::{Button, Key as CKey, Motion, MouseButton};
 
             let transform_coords = |x: f64, y: f64| {
-                ((x - size.x as f64 / 2.0) / hidpi, -(y - size.y as f64 / 2.0) / hidpi)
+                (
+                    (x - size.x as f64 / 2.0) / hidpi,
+                    -(y - size.y as f64 / 2.0) / hidpi,
+                )
             };
 
             match event {
-                WindowEvent::FramebufferSize(w, h) => Some(Input::Resize(w as f64 / hidpi, h as f64 / hidpi)),
+                WindowEvent::FramebufferSize(w, h) => {
+                    Some(Input::Resize(w as f64 / hidpi, h as f64 / hidpi))
+                }
                 WindowEvent::Focus(focus) => Some(Input::Focus(focus)),
                 WindowEvent::CursorPos(x, y, _) => {
                     let (x, y) = transform_coords(x, y);
                     Some(Input::Motion(Motion::MouseCursor { x, y }))
-                },
-                WindowEvent::Scroll(x, y, _) => {
-                    Some(Input::Motion(Motion::Scroll { x, y: -y }))
                 }
+                WindowEvent::Scroll(x, y, _) => Some(Input::Motion(Motion::Scroll { x, y: -y })),
                 WindowEvent::MouseButton(button, action, _) => {
                     let button = match button {
                         crate::event::MouseButton::Button1 => MouseButton::Left,
@@ -810,7 +828,7 @@ impl Window {
                         Key::Copy => CKey::Copy,
                         Key::Paste => CKey::Paste,
                         Key::Cut => CKey::Cut,
-                        _ => CKey::Unknown
+                        _ => CKey::Unknown,
                     };
 
                     match action {
@@ -818,7 +836,7 @@ impl Window {
                         Action::Release => Some(Input::Release(Button::Keyboard(key))),
                     }
                 }
-                _ => None
+                _ => None,
             }
         }
 
@@ -833,15 +851,17 @@ impl Window {
             let state = &conrod_ui.global_input().current;
             let window_id = Some(conrod_ui.window);
 
-            if event.is_keyboard_event() &&
-                state.widget_capturing_keyboard.is_some() &&
-                state.widget_capturing_keyboard != window_id {
+            if event.is_keyboard_event()
+                && state.widget_capturing_keyboard.is_some()
+                && state.widget_capturing_keyboard != window_id
+            {
                 return;
             }
 
-            if event.is_mouse_event() &&
-                state.widget_capturing_mouse.is_some() &&
-                state.widget_capturing_mouse != window_id {
+            if event.is_mouse_event()
+                && state.widget_capturing_mouse.is_some()
+                && state.widget_capturing_mouse != window_id
+            {
                 return;
             }
         }
@@ -974,12 +994,21 @@ impl Window {
         let mut bself_cam = self_cam.borrow_mut();
 
         match (camera, planar_camera) {
-            (Some(cam), Some(cam2)) => self.render_single_frame(cam, cam2, renderer, post_processing),
-            (None, Some(cam2)) => self.render_single_frame(&mut *bself_cam, cam2, renderer, post_processing),
-            (Some(cam), None) => self.render_single_frame(cam, &mut *bself_cam2, renderer, post_processing),
-            (None, None) => {
-                self.render_single_frame(&mut *bself_cam, &mut *bself_cam2, renderer, post_processing)
+            (Some(cam), Some(cam2)) => {
+                self.render_single_frame(cam, cam2, renderer, post_processing)
             }
+            (None, Some(cam2)) => {
+                self.render_single_frame(&mut *bself_cam, cam2, renderer, post_processing)
+            }
+            (Some(cam), None) => {
+                self.render_single_frame(cam, &mut *bself_cam2, renderer, post_processing)
+            }
+            (None, None) => self.render_single_frame(
+                &mut *bself_cam,
+                &mut *bself_cam2,
+                renderer,
+                post_processing,
+            ),
         }
     }
 
@@ -1036,7 +1065,8 @@ impl Window {
 
         if let Some(ref mut p) = post_processing {
             // switch back to the screen framebuffer …
-            self.framebuffer_manager.select(&FramebufferManager::screen());
+            self.framebuffer_manager
+                .select(&FramebufferManager::screen());
             // … and execute the post-process
             // FIXME: use the real time value instead of 0.016!
             p.update(0.016, w as f32, h as f32, znear, zfar);
@@ -1046,11 +1076,14 @@ impl Window {
         self.text_renderer.render(w as f32, h as f32);
         #[cfg(feature = "conrod")]
         self.conrod_context.renderer.render(
-            w as f32, h as f32, self.canvas.hidpi_factor() as f32, &self.conrod_context.textures);
+            w as f32,
+            h as f32,
+            self.canvas.hidpi_factor() as f32,
+            &self.conrod_context.textures,
+        );
 
         // We are done: swap buffers
         self.canvas.swap_buffers();
-
 
         #[cfg(not(target_arch = "wasm32"))]
         {
@@ -1064,7 +1097,6 @@ impl Window {
 
             self.curr_time = Instant::now();
         }
-
 
         // self.transparent_objects.clear();
         // self.opaque_objects.clear();

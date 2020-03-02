@@ -1,6 +1,7 @@
 //! Resource manager to allocate and switch between framebuffers.
 
-use context::{Context, Framebuffer, Texture};
+use context::{Context, Framebuffer, Renderbuffer, Texture};
+use either::Either;
 
 #[path = "../error.rs"]
 mod error;
@@ -16,7 +17,7 @@ pub enum RenderTarget {
 /// OpenGL identifiers to an off-screen buffer.
 pub struct OffscreenBuffers {
     texture: Texture,
-    depth: Option<Texture>,
+    depth: Either<Texture, Renderbuffer>,
 }
 
 impl RenderTarget {
@@ -34,10 +35,10 @@ impl RenderTarget {
     ///
     /// Returns `None` if the texture is off-screen.
     #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
-    pub fn depth_id(&self) -> Option<&Texture> {
+    pub fn depth_id(&self) -> Option<&Either<Texture, Renderbuffer>> {
         match *self {
             RenderTarget::Screen => None,
-            RenderTarget::Offscreen(ref o) => o.depth.as_ref(),
+            RenderTarget::Offscreen(ref o) => Some(&o.depth),
         }
     }
 
@@ -64,19 +65,30 @@ impl RenderTarget {
                 ));
                 verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
-                if cfg!(not(any(target_arch = "wasm32", target_arch = "asmjs"))) {
-                    verify!(ctxt.bind_texture(Context::TEXTURE_2D, o.depth.as_ref()));
-                    verify!(ctxt.tex_image2d(
-                        Context::TEXTURE_2D,
-                        0,
-                        Context::DEPTH_COMPONENT as i32,
-                        w as i32,
-                        h as i32,
-                        0,
-                        Context::DEPTH_COMPONENT,
-                        None
-                    ));
-                    verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
+                match &o.depth {
+                    Either::Left(texture) => {
+                        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(texture)));
+                        verify!(ctxt.tex_image2d(
+                            Context::TEXTURE_2D,
+                            0,
+                            Context::DEPTH_COMPONENT as i32,
+                            w as i32,
+                            h as i32,
+                            0,
+                            Context::DEPTH_COMPONENT,
+                            None
+                        ));
+                        verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
+                    }
+                    Either::Right(renderbuffer) => {
+                        verify!(ctxt.bind_renderbuffer(Some(renderbuffer)));
+                        verify!(ctxt.renderbuffer_storage(
+                            Context::DEPTH_COMPONENT16,
+                            w as i32,
+                            h as i32
+                        ));
+                        verify!(ctxt.bind_renderbuffer(None));
+                    }
                 }
             }
         }
@@ -111,15 +123,18 @@ impl FramebufferManager {
 
     /// Creates a new render target. A render target is the combination of a color buffer and a
     /// depth buffer.
-    pub fn new_render_target(width: usize, height: usize) -> RenderTarget {
+    pub fn new_render_target(
+        width: usize,
+        height: usize,
+        create_depth_texture: bool,
+    ) -> RenderTarget {
         let ctxt = Context::get();
 
         /* Texture */
         verify!(ctxt.active_texture(Context::TEXTURE0));
-        let fbo_texture = verify!(
-            ctxt.create_texture()
-                .expect("Failde to create framebuffer object texture.")
-        );
+        let fbo_texture = verify!(ctxt
+            .create_texture()
+            .expect("Failde to create framebuffer object texture."));
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&fbo_texture)));
         verify!(ctxt.tex_parameteri(
             Context::TEXTURE_2D,
@@ -154,7 +169,7 @@ impl FramebufferManager {
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
         /* Depth buffer */
-        if cfg!(not(any(target_arch = "wasm32", target_arch = "asmjs"))) {
+        if create_depth_texture && cfg!(not(any(target_arch = "wasm32", target_arch = "asmjs"))) {
             verify!(ctxt.active_texture(Context::TEXTURE1));
             let fbo_depth = verify!(ctxt.create_texture().expect("Failed to create a texture."));
             verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&fbo_depth)));
@@ -192,12 +207,23 @@ impl FramebufferManager {
 
             RenderTarget::Offscreen(OffscreenBuffers {
                 texture: fbo_texture,
-                depth: Some(fbo_depth),
+                depth: Either::Left(fbo_depth),
             })
         } else {
+            // Create a renderbuffer instead of the texture for the depth.
+            let renderbuffer =
+                verify!(ctxt.create_renderbuffer()).expect("Failed to create a renderbuffer.");
+            verify!(ctxt.bind_renderbuffer(Some(&renderbuffer)));
+            verify!(ctxt.renderbuffer_storage(
+                Context::DEPTH_COMPONENT16,
+                width as i32,
+                height as i32
+            ));
+            verify!(ctxt.bind_renderbuffer(None));
+
             RenderTarget::Offscreen(OffscreenBuffers {
                 texture: fbo_texture,
-                depth: None,
+                depth: Either::Right(renderbuffer),
             })
         }
     }
@@ -226,13 +252,20 @@ impl FramebufferManager {
                     Some(&o.texture),
                     0
                 ));
-                verify!(ctxt.framebuffer_texture2d(
-                    Context::FRAMEBUFFER,
-                    Context::DEPTH_ATTACHMENT,
-                    Context::TEXTURE_2D,
-                    o.depth.as_ref(),
-                    0
-                ));
+
+                match &o.depth {
+                    Either::Left(texture) => {
+                        verify!(ctxt.framebuffer_texture2d(
+                            Context::FRAMEBUFFER,
+                            Context::DEPTH_ATTACHMENT,
+                            Context::TEXTURE_2D,
+                            Some(texture),
+                            0
+                        ));
+                    }
+                    Either::Right(renderbuffer) => verify!(ctxt
+                        .framebuffer_renderbuffer(Context::DEPTH_ATTACHMENT, Some(renderbuffer))),
+                }
             }
         }
     }
@@ -268,8 +301,18 @@ impl Drop for OffscreenBuffers {
         if ctxt.is_texture(Some(&self.texture)) {
             verify!(ctxt.delete_texture(Some(&self.texture)));
         }
-        if ctxt.is_texture(self.depth.as_ref()) {
-            verify!(ctxt.delete_texture(self.depth.as_ref()));
+
+        match &self.depth {
+            Either::Left(texture) => {
+                if ctxt.is_texture(Some(texture)) {
+                    verify!(ctxt.delete_texture(Some(texture)));
+                }
+            }
+            Either::Right(renderbuffer) => {
+                if ctxt.is_renderbuffer(Some(renderbuffer)) {
+                    verify!(ctxt.delete_renderbuffer(Some(renderbuffer)));
+                }
+            }
         }
     }
 }

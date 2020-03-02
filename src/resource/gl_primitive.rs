@@ -3,7 +3,10 @@
 use context::{Context, UniformLocation};
 use std::slice;
 
-use na::{Matrix2, Matrix3, Matrix4, Point2, Point3, Point4, Rotation2, Rotation3, Vector2, Vector3, Vector4};
+use na::{
+    Matrix2, Matrix3, Matrix4, Point2, Point3, Point4, Rotation2, Rotation3, Vector2, Vector3,
+    Vector4,
+};
 
 #[path = "../error.rs"]
 mod error;

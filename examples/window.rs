@@ -7,6 +7,5 @@ fn main() {
 
     window.set_background_color(0.0, 0.0, 0.3);
 
-    while window.render() {
-    }
+    while window.render() {}
 }

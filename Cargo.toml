@@ -32,14 +32,15 @@ conrod = [ "kiss3d_conrod" ]
 
 
 [dependencies]
+either       = "1"
 libc         = "0.2"
 bitflags     = "1.2"
 num-traits   = "0.2"
-nalgebra     = "0.19"
-ncollide3d   = "0.21"
+nalgebra     = "0.20"
+ncollide3d   = "0.22"
 image        = "0.22"
-serde        = "1.0"
-serde_derive = "1.0"
+serde        = "1"
+serde_derive = "1"
 rusttype     = { version = "0.8", features = [ "gpu_cache" ] }
 instant      = { version = "0.1", features = [ "stdweb" ]}
 kiss3d_conrod = { version = "0.64", features = [ "stdweb" ], optional = true }
@@ -64,4 +65,4 @@ stdweb-derive = "0.5"
 
 [dev-dependencies]
 rand = "0.7"
-ncollide2d = "0.21"
+ncollide2d = "0.22"

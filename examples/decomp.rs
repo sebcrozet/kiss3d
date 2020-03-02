@@ -4,6 +4,7 @@ extern crate nalgebra as na;
 extern crate ncollide3d;
 extern crate rand;
 
+use instant::Instant;
 use kiss3d::light::Light;
 use kiss3d::loader::obj;
 use kiss3d::resource::{AllocationType, BufferType, GPUVec, Mesh};
@@ -16,7 +17,6 @@ use std::path::Path;
 use std::rc::Rc;
 use std::str::FromStr;
 use std::sync::{Arc, RwLock};
-use instant::Instant;
 
 fn usage(exe_name: &str) {
     println!("Usage: {} obj_file scale clusters concavity", exe_name);

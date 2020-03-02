@@ -29,7 +29,7 @@ impl Into<u32> for TextureWrapping {
         match self {
             TextureWrapping::Repeat => Context::REPEAT,
             TextureWrapping::MirroredRepeat => Context::MIRRORED_REPEAT,
-            TextureWrapping::ClampToEdge => Context::CLAMP_TO_EDGE
+            TextureWrapping::ClampToEdge => Context::CLAMP_TO_EDGE,
         }
     }
 }
@@ -37,11 +37,9 @@ impl Into<u32> for TextureWrapping {
 impl Texture {
     /// Allocates a new texture on the gpu. The texture is not configured.
     pub fn new() -> Rc<Texture> {
-        let tex = verify!(
-            Context::get()
-                .create_texture()
-                .expect("Could not create texture.")
-        );
+        let tex = verify!(Context::get()
+            .create_texture()
+            .expect("Could not create texture."));
         Rc::new(tex)
     }
 
@@ -50,11 +48,7 @@ impl Texture {
         let ctxt = Context::get();
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self)));
         let wrap: u32 = wrapping.into();
-        verify!(ctxt.tex_parameteri(
-                Context::TEXTURE_2D,
-                Context::TEXTURE_WRAP_S,
-                wrap as i32
-            ));
+        verify!(ctxt.tex_parameteri(Context::TEXTURE_2D, Context::TEXTURE_WRAP_S, wrap as i32));
     }
 
     /// Sets the wrapping of this texture along the `t` texture coordinate.
@@ -62,11 +56,7 @@ impl Texture {
         let ctxt = Context::get();
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self)));
         let wrap: u32 = wrapping.into();
-        verify!(ctxt.tex_parameteri(
-                Context::TEXTURE_2D,
-                Context::TEXTURE_WRAP_T,
-                wrap as i32
-            ));
+        verify!(ctxt.tex_parameteri(Context::TEXTURE_2D, Context::TEXTURE_WRAP_T, wrap as i32));
     }
 }
 
@@ -156,7 +146,9 @@ impl TextureManager {
 
     /// Get a texture (and its size) with the specified name. Returns `None` if the texture is not registered.
     pub fn get_with_size(&mut self, name: &str) -> Option<(Rc<Texture>, (u32, u32))> {
-        self.textures.get(&name.to_string()).map(|t| (t.0.clone(), t.1))
+        self.textures
+            .get(&name.to_string())
+            .map(|t| (t.0.clone(), t.1))
     }
 
     /// Allocates a new texture that is not yet configured.
@@ -170,29 +162,35 @@ impl TextureManager {
     }
 
     /// Allocates a new texture read from a `DynamicImage` object.
-    /// 
+    ///
     /// If a texture with same name exists, nothing is created and the old texture is returned.
     pub fn add_image(&mut self, dynamic_image: DynamicImage, name: &str) -> Rc<Texture> {
         self.textures
-        .entry(name.to_string())
-        .or_insert_with(|| TextureManager::load_texture_into_context(dynamic_image).unwrap())
-        .0.clone()
+            .entry(name.to_string())
+            .or_insert_with(|| TextureManager::load_texture_into_context(dynamic_image).unwrap())
+            .0
+            .clone()
     }
 
     /// Allocates a new texture and tries to decode it from bytes array
     /// Panics if unable to do so
     /// If a texture with same name exists, nothing is created and the old texture is returned.
     pub fn add_image_from_memory(&mut self, image_data: &[u8], name: &str) -> Rc<Texture> {
-        self.add_image(image::load_from_memory(image_data).expect("Invalid data"), name)
+        self.add_image(
+            image::load_from_memory(image_data).expect("Invalid data"),
+            name,
+        )
     }
 
     /// Allocates a new texture read from a file.
     fn load_texture_from_file(path: &Path) -> (Rc<Texture>, (u32, u32)) {
         TextureManager::load_texture_into_context(image::open(path).unwrap())
-        .expect(path.to_str().unwrap())
+            .expect(path.to_str().unwrap())
     }
 
-    fn load_texture_into_context(dynamic_image: DynamicImage) -> Result<(Rc<Texture>, (u32, u32)), &'static str> {
+    fn load_texture_into_context(
+        dynamic_image: DynamicImage,
+    ) -> Result<(Rc<Texture>, (u32, u32)), &'static str> {
         let ctxt = Context::get();
         let tex = Texture::new();
         let width;
@@ -268,6 +266,7 @@ impl TextureManager {
         self.textures
             .entry(name.to_string())
             .or_insert_with(|| TextureManager::load_texture_from_file(path))
-            .0.clone()
+            .0
+            .clone()
     }
 }

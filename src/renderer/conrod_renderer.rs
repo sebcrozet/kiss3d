@@ -1,27 +1,31 @@
 //! A renderer for Conrod primitives.
 
+use conrod::position::Rect;
+use conrod::text::GlyphCache;
+use conrod::{render::PrimitiveKind, Ui};
+use context::{Context, Texture};
+use na::{Point2, Point3, Point4, Vector2};
+use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
+use rusttype::gpu_cache::Cache;
 use std::collections::HashMap;
 use std::rc::Rc;
-use context::{Context, Texture};
-use na::{Vector2, Point3, Point2, Point4};
-use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 use text::Font;
-use conrod::{Ui, render::PrimitiveKind};
-use conrod::text::GlyphCache;
-use conrod::position::Rect;
-use rusttype::gpu_cache::Cache;
 
 #[path = "../error.rs"]
 mod error;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 enum RenderMode {
-    Image { color: Point4<f32>, texture: conrod::image::Id },
+    Image {
+        color: Point4<f32>,
+        texture: conrod::image::Id,
+    },
     Shape,
-    Text { color: Point4<f32> },
-    Unknown
+    Text {
+        color: Point4<f32>,
+    },
+    Unknown,
 }
-
 
 /// Structure which manages the display of short-living points.
 pub struct ConrodRenderer {
@@ -82,10 +86,9 @@ impl ConrodRenderer {
         /* We're using 1 byte alignment buffering. */
         verify!(ctxt.pixel_storei(Context::UNPACK_ALIGNMENT, 1));
 
-        let texture = verify!(
-            ctxt.create_texture()
-                .expect("Font texture creation failed.")
-        );
+        let texture = verify!(ctxt
+            .create_texture()
+            .expect("Font texture creation failed."));
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&texture)));
         verify!(ctxt.tex_image2d(
             Context::TEXTURE_2D,
@@ -125,18 +128,26 @@ impl ConrodRenderer {
         ConrodRenderer {
             ui,
             points: GPUVec::new(Vec::new(), BufferType::Array, AllocationType::StreamDraw),
-            indices: GPUVec::new(Vec::new(), BufferType::ElementArray, AllocationType::StreamDraw),
+            indices: GPUVec::new(
+                Vec::new(),
+                BufferType::ElementArray,
+                AllocationType::StreamDraw,
+            ),
             triangle_window_size: triangle_shader.get_uniform("window_size").unwrap(),
             triangle_pos: triangle_shader.get_attrib("position").unwrap(),
             triangle_color: triangle_shader.get_attrib("color").unwrap(),
             triangle_shader,
-            text_window_size: text_shader.get_uniform::<Vector2<f32>>("window_size").unwrap(),
+            text_window_size: text_shader
+                .get_uniform::<Vector2<f32>>("window_size")
+                .unwrap(),
             text_color: text_shader.get_uniform::<Point4<f32>>("color").unwrap(),
             text_pos: text_shader.get_attrib("pos").unwrap(),
             text_uvs: text_shader.get_attrib("uvs").unwrap(),
             text_texture: text_shader.get_uniform("tex0").unwrap(),
             text_shader,
-            image_window_size: image_shader.get_uniform::<Vector2<f32>>("window_size").unwrap(),
+            image_window_size: image_shader
+                .get_uniform::<Vector2<f32>>("window_size")
+                .unwrap(),
             image_color: image_shader.get_uniform::<Point4<f32>>("color").unwrap(),
             image_pos: image_shader.get_attrib("pos").unwrap(),
             image_uvs: image_shader.get_attrib("uvs").unwrap(),
@@ -159,10 +170,19 @@ impl ConrodRenderer {
     }
 
     /// Actually draws the points.
-    pub fn render(&mut self, width: f32, height: f32, hidpi_factor: f32, texture_map: &conrod::image::Map<(Rc<Texture>, (u32, u32))>) {
+    pub fn render(
+        &mut self,
+        width: f32,
+        height: f32,
+        hidpi_factor: f32,
+        texture_map: &conrod::image::Map<(Rc<Texture>, (u32, u32))>,
+    ) {
         // NOTE: this seems necessary for WASM.
         if !self.resized_once {
-            self.ui.handle_event(conrod::event::Input::Resize(width as f64 / hidpi_factor as f64, height as f64 / hidpi_factor as f64));
+            self.ui.handle_event(conrod::event::Input::Resize(
+                width as f64 / hidpi_factor as f64,
+                height as f64 / hidpi_factor as f64,
+            ));
             self.resized_once = true;
         }
 
@@ -180,7 +200,6 @@ impl ConrodRenderer {
         verify!(ctxt.disable(Context::DEPTH_TEST));
         verify!(ctxt.enable(Context::SCISSOR_TEST));
 
-
         let rect_to_gl_rect = |rect: Rect| {
             let (w, h) = rect.w_h();
             let l = rect.left() as f32 * hidpi_factor + width / 2.0;
@@ -188,33 +207,35 @@ impl ConrodRenderer {
             let w = w as f32 * hidpi_factor;
             let h = h as f32 * hidpi_factor;
 
-            (
-                l.max(0.0),
-                b.max(0.0),
-                w.min(width),
-                h.min(height),
-            )
+            (l.max(0.0), b.max(0.0), w.min(width), h.min(height))
         };
 
         loop {
             let primitive = primitives.next();
 
             let render = if let Some(ref primitive) = primitive {
-                curr_scizzor != primitive.scizzor ||
-                match primitive.kind {
-                    PrimitiveKind::TrianglesSingleColor {..} => mode != RenderMode::Shape,
-                    PrimitiveKind::TrianglesMultiColor {..} => mode != RenderMode::Shape,
-                    PrimitiveKind::Rectangle {..} => mode != RenderMode::Shape,
-                    PrimitiveKind::Image { color, image_id, .. } => {
-                        let rgba = color.unwrap_or(conrod::color::WHITE).to_rgb();
-                        mode != RenderMode::Image { color: Point4::new(rgba.0, rgba.1, rgba.2, rgba.3), texture: image_id }
-                    },
-                    PrimitiveKind::Text { color, ..} => {
-                        let rgba = color.to_rgb();
-                        mode != RenderMode::Text { color: Point4::new(rgba.0, rgba.1, rgba.2, rgba.3) }
-                    },
-                    PrimitiveKind::Other(_) => false,
-                }
+                curr_scizzor != primitive.scizzor
+                    || match primitive.kind {
+                        PrimitiveKind::TrianglesSingleColor { .. } => mode != RenderMode::Shape,
+                        PrimitiveKind::TrianglesMultiColor { .. } => mode != RenderMode::Shape,
+                        PrimitiveKind::Rectangle { .. } => mode != RenderMode::Shape,
+                        PrimitiveKind::Image {
+                            color, image_id, ..
+                        } => {
+                            let rgba = color.unwrap_or(conrod::color::WHITE).to_rgb();
+                            mode != RenderMode::Image {
+                                color: Point4::new(rgba.0, rgba.1, rgba.2, rgba.3),
+                                texture: image_id,
+                            }
+                        }
+                        PrimitiveKind::Text { color, .. } => {
+                            let rgba = color.to_rgb();
+                            mode != RenderMode::Text {
+                                color: Point4::new(rgba.0, rgba.1, rgba.2, rgba.3),
+                            }
+                        }
+                        PrimitiveKind::Other(_) => false,
+                    }
             } else {
                 true
             };
@@ -228,9 +249,16 @@ impl ConrodRenderer {
                         self.triangle_pos.enable();
                         self.triangle_color.enable();
 
-                        self.triangle_window_size.upload(&Vector2::new(width, height));
-                        unsafe { self.triangle_color.bind_sub_buffer_generic(&mut self.points, 5, 2) };
-                        unsafe { self.triangle_pos.bind_sub_buffer_generic(&mut self.points, 5, 0) };
+                        self.triangle_window_size
+                            .upload(&Vector2::new(width, height));
+                        unsafe {
+                            self.triangle_color
+                                .bind_sub_buffer_generic(&mut self.points, 5, 2)
+                        };
+                        unsafe {
+                            self.triangle_pos
+                                .bind_sub_buffer_generic(&mut self.points, 5, 0)
+                        };
                         self.indices.bind();
 
                         verify!(ctxt.draw_elements(
@@ -251,10 +279,20 @@ impl ConrodRenderer {
                         self.text_color.upload(&color);
                         self.text_window_size.upload(&Vector2::new(width, height));
                         verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self.texture)));
-                        unsafe { self.text_pos.bind_sub_buffer_generic(&mut self.points, 3, 0) };
-                        unsafe { self.text_uvs.bind_sub_buffer_generic(&mut self.points, 3, 2) };
+                        unsafe {
+                            self.text_pos
+                                .bind_sub_buffer_generic(&mut self.points, 3, 0)
+                        };
+                        unsafe {
+                            self.text_uvs
+                                .bind_sub_buffer_generic(&mut self.points, 3, 2)
+                        };
 
-                        verify!(ctxt.draw_arrays(Context::TRIANGLES, 0, (self.points.len() / 4) as i32));
+                        verify!(ctxt.draw_arrays(
+                            Context::TRIANGLES,
+                            0,
+                            (self.points.len() / 4) as i32
+                        ));
 
                         self.text_pos.disable();
                         self.text_uvs.disable();
@@ -269,10 +307,20 @@ impl ConrodRenderer {
                             self.image_color.upload(&color);
                             self.image_window_size.upload(&Vector2::new(width, height));
                             verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&texture.0)));
-                            unsafe { self.image_pos.bind_sub_buffer_generic(&mut self.points, 3, 0) };
-                            unsafe { self.image_uvs.bind_sub_buffer_generic(&mut self.points, 3, 2) };
+                            unsafe {
+                                self.image_pos
+                                    .bind_sub_buffer_generic(&mut self.points, 3, 0)
+                            };
+                            unsafe {
+                                self.image_uvs
+                                    .bind_sub_buffer_generic(&mut self.points, 3, 2)
+                            };
 
-                            verify!(ctxt.draw_arrays(Context::TRIANGLES, 0, (self.points.len() / 4) as i32));
+                            verify!(ctxt.draw_arrays(
+                                Context::TRIANGLES,
+                                0,
+                                (self.points.len() / 4) as i32
+                            ));
 
                             self.image_pos.disable();
                             self.image_uvs.disable();
@@ -307,17 +355,37 @@ impl ConrodRenderer {
                     let tr = (primitive.rect.x.end, primitive.rect.y.end);
 
                     vertices.extend_from_slice(&[
-                        tl.0 as f32 * hidpi_factor, tl.1 as f32 * hidpi_factor, color.0, color.1, color.2, color.3,
-                        bl.0 as f32 * hidpi_factor, bl.1 as f32 * hidpi_factor, color.0, color.1, color.2, color.3,
-                        br.0 as f32 * hidpi_factor, br.1 as f32 * hidpi_factor, color.0, color.1, color.2, color.3,
-                        tr.0 as f32 * hidpi_factor, tr.1 as f32 * hidpi_factor, color.0, color.1, color.2, color.3,
+                        tl.0 as f32 * hidpi_factor,
+                        tl.1 as f32 * hidpi_factor,
+                        color.0,
+                        color.1,
+                        color.2,
+                        color.3,
+                        bl.0 as f32 * hidpi_factor,
+                        bl.1 as f32 * hidpi_factor,
+                        color.0,
+                        color.1,
+                        color.2,
+                        color.3,
+                        br.0 as f32 * hidpi_factor,
+                        br.1 as f32 * hidpi_factor,
+                        color.0,
+                        color.1,
+                        color.2,
+                        color.3,
+                        tr.0 as f32 * hidpi_factor,
+                        tr.1 as f32 * hidpi_factor,
+                        color.0,
+                        color.1,
+                        color.2,
+                        color.3,
                     ]);
 
                     indices.push(Point3::new(vid + 0, vid + 1, vid + 2));
                     indices.push(Point3::new(vid + 2, vid + 3, vid + 0));
 
                     vid += 4;
-                },
+                }
                 PrimitiveKind::TrianglesSingleColor { color, triangles } => {
                     mode = RenderMode::Shape;
 
@@ -325,36 +393,71 @@ impl ConrodRenderer {
                         let pts = triangle.points();
 
                         vertices.extend_from_slice(&[
-                            pts[0][0] as f32 * hidpi_factor, pts[0][1] as f32 * hidpi_factor, color.0, color.1, color.2, color.3,
-                            pts[1][0] as f32 * hidpi_factor, pts[1][1] as f32 * hidpi_factor, color.0, color.1, color.2, color.3,
-                            pts[2][0] as f32 * hidpi_factor, pts[2][1] as f32 * hidpi_factor, color.0, color.1, color.2, color.3,
+                            pts[0][0] as f32 * hidpi_factor,
+                            pts[0][1] as f32 * hidpi_factor,
+                            color.0,
+                            color.1,
+                            color.2,
+                            color.3,
+                            pts[1][0] as f32 * hidpi_factor,
+                            pts[1][1] as f32 * hidpi_factor,
+                            color.0,
+                            color.1,
+                            color.2,
+                            color.3,
+                            pts[2][0] as f32 * hidpi_factor,
+                            pts[2][1] as f32 * hidpi_factor,
+                            color.0,
+                            color.1,
+                            color.2,
+                            color.3,
                         ]);
                         indices.push(Point3::new(vid + 0, vid + 1, vid + 2));
 
                         vid += 3;
                     }
-                },
+                }
                 PrimitiveKind::TrianglesMultiColor { triangles } => {
                     mode = RenderMode::Shape;
 
                     for triangle in triangles {
-                        let ((a, ca), (b, cb), (c, cc)) = (triangle.0[0], triangle.0[1], triangle.0[2]);
+                        let ((a, ca), (b, cb), (c, cc)) =
+                            (triangle.0[0], triangle.0[1], triangle.0[2]);
                         vertices.extend_from_slice(&[
-                            a[0] as f32 * hidpi_factor, a[1] as f32 * hidpi_factor, ca.0, ca.1, ca.2, ca.3,
-                            b[0] as f32 * hidpi_factor, b[1] as f32 * hidpi_factor, cb.0, cb.1, cb.2, cb.3,
-                            c[0] as f32 * hidpi_factor, c[1] as f32 * hidpi_factor, cc.0, cc.1, cc.2, cc.3,
+                            a[0] as f32 * hidpi_factor,
+                            a[1] as f32 * hidpi_factor,
+                            ca.0,
+                            ca.1,
+                            ca.2,
+                            ca.3,
+                            b[0] as f32 * hidpi_factor,
+                            b[1] as f32 * hidpi_factor,
+                            cb.0,
+                            cb.1,
+                            cb.2,
+                            cb.3,
+                            c[0] as f32 * hidpi_factor,
+                            c[1] as f32 * hidpi_factor,
+                            cc.0,
+                            cc.1,
+                            cc.2,
+                            cc.3,
                         ]);
                         indices.push(Point3::new(vid + 0, vid + 1, vid + 2));
 
                         vid += 3;
                     }
-                },
-                PrimitiveKind::Image { image_id, color, source_rect } => {
+                }
+                PrimitiveKind::Image {
+                    image_id,
+                    color,
+                    source_rect,
+                } => {
                     if let Some(texture) = texture_map.get(&image_id) {
                         let color = color.unwrap_or(conrod::color::WHITE).to_rgb();
                         mode = RenderMode::Image {
                             color: Point4::new(color.0, color.1, color.2, color.3),
-                            texture: image_id
+                            texture: image_id,
                         };
 
                         let min_px = primitive.rect.x.start as f32 * hidpi_factor;
@@ -364,8 +467,8 @@ impl ConrodRenderer {
 
                         let w = (texture.1).0 as f64;
                         let h = (texture.1).1 as f64;
-                        let mut tex = source_rect.unwrap_or(
-                            conrod::position::Rect::from_corners([0.0, 0.0], [w, h]));
+                        let mut tex = source_rect
+                            .unwrap_or(conrod::position::Rect::from_corners([0.0, 0.0], [w, h]));
                         tex.x.start /= w;
                         tex.x.end /= w;
                         // Because opengl textures are loaded upside down.
@@ -373,25 +476,43 @@ impl ConrodRenderer {
                         tex.y.end = (h - tex.y.end) / h;
 
                         vertices.extend_from_slice(&[
-                            min_px, min_py,
-                            tex.x.start as f32, tex.y.start as f32,
-                            min_px, max_py,
-                            tex.x.start as f32, tex.y.end as f32,
-                            max_px, min_py,
-                            tex.x.end as f32, tex.y.start as f32,
-                            max_px, min_py,
-                            tex.x.end as f32, tex.y.start as f32,
-                            min_px, max_py,
-                            tex.x.start as f32, tex.y.end as f32,
-                            max_px, max_py,
-                            tex.x.end as f32, tex.y.end as f32,
+                            min_px,
+                            min_py,
+                            tex.x.start as f32,
+                            tex.y.start as f32,
+                            min_px,
+                            max_py,
+                            tex.x.start as f32,
+                            tex.y.end as f32,
+                            max_px,
+                            min_py,
+                            tex.x.end as f32,
+                            tex.y.start as f32,
+                            max_px,
+                            min_py,
+                            tex.x.end as f32,
+                            tex.y.start as f32,
+                            min_px,
+                            max_py,
+                            tex.x.start as f32,
+                            tex.y.end as f32,
+                            max_px,
+                            max_py,
+                            tex.x.end as f32,
+                            tex.y.end as f32,
                         ]);
                     }
                 }
                 PrimitiveKind::Other(_) => {}
-                PrimitiveKind::Text { color, text, font_id } => {
+                PrimitiveKind::Text {
+                    color,
+                    text,
+                    font_id,
+                } => {
                     let rgba = color.to_rgb();
-                    mode = RenderMode::Text { color: Point4::new(rgba.0, rgba.1, rgba.2, rgba.3) };
+                    mode = RenderMode::Text {
+                        color: Point4::new(rgba.0, rgba.1, rgba.2, rgba.3),
+                    };
 
                     verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self.texture)));
                     verify!(ctxt.tex_parameteri(
@@ -430,34 +551,22 @@ impl ConrodRenderer {
                      * Build the vertex buffer.
                      */
                     for glyph in positioned_glyphs {
-                        if let Some(Some((tex, rect))) = self.cache.rect_for(font_id.index(), &glyph).ok() {
+                        if let Some(Some((tex, rect))) =
+                            self.cache.rect_for(font_id.index(), &glyph).ok()
+                        {
                             let min_px = rect.min.x as f32;
                             let min_py = rect.min.y as f32;
                             let max_px = rect.max.x as f32;
                             let max_py = rect.max.y as f32;
 
                             vertices.extend_from_slice(&[
-                                min_px, min_py,
-                                tex.min.x, tex.min.y,
-
-                                min_px, max_py,
-                                tex.min.x, tex.max.y,
-
-                                max_px, min_py,
-                                tex.max.x, tex.min.y,
-
-                                max_px, min_py,
-                                tex.max.x, tex.min.y,
-
-                                min_px, max_py,
-                                tex.min.x, tex.max.y,
-
-                                max_px, max_py,
-                                tex.max.x, tex.max.y,
+                                min_px, min_py, tex.min.x, tex.min.y, min_px, max_py, tex.min.x,
+                                tex.max.y, max_px, min_py, tex.max.x, tex.min.y, max_px, min_py,
+                                tex.max.x, tex.min.y, min_px, max_py, tex.min.x, tex.max.y, max_px,
+                                max_py, tex.max.x, tex.max.y,
                             ]);
                         }
                     }
-
                 }
             }
         }
@@ -493,7 +602,6 @@ varying vec4 v_color;
 void main() {
   gl_FragColor = v_color;
 }";
-
 
 const TEXT_VERTEX_SRC: &'static str = "
 #version 100
@@ -532,7 +640,6 @@ void main() {
     gl_FragColor = vec4(v_color.rgb, v_color.a * texture2D(tex0, v_uvs).r);
 }
 ";
-
 
 const IMAGE_VERTEX_SRC: &'static str = "
 #version 100

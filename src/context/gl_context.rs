@@ -45,10 +45,12 @@ impl AbstractContextConst for GLContext {
     const FRAGMENT_SHADER: u32 = gl::FRAGMENT_SHADER;
     const COMPILE_STATUS: u32 = gl::COMPILE_STATUS;
     const FRAMEBUFFER: u32 = gl::FRAMEBUFFER;
+    const RENDERBUFFER: u32 = gl::RENDERBUFFER;
     const DEPTH_ATTACHMENT: u32 = gl::DEPTH_ATTACHMENT;
     const COLOR_ATTACHMENT0: u32 = gl::COLOR_ATTACHMENT0;
     const TEXTURE_2D: u32 = gl::TEXTURE_2D;
     const DEPTH_COMPONENT: u32 = gl::DEPTH_COMPONENT;
+    const DEPTH_COMPONENT16: u32 = gl::DEPTH_COMPONENT16;
     const UNSIGNED_BYTE: u32 = gl::UNSIGNED_BYTE;
     const TEXTURE_WRAP_S: u32 = gl::TEXTURE_WRAP_S;
     const TEXTURE_WRAP_T: u32 = gl::TEXTURE_WRAP_T;
@@ -96,6 +98,7 @@ impl AbstractContext for GLContext {
     type Shader = u32;
     type Program = u32;
     type Framebuffer = u32;
+    type Renderbuffer = u32;
     type Texture = u32;
 
     fn get_error(&self) -> GLenum {
@@ -176,14 +179,7 @@ impl AbstractContext for GLContext {
     }
 
     fn buffer_data_uninitialized(&self, target: GLenum, len: usize, usage: GLenum) {
-        unsafe {
-            gl::BufferData(
-                target,
-                len as GLsizeiptr,
-                ptr::null(),
-                usage,
-            )
-        }
+        unsafe { gl::BufferData(target, len as GLsizeiptr, ptr::null(), usage) }
     }
 
     fn buffer_data<T: GLPrimitive>(&self, target: GLenum, data: &[T], usage: GLenum) {
@@ -371,6 +367,43 @@ impl AbstractContext for GLContext {
         level: i32,
     ) {
         unsafe { gl::FramebufferTexture2D(target, attachment, textarget, val(texture), level) }
+    }
+
+    fn create_renderbuffer(&self) -> Option<Self::Renderbuffer> {
+        let mut res = 0;
+        unsafe { gl::GenRenderbuffers(1, &mut res) };
+        checked!(res)
+    }
+
+    fn is_renderbuffer(&self, buffer: Option<&Self::Renderbuffer>) -> bool {
+        unsafe { gl::IsRenderbuffer(val(buffer)) != 0 }
+    }
+
+    fn delete_renderbuffer(&self, buffer: Option<&Self::Renderbuffer>) {
+        unsafe { gl::DeleteRenderbuffers(1, &val(buffer)) }
+    }
+
+    fn bind_renderbuffer(&self, buffer: Option<&Self::Renderbuffer>) {
+        unsafe { gl::BindRenderbuffer(Self::RENDERBUFFER, val(buffer)) }
+    }
+
+    fn renderbuffer_storage(&self, internal_format: GLenum, width: i32, height: i32) {
+        unsafe { gl::RenderbufferStorage(Self::RENDERBUFFER, internal_format, width, height) }
+    }
+
+    fn framebuffer_renderbuffer(
+        &self,
+        attachment: GLenum,
+        renderbuffer: Option<&Self::Renderbuffer>,
+    ) {
+        unsafe {
+            gl::FramebufferRenderbuffer(
+                Self::FRAMEBUFFER,
+                attachment,
+                Self::RENDERBUFFER,
+                val(renderbuffer),
+            )
+        }
     }
 
     fn bind_texture(&self, target: GLenum, texture: Option<&Self::Texture>) {

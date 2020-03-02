@@ -148,13 +148,18 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
 
     /// Binds this attribute to non contiguous parts of a gpu vector.
     pub fn bind_sub_buffer(&mut self, vector: &mut GPUVec<T>, strides: usize, start_index: usize) {
-        unsafe { self.bind_sub_buffer_generic(vector, strides, start_index)}
+        unsafe { self.bind_sub_buffer_generic(vector, strides, start_index) }
     }
 
     /// Binds this attribute to non contiguous parts of a gpu vector.
     ///
     /// The type of the provided GPU buffer is not forced to match the type of this attribute.
-    pub unsafe fn bind_sub_buffer_generic<T2: GLPrimitive>(&mut self, vector: &mut GPUVec<T2>, strides: usize, start_index: usize) {
+    pub unsafe fn bind_sub_buffer_generic<T2: GLPrimitive>(
+        &mut self,
+        vector: &mut GPUVec<T2>,
+        strides: usize,
+        start_index: usize,
+    ) {
         vector.bind();
 
         verify!(Context::get().vertex_attrib_pointer(
@@ -174,20 +179,18 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
 fn load_shader_program(vertex_shader: &str, fragment_shader: &str) -> (Program, Shader, Shader) {
     // Create and compile the vertex shader
     let ctxt = Context::get();
-    let vshader = verify!(
-        ctxt.create_shader(Context::VERTEX_SHADER)
-            .expect("Could not create vertex shader.")
-    );
+    let vshader = verify!(ctxt
+        .create_shader(Context::VERTEX_SHADER)
+        .expect("Could not create vertex shader."));
 
     verify!(ctxt.shader_source(&vshader, vertex_shader));
     verify!(ctxt.compile_shader(&vshader));
     check_shader_error(&vshader);
 
     // Create and compile the fragment shader
-    let fshader = verify!(
-        ctxt.create_shader(Context::FRAGMENT_SHADER)
-            .expect("Could not create fragment shader.")
-    );
+    let fshader = verify!(ctxt
+        .create_shader(Context::FRAGMENT_SHADER)
+        .expect("Could not create fragment shader."));
     verify!(ctxt.shader_source(&fshader, fragment_shader));
     verify!(ctxt.compile_shader(&fshader));
     check_shader_error(&fshader);

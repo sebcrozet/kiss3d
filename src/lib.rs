@@ -132,11 +132,12 @@ Thanks to all the Rustaceans for their help, and their OpenGL bindings.
 
 #[macro_use]
 extern crate bitflags;
-extern crate rusttype;
+extern crate either;
 extern crate image;
 extern crate nalgebra as na;
 extern crate ncollide3d;
 extern crate num_traits as num;
+extern crate rusttype;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde;
@@ -157,7 +158,6 @@ pub extern crate kiss3d_conrod as conrod;
 #[cfg(feature = "conrod")]
 pub use conrod::widget_ids;
 
-
 #[deprecated(note = "Use the `renderer` module instead.")]
 pub use renderer::line_renderer;
 #[deprecated(note = "Use the `renderer` module instead.")]
@@ -172,8 +172,8 @@ pub mod light;
 pub mod loader;
 pub mod planar_camera;
 pub mod planar_line_renderer;
-pub mod renderer;
 pub mod post_processing;
+pub mod renderer;
 pub mod resource;
 pub mod scene;
 pub mod text;
