@@ -2,7 +2,9 @@
 /*
  * FIXME: this file is too big. Some heavy refactoring need to be done here.
  */
+use std::cell::Ref;
 use std::cell::RefCell;
+use std::cell::RefMut;
 use std::iter::repeat;
 use std::path::Path;
 use std::rc::Rc;
@@ -629,6 +631,16 @@ impl Window {
     /// The position of the mouse is automatically updated when the mouse moves over the canvas.
     pub fn cursor_pos(&self) -> Option<(f64, f64)> {
         self.canvas.cursor_pos()
+    }
+
+    /// Gets a handle to the window camera.
+    pub fn camera(&self) -> Ref<'_, ArcBall> {
+        self.camera.borrow()
+    }
+
+    /// Gets a mutable handle to the window camera.
+    pub fn camera_mut(&self) -> RefMut<'_, ArcBall> {
+        self.camera.borrow_mut()
     }
 
     #[inline]
