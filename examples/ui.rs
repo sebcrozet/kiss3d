@@ -164,8 +164,8 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
     const TITLE: &'static str = "All Widgets";
     widget::Canvas::new()
         .pad(MARGIN)
-        .align_bottom()
-        .h(300.0)
+        .align_right()
+        .w(600.0)
         .scroll_kids_vertically()
         .set(ids.canvas, ui);
 
