@@ -110,6 +110,9 @@ widget_ids! {
         dialer_title,
         number_dialer,
         plot_path,
+        // TextBox and TextEdit
+        text_box,
+        text_edit,
         // Scrollbar
         canvas_scrollbar,
     }
@@ -125,6 +128,8 @@ pub struct DemoApp {
     ball_color: conrod::Color,
     sine_frequency: f32,
     cat: conrod::image::Id,
+    text_box: String,
+    text_edit: String,
 }
 
 #[cfg(feature = "conrod")]
@@ -136,6 +141,8 @@ impl DemoApp {
             ball_color: conrod::color::WHITE,
             sine_frequency: 1.0,
             cat,
+            text_box: "Hello".to_string(),
+            text_edit: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\nUt enim ad minim veniam...".to_string(),
         }
     }
 }
@@ -143,7 +150,7 @@ impl DemoApp {
 /// Instantiate a GUI demonstrating every widget available in conrod.
 #[cfg(feature = "conrod")]
 pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
-    use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget};
+    use conrod::{widget, Colorable, Labelable, Sizeable, Widget};
     use std::iter::once;
 
     const MARGIN: conrod::Scalar = 30.0;
@@ -386,6 +393,36 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
         .down(60.0)
         .align_middle_x_of(ids.canvas)
         .set(ids.plot_path, ui);
+
+    ////////////////////////////////
+    ///// TextBox and TextEdit /////
+    ////////////////////////////////
+
+    for event in widget::TextBox::new(&app.text_box)
+        .down_from(ids.plot_path, 60.0)
+        .align_middle_x_of(ids.canvas)
+        .padded_w_of(ids.canvas, MARGIN)
+        .h(40.0)
+        .set(ids.text_box, ui)
+    {
+        use conrod::widget::text_box::Event;
+        match event {
+            Event::Enter => {}
+            Event::Update(s) => {
+                app.text_box = s;
+            }
+        }
+    }
+
+    for string in widget::TextEdit::new(&app.text_edit)
+        .down_from(ids.text_box, 60.0)
+        .align_middle_x_of(ids.canvas)
+        .padded_w_of(ids.canvas, MARGIN)
+        .h(100.0)
+        .set(ids.text_edit, ui)
+    {
+        app.text_edit = string;
+    }
 
     /////////////////////
     ///// Scrollbar /////
