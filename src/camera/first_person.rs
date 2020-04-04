@@ -1,6 +1,9 @@
 use camera::Camera;
 use event::{Action, Key, MouseButton, WindowEvent};
-use na::{self, Isometry3, Matrix4, Perspective3, Point3, Translation3, Vector2, Vector3};
+use na::{
+    self, Isometry3, Matrix4, Perspective3, Point3, Translation3, Unit, UnitQuaternion, Vector2,
+    Vector3,
+};
 use num::Zero;
 use resource::ShaderUniform;
 use std::f32;
@@ -17,6 +20,7 @@ pub struct FirstPerson {
     eye: Point3<f32>,
     yaw: f32,
     pitch: f32,
+    roll: f32,
 
     yaw_step: f32,
     pitch_step: f32,
@@ -55,6 +59,7 @@ impl FirstPerson {
             eye: Point3::new(0.0, 0.0, 0.0),
             yaw: 0.0,
             pitch: 0.0,
+            roll: 0.0,
             yaw_step: 0.005,
             pitch_step: 0.005,
             move_step: 0.5,
@@ -76,6 +81,14 @@ impl FirstPerson {
         res.look_at(eye, at);
 
         res
+    }
+
+    /// Sets the roll angle of the camera, in clockwise direction.
+    ///
+    /// The default value is 0.0.
+    #[inline]
+    pub fn set_roll(&mut self, roll: f32) {
+        self.roll = roll;
     }
 
     /// Sets the translational increment per arrow press.
@@ -382,7 +395,13 @@ impl Camera for FirstPerson {
 
     /// The camera view transformation (i-e transformation without projection).
     fn view_transform(&self) -> Isometry3<f32> {
-        Isometry3::look_at_rh(&self.eye, &self.at(), &self.coord_system.up_axis())
+        let mut look_at =
+            Isometry3::look_at_rh(&self.eye, &self.at(), &self.coord_system.up_axis());
+        look_at.append_rotation_mut(&UnitQuaternion::from_axis_angle(
+            &Vector3::z_axis(),
+            self.roll,
+        ));
+        look_at
     }
 
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
