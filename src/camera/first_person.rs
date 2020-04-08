@@ -1,6 +1,9 @@
 use camera::Camera;
 use event::{Action, Key, MouseButton, WindowEvent};
-use na::{self, Isometry3, Matrix4, Perspective3, Point3, Translation3, Vector2, Vector3};
+use na::{
+    self, Isometry3, Matrix4, Perspective3, Point3, Translation3, Unit, UnitQuaternion, Vector2,
+    Vector3,
+};
 use num::Zero;
 use resource::ShaderUniform;
 use std::f32;
@@ -34,7 +37,7 @@ pub struct FirstPerson {
     proj_view: Matrix4<f32>,
     inverse_proj_view: Matrix4<f32>,
     last_cursor_pos: Vector2<f32>,
-    coord_system: CoordSystem,
+    coord_system: CoordSystemRh,
 }
 
 impl FirstPerson {
@@ -70,7 +73,7 @@ impl FirstPerson {
             proj_view: na::zero(),
             inverse_proj_view: na::zero(),
             last_cursor_pos: na::zero(),
-            coord_system: CoordSystem::RightHandYUp,
+            coord_system: CoordSystemRh::from_up_axis(Vector3::y_axis()),
         };
 
         res.look_at(eye, at);
@@ -124,18 +127,10 @@ impl FirstPerson {
     pub fn look_at(&mut self, eye: Point3<f32>, at: Point3<f32>) {
         let dist = (eye - at).norm();
 
-        let pitch;
-        let yaw;
-        match self.coord_system {
-            CoordSystem::RightHandYUp => {
-                pitch = ((at.y - eye.y) / dist).acos();
-                yaw = (at.z - eye.z).atan2(at.x - eye.x);
-            }
-            CoordSystem::RightHandZUp => {
-                pitch = ((at.z - eye.z) / dist).acos();
-                yaw = (eye.y - at.y).atan2(at.x - eye.x);
-            }
-        }
+        let view_eye = self.coord_system.rotation_to_y_up * eye;
+        let view_at = self.coord_system.rotation_to_y_up * at;
+        let pitch = ((view_at.y - view_eye.y) / dist).acos();
+        let yaw = (view_at.z - view_eye.z).atan2(view_at.x - view_eye.x);
 
         self.eye = eye;
         self.yaw = yaw;
@@ -145,21 +140,11 @@ impl FirstPerson {
 
     /// The point the camera is looking at.
     pub fn at(&self) -> Point3<f32> {
-        let ax = self.eye.x + self.yaw.cos() * self.pitch.sin();
-        let ay;
-        let az;
-        match self.coord_system {
-            CoordSystem::RightHandYUp => {
-                ay = self.eye.y + self.pitch.cos();
-                az = self.eye.z + self.yaw.sin() * self.pitch.sin();
-            }
-            CoordSystem::RightHandZUp => {
-                ay = self.eye.y - self.yaw.sin() * self.pitch.sin();
-                az = self.eye.z + self.pitch.cos();
-            }
-        }
-
-        Point3::new(ax, ay, az)
+        let view_eye = self.coord_system.rotation_to_y_up * self.eye;
+        let ax = view_eye.x + self.yaw.cos() * self.pitch.sin();
+        let ay = view_eye.y + self.pitch.cos();
+        let az = view_eye.z + self.yaw.sin() * self.pitch.sin();
+        self.coord_system.rotation_to_y_up.inverse() * Point3::new(ax, ay, az)
     }
 
     fn update_restrictions(&mut self) {
@@ -260,7 +245,7 @@ impl FirstPerson {
     pub fn handle_right_button_displacement(&mut self, dpos: &Vector2<f32>) {
         let at = self.at();
         let dir = (at - self.eye).normalize();
-        let tangent = self.coord_system.up_axis().cross(&dir).normalize();
+        let tangent = self.coord_system.up_axis.cross(&dir).normalize();
         let bitangent = dir.cross(&tangent);
 
         self.eye = self.eye + tangent * (0.01 * dpos.x / 10.0) + bitangent * (0.01 * dpos.y / 10.0);
@@ -348,18 +333,18 @@ impl FirstPerson {
         self.update_projviews();
     }
 
-    /// Sets the Up vector of this camera.
+    /// Sets the up vector of this camera. Prefer using [`set_up_axis_dir`](#method.set_up_axis_dir)
+    /// if your up vector is already normalized.
     #[inline]
     pub fn set_up_axis(&mut self, up_axis: Vector3<f32>) {
-        let new_coord_system;
-        if up_axis == Vector3::y() {
-            new_coord_system = CoordSystem::RightHandYUp;
-        } else if up_axis == Vector3::z() {
-            new_coord_system = CoordSystem::RightHandZUp;
-        } else {
-            panic!("This up_axis is not supported: {:?}", up_axis);
-        }
-        if self.coord_system != new_coord_system {
+        self.set_up_axis_dir(Unit::new_normalize(up_axis));
+    }
+
+    /// Sets the up-axis direction of this camera.
+    #[inline]
+    pub fn set_up_axis_dir(&mut self, up_axis: Unit<Vector3<f32>>) {
+        if self.coord_system.up_axis != up_axis {
+            let new_coord_system = CoordSystemRh::from_up_axis(up_axis);
             // Since setting the up axis changes the meaning of pitch and yaw
             // angles, we need to recalculate them in order to preserve the eye
             // position.
@@ -371,7 +356,7 @@ impl FirstPerson {
 
     /// The camera observer local frame.
     fn observer_frame(&self) -> Isometry3<f32> {
-        Isometry3::face_towards(&self.eye, &self.at(), &self.coord_system.up_axis())
+        Isometry3::face_towards(&self.eye, &self.at(), &self.coord_system.up_axis)
     }
 }
 
@@ -382,7 +367,7 @@ impl Camera for FirstPerson {
 
     /// The camera view transformation (i-e transformation without projection).
     fn view_transform(&self) -> Isometry3<f32> {
-        Isometry3::look_at_rh(&self.eye, &self.at(), &self.coord_system.up_axis())
+        Isometry3::look_at_rh(&self.eye, &self.at(), &self.coord_system.up_axis)
     }
 
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
@@ -458,18 +443,22 @@ fn check_optional_key_state(canvas: &Canvas, key: Option<Key>, key_state: Action
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-enum CoordSystem {
-    RightHandYUp,
-    RightHandZUp,
+#[derive(Clone, Copy, Debug)]
+struct CoordSystemRh {
+    up_axis: Unit<Vector3<f32>>,
+    rotation_to_y_up: UnitQuaternion<f32>,
 }
 
-impl CoordSystem {
+impl CoordSystemRh {
     #[inline]
-    fn up_axis(self) -> Vector3<f32> {
-        match self {
-            CoordSystem::RightHandYUp => Vector3::y(),
-            CoordSystem::RightHandZUp => Vector3::z(),
+    fn from_up_axis(up_axis: Unit<Vector3<f32>>) -> Self {
+        let rotation_to_y_up = UnitQuaternion::rotation_between_axis(&up_axis, &Vector3::y_axis())
+            .unwrap_or_else(|| {
+                UnitQuaternion::from_axis_angle(&Vector3::x_axis(), std::f32::consts::PI)
+            });
+        Self {
+            up_axis,
+            rotation_to_y_up,
         }
     }
 }
