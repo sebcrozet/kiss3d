@@ -1,6 +1,6 @@
 use camera::Camera;
 use event::{Action, Key, Modifiers, MouseButton, WindowEvent};
-use na::{self, Isometry3, Matrix4, Perspective3, Point3, Vector2, Vector3};
+use na::{self, Isometry3, Matrix4, Perspective3, Point3, Unit, UnitQuaternion, Vector2, Vector3};
 use resource::ShaderUniform;
 use std::f32;
 use window::Canvas;
@@ -52,7 +52,7 @@ pub struct ArcBall {
     proj_view: Matrix4<f32>,
     inverse_proj_view: Matrix4<f32>,
     last_cursor_pos: Vector2<f32>,
-    coord_system: CoordSystem,
+    coord_system: CoordSystemRh,
 }
 
 impl ArcBall {
@@ -92,7 +92,7 @@ impl ArcBall {
             proj_view: na::zero(),
             inverse_proj_view: na::zero(),
             last_cursor_pos: na::zero(),
-            coord_system: CoordSystem::RightHandYUp,
+            coord_system: CoordSystemRh::from_up_axis(Vector3::y_axis()),
         };
 
         res.look_at(eye, at);
@@ -193,18 +193,11 @@ impl ArcBall {
     /// Move and orient the camera such that it looks at a specific point.
     pub fn look_at(&mut self, eye: Point3<f32>, at: Point3<f32>) {
         let dist = (eye - at).norm();
-        let pitch;
-        let yaw;
-        match self.coord_system {
-            CoordSystem::RightHandYUp => {
-                pitch = ((eye.y - at.y) / dist).acos();
-                yaw = (eye.z - at.z).atan2(eye.x - at.x);
-            }
-            CoordSystem::RightHandZUp => {
-                pitch = ((eye.z - at.z) / dist).acos();
-                yaw = (at.y - eye.y).atan2(eye.x - at.x);
-            }
-        }
+
+        let view_eye = self.coord_system.rotation_to_y_up * eye;
+        let view_at = self.coord_system.rotation_to_y_up * at;
+        let pitch = ((view_eye.y - view_at.y) / dist).acos();
+        let yaw = (view_eye.z - view_at.z).atan2(view_eye.x - view_at.x);
 
         self.at = at;
         self.dist = dist;
@@ -306,7 +299,7 @@ impl ArcBall {
     fn handle_right_button_displacement(&mut self, dpos: &Vector2<f32>) {
         let eye = self.eye();
         let dir = (self.at - eye).normalize();
-        let tangent = self.coord_system.up_axis().cross(&dir).normalize();
+        let tangent = self.coord_system.up_axis.cross(&dir).normalize();
         let bitangent = dir.cross(&tangent);
         let mult = self.dist / 1000.0;
 
@@ -327,18 +320,18 @@ impl ArcBall {
         self.inverse_proj_view = self.proj_view.try_inverse().unwrap();
     }
 
-    /// Sets the up vector of this camera.
+    /// Sets the up vector of this camera. Prefer using [`set_up_axis_dir`](#method.set_up_axis_dir)
+    /// if your up vector is already normalized.
     #[inline]
     pub fn set_up_axis(&mut self, up_axis: Vector3<f32>) {
-        let new_coord_system;
-        if up_axis == Vector3::y() {
-            new_coord_system = CoordSystem::RightHandYUp;
-        } else if up_axis == Vector3::z() {
-            new_coord_system = CoordSystem::RightHandZUp;
-        } else {
-            panic!("This up_axis is not supported: {:?}", up_axis);
-        }
-        if self.coord_system != new_coord_system {
+        self.set_up_axis_dir(Unit::new_normalize(up_axis));
+    }
+
+    /// Sets the up-axis direction of this camera.
+    #[inline]
+    pub fn set_up_axis_dir(&mut self, up_axis: Unit<Vector3<f32>>) {
+        if self.coord_system.up_axis != up_axis {
+            let new_coord_system = CoordSystemRh::from_up_axis(up_axis);
             // Since setting the up axis changes the meaning of pitch and yaw
             // angles, we need to recalculate them in order to preserve the eye
             // position.
@@ -355,25 +348,15 @@ impl Camera for ArcBall {
     }
 
     fn view_transform(&self) -> Isometry3<f32> {
-        Isometry3::look_at_rh(&self.eye(), &self.at, &self.coord_system.up_axis())
+        Isometry3::look_at_rh(&self.eye(), &self.at, &self.coord_system.up_axis)
     }
 
     fn eye(&self) -> Point3<f32> {
-        let px = self.at.x + self.dist * self.yaw.cos() * self.pitch.sin();
-        let py;
-        let pz;
-        match self.coord_system {
-            CoordSystem::RightHandYUp => {
-                py = self.at.y + self.dist * self.pitch.cos();
-                pz = self.at.z + self.dist * self.yaw.sin() * self.pitch.sin();
-            }
-            CoordSystem::RightHandZUp => {
-                py = self.at.y - self.dist * self.yaw.sin() * self.pitch.sin();
-                pz = self.at.z + self.dist * self.pitch.cos();
-            }
-        }
-
-        Point3::new(px, py, pz)
+        let view_at = self.coord_system.rotation_to_y_up * self.at;
+        let px = view_at.x + self.dist * self.yaw.cos() * self.pitch.sin();
+        let py = view_at.y + self.dist * self.pitch.cos();
+        let pz = view_at.z + self.dist * self.yaw.sin() * self.pitch.sin();
+        self.coord_system.rotation_to_y_up.inverse() * Point3::new(px, py, pz)
     }
 
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
@@ -439,18 +422,22 @@ impl Camera for ArcBall {
     fn update(&mut self, _: &Canvas) {}
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-enum CoordSystem {
-    RightHandYUp,
-    RightHandZUp,
+#[derive(Clone, Copy, Debug)]
+struct CoordSystemRh {
+    up_axis: Unit<Vector3<f32>>,
+    rotation_to_y_up: UnitQuaternion<f32>,
 }
 
-impl CoordSystem {
+impl CoordSystemRh {
     #[inline]
-    fn up_axis(self) -> Vector3<f32> {
-        match self {
-            CoordSystem::RightHandYUp => Vector3::y(),
-            CoordSystem::RightHandZUp => Vector3::z(),
+    fn from_up_axis(up_axis: Unit<Vector3<f32>>) -> Self {
+        let rotation_to_y_up = UnitQuaternion::rotation_between_axis(&up_axis, &Vector3::y_axis())
+            .unwrap_or_else(|| {
+                UnitQuaternion::from_axis_angle(&Vector3::x_axis(), std::f32::consts::PI)
+            });
+        Self {
+            up_axis,
+            rotation_to_y_up,
         }
     }
 }
