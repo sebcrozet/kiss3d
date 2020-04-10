@@ -37,6 +37,14 @@ struct WebGLCanvasData {
     pending_events: Vec<WindowEvent>,
     out_events: Sender<WindowEvent>,
     hidpi_factor: f64,
+    mouse_capture_state: MouseCaptureState,
+}
+
+#[derive(PartialEq, Eq)]
+enum MouseCaptureState {
+    NotCaptured,
+    Captured,
+    OtherElement,
 }
 
 /// A canvas based on WebGL and stdweb.
@@ -103,6 +111,7 @@ impl AbstractCanvas for WebGLCanvas {
             pending_events: Vec::new(),
             out_events,
             hidpi_factor: initial_hidpi_factor,
+            mouse_capture_state: MouseCaptureState::NotCaptured,
         }));
         let mut event_listeners = Vec::new();
 
@@ -131,6 +140,23 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let listener = web::window().add_event_listener(move |e: webevent::MouseDownEvent| {
             let mut edata = edata.borrow_mut();
+            match edata.mouse_capture_state {
+                MouseCaptureState::NotCaptured => {
+                    if e.target()
+                        .map_or(false, |target| target.as_ref() != edata.canvas.as_ref())
+                    {
+                        // Stop handling mouse events after the mouse is pressed
+                        // outside of the canvas.
+                        edata.mouse_capture_state = MouseCaptureState::OtherElement;
+                        return;
+                    }
+                }
+                MouseCaptureState::Captured => {}
+                MouseCaptureState::OtherElement => {
+                    return;
+                }
+            }
+            edata.mouse_capture_state = MouseCaptureState::Captured;
             let button = translate_mouse_button(&e);
             let _ = edata.pending_events.push(WindowEvent::MouseButton(
                 button,
@@ -144,6 +170,26 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let listener = web::window().add_event_listener(move |e: webevent::MouseUpEvent| {
             let mut edata = edata.borrow_mut();
+            match edata.mouse_capture_state {
+                MouseCaptureState::NotCaptured => {
+                    // This shouldn't happen but we'll ignore it.
+                    return;
+                }
+                MouseCaptureState::Captured => {}
+                MouseCaptureState::OtherElement => {
+                    use stdweb::web::event::MouseButton::*;
+                    let buttons = e.buttons();
+                    if [Left, Wheel, Right, Button4, Button5]
+                        .iter()
+                        .all(|&button| !buttons.is_down(button))
+                    {
+                        // Resume handling mouse events after mouse buttons are
+                        // released.
+                        edata.mouse_capture_state = MouseCaptureState::NotCaptured;
+                    }
+                    return;
+                }
+            }
             let button = translate_mouse_button(&e);
             let _ = edata.pending_events.push(WindowEvent::MouseButton(
                 button,
@@ -151,12 +197,33 @@ impl AbstractCanvas for WebGLCanvas {
                 translate_mouse_modifiers(&e),
             ));
             edata.button_states[button as usize] = Action::Release;
+            if edata
+                .button_states
+                .iter()
+                .all(|&state| state == Action::Release)
+            {
+                edata.mouse_capture_state = MouseCaptureState::NotCaptured;
+            }
         });
         event_listeners.push(listener);
 
         let edata = data.clone();
         let listener = web::window().add_event_listener(move |e: webevent::MouseMoveEvent| {
             let mut edata = edata.borrow_mut();
+            match edata.mouse_capture_state {
+                MouseCaptureState::NotCaptured => {
+                    if e.target()
+                        .map_or(false, |target| target.as_ref() != edata.canvas.as_ref())
+                    {
+                        // Don't handle hover events outside of the canvas.
+                        return;
+                    }
+                }
+                MouseCaptureState::Captured => {}
+                MouseCaptureState::OtherElement => {
+                    return;
+                }
+            }
             let hidpi_factor = edata.hidpi_factor;
             edata.cursor_pos = Some((
                 e.offset_x() as f64 * hidpi_factor,
