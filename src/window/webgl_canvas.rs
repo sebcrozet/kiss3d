@@ -225,13 +225,13 @@ impl AbstractCanvas for WebGLCanvas {
                 }
             }
             let hidpi_factor = edata.hidpi_factor;
-            edata.cursor_pos = Some((
-                e.offset_x() as f64 * hidpi_factor,
-                e.offset_y() as f64 * hidpi_factor,
-            ));
+            let bounding_client_rect = edata.canvas.get_bounding_client_rect();
+            let x = (e.client_x() as f64 - bounding_client_rect.get_x()) * hidpi_factor;
+            let y = (e.client_y() as f64 - bounding_client_rect.get_y()) * hidpi_factor;
+            edata.cursor_pos = Some((x, y));
             let _ = edata.pending_events.push(WindowEvent::CursorPos(
-                e.offset_x() as f64 * hidpi_factor,
-                e.offset_y() as f64 * hidpi_factor,
+                x,
+                y,
                 translate_mouse_modifiers(&e),
             ));
         });
