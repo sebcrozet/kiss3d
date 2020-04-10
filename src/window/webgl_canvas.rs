@@ -12,7 +12,8 @@ use stdweb::web::event::{
     ConcreteEvent, IEvent, IKeyboardEvent, IMouseEvent, ITouchEvent, IUiEvent,
 };
 use stdweb::web::{
-    self, html_element::CanvasElement, EventListenerHandle, IEventTarget, IHtmlElement, IParentNode,
+    self, html_element::CanvasElement, EventListenerHandle, IElement, IEventTarget, IHtmlElement,
+    IParentNode,
 };
 use stdweb::{unstable::TryInto, Reference};
 use window::{AbstractCanvas, CanvasSetup};
@@ -86,6 +87,14 @@ impl AbstractCanvas for WebGLCanvas {
             .unwrap();
         canvas.set_width((canvas.offset_width() as f64 * initial_hidpi_factor) as u32);
         canvas.set_height((canvas.offset_height() as f64 * initial_hidpi_factor) as u32);
+        // We set tabIndex to make the canvas focusable to allow keyboard
+        // events to be received, but only if it is not already set to any
+        // specific values. This is done to keep old code working without
+        // changes since the keyboard event listeners are now added to the
+        // canvas element instead of the window.
+        if !canvas.has_attribute("tabindex") {
+            canvas.set_attribute("tabindex", "0");
+        }
         let data = Rc::new(RefCell::new(WebGLCanvasData {
             canvas,
             cursor_pos: None,
@@ -231,52 +240,61 @@ impl AbstractCanvas for WebGLCanvas {
         event_listeners.push(listener);
 
         let edata = data.clone();
-        let listener = web::window().add_event_listener(move |e: WheelEvent| {
-            let delta_x: f64 = js!(
-                return @{e.as_ref()}.deltaX;
-            )
-            .try_into()
-            .ok()
-            .unwrap_or(0.0);
-            let delta_y: f64 = js!(
-                return @{e.as_ref()}.deltaY;
-            )
-            .try_into()
-            .ok()
-            .unwrap_or(0.0);
-            let mut edata = edata.borrow_mut();
-            let _ = edata.pending_events.push(WindowEvent::Scroll(
-                delta_x / 10.0,
-                -delta_y / 10.0,
-                translate_mouse_modifiers(&e),
-            ));
-        });
+        let listener = data
+            .borrow()
+            .canvas
+            .add_event_listener(move |e: WheelEvent| {
+                let delta_x: f64 = js!(
+                    return @{e.as_ref()}.deltaX;
+                )
+                .try_into()
+                .ok()
+                .unwrap_or(0.0);
+                let delta_y: f64 = js!(
+                    return @{e.as_ref()}.deltaY;
+                )
+                .try_into()
+                .ok()
+                .unwrap_or(0.0);
+                let mut edata = edata.borrow_mut();
+                let _ = edata.pending_events.push(WindowEvent::Scroll(
+                    delta_x / 10.0,
+                    -delta_y / 10.0,
+                    translate_mouse_modifiers(&e),
+                ));
+            });
         event_listeners.push(listener);
 
         let edata = data.clone();
-        let listener = web::window().add_event_listener(move |e: webevent::KeyDownEvent| {
-            let mut edata = edata.borrow_mut();
-            let key = translate_key(&e);
-            let _ = edata.pending_events.push(WindowEvent::Key(
-                key,
-                Action::Press,
-                translate_key_modifiers(&e),
-            ));
-            edata.key_states[key as usize] = Action::Press;
-        });
+        let listener = data
+            .borrow()
+            .canvas
+            .add_event_listener(move |e: webevent::KeyDownEvent| {
+                let mut edata = edata.borrow_mut();
+                let key = translate_key(&e);
+                let _ = edata.pending_events.push(WindowEvent::Key(
+                    key,
+                    Action::Press,
+                    translate_key_modifiers(&e),
+                ));
+                edata.key_states[key as usize] = Action::Press;
+            });
         event_listeners.push(listener);
 
         let edata = data.clone();
-        let listener = web::window().add_event_listener(move |e: webevent::KeyUpEvent| {
-            let mut edata = edata.borrow_mut();
-            let key = translate_key(&e);
-            let _ = edata.pending_events.push(WindowEvent::Key(
-                key,
-                Action::Release,
-                translate_key_modifiers(&e),
-            ));
-            edata.key_states[key as usize] = Action::Release;
-        });
+        let listener = data
+            .borrow()
+            .canvas
+            .add_event_listener(move |e: webevent::KeyUpEvent| {
+                let mut edata = edata.borrow_mut();
+                let key = translate_key(&e);
+                let _ = edata.pending_events.push(WindowEvent::Key(
+                    key,
+                    Action::Release,
+                    translate_key_modifiers(&e),
+                ));
+                edata.key_states[key as usize] = Action::Release;
+            });
         event_listeners.push(listener);
 
         WebGLCanvas {
