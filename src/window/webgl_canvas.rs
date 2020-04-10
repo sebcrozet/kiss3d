@@ -11,7 +11,10 @@ use stdweb::web::event as webevent;
 use stdweb::web::event::{
     ConcreteEvent, IEvent, IKeyboardEvent, IMouseEvent, ITouchEvent, IUiEvent,
 };
-use stdweb::web::{self, html_element::CanvasElement, IEventTarget, IHtmlElement, IParentNode};
+use stdweb::web::{
+    self, html_element::CanvasElement, EventListenerHandle, IElement, IEventTarget, IHtmlElement,
+    IParentNode,
+};
 use stdweb::{unstable::TryInto, Reference};
 use window::{AbstractCanvas, CanvasSetup};
 
@@ -39,6 +42,26 @@ struct WebGLCanvasData {
 /// A canvas based on WebGL and stdweb.
 pub struct WebGLCanvas {
     data: Rc<RefCell<WebGLCanvasData>>,
+    event_listeners: Vec<EventListenerHandle>,
+}
+
+impl Drop for WebGLCanvas {
+    fn drop(&mut self) {
+        use context::Context;
+        // Remove event listeners to free memory:
+        let event_listeners = std::mem::replace(&mut self.event_listeners, Vec::new());
+        for listener in event_listeners {
+            listener.remove();
+        }
+        // Clear the remnants of the last frame:
+        // HACK: This uses the global context.
+        let ctxt = Context::get();
+        verify!(ctxt.active_texture(Context::TEXTURE0));
+        verify!(ctxt.clear_color(1.0, 1.0, 1.0, 1.0));
+        verify!(ctxt.clear(Context::COLOR_BUFFER_BIT));
+        verify!(ctxt.clear(Context::DEPTH_BUFFER_BIT));
+        // TODO: Free other resources such as textures?
+    }
 }
 
 impl AbstractCanvas for WebGLCanvas {
@@ -64,6 +87,14 @@ impl AbstractCanvas for WebGLCanvas {
             .unwrap();
         canvas.set_width((canvas.offset_width() as f64 * initial_hidpi_factor) as u32);
         canvas.set_height((canvas.offset_height() as f64 * initial_hidpi_factor) as u32);
+        // We set tabIndex to make the canvas focusable to allow keyboard
+        // events to be received, but only if it is not already set to any
+        // specific values. This is done to keep old code working without
+        // changes since the keyboard event listeners are now added to the
+        // canvas element instead of the window.
+        if !canvas.has_attribute("tabindex") {
+            canvas.set_attribute("tabindex", "0");
+        }
         let data = Rc::new(RefCell::new(WebGLCanvasData {
             canvas,
             cursor_pos: None,
@@ -73,9 +104,10 @@ impl AbstractCanvas for WebGLCanvas {
             out_events,
             hidpi_factor: initial_hidpi_factor,
         }));
+        let mut event_listeners = Vec::new();
 
         let edata = data.clone();
-        let _ = web::window().add_event_listener(move |_: webevent::ResizeEvent| {
+        let listener = web::window().add_event_listener(move |_: webevent::ResizeEvent| {
             let mut edata = edata.borrow_mut();
             // Here we update the hidpi factor with the assumption that a resize
             // event will always be triggered whenever window.devicePixelRatio
@@ -94,9 +126,10 @@ impl AbstractCanvas for WebGLCanvas {
                 .push(WindowEvent::FramebufferSize(w, h));
             let _ = edata.pending_events.push(WindowEvent::Size(w, h));
         });
+        event_listeners.push(listener);
 
         let edata = data.clone();
-        let _ = web::window().add_event_listener(move |e: webevent::MouseDownEvent| {
+        let listener = web::window().add_event_listener(move |e: webevent::MouseDownEvent| {
             let mut edata = edata.borrow_mut();
             let button = translate_mouse_button(&e);
             let _ = edata.pending_events.push(WindowEvent::MouseButton(
@@ -106,9 +139,10 @@ impl AbstractCanvas for WebGLCanvas {
             ));
             edata.button_states[button as usize] = Action::Press;
         });
+        event_listeners.push(listener);
 
         let edata = data.clone();
-        let _ = web::window().add_event_listener(move |e: webevent::MouseUpEvent| {
+        let listener = web::window().add_event_listener(move |e: webevent::MouseUpEvent| {
             let mut edata = edata.borrow_mut();
             let button = translate_mouse_button(&e);
             let _ = edata.pending_events.push(WindowEvent::MouseButton(
@@ -118,9 +152,10 @@ impl AbstractCanvas for WebGLCanvas {
             ));
             edata.button_states[button as usize] = Action::Release;
         });
+        event_listeners.push(listener);
 
         let edata = data.clone();
-        let _ = web::window().add_event_listener(move |e: webevent::MouseMoveEvent| {
+        let listener = web::window().add_event_listener(move |e: webevent::MouseMoveEvent| {
             let mut edata = edata.borrow_mut();
             let hidpi_factor = edata.hidpi_factor;
             edata.cursor_pos = Some((
@@ -133,9 +168,10 @@ impl AbstractCanvas for WebGLCanvas {
                 translate_mouse_modifiers(&e),
             ));
         });
+        event_listeners.push(listener);
 
         let edata = data.clone();
-        let _ = web::window().add_event_listener(move |e: webevent::TouchStart| {
+        let listener = web::window().add_event_listener(move |e: webevent::TouchStart| {
             let mut edata = edata.borrow_mut();
             let hidpi_factor = edata.hidpi_factor;
             for t in e.changed_touches() {
@@ -148,9 +184,10 @@ impl AbstractCanvas for WebGLCanvas {
                 ));
             }
         });
+        event_listeners.push(listener);
 
         let edata = data.clone();
-        let _ = web::window().add_event_listener(move |e: webevent::TouchEnd| {
+        let listener = web::window().add_event_listener(move |e: webevent::TouchEnd| {
             let mut edata = edata.borrow_mut();
             let hidpi_factor = edata.hidpi_factor;
             for t in e.changed_touches() {
@@ -163,9 +200,10 @@ impl AbstractCanvas for WebGLCanvas {
                 ));
             }
         });
+        event_listeners.push(listener);
 
         let edata = data.clone();
-        let _ = web::window().add_event_listener(move |e: webevent::TouchCancel| {
+        let listener = web::window().add_event_listener(move |e: webevent::TouchCancel| {
             let mut edata = edata.borrow_mut();
             let hidpi_factor = edata.hidpi_factor;
             for t in e.changed_touches() {
@@ -178,9 +216,10 @@ impl AbstractCanvas for WebGLCanvas {
                 ));
             }
         });
+        event_listeners.push(listener);
 
         let edata = data.clone();
-        let _ = web::window().add_event_listener(move |e: webevent::TouchMove| {
+        let listener = web::window().add_event_listener(move |e: webevent::TouchMove| {
             let mut edata = edata.borrow_mut();
             let hidpi_factor = edata.hidpi_factor;
 
@@ -198,54 +237,70 @@ impl AbstractCanvas for WebGLCanvas {
                 ));
             }
         });
+        event_listeners.push(listener);
 
         let edata = data.clone();
-        let _ = web::window().add_event_listener(move |e: WheelEvent| {
-            let delta_x: f64 = js!(
-                return @{e.as_ref()}.deltaX;
-            )
-            .try_into()
-            .ok()
-            .unwrap_or(0.0);
-            let delta_y: f64 = js!(
-                return @{e.as_ref()}.deltaY;
-            )
-            .try_into()
-            .ok()
-            .unwrap_or(0.0);
-            let mut edata = edata.borrow_mut();
-            let _ = edata.pending_events.push(WindowEvent::Scroll(
-                delta_x / 10.0,
-                -delta_y / 10.0,
-                translate_mouse_modifiers(&e),
-            ));
-        });
+        let listener = data
+            .borrow()
+            .canvas
+            .add_event_listener(move |e: WheelEvent| {
+                let delta_x: f64 = js!(
+                    return @{e.as_ref()}.deltaX;
+                )
+                .try_into()
+                .ok()
+                .unwrap_or(0.0);
+                let delta_y: f64 = js!(
+                    return @{e.as_ref()}.deltaY;
+                )
+                .try_into()
+                .ok()
+                .unwrap_or(0.0);
+                let mut edata = edata.borrow_mut();
+                let _ = edata.pending_events.push(WindowEvent::Scroll(
+                    delta_x / 10.0,
+                    -delta_y / 10.0,
+                    translate_mouse_modifiers(&e),
+                ));
+            });
+        event_listeners.push(listener);
 
         let edata = data.clone();
-        let _ = web::window().add_event_listener(move |e: webevent::KeyDownEvent| {
-            let mut edata = edata.borrow_mut();
-            let key = translate_key(&e);
-            let _ = edata.pending_events.push(WindowEvent::Key(
-                key,
-                Action::Press,
-                translate_key_modifiers(&e),
-            ));
-            edata.key_states[key as usize] = Action::Press;
-        });
+        let listener = data
+            .borrow()
+            .canvas
+            .add_event_listener(move |e: webevent::KeyDownEvent| {
+                let mut edata = edata.borrow_mut();
+                let key = translate_key(&e);
+                let _ = edata.pending_events.push(WindowEvent::Key(
+                    key,
+                    Action::Press,
+                    translate_key_modifiers(&e),
+                ));
+                edata.key_states[key as usize] = Action::Press;
+            });
+        event_listeners.push(listener);
 
         let edata = data.clone();
-        let _ = web::window().add_event_listener(move |e: webevent::KeyUpEvent| {
-            let mut edata = edata.borrow_mut();
-            let key = translate_key(&e);
-            let _ = edata.pending_events.push(WindowEvent::Key(
-                key,
-                Action::Release,
-                translate_key_modifiers(&e),
-            ));
-            edata.key_states[key as usize] = Action::Release;
-        });
+        let listener = data
+            .borrow()
+            .canvas
+            .add_event_listener(move |e: webevent::KeyUpEvent| {
+                let mut edata = edata.borrow_mut();
+                let key = translate_key(&e);
+                let _ = edata.pending_events.push(WindowEvent::Key(
+                    key,
+                    Action::Release,
+                    translate_key_modifiers(&e),
+                ));
+                edata.key_states[key as usize] = Action::Release;
+            });
+        event_listeners.push(listener);
 
-        WebGLCanvas { data }
+        WebGLCanvas {
+            data,
+            event_listeners,
+        }
     }
 
     fn render_loop(mut callback: impl FnMut(f64) -> bool + 'static) {
