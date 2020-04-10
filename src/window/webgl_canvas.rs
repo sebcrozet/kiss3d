@@ -52,6 +52,14 @@ impl Drop for WebGLCanvas {
         for listener in event_listeners {
             listener.remove();
         }
+        // Clear the remnants of the last frame:
+        // HACK: This uses the global context.
+        let ctxt = Context::get();
+        verify!(ctxt.active_texture(Context::TEXTURE0));
+        verify!(ctxt.clear_color(1.0, 1.0, 1.0, 1.0));
+        verify!(ctxt.clear(Context::COLOR_BUFFER_BIT));
+        verify!(ctxt.clear(Context::DEPTH_BUFFER_BIT));
+        // TODO: Free other resources such as textures?
     }
 }
 
