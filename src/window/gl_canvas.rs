@@ -143,7 +143,9 @@ impl AbstractCanvas for GLCanvas {
                     delta, modifiers, ..
                 } => {
                     let (x, y) = match delta {
-                        glutin::MouseScrollDelta::LineDelta(dx, dy) => (dx as f64, dy as f64),
+                        glutin::MouseScrollDelta::LineDelta(dx, dy) => {
+                            (dx as f64 * 10.0, dy as f64 * 10.0)
+                        }
                         glutin::MouseScrollDelta::PixelDelta(delta) => delta.into(),
                     };
                     let modifiers = translate_modifiers(modifiers);
