@@ -152,9 +152,9 @@ extern crate stdweb;
 #[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 #[macro_use]
 extern crate stdweb_derive;
-extern crate instant;
 #[cfg(feature = "conrod")]
-pub extern crate kiss3d_conrod as conrod;
+pub extern crate conrod_core as conrod;
+extern crate instant;
 #[cfg(feature = "conrod")]
 pub use conrod::widget_ids;
 

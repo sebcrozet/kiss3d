@@ -167,6 +167,8 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
     const TITLE: &'static str = "All Widgets";
     widget::Canvas::new()
         .pad(MARGIN)
+        .align_bottom()
+        .h(ui.win_h / 2.0)
         .scroll_kids_vertically()
 //        .color(conrod::Color::Rgba(0.5, 0.5, 0.5, 0.2))
         .set(ids.canvas, ui);

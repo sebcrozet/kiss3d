@@ -323,6 +323,23 @@ impl AbstractCanvas for WebGLCanvas {
                 .try_into()
                 .ok()
                 .unwrap_or(0.0);
+                // The values of deltaMode:
+                // 0x00 => DOM_DELTA_PIXEL
+                // 0x01 => DOM_DELTA_LINE
+                // 0x02 => DOM_DELTA_PAGE
+                let delta_mode = js!(
+                    return @{e.as_ref()}.deltaMode;
+                )
+                .try_into()
+                .ok()
+                .unwrap_or(0u32);
+                let (delta_x, delta_y) = match delta_mode {
+                    // It doesn't really make much sense to scroll a "page" in
+                    // case of scrolling the cameras so we treat DOM_DELTA_PAGE
+                    // the same way as DOM_DELTA_LINE.
+                    0x01 | 0x02 => (delta_x * 10.0, delta_y * 10.0),
+                    _ => (delta_x, delta_y),
+                };
                 let mut edata = edata.borrow_mut();
                 let _ = edata.pending_events.push(WindowEvent::Scroll(
                     delta_x / 10.0,
