@@ -87,6 +87,7 @@ impl AbstractContextConst for GLContext {
     const BLEND: u32 = gl::BLEND;
     const SRC_ALPHA: u32 = gl::SRC_ALPHA;
     const ONE_MINUS_SRC_ALPHA: u32 = gl::ONE_MINUS_SRC_ALPHA;
+    const ONE: u32 = gl::ONE;
     const UNPACK_ALIGNMENT: u32 = gl::UNPACK_ALIGNMENT;
     const ALPHA: u32 = gl::ALPHA;
     const RED: u32 = gl::RED;
@@ -636,7 +637,13 @@ impl AbstractContext for GLContext {
         unsafe { gl::PixelStorei(pname, param) }
     }
 
-    fn blend_func(&self, sfactor: GLenum, dfactor: GLenum) {
-        unsafe { gl::BlendFunc(sfactor, dfactor) }
+    fn blend_func_separate(
+        &self,
+        src_rgb: GLenum,
+        dst_rgb: GLenum,
+        src_alpha: GLenum,
+        dst_alpha: GLenum,
+    ) {
+        unsafe { gl::BlendFuncSeparate(src_rgb, dst_rgb, src_alpha, dst_alpha) }
     }
 }

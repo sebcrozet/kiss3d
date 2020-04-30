@@ -93,6 +93,7 @@ impl AbstractContextConst for WebGLContext {
     const BLEND: u32 = WebGLRenderingContext::BLEND;
     const SRC_ALPHA: u32 = WebGLRenderingContext::SRC_ALPHA;
     const ONE_MINUS_SRC_ALPHA: u32 = WebGLRenderingContext::ONE_MINUS_SRC_ALPHA;
+    const ONE: u32 = WebGLRenderingContext::ONE;
     const UNPACK_ALIGNMENT: u32 = WebGLRenderingContext::UNPACK_ALIGNMENT;
     const ALPHA: u32 = WebGLRenderingContext::ALPHA;
     const RED: u32 = WebGLRenderingContext::LUMINANCE;
@@ -603,7 +604,14 @@ impl AbstractContext for WebGLContext {
         self.ctxt.pixel_storei(pname, param)
     }
 
-    fn blend_func(&self, sfactor: GLenum, dfactor: GLenum) {
-        self.ctxt.blend_func(sfactor, dfactor)
+    fn blend_func_separate(
+        &self,
+        src_rgb: GLenum,
+        dst_rgb: GLenum,
+        src_alpha: GLenum,
+        dst_alpha: GLenum,
+    ) {
+        self.ctxt
+            .blend_func_separate(src_rgb, dst_rgb, src_alpha, dst_alpha)
     }
 }
