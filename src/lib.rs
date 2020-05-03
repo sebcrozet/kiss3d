@@ -156,7 +156,7 @@ extern crate instant;
 pub use conrod::widget_ids;
 
 pub use nalgebra;
-pub use ncollide3d as ncollide;
+pub use ncollide3d;
 
 #[deprecated(note = "Use the `renderer` module instead.")]
 pub use crate::renderer::line_renderer;
