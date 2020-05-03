@@ -149,7 +149,12 @@ impl TextRenderer {
 
         let _ = verify!(ctxt.polygon_mode(Context::FRONT_AND_BACK, Context::FILL));
         verify!(ctxt.enable(Context::BLEND));
-        verify!(ctxt.blend_func(Context::SRC_ALPHA, Context::ONE_MINUS_SRC_ALPHA));
+        verify!(ctxt.blend_func_separate(
+            Context::SRC_ALPHA,
+            Context::ONE_MINUS_SRC_ALPHA,
+            Context::ONE,
+            Context::ONE_MINUS_SRC_ALPHA,
+        ));
         verify!(ctxt.disable(Context::DEPTH_TEST));
 
         self.pos.enable();

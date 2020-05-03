@@ -105,6 +105,7 @@ impl Context {
     pub const BLEND: u32 = ContextImpl::BLEND;
     pub const SRC_ALPHA: u32 = ContextImpl::SRC_ALPHA;
     pub const ONE_MINUS_SRC_ALPHA: u32 = ContextImpl::ONE_MINUS_SRC_ALPHA;
+    pub const ONE: u32 = ContextImpl::ONE;
     pub const UNPACK_ALIGNMENT: u32 = ContextImpl::UNPACK_ALIGNMENT;
     pub const ALPHA: u32 = ContextImpl::ALPHA;
     pub const RED: u32 = ContextImpl::RED;
@@ -513,8 +514,15 @@ impl Context {
         self.ctxt.pixel_storei(pname, param)
     }
 
-    pub fn blend_func(&self, sfactor: GLenum, dfactor: GLenum) {
-        self.ctxt.blend_func(sfactor, dfactor)
+    pub fn blend_func_separate(
+        &self,
+        src_rgb: GLenum,
+        dst_rgb: GLenum,
+        src_alpha: GLenum,
+        dst_alpha: GLenum,
+    ) {
+        self.ctxt
+            .blend_func_separate(src_rgb, dst_rgb, src_alpha, dst_alpha)
     }
 }
 
@@ -574,6 +582,7 @@ pub(crate) trait AbstractContextConst {
     const BLEND: u32;
     const SRC_ALPHA: u32;
     const ONE_MINUS_SRC_ALPHA: u32;
+    const ONE: u32;
     const UNPACK_ALIGNMENT: u32;
     const ALPHA: u32;
     const RED: u32;
@@ -750,5 +759,11 @@ pub(crate) trait AbstractContext {
     );
     fn pixel_storei(&self, pname: GLenum, param: i32);
 
-    fn blend_func(&self, sfactor: GLenum, dfactor: GLenum);
+    fn blend_func_separate(
+        &self,
+        src_rgb: GLenum,
+        dst_rgb: GLenum,
+        src_alpha: GLenum,
+        dst_alpha: GLenum,
+    );
 }
