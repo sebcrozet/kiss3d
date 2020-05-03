@@ -2,9 +2,9 @@
 
 use na::Vector2;
 
-use context::Context;
-use post_processing::post_processing_effect::PostProcessingEffect;
-use resource::{
+use crate::context::Context;
+use crate::post_processing::post_processing_effect::PostProcessingEffect;
+use crate::resource::{
     AllocationType, BufferType, Effect, GPUVec, RenderTarget, ShaderAttribute, ShaderUniform,
 };
 

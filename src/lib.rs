@@ -132,10 +132,7 @@ Thanks to all the Rustaceans for their help, and their OpenGL bindings.
 
 #[macro_use]
 extern crate bitflags;
-extern crate either;
-extern crate image;
 extern crate nalgebra as na;
-extern crate ncollide3d;
 extern crate num_traits as num;
 extern crate rusttype;
 #[macro_use]
@@ -158,10 +155,13 @@ extern crate instant;
 #[cfg(feature = "conrod")]
 pub use conrod::widget_ids;
 
+pub use nalgebra;
+pub use ncollide3d as ncollide;
+
 #[deprecated(note = "Use the `renderer` module instead.")]
-pub use renderer::line_renderer;
+pub use crate::renderer::line_renderer;
 #[deprecated(note = "Use the `renderer` module instead.")]
-pub use renderer::point_renderer;
+pub use crate::renderer::point_renderer;
 
 pub mod builtin;
 pub mod camera;

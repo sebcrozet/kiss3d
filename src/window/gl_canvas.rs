@@ -1,14 +1,14 @@
 use std::sync::mpsc::Sender;
 
-use event::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent};
+use crate::event::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent};
 use gl;
 use glutin::{
     self, dpi::LogicalSize, ContextBuilder, EventsLoop, GlContext, GlRequest, GlWindow, TouchPhase,
     WindowBuilder,
 };
 use image::{GenericImage, Pixel};
-use window::canvas::{CanvasSetup, NumSamples};
-use window::AbstractCanvas;
+use crate::window::canvas::{CanvasSetup, NumSamples};
+use crate::window::AbstractCanvas;
 
 /// A canvas based on glutin and OpenGL.
 pub struct GLCanvas {

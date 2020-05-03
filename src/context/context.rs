@@ -3,9 +3,9 @@
 use std::sync::Once;
 
 #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
-use context::GLContext as ContextImpl;
+use crate::context::GLContext as ContextImpl;
 #[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
-use context::WebGLContext as ContextImpl;
+use crate::context::WebGLContext as ContextImpl;
 
 #[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 use super::webgl_bindings::{
@@ -17,7 +17,7 @@ use gl::{
 };
 
 use na::{Matrix2, Matrix3, Matrix4};
-use resource::GLPrimitive;
+use crate::resource::GLPrimitive;
 
 #[path = "../error.rs"]
 mod error;

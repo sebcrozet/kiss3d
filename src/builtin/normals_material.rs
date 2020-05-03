@@ -1,10 +1,10 @@
-use camera::Camera;
-use context::Context;
-use light::Light;
+use crate::camera::Camera;
+use crate::context::Context;
+use crate::light::Light;
 use na::{Isometry3, Matrix3, Matrix4, Point3, Vector3};
-use resource::Material;
-use resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
-use scene::ObjectData;
+use crate::resource::Material;
+use crate::resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
+use crate::scene::ObjectData;
 
 #[path = "../error.rs"]
 mod error;

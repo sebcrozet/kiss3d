@@ -1,7 +1,7 @@
 //! A resource manager to load materials.
 
-use builtin::{NormalsMaterial, ObjectMaterial, UvsMaterial};
-use resource::Material;
+use crate::builtin::{NormalsMaterial, ObjectMaterial, UvsMaterial};
+use crate::resource::Material;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;

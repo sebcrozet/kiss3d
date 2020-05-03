@@ -1,9 +1,9 @@
 //! Data structure of a scene node.
 
-use camera::Camera;
-use light::Light;
+use crate::camera::Camera;
+use crate::light::Light;
 use na::{Isometry3, Point2, Point3, Vector3};
-use resource::{Material, Mesh, Texture, TextureManager};
+use crate::resource::{Material, Mesh, Texture, TextureManager};
 use std::any::Any;
 use std::cell::RefCell;
 use std::path::Path;

@@ -1,4 +1,4 @@
-use camera::Camera;
+use crate::camera::Camera;
 
 /// Trait implemented by custom renderer.
 pub trait Renderer {

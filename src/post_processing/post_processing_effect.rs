@@ -1,6 +1,6 @@
 //! Trait implemented by every post-processing effect.
 
-use resource::RenderTarget;
+use crate::resource::RenderTarget;
 
 /// Trait of post processing effect.
 ///

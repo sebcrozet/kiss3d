@@ -1,13 +1,13 @@
-use camera::Camera;
-use event::{Action, Key, MouseButton, WindowEvent};
+use crate::camera::Camera;
+use crate::event::{Action, Key, MouseButton, WindowEvent};
 use na::{
     self, Isometry3, Matrix4, Perspective3, Point3, Translation3, Unit, UnitQuaternion, Vector2,
     Vector3,
 };
 use num::Zero;
-use resource::ShaderUniform;
+use crate::resource::ShaderUniform;
 use std::f32;
-use window::Canvas;
+use crate::window::Canvas;
 
 /// First-person camera mode.
 ///

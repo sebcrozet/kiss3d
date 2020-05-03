@@ -1,8 +1,8 @@
-use camera::Camera;
-use planar_camera::PlanarCamera;
-use post_processing::PostProcessingEffect;
-use renderer::Renderer;
-use window::Window;
+use crate::camera::Camera;
+use crate::planar_camera::PlanarCamera;
+use crate::post_processing::PostProcessingEffect;
+use crate::renderer::Renderer;
+use crate::window::Window;
 
 /// Trait implemented by objects describing state of an application.
 ///

@@ -1,7 +1,7 @@
 //! Simplistic mtl loader.
 
-use loader::obj;
-use loader::obj::Words;
+use crate::loader::obj;
+use crate::loader::obj::Words;
 use na::Vector3;
 use std::fs::File;
 use std::io::Read;

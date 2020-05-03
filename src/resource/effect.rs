@@ -5,8 +5,8 @@ use std::mem;
 use std::path::Path;
 use std::str;
 
-use context::{Context, GLintptr, Program, Shader, UniformLocation};
-use resource::{GLPrimitive, GPUVec};
+use crate::context::{Context, GLintptr, Program, Shader, UniformLocation};
+use crate::resource::{GLPrimitive, GPUVec};
 
 #[path = "../error.rs"]
 mod error;

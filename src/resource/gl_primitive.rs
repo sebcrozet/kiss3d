@@ -1,6 +1,6 @@
 //! Structures that a gpu buffer may contain.
 
-use context::{Context, UniformLocation};
+use crate::context::{Context, UniformLocation};
 use std::slice;
 
 use na::{

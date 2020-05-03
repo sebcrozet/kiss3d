@@ -6,12 +6,12 @@ use super::webgl_bindings::{
     WebGLBuffer, WebGLFramebuffer, WebGLProgram, WebGLRenderbuffer, WebGLRenderingContext,
     WebGLShader, WebGLTexture, WebGLUniformLocation,
 };
-use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr, GLsizeiptr};
+use crate::context::{AbstractContext, AbstractContextConst, GLenum, GLintptr, GLsizeiptr};
 use stdweb::web::{self, html_element::CanvasElement, IParentNode, TypedArray};
 use stdweb::{self, unstable::TryInto, Value};
 
 use na::{Matrix2, Matrix3, Matrix4};
-use resource::{GLPrimitive, PrimitiveArray};
+use crate::resource::{GLPrimitive, PrimitiveArray};
 
 /// A WebGL 1.0 cotnext.
 #[derive(Clone)]

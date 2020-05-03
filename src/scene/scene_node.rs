@@ -1,11 +1,11 @@
-use camera::Camera;
-use light::Light;
+use crate::camera::Camera;
+use crate::light::Light;
 use na;
 use na::{Isometry3, Point2, Point3, Translation3, UnitQuaternion, Vector3};
 use ncollide3d::procedural;
 use ncollide3d::procedural::TriMesh;
-use resource::{Material, MaterialManager, Mesh, MeshManager, Texture, TextureManager};
-use scene::Object;
+use crate::resource::{Material, MaterialManager, Mesh, MeshManager, Texture, TextureManager};
+use crate::scene::Object;
 use std::cell::{Ref, RefCell, RefMut};
 use std::mem;
 use std::path::{Path, PathBuf};

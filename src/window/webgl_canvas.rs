@@ -5,7 +5,7 @@ use std::ops::DerefMut;
 use std::rc::Rc;
 use std::sync::mpsc::Sender;
 
-use event::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent};
+use crate::event::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent};
 use image::{GenericImage, Pixel};
 use stdweb::web::event as webevent;
 use stdweb::web::event::{
@@ -16,7 +16,7 @@ use stdweb::web::{
     IParentNode,
 };
 use stdweb::{unstable::TryInto, Reference};
-use window::{AbstractCanvas, CanvasSetup};
+use crate::window::{AbstractCanvas, CanvasSetup};
 
 #[derive(Clone, Debug, PartialEq, Eq, ReferenceType)]
 #[reference(instance_of = "Event")] // TODO: Better type check.
@@ -55,7 +55,7 @@ pub struct WebGLCanvas {
 
 impl Drop for WebGLCanvas {
     fn drop(&mut self) {
-        use context::Context;
+        use crate::context::Context;
         // Remove event listeners to free memory:
         let event_listeners = std::mem::replace(&mut self.event_listeners, Vec::new());
         for listener in event_listeners {

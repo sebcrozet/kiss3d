@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::rc::Rc;
 
-use context::{Context, Texture};
+use crate::context::{Context, Texture};
 
 #[path = "../error.rs"]
 mod error;

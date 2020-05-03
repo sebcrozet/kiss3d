@@ -1,10 +1,10 @@
 use na::{self, Isometry2, Point2, Point3, Translation2, UnitComplex, Vector2};
 
-use planar_camera::PlanarCamera;
-use resource::{
+use crate::planar_camera::PlanarCamera;
+use crate::resource::{
     PlanarMaterial, PlanarMaterialManager, PlanarMesh, PlanarMeshManager, Texture, TextureManager,
 };
-use scene::PlanarObject;
+use crate::scene::PlanarObject;
 use std::cell::{Ref, RefCell, RefMut};
 use std::f32;
 use std::mem;

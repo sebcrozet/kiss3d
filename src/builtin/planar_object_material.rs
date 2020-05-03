@@ -1,9 +1,9 @@
-use context::Context;
+use crate::context::Context;
 use na::{Isometry2, Matrix2, Matrix3, Point2, Point3, Vector2};
-use planar_camera::PlanarCamera;
-use resource::PlanarMaterial;
-use resource::{Effect, PlanarMesh, ShaderAttribute, ShaderUniform};
-use scene::PlanarObjectData;
+use crate::planar_camera::PlanarCamera;
+use crate::resource::PlanarMaterial;
+use crate::resource::{Effect, PlanarMesh, ShaderAttribute, ShaderUniform};
+use crate::scene::PlanarObjectData;
 
 #[path = "../error.rs"]
 mod error;

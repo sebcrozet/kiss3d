@@ -3,12 +3,12 @@ use std::iter;
 use std::mem;
 use std::ptr;
 
-use context::{AbstractContext, AbstractContextConst, GLenum, GLintptr, GLsizeiptr};
+use crate::context::{AbstractContext, AbstractContextConst, GLenum, GLintptr, GLsizeiptr};
 use gl;
 use num::Zero;
 
 use na::{Matrix2, Matrix3, Matrix4};
-use resource::GLPrimitive;
+use crate::resource::GLPrimitive;
 
 #[path = "../error.rs"]
 mod error;

@@ -3,7 +3,7 @@ use std::f32;
 
 use na::{Point2, Point3};
 
-use resource::PlanarMesh;
+use crate::resource::PlanarMesh;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;

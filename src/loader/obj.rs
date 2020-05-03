@@ -1,11 +1,11 @@
 //! Simplistic obj loader.
 
-use loader::mtl;
-use loader::mtl::MtlMaterial;
+use crate::loader::mtl;
+use crate::loader::mtl::MtlMaterial;
 use na::{Point2, Point3, Vector3};
 use num::Bounded;
-use resource::GPUVec;
-use resource::{AllocationType, BufferType, Mesh};
+use crate::resource::GPUVec;
+use crate::resource::{AllocationType, BufferType, Mesh};
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::fs::File;

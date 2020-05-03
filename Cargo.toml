@@ -9,6 +9,7 @@ readme = "README.md"
 keywords = [ "3D", "graphics", "OpenGL", "KISS" ]
 license = "BSD-3-Clause"
 autoexamples = true
+edition = "2018"
 
 include = [
     "src/**/*.rs",

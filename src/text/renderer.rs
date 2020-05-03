@@ -7,9 +7,9 @@ use rusttype;
 use rusttype::gpu_cache::Cache;
 use std::rc::Rc;
 
-use context::{Context, Texture};
-use resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
-use text::Font;
+use crate::context::{Context, Texture};
+use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
+use crate::text::Font;
 
 #[path = "../error.rs"]
 mod error;

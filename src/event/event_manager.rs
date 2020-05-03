@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::mpsc::{Receiver, TryIter};
 
-use event::WindowEvent;
+use crate::event::WindowEvent;
 
 /// An event.
 pub struct Event<'a> {

@@ -1,10 +1,10 @@
-use event::{Action, MouseButton, WindowEvent};
+use crate::event::{Action, MouseButton, WindowEvent};
 use na::{self, Matrix3, Point2, Translation2, Vector2};
 use num::Pow;
-use planar_camera::PlanarCamera;
-use resource::ShaderUniform;
+use crate::planar_camera::PlanarCamera;
+use crate::resource::ShaderUniform;
 use std::f32;
-use window::Canvas;
+use crate::window::Canvas;
 
 /// A 2D camera that can be zoomed and panned.
 #[derive(Clone, Debug)]

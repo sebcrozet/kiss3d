@@ -2,11 +2,11 @@ use std::f32;
 
 use na::{self, Isometry3, Matrix4, Perspective3, Point2, Point3, Vector2, Vector3};
 
-use camera::Camera;
-use context::Context;
-use event::{Action, Key, MouseButton, WindowEvent};
-use resource::ShaderUniform;
-use window::Canvas;
+use crate::camera::Camera;
+use crate::context::Context;
+use crate::event::{Action, Key, MouseButton, WindowEvent};
+use crate::resource::ShaderUniform;
+use crate::window::Canvas;
 
 #[path = "../error.rs"]
 mod error;

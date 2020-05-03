@@ -1,18 +1,18 @@
 //! GPU resource managers
 
-pub use context::Texture;
-pub use resource::effect::{Effect, ShaderAttribute, ShaderUniform};
-pub use resource::framebuffer_manager::{FramebufferManager, OffscreenBuffers, RenderTarget};
-pub use resource::gl_primitive::{GLPrimitive, PrimitiveArray};
-pub use resource::gpu_vector::{AllocationType, BufferType, GPUVec};
-pub use resource::material::{Material, PlanarMaterial};
-pub use resource::material_manager::MaterialManager;
-pub use resource::mesh::Mesh;
-pub use resource::mesh_manager::MeshManager;
-pub use resource::planar_material_manager::PlanarMaterialManager;
-pub use resource::planar_mesh::PlanarMesh;
-pub use resource::planar_mesh_manager::PlanarMeshManager;
-pub use resource::texture_manager::{TextureManager, TextureWrapping};
+pub use crate::context::Texture;
+pub use crate::resource::effect::{Effect, ShaderAttribute, ShaderUniform};
+pub use crate::resource::framebuffer_manager::{FramebufferManager, OffscreenBuffers, RenderTarget};
+pub use crate::resource::gl_primitive::{GLPrimitive, PrimitiveArray};
+pub use crate::resource::gpu_vector::{AllocationType, BufferType, GPUVec};
+pub use crate::resource::material::{Material, PlanarMaterial};
+pub use crate::resource::material_manager::MaterialManager;
+pub use crate::resource::mesh::Mesh;
+pub use crate::resource::mesh_manager::MeshManager;
+pub use crate::resource::planar_material_manager::PlanarMaterialManager;
+pub use crate::resource::planar_mesh::PlanarMesh;
+pub use crate::resource::planar_mesh_manager::PlanarMeshManager;
+pub use crate::resource::texture_manager::{TextureManager, TextureWrapping};
 
 mod effect;
 mod framebuffer_manager;

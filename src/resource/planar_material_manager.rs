@@ -1,7 +1,7 @@
 //! A resource manager to load materials.
 
-use builtin::PlanarObjectMaterial;
-use resource::PlanarMaterial;
+use crate::builtin::PlanarObjectMaterial;
+use crate::resource::PlanarMaterial;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;

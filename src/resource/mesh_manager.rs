@@ -1,10 +1,10 @@
 //! A resource manager to load meshes.
 
-use loader::mtl::MtlMaterial;
-use loader::obj;
+use crate::loader::mtl::MtlMaterial;
+use crate::loader::obj;
 use ncollide3d::procedural;
 use ncollide3d::procedural::TriMesh;
-use resource::Mesh;
+use crate::resource::Mesh;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::io::Result as IoResult;

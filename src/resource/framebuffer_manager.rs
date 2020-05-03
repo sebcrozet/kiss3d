@@ -1,6 +1,6 @@
 //! Resource manager to allocate and switch between framebuffers.
 
-use context::{Context, Framebuffer, Renderbuffer, Texture};
+use crate::context::{Context, Framebuffer, Renderbuffer, Texture};
 use either::Either;
 
 #[path = "../error.rs"]

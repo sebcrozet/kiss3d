@@ -13,25 +13,25 @@ use std::time::Duration;
 use instant::Instant;
 use na::{Point2, Point3, Vector2, Vector3};
 
-use camera::{ArcBall, Camera};
-use context::Context;
-use event::{Action, EventManager, Key, WindowEvent};
+use crate::camera::{ArcBall, Camera};
+use crate::context::Context;
+use crate::event::{Action, EventManager, Key, WindowEvent};
 use image::imageops;
 use image::{GenericImage, Pixel};
 use image::{ImageBuffer, Rgb};
-use light::Light;
+use crate::light::Light;
 use ncollide3d::procedural::TriMesh;
-use planar_camera::{FixedView, PlanarCamera};
-use planar_line_renderer::PlanarLineRenderer;
-use post_processing::PostProcessingEffect;
+use crate::planar_camera::{FixedView, PlanarCamera};
+use crate::planar_line_renderer::PlanarLineRenderer;
+use crate::post_processing::PostProcessingEffect;
 #[cfg(feature = "conrod")]
-use renderer::ConrodRenderer;
-use renderer::{LineRenderer, PointRenderer, Renderer};
-use resource::{FramebufferManager, Mesh, PlanarMesh, RenderTarget, Texture, TextureManager};
-use scene::{PlanarSceneNode, SceneNode};
-use text::{Font, TextRenderer};
-use window::canvas::CanvasSetup;
-use window::{Canvas, State};
+use crate::renderer::ConrodRenderer;
+use crate::renderer::{LineRenderer, PointRenderer, Renderer};
+use crate::resource::{FramebufferManager, Mesh, PlanarMesh, RenderTarget, Texture, TextureManager};
+use crate::scene::{PlanarSceneNode, SceneNode};
+use crate::text::{Font, TextRenderer};
+use crate::window::canvas::CanvasSetup;
+use crate::window::{Canvas, State};
 
 #[cfg(feature = "conrod")]
 use std::collections::HashMap;

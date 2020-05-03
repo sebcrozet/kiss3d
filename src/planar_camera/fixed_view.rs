@@ -1,9 +1,9 @@
-use event::WindowEvent;
+use crate::event::WindowEvent;
 use na::{self, Matrix3, Point2, Vector2, Vector3};
-use planar_camera::PlanarCamera;
-use resource::ShaderUniform;
+use crate::planar_camera::PlanarCamera;
+use crate::resource::ShaderUniform;
 use std::f32;
-use window::Canvas;
+use crate::window::Canvas;
 
 /// A camera that cannot move.
 #[derive(Clone, Debug)]
