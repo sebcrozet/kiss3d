@@ -67,7 +67,3 @@ stdweb-derive = "0.5"
 [dev-dependencies]
 rand = "0.7"
 ncollide2d = "0.23"
-
-[patch.crates-io]
-ncollide2d = { path = "../ncollide/build/ncollide2d" }
-ncollide3d = { path = "../ncollide/build/ncollide3d" }
