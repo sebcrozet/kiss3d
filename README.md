@@ -99,16 +99,19 @@ Some controls are handled by default by the engine (they can be overridden by th
 * `right click + drag`: translate the view point.
 * `enter`: look at the origin (0.0, 0.0, 0.0).
 
-## Compilation
+## Use as dependency
 You will need the last stable build of the [rust compiler](http://www.rust-lang.org)
 and the official package manager: [cargo](https://github.com/rust-lang/cargo).
 
-Simply add the following to your `Cargo.toml` file:
+Simply add the following to your `Cargo.toml` file (check the current latest version on [crates.io](https://crates.io/crates/kiss3d)):
 
 ```
 [dependencies]
-kiss3d = "0.23"
+kiss3d = "0.24.1"
 ```
+
+## Build
+You need to have [`ncollide/`](https://github.com/rustsim/ncollide) in the parent folder of `kiss3d/`.
 
 
 ## Contributions
