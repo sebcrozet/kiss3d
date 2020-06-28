@@ -34,7 +34,7 @@ impl RenderTarget {
     /// Returns an opengl handle to the off-screen depth buffer.
     ///
     /// Returns `None` if the texture is off-screen.
-    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn depth_id(&self) -> Option<&Either<Texture, Renderbuffer>> {
         match *self {
             RenderTarget::Screen => None,

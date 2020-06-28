@@ -5,7 +5,7 @@ macro_rules! verify(
     ($e: expr) => {
         {
             let res = $e;
-            #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+            #[cfg(not(target_arch = "wasm32"))]
             { assert_eq!(crate::context::Context::get().get_error(), 0); }
             res
         }
@@ -17,7 +17,7 @@ macro_rules! ignore(
     ($e: expr) => {
         {
             let res = $e;
-            #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+            #[cfg(not(target_arch = "wasm32"))]
             { let _ = crate::context::Context::get().get_error(); }
             res
         }

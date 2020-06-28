@@ -16,22 +16,24 @@ use na::{Point2, Point3, Vector2, Vector3};
 use crate::camera::{ArcBall, Camera};
 use crate::context::Context;
 use crate::event::{Action, EventManager, Key, WindowEvent};
-use image::imageops;
-use image::{GenericImage, Pixel};
-use image::{ImageBuffer, Rgb};
 use crate::light::Light;
-use ncollide3d::procedural::TriMesh;
 use crate::planar_camera::{FixedView, PlanarCamera};
 use crate::planar_line_renderer::PlanarLineRenderer;
 use crate::post_processing::PostProcessingEffect;
 #[cfg(feature = "conrod")]
 use crate::renderer::ConrodRenderer;
 use crate::renderer::{LineRenderer, PointRenderer, Renderer};
-use crate::resource::{FramebufferManager, Mesh, PlanarMesh, RenderTarget, Texture, TextureManager};
+use crate::resource::{
+    FramebufferManager, Mesh, PlanarMesh, RenderTarget, Texture, TextureManager,
+};
 use crate::scene::{PlanarSceneNode, SceneNode};
 use crate::text::{Font, TextRenderer};
 use crate::window::canvas::CanvasSetup;
 use crate::window::{Canvas, State};
+use image::imageops;
+use image::{GenericImage, Pixel};
+use image::{ImageBuffer, Rgb};
+use ncollide3d::procedural::TriMesh;
 
 #[cfg(feature = "conrod")]
 use std::collections::HashMap;
@@ -883,7 +885,7 @@ impl Window {
     }
 
     /// Render one frame using the specified state.
-    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn render_with_state<S: State>(&mut self, state: &mut S) -> bool {
         self.do_render_with_state(state)
     }
@@ -904,7 +906,7 @@ impl Window {
     /// Renders the scene using the default camera.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn render(&mut self) -> bool {
         self.render_with(None, None, None)
     }
@@ -912,7 +914,7 @@ impl Window {
     /// Render using a specific post processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn render_with_effect(&mut self, effect: &mut (dyn PostProcessingEffect)) -> bool {
         self.render_with(None, None, Some(effect))
     }
@@ -920,7 +922,7 @@ impl Window {
     /// Render using a specific camera.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn render_with_camera(&mut self, camera: &mut (dyn Camera)) -> bool {
         self.render_with(Some(camera), None, None)
     }
@@ -928,7 +930,7 @@ impl Window {
     /// Render using a specific 2D and 3D camera.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn render_with_cameras(
         &mut self,
         camera: &mut dyn Camera,
@@ -940,7 +942,7 @@ impl Window {
     /// Render using a specific camera and post processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn render_with_camera_and_effect(
         &mut self,
         camera: &mut dyn Camera,
@@ -952,7 +954,7 @@ impl Window {
     /// Render using a specific 2D and 3D camera and post processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn render_with_cameras_and_effect(
         &mut self,
         camera: &mut dyn Camera,
@@ -965,7 +967,7 @@ impl Window {
     /// Draws the scene with the given camera and post-processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn render_with(
         &mut self,
         camera: Option<&mut dyn Camera>,
@@ -1151,7 +1153,7 @@ fn init_gl() {
     verify!(ctxt.front_face(Context::CCW));
     verify!(ctxt.enable(Context::DEPTH_TEST));
     verify!(ctxt.enable(Context::SCISSOR_TEST));
-    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+    #[cfg(not(target_arch = "wasm32"))]
     {
         verify!(ctxt.enable(Context::PROGRAM_POINT_SIZE));
     }

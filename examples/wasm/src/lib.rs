@@ -1,18 +1,17 @@
 #[macro_use]
 extern crate kiss3d;
 extern crate nalgebra as na;
-#[macro_use]
-extern crate stdweb;
 
-use kiss3d::conrod::widget::{Button, button::Style, Widget, Text};
 use kiss3d::conrod::color::{Color, Colorable};
-use kiss3d::conrod::position::{Sizeable, Positionable};
+use kiss3d::conrod::position::{Positionable, Sizeable};
+use kiss3d::conrod::widget::{button::Style, Button, Text, Widget};
 use kiss3d::conrod::Labelable;
+use wasm_bindgen::prelude::*;
 
+use kiss3d::conrod;
 use kiss3d::light::Light;
 use kiss3d::scene::SceneNode;
 use kiss3d::window::{State, Window};
-use kiss3d::conrod;
 use na::{UnitQuaternion, Vector3};
 
 struct AppState {
@@ -24,16 +23,17 @@ struct AppState {
 
 impl State for AppState {
     fn step(&mut self, window: &mut Window) {
-        for event in window.conrod_ui().widget_input(self.ids.button).events() {
-            console!(log, format!("Found event: {:?}", event))
-        }
+        //        for event in window.conrod_ui().widget_input(self.ids.button).events() {
+        //            console!(log, format!("Found event: {:?}", event))
+        //        }
 
         let mut ui = window.conrod_ui_mut().set_widgets();
         gui(&mut ui, &self.ids, &mut self.app)
     }
 }
 
-fn main() {
+#[wasm_bindgen(start)]
+pub fn main() -> Result<(), JsValue> {
     let mut window = Window::new("Kiss3d: wasm example");
     window.set_background_color(1.0, 1.0, 1.0);
     let mut c = window.add_cube(0.1, 0.1, 0.1);
@@ -44,18 +44,16 @@ fn main() {
 
     let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
 
-
     // Generate the widget identifiers.
     let ids = Ids::new(window.conrod_ui_mut().widget_id_generator());
     let app = DemoApp::new();
     window.conrod_ui_mut().theme = theme();
 
-
     let state = AppState { c, rot, ids, app };
 
-    window.render_loop(state)
+    window.render_loop(state);
+    Ok(())
 }
-
 
 /*
  *
@@ -125,7 +123,6 @@ widget_ids! {
     }
 }
 
-
 pub const WIN_W: u32 = 600;
 pub const WIN_H: u32 = 420;
 
@@ -134,9 +131,8 @@ pub struct DemoApp {
     ball_xy: conrod::Point,
     ball_color: conrod::Color,
     sine_frequency: f32,
-//    rust_logo: conrod::image::Id,
+    //    rust_logo: conrod::image::Id,
 }
-
 
 impl DemoApp {
     /// Simple constructor for the `DemoApp`.
@@ -145,11 +141,10 @@ impl DemoApp {
             ball_xy: [0.0, 0.0],
             ball_color: conrod::color::WHITE,
             sine_frequency: 1.0,
-//            rust_logo: rust_logo,
+            //            rust_logo: rust_logo,
         }
     }
 }
-
 
 /// Instantiate a GUI demonstrating every widget available in conrod.
 pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
@@ -170,18 +165,19 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
         .align_bottom()
         .h(ui.win_h / 2.0)
         .scroll_kids_vertically()
-//        .color(conrod::Color::Rgba(0.5, 0.5, 0.5, 0.2))
+        //        .color(conrod::Color::Rgba(0.5, 0.5, 0.5, 0.2))
         .set(ids.canvas, ui);
-
 
     ////////////////
     ///// TEXT /////
     ////////////////
 
-
     // We'll demonstrate the `Text` primitive widget by using it to draw a title and an
     // introduction to the example.
-    widget::Text::new(TITLE).font_size(TITLE_SIZE).mid_top_of(ids.canvas).set(ids.title, ui);
+    widget::Text::new(TITLE)
+        .font_size(TITLE_SIZE)
+        .mid_top_of(ids.canvas)
+        .set(ids.title, ui);
     const INTRODUCTION: &'static str =
         "This example aims to demonstrate all widgets that are provided by conrod.\
         \n\nThe widget that you are currently looking at is the Text widget. The Text widget \
@@ -197,11 +193,10 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
         .line_spacing(5.0)
         .set(ids.introduction, ui);
 
-//return;
+    //return;
     ////////////////////////////
     ///// Lines and Shapes /////
     ////////////////////////////
-
 
     widget::Text::new("Lines and Shapes")
         .down(70.0)
@@ -237,36 +232,53 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
 
     let start = [-40.0, -40.0];
     let end = [40.0, 40.0];
-    widget::Line::centred(start, end).mid_left_of(ids.shapes_left_col).set(ids.line, ui);
+    widget::Line::centred(start, end)
+        .mid_left_of(ids.shapes_left_col)
+        .set(ids.line, ui);
 
     let left = [-40.0, -40.0];
     let top = [0.0, 40.0];
     let right = [40.0, -40.0];
     let points = once(left).chain(once(top)).chain(once(right));
-    widget::PointPath::centred(points).right(SHAPE_GAP).set(ids.point_path, ui);
+    widget::PointPath::centred(points)
+        .right(SHAPE_GAP)
+        .set(ids.point_path, ui);
 
-    widget::Rectangle::fill([80.0, 80.0]).right(SHAPE_GAP).set(ids.rectangle_fill, ui);
+    widget::Rectangle::fill([80.0, 80.0])
+        .right(SHAPE_GAP)
+        .set(ids.rectangle_fill, ui);
 
-    widget::Rectangle::outline([80.0, 80.0]).right(SHAPE_GAP).set(ids.rectangle_outline, ui);
+    widget::Rectangle::outline([80.0, 80.0])
+        .right(SHAPE_GAP)
+        .set(ids.rectangle_outline, ui);
 
     let bl = [-40.0, -40.0];
     let tl = [-20.0, 40.0];
     let tr = [20.0, 40.0];
     let br = [40.0, -40.0];
     let points = once(bl).chain(once(tl)).chain(once(tr)).chain(once(br));
-    widget::Polygon::centred_fill(points).mid_left_of(ids.shapes_right_col).set(ids.trapezoid, ui);
+    widget::Polygon::centred_fill(points)
+        .mid_left_of(ids.shapes_right_col)
+        .set(ids.trapezoid, ui);
 
-    widget::Oval::fill([40.0, 80.0]).right(SHAPE_GAP + 20.0).align_middle_y().set(ids.oval_fill, ui);
+    widget::Oval::fill([40.0, 80.0])
+        .right(SHAPE_GAP + 20.0)
+        .align_middle_y()
+        .set(ids.oval_fill, ui);
 
-    widget::Oval::outline([80.0, 40.0]).right(SHAPE_GAP + 20.0).align_middle_y().set(ids.oval_outline, ui);
+    widget::Oval::outline([80.0, 40.0])
+        .right(SHAPE_GAP + 20.0)
+        .align_middle_y()
+        .set(ids.oval_outline, ui);
 
-    widget::Circle::fill(40.0).right(SHAPE_GAP).align_middle_y().set(ids.circle, ui);
-
+    widget::Circle::fill(40.0)
+        .right(SHAPE_GAP)
+        .align_middle_y()
+        .set(ids.circle, ui);
 
     /////////////////
     ///// Image /////
     /////////////////
-
 
     widget::Text::new("Image")
         .down_from(ids.shapes_canvas, MARGIN)
@@ -275,20 +287,18 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
         .set(ids.image_title, ui);
 
     const LOGO_SIDE: conrod::Scalar = 144.0;
-//    widget::Image::new(app.rust_logo)
-//        .w_h(LOGO_SIDE, LOGO_SIDE)
-//        .down(60.0)
-//        .align_middle_x_of(ids.canvas)
-//        .set(ids.rust_logo, ui);
-
+    //    widget::Image::new(app.rust_logo)
+    //        .w_h(LOGO_SIDE, LOGO_SIDE)
+    //        .down(60.0)
+    //        .align_middle_x_of(ids.canvas)
+    //        .set(ids.rust_logo, ui);
 
     /////////////////////////////////
     ///// Button, XYPad, Toggle /////
     /////////////////////////////////
 
-
     widget::Text::new("Button, XYPad and Toggle")
-//        .down_from(ids.rust_logo, 60.0)
+        //        .down_from(ids.rust_logo, 60.0)
         .align_middle_x_of(ids.canvas)
         .font_size(SUBTITLE_SIZE)
         .set(ids.button_title, ui);
@@ -307,35 +317,42 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
         .down_from(ids.button_title, 60.0)
         .w_h(side, side)
         .set(ids.button, ui)
-        {
-            let x = rand::random::<conrod::Scalar>() * (max_x - min_x) - max_x;
-            let y = rand::random::<conrod::Scalar>() * (max_y - min_y) - max_y;
-            app.ball_xy = [x, y];
-        }
+    {
+        let x = rand::random::<conrod::Scalar>() * (max_x - min_x) - max_x;
+        let y = rand::random::<conrod::Scalar>() * (max_y - min_y) - max_y;
+        app.ball_xy = [x, y];
+    }
 
-    for (x, y) in widget::XYPad::new(app.ball_xy[0], min_x, max_x,
-                                     app.ball_xy[1], min_y, max_y)
+    for (x, y) in widget::XYPad::new(app.ball_xy[0], min_x, max_x, app.ball_xy[1], min_y, max_y)
         .label("BALL XY")
         .wh_of(ids.button)
         .align_middle_y_of(ids.button)
         .align_middle_x_of(ids.canvas)
         .parent(ids.canvas)
         .set(ids.xy_pad, ui)
-        {
-            app.ball_xy = [x, y];
-        }
+    {
+        app.ball_xy = [x, y];
+    }
 
     let is_white = app.ball_color == conrod::color::WHITE;
     let label = if is_white { "WHITE" } else { "BLACK" };
     for is_white in widget::Toggle::new(is_white)
         .label(label)
-        .label_color(if is_white { conrod::color::WHITE } else { conrod::color::LIGHT_CHARCOAL })
+        .label_color(if is_white {
+            conrod::color::WHITE
+        } else {
+            conrod::color::LIGHT_CHARCOAL
+        })
         .mid_right_with_margin_on(ids.canvas, MARGIN)
         .align_middle_y_of(ids.button)
         .set(ids.toggle, ui)
-        {
-            app.ball_color = if is_white { conrod::color::WHITE } else { conrod::color::BLACK };
-        }
+    {
+        app.ball_color = if is_white {
+            conrod::color::WHITE
+        } else {
+            conrod::color::BLACK
+        };
+    }
 
     let ball_x = app.ball_xy[0];
     let ball_y = app.ball_xy[1] - max_y - side * 0.5 - MARGIN;
@@ -344,11 +361,9 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
         .x_y_relative_to(ids.xy_pad, ball_x, ball_y)
         .set(ids.ball, ui);
 
-
     //////////////////////////////////
     ///// NumberDialer, PlotPath /////
     //////////////////////////////////
-
 
     widget::Text::new("NumberDialer and PlotPath")
         .down_from(ids.xy_pad, max_y - min_y + side * 0.5 + MARGIN)
@@ -366,9 +381,9 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
         .w_h(160.0, 40.0)
         .label("F R E Q")
         .set(ids.number_dialer, ui)
-        {
-            app.sine_frequency = new_freq;
-        }
+    {
+        app.sine_frequency = new_freq;
+    }
 
     // Use the `PlotPath` widget to display a sine wave.
     let min_x = 0.0;
@@ -382,11 +397,11 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
         .align_middle_x_of(ids.canvas)
         .set(ids.plot_path, ui);
 
-
     /////////////////////
     ///// Scrollbar /////
     /////////////////////
 
-
-    widget::Scrollbar::y_axis(ids.canvas).auto_hide(true).set(ids.canvas_scrollbar, ui);
+    widget::Scrollbar::y_axis(ids.canvas)
+        .auto_hide(true)
+        .set(ids.canvas_scrollbar, ui);
 }

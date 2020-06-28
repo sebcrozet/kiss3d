@@ -1,14 +1,14 @@
 use std::sync::mpsc::Sender;
 
+use crate::context::Context;
 use crate::event::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent};
-use gl;
+use crate::window::canvas::{CanvasSetup, NumSamples};
+use crate::window::AbstractCanvas;
 use glutin::{
     self, dpi::LogicalSize, ContextBuilder, EventsLoop, GlContext, GlRequest, GlWindow, TouchPhase,
     WindowBuilder,
 };
 use image::{GenericImage, Pixel};
-use crate::window::canvas::{CanvasSetup, NumSamples};
-use crate::window::AbstractCanvas;
 
 /// A canvas based on glutin and OpenGL.
 pub struct GLCanvas {
@@ -48,16 +48,15 @@ impl AbstractCanvas for GLCanvas {
             });
         let window = GlWindow::new(window, context, &events).unwrap();
         let _ = unsafe { window.make_current().unwrap() };
-        verify!(gl::load_with(
-            |name| window.context().get_proc_address(name) as *const _
-        ));
+        Context::init(|| {
+            glow::Context::from_loader_function(|name| {
+                window.context().get_proc_address(name) as *const _
+            })
+        });
 
-        unsafe {
-            // Setup a single VAO.
-            let mut vao = 0;
-            gl::GenVertexArrays(1, &mut vao);
-            gl::BindVertexArray(vao);
-        }
+        let ctxt = Context::get();
+        let vao = ctxt.create_vertex_array();
+        ctxt.bind_vertex_array(vao.as_ref());
 
         GLCanvas {
             window,
