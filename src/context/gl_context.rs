@@ -1,11 +1,7 @@
-use std::ffi::CString;
-use std::iter;
 use std::mem;
-use std::ptr;
 use std::sync::Arc;
 
-use crate::context::{AbstractContext, AbstractContextConst, GLenum, GLintptr, GLsizeiptr};
-use num::Zero;
+use crate::context::{AbstractContext, AbstractContextConst, GLenum, GLintptr};
 
 use crate::resource::GLPrimitive;
 use glow::{Context, HasContext};
@@ -17,14 +13,8 @@ mod error;
 /// An OpenGL context.
 #[derive(Clone)]
 pub struct GLContext {
+    /// The underlying glow context.
     pub context: Arc<Context>,
-}
-
-fn val<T: Copy + Zero>(val: Option<&T>) -> T {
-    match val {
-        Some(t) => *t,
-        None => T::zero(),
-    }
 }
 
 impl GLContext {
@@ -285,7 +275,7 @@ impl AbstractContext for GLContext {
         unsafe { self.context.attach_shader(*program, *shader) }
     }
 
-    fn get_shader_parameter_int(&self, shader: &Self::Shader, pname: GLenum) -> Option<i32> {
+    fn get_shader_parameter_int(&self, shader: &Self::Shader, _pname: GLenum) -> Option<i32> {
         unsafe {
             if self.context.get_shader_compile_status(*shader) {
                 Some(1)
@@ -560,7 +550,7 @@ impl AbstractContext for GLContext {
         unsafe { self.context.draw_arrays(mode, first, count) }
     }
 
-    fn point_size(&self, size: f32) {
+    fn point_size(&self, _size: f32) {
         //        unsafe { self.context.point_size(size) }
     }
 

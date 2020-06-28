@@ -494,6 +494,7 @@ impl Window {
         Window::do_new(title, false, width, height, None)
     }
 
+    /// Opens a window with custom options for vsync and AA.
     pub fn new_with_setup(title: &str, width: u32, height: u32, setup: CanvasSetup) -> Window {
         Window::do_new(title, false, width, height, Some(setup))
     }

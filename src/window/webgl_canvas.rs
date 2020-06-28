@@ -11,9 +11,7 @@ use crate::window::{AbstractCanvas, CanvasSetup};
 use image::{GenericImage, Pixel};
 use wasm_bindgen::closure::Closure;
 use wasm_bindgen::{JsCast, JsValue};
-use web_sys::{
-    HtmlCanvasElement, KeyboardEvent, MouseEvent, TouchEvent, UiEvent, WheelEvent, Window,
-};
+use web_sys::{HtmlCanvasElement, KeyboardEvent, MouseEvent, TouchEvent, UiEvent, WheelEvent};
 
 struct WebGLCanvasData {
     canvas: HtmlCanvasElement,
@@ -34,11 +32,11 @@ enum MouseCaptureState {
 }
 
 enum EventClosure {
-    Ui(Closure<FnMut(UiEvent)>),
-    Mouse(Closure<FnMut(MouseEvent)>),
-    Touch(Closure<FnMut(TouchEvent)>),
-    Wheel(Closure<FnMut(WheelEvent)>),
-    Keyboard(Closure<FnMut(KeyboardEvent)>),
+    Ui(Closure<dyn FnMut(UiEvent)>),
+    Mouse(Closure<dyn FnMut(MouseEvent)>),
+    Touch(Closure<dyn FnMut(TouchEvent)>),
+    Wheel(Closure<dyn FnMut(WheelEvent)>),
+    Keyboard(Closure<dyn FnMut(KeyboardEvent)>),
 }
 
 /// A canvas based on WebGL and stdweb.
@@ -49,7 +47,6 @@ pub struct WebGLCanvas {
 
 impl Drop for WebGLCanvas {
     fn drop(&mut self) {
-        use crate::context::Context;
         // Clear the remnants of the last frame:
         // HACK: This uses the global context.
         let ctxt = Context::get();
@@ -67,7 +64,7 @@ impl AbstractCanvas for WebGLCanvas {
         _: bool,
         _: u32,
         _: u32,
-        setup: Option<CanvasSetup>,
+        _setup: Option<CanvasSetup>,
         out_events: Sender<WindowEvent>,
     ) -> Self {
         fn get_hidpi_factor() -> f64 {
@@ -446,11 +443,11 @@ impl AbstractCanvas for WebGLCanvas {
         // Not supported.
     }
 
-    fn set_icon(&mut self, icon: impl GenericImage<Pixel = impl Pixel<Subpixel = u8>>) {
+    fn set_icon(&mut self, _icon: impl GenericImage<Pixel = impl Pixel<Subpixel = u8>>) {
         // Not supported.
     }
 
-    fn set_cursor_grab(&self, grab: bool) {
+    fn set_cursor_grab(&self, _: bool) {
         // Not supported.
     }
 
