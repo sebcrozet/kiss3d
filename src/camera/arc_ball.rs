@@ -1,9 +1,9 @@
 use crate::camera::Camera;
 use crate::event::{Action, Key, Modifiers, MouseButton, WindowEvent};
-use na::{self, Isometry3, Matrix4, Perspective3, Point3, Unit, UnitQuaternion, Vector2, Vector3};
 use crate::resource::ShaderUniform;
-use std::f32;
 use crate::window::Canvas;
+use na::{self, Isometry3, Matrix4, Perspective3, Point3, Unit, UnitQuaternion, Vector2, Vector3};
+use std::f32;
 
 /// Arc-ball camera mode.
 ///
@@ -188,6 +188,11 @@ impl ArcBall {
     /// Set the maximum distance from the camera position to its view point.
     pub fn set_max_dist(&mut self, max_dist: f32) {
         self.max_dist = max_dist;
+    }
+
+    /// Set the increment for a unit scroll (default at 40).
+    pub fn set_dist_step(&mut self, dist_step: f32) {
+        self.dist_step = dist_step;
     }
 
     /// Move and orient the camera such that it looks at a specific point.
