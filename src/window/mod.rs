@@ -7,7 +7,7 @@ pub use self::gl_canvas::GLCanvas;
 pub use self::state::State;
 #[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
 pub use self::webgl_canvas::WebGLCanvas;
-pub use self::window::Window;
+pub use self::window::{NullUiContext, UiContext, Window};
 
 mod canvas;
 #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]

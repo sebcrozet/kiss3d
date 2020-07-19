@@ -1,0 +1,16 @@
+[package]
+name    = "kiss3d_conrod"
+version = "0.69.0"
+authors = [ "Sébastien Crozet <developer@crozet.re>" ]
+edition = "2018"
+
+license = "BSD-3-Clause"
+
+[dependencies]
+conrod_core = { version = "0.69", features = [ "stdweb" ] }
+kiss3d = { version = "0.24", path = "../.." }
+nalgebra = "0.21"
+rusttype = { version = "0.8", features = [ "gpu_cache" ] }
+
+[dev-dependencies]
+rand = "0.7"
