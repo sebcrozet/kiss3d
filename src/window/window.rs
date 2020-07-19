@@ -544,6 +544,7 @@ impl<Ui: UiContext> Window<Ui> {
             ))),
             ui_context: Ui::new(width, height, ui_init),
         };
+        Context::get().bind_vao();
 
         if hide {
             usr_window.canvas.hide()
@@ -887,6 +888,7 @@ impl<Ui: UiContext> Window<Ui> {
 
         self.text_renderer.render(w as f32, h as f32);
         self.ui_context.render(w, h, self.canvas.hidpi_factor());
+        Context::get().bind_vao();
 
         // We are done: swap buffers
         self.canvas.swap_buffers();
