@@ -1,13 +1,13 @@
 use crate::camera::Camera;
 use crate::event::{Action, Key, MouseButton, WindowEvent};
+use crate::resource::ShaderUniform;
+use crate::window::Canvas;
 use na::{
     self, Isometry3, Matrix4, Perspective3, Point3, Translation3, Unit, UnitQuaternion, Vector2,
     Vector3,
 };
 use num::Zero;
-use crate::resource::ShaderUniform;
 use std::f32;
-use crate::window::Canvas;
 
 /// First-person camera mode.
 ///
@@ -38,6 +38,8 @@ pub struct FirstPerson {
     inverse_proj_view: Matrix4<f32>,
     last_cursor_pos: Vector2<f32>,
     coord_system: CoordSystemRh,
+
+    key_states: KeyStates,
 }
 
 impl FirstPerson {
@@ -74,6 +76,7 @@ impl FirstPerson {
             inverse_proj_view: na::zero(),
             last_cursor_pos: na::zero(),
             coord_system: CoordSystemRh::from_up_axis(Vector3::y_axis()),
+            key_states: Default::default(),
         };
 
         res.look_at(eye, at);
@@ -204,24 +207,28 @@ impl FirstPerson {
     /// Use None to disable movement in this direction.
     pub fn rebind_up_key(&mut self, new_key: Option<Key>) {
         self.up_key = new_key;
+        self.key_states.up = false;
     }
 
     /// Set the movement button for down.
     /// Use None to disable movement in this direction.
     pub fn rebind_down_key(&mut self, new_key: Option<Key>) {
         self.down_key = new_key;
+        self.key_states.down = false;
     }
 
     /// Set the movement button for left.
     /// Use None to disable movement in this direction.
     pub fn rebind_left_key(&mut self, new_key: Option<Key>) {
         self.left_key = new_key;
+        self.key_states.left = false;
     }
 
     /// Set the movement button for right.
     /// Use None to disable movement in this direction.
     pub fn rebind_right_key(&mut self, new_key: Option<Key>) {
         self.right_key = new_key;
+        self.key_states.right = false;
     }
 
     /// Disable the movement buttons for up, down, left and right.
@@ -396,6 +403,21 @@ impl Camera for FirstPerson {
                 self.projection.set_aspect(w as f32 / h as f32);
                 self.update_projviews();
             }
+            WindowEvent::Key(key, act, _mods) => {
+                let is_down = match act {
+                    Action::Release => false,
+                    Action::Press => true,
+                };
+                if self.up_key.map_or(false, |x| x == key) {
+                    self.key_states.up = is_down;
+                } else if self.down_key.map_or(false, |x| x == key) {
+                    self.key_states.down = is_down;
+                } else if self.left_key.map_or(false, |x| x == key) {
+                    self.key_states.left = is_down;
+                } else if self.right_key.map_or(false, |x| x == key) {
+                    self.key_states.right = is_down;
+                }
+            }
             _ => {}
         }
     }
@@ -423,23 +445,16 @@ impl Camera for FirstPerson {
         view.upload(&self.view);
     }
 
-    fn update(&mut self, canvas: &Canvas) {
-        let up = check_optional_key_state(canvas, self.up_key, Action::Press);
-        let down = check_optional_key_state(canvas, self.down_key, Action::Press);
-        let right = check_optional_key_state(canvas, self.right_key, Action::Press);
-        let left = check_optional_key_state(canvas, self.left_key, Action::Press);
-        let dir = self.move_dir(up, down, right, left);
+    fn update(&mut self, _canvas: &Canvas) {
+        let dir = self.move_dir(
+            self.key_states.up,
+            self.key_states.down,
+            self.key_states.right,
+            self.key_states.left,
+        );
 
         let move_amount = dir * self.move_step;
         self.translate_mut(&Translation3::from(move_amount));
-    }
-}
-
-fn check_optional_key_state(canvas: &Canvas, key: Option<Key>, key_state: Action) -> bool {
-    if let Some(actual_key) = key {
-        canvas.get_key(actual_key) == key_state
-    } else {
-        false
     }
 }
 
@@ -461,4 +476,12 @@ impl CoordSystemRh {
             rotation_to_y_up,
         }
     }
+}
+
+#[derive(Default, Clone, Copy, Debug)]
+struct KeyStates {
+    up: bool,
+    down: bool,
+    left: bool,
+    right: bool,
 }
