@@ -1,0 +1,16 @@
+[package]
+name    = "kiss3d_iced"
+version = "0.0.1"
+authors = [ "Alvin Wong <alvinhochun@gmail.com>" ]
+edition = "2018"
+
+[dependencies]
+bytemuck = "1.2"
+# chrono = { version = "0.4" }
+glow = "0.4"
+glow_glyph = "0.2"
+glyph_brush = "0.7"
+iced_graphics = { version = "0.1", path = "D:\\dev\\experiments\\rust-fiddle\\iced\\graphics", features = ["font-fallback", "font-icons"] }
+iced_native = { version = "0.2", path = "D:\\dev\\experiments\\rust-fiddle\\iced\\native" }
+kiss3d = { version = "0.24", path = "../.." }
+nalgebra = "0.21"

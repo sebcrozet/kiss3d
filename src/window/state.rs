@@ -2,16 +2,16 @@ use crate::camera::Camera;
 use crate::planar_camera::PlanarCamera;
 use crate::post_processing::PostProcessingEffect;
 use crate::renderer::Renderer;
-use crate::window::Window;
+use crate::window::{NullUiContext, UiContext, Window};
 
 /// Trait implemented by objects describing state of an application.
 ///
 /// It is passed to the window's render loop. Its methods are called at each
 /// render loop to update the application state, and customize the cameras and
 /// post-processing effects to be used by the renderer.
-pub trait State: 'static {
+pub trait State<Ui: UiContext = NullUiContext>: 'static {
     /// Method called at each render loop before a rendering.
-    fn step(&mut self, window: &mut Window);
+    fn step(&mut self, window: &mut Window<Ui>);
 
     /// Unless `cameras_and_effect_and_renderer` is implemented, this method called at each render loop to retrieve
     /// the cameras and post-processing effects to be used for the next render.
@@ -43,6 +43,6 @@ pub trait State: 'static {
     }
 }
 
-impl State for () {
-    fn step(&mut self, _: &mut Window) {}
+impl<Ui: UiContext> State<Ui> for () {
+    fn step(&mut self, _: &mut Window<Ui>) {}
 }

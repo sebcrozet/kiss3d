@@ -47,7 +47,11 @@ impl Drop for Buffer {
 #[derive(Clone)]
 pub struct Context {
     ctxt: ContextImpl,
+    glow_ctxt: std::sync::Arc<glow::Context>,
 }
+
+static mut CONTEXT_SINGLETON: Option<Context> = None;
+static INIT: Once = Once::new();
 
 impl Context {
     pub const FLOAT: u32 = ContextImpl::FLOAT;
@@ -110,19 +114,43 @@ impl Context {
     pub const ALPHA: u32 = ContextImpl::ALPHA;
     pub const RED: u32 = ContextImpl::RED;
 
-    pub fn get() -> Context {
-        static mut CONTEXT_SINGLETON: Option<Context> = None;
-        static INIT: Once = Once::new();
-
+    pub fn init(get_ctxt: impl Fn() -> glow::Context) {
         unsafe {
             INIT.call_once(|| {
+                let ctxt = get_ctxt();
                 CONTEXT_SINGLETON = Some(Context {
                     ctxt: ContextImpl::new(),
+                    glow_ctxt: std::sync::Arc::new(ctxt),
                 });
-            });
-
-            CONTEXT_SINGLETON.clone().unwrap()
+            })
         }
+    }
+
+    pub fn with_mut(f: impl FnOnce(&mut Context)) {
+        unsafe {
+            f(CONTEXT_SINGLETON
+                .as_mut()
+                .expect("GL context not initialized."));
+        }
+    }
+
+    pub fn get() -> Context {
+        unsafe {
+            CONTEXT_SINGLETON
+                .clone()
+                .expect("GL context not initialized.")
+        }
+    }
+
+    pub fn get_glow(&self) -> &glow::Context {
+        &self.glow_ctxt
+    }
+
+    pub fn init_vao(&mut self) {
+        self.ctxt.init_vao()
+    }
+    pub fn bind_vao(&self) {
+        self.ctxt.bind_vao()
     }
 
     pub fn get_error(&self) -> GLenum {
@@ -596,6 +624,9 @@ pub(crate) trait AbstractContext {
     type Texture;
     type Framebuffer;
     type Renderbuffer;
+
+    fn init_vao(&mut self);
+    fn bind_vao(&self);
 
     fn get_error(&self) -> GLenum;
     fn uniform_matrix2fv(

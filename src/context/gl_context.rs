@@ -15,7 +15,9 @@ mod error;
 
 /// An OpenGL context.
 #[derive(Clone)]
-pub struct GLContext;
+pub struct GLContext {
+    vao: u32,
+}
 
 fn val<T: Copy + Zero>(val: Option<&T>) -> T {
     match val {
@@ -27,7 +29,7 @@ fn val<T: Copy + Zero>(val: Option<&T>) -> T {
 impl GLContext {
     /// Creates a new OpenGL context.
     pub fn new() -> Self {
-        GLContext
+        GLContext { vao: 0 }
     }
 }
 
@@ -101,6 +103,20 @@ impl AbstractContext for GLContext {
     type Framebuffer = u32;
     type Renderbuffer = u32;
     type Texture = u32;
+
+    fn init_vao(&mut self) {
+        unsafe {
+            let mut vao = 0;
+            gl::GenVertexArrays(1, &mut vao);
+            self.vao = vao;
+            gl::BindVertexArray(vao);
+        }
+    }
+    fn bind_vao(&self) {
+        unsafe {
+            gl::BindVertexArray(self.vao);
+        }
+    }
 
     fn get_error(&self) -> GLenum {
         unsafe { gl::GetError() }
