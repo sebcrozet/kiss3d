@@ -177,7 +177,14 @@ where
 
         // Enable alpha blending
         unsafe { gl.enable(glow::BLEND) };
-        unsafe { gl.blend_func(glow::SRC_ALPHA, glow::ONE_MINUS_SRC_ALPHA) };
+        unsafe {
+            gl.blend_func_separate(
+                glow::SRC_ALPHA,
+                glow::ONE_MINUS_SRC_ALPHA,
+                glow::ONE,
+                glow::ONE_MINUS_SRC_ALPHA,
+            )
+        };
 
         // Disable multisampling by default
         unsafe { gl.disable(glow::MULTISAMPLE) };
