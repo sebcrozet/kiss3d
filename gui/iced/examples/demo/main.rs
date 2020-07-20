@@ -27,5 +27,11 @@ fn main() {
     while window.render_with_camera(&mut first_person) {
         let color = window.ui().program().background_color();
         window.set_background_color(color.r, color.g, color.b);
+        if window.ui().program().is_camera_reset_requested() {
+            first_person.look_at(eye, at);
+            window
+                .ui_mut()
+                .queue_message(controls::Message::ClearCameraResetRequest);
+        }
     }
 }

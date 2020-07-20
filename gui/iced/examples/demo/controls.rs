@@ -1,4 +1,5 @@
 // use iced_wgpu::Renderer;
+use iced_graphics::container;
 use iced_native::{Align, Color, Command, Element, Length, Program};
 use kiss3d_iced::{
     widget::{slider, Column, Row, Slider, Text},
@@ -10,12 +11,16 @@ pub struct Controls {
     sliders: [slider::State; 3],
     test: String,
     test_state: kiss3d_iced::widget::text_input::State,
+    camera_reset_button: kiss3d_iced::widget::button::State,
+    is_camera_reset_requested: bool,
 }
 
 #[derive(Debug, Clone)]
 pub enum Message {
     BackgroundColorChanged(Color),
     TestEdited(String),
+    CameraResetPressed,
+    ClearCameraResetRequest,
 }
 
 impl Controls {
@@ -25,11 +30,17 @@ impl Controls {
             sliders: Default::default(),
             test: String::new(),
             test_state: Default::default(),
+            camera_reset_button: Default::default(),
+            is_camera_reset_requested: false,
         }
     }
 
     pub fn background_color(&self) -> Color {
         self.background_color
+    }
+
+    pub fn is_camera_reset_requested(&self) -> bool {
+        self.is_camera_reset_requested
     }
 }
 
@@ -44,6 +55,12 @@ impl Program for Controls {
             }
             Message::TestEdited(s) => {
                 self.test = s;
+            }
+            Message::CameraResetPressed => {
+                self.is_camera_reset_requested = true;
+            }
+            Message::ClearCameraResetRequest => {
+                self.is_camera_reset_requested = false;
             }
         }
 
@@ -85,33 +102,66 @@ impl Program for Controls {
                 .step(0.01),
             );
 
+        let inner = Column::new()
+            .width(Length::Fill)
+            .align_items(Align::End)
+            .push(
+                Column::new()
+                    .padding(10)
+                    .spacing(10)
+                    .push(Text::new("Background color").color(Color::WHITE))
+                    .push(sliders)
+                    .push(
+                        Text::new(format!("{:?}", background_color))
+                            .size(14)
+                            .color(Color::WHITE),
+                    )
+                    .push(
+                        Row::new()
+                            .align_items(Align::End)
+                            .spacing(4)
+                            .push(
+                                kiss3d_iced::widget::Button::new(
+                                    &mut self.camera_reset_button,
+                                    Text::new("Reset Camera"),
+                                )
+                                .on_press(Message::CameraResetPressed),
+                            )
+                            .push(
+                                kiss3d_iced::widget::TextInput::new(
+                                    &mut self.test_state,
+                                    "TextInput for test",
+                                    &self.test,
+                                    Message::TestEdited,
+                                )
+                                .padding(4)
+                                .width(Length::Units(300)),
+                            ),
+                    ),
+            );
         Row::new()
             .width(Length::Fill)
             .height(Length::Fill)
             .align_items(Align::End)
             .push(
-                Column::new()
+                container::Container::new(inner)
                     .width(Length::Fill)
-                    .align_items(Align::End)
-                    .push(
-                        Column::new()
-                            .padding(10)
-                            .spacing(10)
-                            .push(Text::new("Background color").color(Color::WHITE))
-                            .push(sliders)
-                            .push(
-                                Text::new(format!("{:?}", background_color))
-                                    .size(14)
-                                    .color(Color::WHITE),
-                            )
-                            .push(kiss3d_iced::widget::TextInput::new(
-                                &mut self.test_state,
-                                "TextInput for test",
-                                &self.test,
-                                Message::TestEdited,
-                            )),
-                    ),
+                    .height(Length::Shrink)
+                    .style(ContainerStyle),
             )
             .into()
+    }
+}
+
+struct ContainerStyle;
+
+impl container::StyleSheet for ContainerStyle {
+    fn style(&self) -> container::Style {
+        container::Style {
+            background: Some(iced_graphics::Background::Color(Color::from_rgba(
+                0.2, 0.2, 0.2, 0.4,
+            ))),
+            ..Default::default()
+        }
     }
 }

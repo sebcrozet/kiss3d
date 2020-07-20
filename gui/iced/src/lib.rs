@@ -41,6 +41,10 @@ where
     pub fn program(&self) -> &P {
         self.state.program()
     }
+
+    pub fn queue_message(&mut self, message: P::Message) {
+        self.state.queue_message(message);
+    }
 }
 
 impl<P> UiContext for IcedContext<P>
