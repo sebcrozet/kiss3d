@@ -30,6 +30,7 @@ where
     renderer: Renderer,
     viewport: Viewport,
     cursor_position: (f64, f64),
+    mouse_buttons_captured_outside_ui: [bool; 8],
     // TODO
 }
 
@@ -66,6 +67,7 @@ where
             renderer,
             viewport,
             cursor_position: (0.0, 0.0),
+            mouse_buttons_captured_outside_ui: [false; 8],
         }
     }
 
@@ -100,12 +102,45 @@ where
             _ => {}
         }
 
+        let mut is_handled = false;
+        if event.is_keyboard_event() {
+            if self.state.has_focus() {
+                is_handled = true;
+            }
+        }
+        if event.is_mouse_event() {
+            if self.state.is_wanting_mouse_events()
+                && !self.mouse_buttons_captured_outside_ui.iter().any(|&x| x)
+            {
+                is_handled = true;
+            } else {
+                match event {
+                    WindowEvent::MouseButton(btn, act, _mods) => {
+                        let mouse_button_idx = match btn {
+                            kiss3d::event::MouseButton::Button1 => 0,
+                            kiss3d::event::MouseButton::Button2 => 1,
+                            kiss3d::event::MouseButton::Button3 => 2,
+                            kiss3d::event::MouseButton::Button4 => 3,
+                            kiss3d::event::MouseButton::Button5 => 4,
+                            kiss3d::event::MouseButton::Button6 => 5,
+                            kiss3d::event::MouseButton::Button7 => 6,
+                            kiss3d::event::MouseButton::Button8 => 7,
+                        };
+                        self.mouse_buttons_captured_outside_ui[mouse_button_idx] = match act {
+                            kiss3d::event::Action::Release => false,
+                            kiss3d::event::Action::Press => true,
+                        };
+                    }
+                    _ => {}
+                }
+            }
+        }
+
         if let Some(event) = window_event_to_iced_event(*event, size, hidpi_factor) {
             self.state.queue_event(event);
         }
-        // TODO
-        // todo!()
-        false
+
+        is_handled
     }
 
     fn render(&mut self, width: u32, height: u32, hidpi_factor: f64) {
