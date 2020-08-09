@@ -12,7 +12,7 @@ pub use crate::resource::mesh_manager::MeshManager;
 pub use crate::resource::planar_material_manager::PlanarMaterialManager;
 pub use crate::resource::planar_mesh::PlanarMesh;
 pub use crate::resource::planar_mesh_manager::PlanarMeshManager;
-pub use crate::resource::texture_manager::{TextureManager, TextureWrapping};
+pub use crate::resource::texture_manager::{TextureManager, TextureWrapping, CubemapDirection};
 
 mod effect;
 mod framebuffer_manager;

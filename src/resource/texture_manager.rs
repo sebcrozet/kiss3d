@@ -34,6 +34,31 @@ impl Into<u32> for TextureWrapping {
     }
 }
 
+/// Cubemap directions
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
+pub enum CubemapDirection {
+    PositiveX,
+    NegativeX,
+    PositiveY,
+    NegativeY,
+    PositiveZ,
+    NegativeZ
+}
+
+impl Into<u32> for CubemapDirection {
+    #[inline]
+    fn into(self) -> u32 {
+        match self {
+            CubemapDirection::PositiveX => Context::TEXTURE_CUBE_MAP_POSITIVE_X,
+            CubemapDirection::NegativeX => Context::TEXTURE_CUBE_MAP_NEGATIVE_X,
+            CubemapDirection::PositiveY => Context::TEXTURE_CUBE_MAP_POSITIVE_Y,
+            CubemapDirection::NegativeY => Context::TEXTURE_CUBE_MAP_NEGATIVE_Y,
+            CubemapDirection::PositiveZ => Context::TEXTURE_CUBE_MAP_POSITIVE_Z,
+            CubemapDirection::NegativeZ => Context::TEXTURE_CUBE_MAP_NEGATIVE_Z,
+        }
+    }
+}
+
 impl Texture {
     /// Allocates a new texture on the gpu. The texture is not configured.
     pub fn new() -> Rc<Texture> {
@@ -57,6 +82,23 @@ impl Texture {
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self)));
         let wrap: u32 = wrapping.into();
         verify!(ctxt.tex_parameteri(Context::TEXTURE_2D, Context::TEXTURE_WRAP_T, wrap as i32));
+    }
+
+    /// Set the wrappings of this texture for cubemap settings for `s`, `t`, and `r`
+    pub fn set_cubemap_wrapping(&mut self, s: TextureWrapping, t: TextureWrapping, r: TextureWrapping) {
+        // FIXME: this isn't typesafe right now -- a user could create a texture for a 2D texture
+        // and swap it with a cubemap later on.
+        let ctxt = Context::get();
+        verify!(ctxt.bind_texture(Context::TEXTURE_CUBE_MAP, Some(&self)));
+
+        let wrap_s: u32 = s.into();
+        verify!(ctxt.tex_parameteri(Context::TEXTURE_CUBE_MAP, Context::TEXTURE_WRAP_S, wrap_s as i32));
+
+        let wrap_t: u32 = t.into();
+        verify!(ctxt.tex_parameteri(Context::TEXTURE_CUBE_MAP, Context::TEXTURE_WRAP_T, wrap_t as i32));
+
+        let wrap_r: u32 = r.into();
+        verify!(ctxt.tex_parameteri(Context::TEXTURE_CUBE_MAP, Context::TEXTURE_WRAP_R, wrap_r as i32));
     }
 }
 
@@ -188,6 +230,102 @@ impl TextureManager {
             .expect(path.to_str().unwrap())
     }
 
+    fn load_cubemap_from_files(paths: [&Path; 6], directions: [CubemapDirection; 6]) -> (Rc<Texture>, (u32, u32)) {
+        let imgs: [DynamicImage; 6] = [
+            image::open(paths[0]).expect(paths[0].to_str().unwrap()),
+            image::open(paths[1]).expect(paths[1].to_str().unwrap()),
+            image::open(paths[2]).expect(paths[2].to_str().unwrap()),
+            image::open(paths[3]).expect(paths[3].to_str().unwrap()),
+            image::open(paths[4]).expect(paths[4].to_str().unwrap()),
+            image::open(paths[5]).expect(paths[5].to_str().unwrap()),
+        ];
+
+        return TextureManager::load_cubemap_into_context(imgs, directions).unwrap();
+    }
+
+
+    fn load_cubemap_into_context(images: [DynamicImage; 6], directions: [CubemapDirection; 6])
+            -> Result<(Rc<Texture>, (u32, u32)), &'static str> {
+        // FIXME: this isn't typesafe right now -- a user could create a texture for a 2D texture
+        // and swap it with a cubemap later on.
+
+        let ctxt = Context::get();
+        let tex = Texture::new();
+        let mut width = 0;
+        let mut height = 0;
+
+        unsafe {
+            verify!(ctxt.active_texture(Context::TEXTURE0));
+            verify!(ctxt.bind_texture(Context::TEXTURE_CUBE_MAP, Some(&*tex)));
+
+            for (dynamic_image, dir) in images.iter().zip(directions.iter()) {
+                let u_dir: u32 = (*dir).into();
+                match dynamic_image {
+                    DynamicImage::ImageRgb8(image) => {
+                        width = image.width();
+                        height = image.height();
+
+                        verify!(ctxt.tex_image2d(
+                                u_dir,
+                                0,
+                                Context::RGB as i32,
+                                image.width() as i32,
+                                image.height() as i32,
+                                0,
+                                Context::RGB,
+                                Some(image)
+                                ));
+                    }
+                    DynamicImage::ImageRgba8(image) => {
+                        width = image.width();
+                        height = image.height();
+
+                        verify!(ctxt.tex_image2d(
+                                u_dir,
+                                0,
+                                Context::RGBA as i32,
+                                image.width() as i32,
+                                image.height() as i32,
+                                0,
+                                Context::RGBA,
+                                Some(image)
+                                ));
+                    }
+                    _ => {
+                        return Err("Failed to load texture, unsuported pixel format.");
+                    }
+                }
+            }
+
+            verify!(ctxt.tex_parameteri(
+                Context::TEXTURE_CUBE_MAP,
+                Context::TEXTURE_WRAP_S,
+                Context::CLAMP_TO_EDGE as i32
+            ));
+            verify!(ctxt.tex_parameteri(
+                Context::TEXTURE_CUBE_MAP,
+                Context::TEXTURE_WRAP_T,
+                Context::CLAMP_TO_EDGE as i32
+            ));
+            verify!(ctxt.tex_parameteri(
+                Context::TEXTURE_CUBE_MAP,
+                Context::TEXTURE_WRAP_R,
+                Context::CLAMP_TO_EDGE as i32
+            ));
+            verify!(ctxt.tex_parameteri(
+                Context::TEXTURE_CUBE_MAP,
+                Context::TEXTURE_MIN_FILTER,
+                Context::LINEAR as i32
+            ));
+            verify!(ctxt.tex_parameteri(
+                Context::TEXTURE_CUBE_MAP,
+                Context::TEXTURE_MAG_FILTER,
+                Context::LINEAR as i32
+            ));
+        }
+        Ok((tex, (width, height)))
+    }
+
     fn load_texture_into_context(
         dynamic_image: DynamicImage,
     ) -> Result<(Rc<Texture>, (u32, u32)), &'static str> {
@@ -266,6 +404,15 @@ impl TextureManager {
         self.textures
             .entry(name.to_string())
             .or_insert_with(|| TextureManager::load_texture_from_file(path))
+            .0
+            .clone()
+    }
+
+    /// Load a cubemap from files
+    pub fn add_cubemap(&mut self, paths: [&Path; 6], directions: [CubemapDirection; 6], name: &str) -> Rc<Texture> {
+        self.textures
+            .entry(name.to_string())
+            .or_insert_with(|| TextureManager::load_cubemap_from_files(paths, directions))
             .0
             .clone()
     }
