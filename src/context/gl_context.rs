@@ -112,8 +112,11 @@ impl AbstractContext for GLContext {
         m: &Matrix2<f32>,
     ) {
         unsafe {
-            self.context
-                .uniform_matrix_2_f32_slice(location.cloned(), transpose, mem::transmute(m))
+            self.context.uniform_matrix_2_f32_slice(
+                location,
+                transpose,
+                mem::transmute::<_, &[f32; 4]>(m),
+            )
         }
     }
 
@@ -124,8 +127,11 @@ impl AbstractContext for GLContext {
         m: &Matrix3<f32>,
     ) {
         unsafe {
-            self.context
-                .uniform_matrix_3_f32_slice(location.cloned(), transpose, mem::transmute(m))
+            self.context.uniform_matrix_3_f32_slice(
+                location,
+                transpose,
+                mem::transmute::<_, &[f32; 9]>(m),
+            )
         }
     }
 
@@ -136,37 +142,40 @@ impl AbstractContext for GLContext {
         m: &Matrix4<f32>,
     ) {
         unsafe {
-            self.context
-                .uniform_matrix_4_f32_slice(location.cloned(), transpose, mem::transmute(m))
+            self.context.uniform_matrix_4_f32_slice(
+                location,
+                transpose,
+                mem::transmute::<_, &[f32; 16]>(m),
+            )
         }
     }
 
     fn uniform4f(&self, location: Option<&Self::UniformLocation>, x: f32, y: f32, z: f32, w: f32) {
-        unsafe { self.context.uniform_4_f32(location.cloned(), x, y, z, w) }
+        unsafe { self.context.uniform_4_f32(location, x, y, z, w) }
     }
 
     fn uniform3f(&self, location: Option<&Self::UniformLocation>, x: f32, y: f32, z: f32) {
-        unsafe { self.context.uniform_3_f32(location.cloned(), x, y, z) }
+        unsafe { self.context.uniform_3_f32(location, x, y, z) }
     }
 
     fn uniform2f(&self, location: Option<&Self::UniformLocation>, x: f32, y: f32) {
-        unsafe { self.context.uniform_2_f32(location.cloned(), x, y) }
+        unsafe { self.context.uniform_2_f32(location, x, y) }
     }
 
     fn uniform1f(&self, location: Option<&Self::UniformLocation>, x: f32) {
-        unsafe { self.context.uniform_1_f32(location.cloned(), x) }
+        unsafe { self.context.uniform_1_f32(location, x) }
     }
 
     fn uniform3i(&self, location: Option<&Self::UniformLocation>, x: i32, y: i32, z: i32) {
-        unsafe { self.context.uniform_3_i32(location.cloned(), x, y, z) }
+        unsafe { self.context.uniform_3_i32(location, x, y, z) }
     }
 
     fn uniform2i(&self, location: Option<&Self::UniformLocation>, x: i32, y: i32) {
-        unsafe { self.context.uniform_2_i32(location.cloned(), x, y) }
+        unsafe { self.context.uniform_2_i32(location, x, y) }
     }
 
     fn uniform1i(&self, location: Option<&Self::UniformLocation>, x: i32) {
-        unsafe { self.context.uniform_1_i32(location.cloned(), x) }
+        unsafe { self.context.uniform_1_i32(location, x) }
     }
 
     fn create_vertex_array(&self) -> Option<Self::VertexArray> {
@@ -198,8 +207,11 @@ impl AbstractContext for GLContext {
     }
 
     fn is_buffer(&self, buffer: Option<&Self::Buffer>) -> bool {
-        buffer.is_some()
-        //        unsafe { gl::IsBuffer(val(buffer)) != 0 }
+        if let Some(b) = buffer {
+            unsafe { self.context.is_buffer(b.clone()) }
+        } else {
+            false
+        }
     }
 
     fn buffer_data_uninitialized(&self, target: GLenum, len: usize, usage: GLenum) {
@@ -246,13 +258,19 @@ impl AbstractContext for GLContext {
     }
 
     fn is_shader(&self, shader: Option<&Self::Shader>) -> bool {
-        shader.is_some()
-        //        unsafe { gl::IsShader(val(shader)) != 0 }
+        if let Some(s) = shader {
+            unsafe { self.context.is_shader(s.clone()) }
+        } else {
+            false
+        }
     }
 
     fn is_program(&self, program: Option<&Self::Program>) -> bool {
-        program.is_some()
-        //        unsafe { gl::IsProgram(val(program)) != 0 }
+        if let Some(p) = program {
+            unsafe { self.context.is_program(p.clone()) }
+        } else {
+            false
+        }
     }
 
     fn shader_source(&self, shader: &Self::Shader, source: &str) {
@@ -493,18 +511,20 @@ impl AbstractContext for GLContext {
         format: GLenum,
         pixels: Option<&[u8]>,
     ) {
-        unsafe {
-            self.context.tex_sub_image_2d_u8_slice(
-                target,
-                level,
-                xoffset,
-                yoffset,
-                width,
-                height,
-                format,
-                Self::UNSIGNED_BYTE,
-                pixels,
-            )
+        if let Some(pixels) = pixels {
+            unsafe {
+                self.context.tex_sub_image_2d(
+                    target,
+                    level,
+                    xoffset,
+                    yoffset,
+                    width,
+                    height,
+                    format,
+                    Self::UNSIGNED_BYTE,
+                    glow::PixelUnpackData::Slice(pixels),
+                )
+            }
         }
     }
 
@@ -513,8 +533,11 @@ impl AbstractContext for GLContext {
     }
 
     fn is_texture(&self, texture: Option<&Self::Texture>) -> bool {
-        texture.is_some()
-        //        unsafe { gl::IsTexture(val(texture)) != 0 }
+        if let Some(t) = texture {
+            unsafe { self.context.is_texture(t.clone()) }
+        } else {
+            false
+        }
     }
 
     fn create_texture(&self) -> Option<Self::Texture> {
@@ -598,8 +621,15 @@ impl AbstractContext for GLContext {
         if let Some(pixels) = pixels {
             // FIXME: this may segfault?
             unsafe {
-                self.context
-                    .read_pixels(x, y, width, height, format, Self::UNSIGNED_BYTE, pixels);
+                self.context.read_pixels(
+                    x,
+                    y,
+                    width,
+                    height,
+                    format,
+                    Self::UNSIGNED_BYTE,
+                    glow::PixelPackData::Slice(pixels),
+                );
             }
         }
     }

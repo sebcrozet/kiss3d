@@ -48,7 +48,7 @@ impl AbstractCanvas for GLCanvas {
             });
         let window = GlWindow::new(window, context, &events).unwrap();
         let _ = unsafe { window.make_current().unwrap() };
-        Context::init(|| {
+        Context::init(|| unsafe {
             glow::Context::from_loader_function(|name| {
                 window.context().get_proc_address(name) as *const _
             })

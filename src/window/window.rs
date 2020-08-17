@@ -65,7 +65,6 @@ impl ConrodContext {
 pub struct Window {
     events: Rc<Receiver<WindowEvent>>,
     unhandled_events: Rc<RefCell<Vec<WindowEvent>>>,
-    canvas: Canvas,
     max_dur_per_frame: Option<Duration>,
     scene: SceneNode,
     scene2: PlanarSceneNode,
@@ -84,6 +83,7 @@ pub struct Window {
     should_close: bool,
     #[cfg(feature = "conrod")]
     conrod_context: ConrodContext,
+    canvas: Canvas,
 }
 
 impl Window {
