@@ -32,6 +32,23 @@ pub struct Shader(<ContextImpl as AbstractContext>::Shader);
 pub struct Framebuffer(<ContextImpl as AbstractContext>::Framebuffer);
 pub struct Renderbuffer(<ContextImpl as AbstractContext>::Renderbuffer);
 pub struct Texture(<ContextImpl as AbstractContext>::Texture);
+pub struct Cubemap(<ContextImpl as AbstractContext>::Texture);
+
+pub trait TextureHandle {
+    fn get_handle(&self) -> &u32;
+}
+
+impl TextureHandle for Texture {
+    fn get_handle(&self) -> &u32 {
+        return &self.0;
+    }
+}
+
+impl TextureHandle for Cubemap {
+    fn get_handle(&self) -> &u32 {
+        return &self.0;
+    }
+}
 
 impl Drop for Buffer {
     fn drop(&mut self) {
@@ -340,8 +357,7 @@ impl Context {
         level: i32,
     ) {
         self.ctxt
-            .framebuffer_texture2d(target, attachment, textarget, texture.map(|e| &e.0), level)
-    }
+            .framebuffer_texture2d(target, attachment, textarget, texture.map(|e| e.get_handle()), level) }
 
     pub fn create_renderbuffer(&self) -> Option<Renderbuffer> {
         self.ctxt.create_renderbuffer().map(|b| Renderbuffer(b))
@@ -374,7 +390,11 @@ impl Context {
     }
 
     pub fn bind_texture(&self, target: GLenum, texture: Option<&Texture>) {
-        self.ctxt.bind_texture(target, texture.map(|e| &e.0))
+        self.ctxt.bind_texture(target, texture.map(|e| e.get_handle()));
+    }
+
+    pub fn bind_cubemap(&self, target: GLenum, texture: Option<&Cubemap>) {
+        self.ctxt.bind_texture(target, texture.map(|e| e.get_handle()));
     }
 
     pub fn tex_image2d(
@@ -443,16 +463,20 @@ impl Context {
         self.ctxt.tex_parameteri(target, pname, param)
     }
 
-    pub fn is_texture(&self, texture: Option<&Texture>) -> bool {
-        self.ctxt.is_texture(texture.map(|e| &e.0))
+    pub fn is_texture(&self, texture: Option<&dyn TextureHandle>) -> bool {
+        self.ctxt.is_texture(texture.map(|e| e.get_handle()))
     }
 
     pub fn create_texture(&self) -> Option<Texture> {
         self.ctxt.create_texture().map(|e| Texture(e))
     }
 
-    pub fn delete_texture(&self, texture: Option<&Texture>) {
-        self.ctxt.delete_texture(texture.map(|e| &e.0))
+    pub fn create_cubemap(&self) -> Option<Cubemap> {
+        self.ctxt.create_texture().map(|e| Cubemap(e))
+    }
+
+    pub fn delete_texture(&self, texture: Option<&dyn TextureHandle>) {
+        self.ctxt.delete_texture(texture.map(|e| e.get_handle()))
     }
 
     pub fn active_texture(&self, texture: GLenum) {

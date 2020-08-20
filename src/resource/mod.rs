@@ -1,6 +1,6 @@
 //! GPU resource managers
 
-pub use crate::context::Texture;
+pub use crate::context::{Texture, Cubemap};
 pub use crate::resource::effect::{Effect, ShaderAttribute, ShaderUniform};
 pub use crate::resource::framebuffer_manager::{FramebufferManager, OffscreenBuffers, RenderTarget};
 pub use crate::resource::gl_primitive::{GLPrimitive, PrimitiveArray};

@@ -4,45 +4,55 @@ extern crate nalgebra as na;
 use kiss3d::camera::Camera;
 use kiss3d::context::Context;
 use kiss3d::light::Light;
+use kiss3d::resource::{CubemapDirection, Cubemap, TextureManager};
 use kiss3d::resource::{Effect, Material, Mesh, ShaderAttribute, ShaderUniform};
 use kiss3d::scene::ObjectData;
-use kiss3d::window::Window;
-use kiss3d::resource::{TextureManager, CubemapDirection};
+use kiss3d::window::{State, Window};
 
-use na::{Isometry3, Matrix3, Matrix4, Point3, Translation3, UnitQuaternion, Vector3};
+use na::{Isometry3, Matrix3, Matrix4, Point3, Vector3};
 use std::cell::RefCell;
-use std::rc::Rc;
 use std::path::Path;
+use std::rc::Rc;
+
+struct AppState {}
+impl State for AppState {
+    fn step(&mut self, _: &mut Window) {}
+}
 
 fn main() {
     let mut window = Window::new("Kiss3d: cube_map");
     let mut c = window.add_cube(400.0, 400.0, 400.0);
 
+    let cubemap = TextureManager::get_global_manager(|tm| {
+        tm.add_cubemap(
+            [
+                &Path::new("./examples/media/kitten.png"),
+                &Path::new("./examples/media/kitten.png"),
+                &Path::new("./examples/media/kitten.png"),
+                &Path::new("./examples/media/kitten.png"),
+                &Path::new("./examples/media/kitten.png"),
+                &Path::new("./examples/media/kitten.png"),
+            ],
+            [
+                CubemapDirection::PositiveX,
+                CubemapDirection::NegativeX,
+                CubemapDirection::PositiveY,
+                CubemapDirection::NegativeY,
+                CubemapDirection::PositiveZ,
+                CubemapDirection::NegativeZ,
+            ],
+            "skybox",
+        )
+    });
+
     let material = Rc::new(RefCell::new(
-        Box::new(SkyboxMaterial::new()) as Box<dyn Material + 'static>
+        Box::new(SkyboxMaterial::new(cubemap)) as Box<dyn Material + 'static>
     ));
 
     c.set_material(material);
-    let cubemap_texture =
-        TextureManager::get_global_manager(|tm|
-                                           tm.add_cubemap(
-                                               [&Path::new("./examples/media/kitten.png"),
-                                               &Path::new("./examples/media/kitten.png"),
-                                               &Path::new("./examples/media/kitten.png"),
-                                               &Path::new("./examples/media/kitten.png"),
-                                               &Path::new("./examples/media/kitten.png"),
-                                               &Path::new("./examples/media/kitten.png")],
-                                               [CubemapDirection::PositiveX,
-                                               CubemapDirection::NegativeX,
-                                               CubemapDirection::PositiveY,
-                                               CubemapDirection::NegativeY,
-                                               CubemapDirection::PositiveZ,
-                                               CubemapDirection::NegativeZ],
-                                               "skybox"
-                                               ));
-    c.set_texture(cubemap_texture);
 
-    while window.render() { }
+    let state = AppState {};
+    window.render_loop(state);
 }
 
 /// A material that draws skybox
@@ -53,10 +63,11 @@ pub struct SkyboxMaterial {
     proj: ShaderUniform<Matrix4<f32>>,
     transform: ShaderUniform<Matrix4<f32>>,
     scale: ShaderUniform<Matrix3<f32>>,
+    cubemap: Rc<Cubemap>
 }
 
 impl SkyboxMaterial {
-    pub fn new() -> SkyboxMaterial {
+    pub fn new(c: Rc<Cubemap>) -> SkyboxMaterial {
         let mut shader = Effect::new_from_str(NORMAL_VERTEX_SRC, NORMAL_FRAGMENT_SRC);
 
         shader.use_program();
@@ -68,6 +79,7 @@ impl SkyboxMaterial {
             view: shader.get_uniform("view").unwrap(),
             proj: shader.get_uniform("proj").unwrap(),
             shader: shader,
+            cubemap: c
         }
     }
 }
@@ -80,7 +92,7 @@ impl Material for SkyboxMaterial {
         scale: &Vector3<f32>,
         camera: &mut dyn Camera,
         _: &Light,
-        data: &ObjectData,
+        _data: &ObjectData,
         mesh: &mut Mesh,
     ) {
         self.shader.use_program();
@@ -110,7 +122,7 @@ impl Material for SkyboxMaterial {
         ctxt.active_texture(Context::TEXTURE0);
         assert_eq!(kiss3d::context::Context::get().get_error(), 0);
 
-        ctxt.bind_texture(Context::TEXTURE_CUBE_MAP, Some(&*data.texture()));
+        ctxt.bind_cubemap(Context::TEXTURE_CUBE_MAP, Some(&*self.cubemap));
         assert_eq!(kiss3d::context::Context::get().get_error(), 0);
 
         ctxt.cull_face(Context::FRONT);
