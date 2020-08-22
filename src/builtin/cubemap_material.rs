@@ -73,7 +73,7 @@ impl Material for CubemapMaterial {
 
         let ctxt = Context::get();
         verify!(ctxt.active_texture(Context::TEXTURE0));
-        verify!(ctxt.bind_cubemap(Context::TEXTURE_CUBE_MAP, Some(&*self.cubemap)));
+        verify!(ctxt.bind_cubemap(Some(&*self.cubemap)));
 
         ctxt.cull_face(Context::FRONT);
 

@@ -81,7 +81,7 @@ impl PostProcessingEffect for Waves {
          */
         verify!(ctxt.clear_color(0.0, 0.0, 0.0, 1.0));
         verify!(ctxt.clear(Context::COLOR_BUFFER_BIT | Context::DEPTH_BUFFER_BIT));
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, target.texture_id()));
+        verify!(ctxt.bind_texture(target.texture_id()));
 
         self.fbo_texture.upload(&0);
         self.v_coord.enable();

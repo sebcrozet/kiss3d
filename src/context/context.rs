@@ -389,12 +389,12 @@ impl Context {
             .framebuffer_renderbuffer(attachment, renderbuffer.map(|b| &b.0))
     }
 
-    pub fn bind_texture(&self, target: GLenum, texture: Option<&Texture>) {
-        self.ctxt.bind_texture(target, texture.map(|e| e.get_handle()));
+    pub fn bind_texture(&self, texture: Option<&Texture>) {
+        self.ctxt.bind_texture(Context::TEXTURE_2D, texture.map(|e| e.get_handle()));
     }
 
-    pub fn bind_cubemap(&self, target: GLenum, texture: Option<&Cubemap>) {
-        self.ctxt.bind_texture(target, texture.map(|e| e.get_handle()));
+    pub fn bind_cubemap(&self, texture: Option<&Cubemap>) {
+        self.ctxt.bind_texture(Context::TEXTURE_CUBE_MAP, texture.map(|e| e.get_handle()));
     }
 
     pub fn tex_image2d(

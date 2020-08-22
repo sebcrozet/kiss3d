@@ -87,7 +87,7 @@ impl PlanarMaterial for PlanarObjectMaterial {
             mesh.bind(&mut self.pos, &mut self.tex_coord);
 
             verify!(ctxt.active_texture(Context::TEXTURE0));
-            verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(data.texture())));
+            verify!(ctxt.bind_texture(Some(data.texture())));
             verify!(ctxt.disable(Context::CULL_FACE));
 
             if data.surface_rendering_active() {

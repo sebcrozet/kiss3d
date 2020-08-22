@@ -84,7 +84,7 @@ impl Cubemap {
         // FIXME: this isn't typesafe right now -- a user could create a texture for a 2D texture
         // and swap it with a cubemap later on.
         let ctxt = Context::get();
-        verify!(ctxt.bind_cubemap(Context::TEXTURE_CUBE_MAP, Some(&self)));
+        verify!(ctxt.bind_cubemap(Some(&self)));
 
         let wrap_s: u32 = s.into();
         verify!(ctxt.tex_parameteri(
@@ -132,7 +132,7 @@ impl Texture {
     /// Sets the wrapping of this texture along the `s` texture coordinate.
     pub fn set_wrapping_s(&mut self, wrapping: TextureWrapping) {
         let ctxt = Context::get();
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self)));
+        verify!(ctxt.bind_texture(Some(&self)));
         let wrap: u32 = wrapping.into();
         verify!(ctxt.tex_parameteri(Context::TEXTURE_2D, Context::TEXTURE_WRAP_S, wrap as i32));
     }
@@ -140,7 +140,7 @@ impl Texture {
     /// Sets the wrapping of this texture along the `t` texture coordinate.
     pub fn set_wrapping_t(&mut self, wrapping: TextureWrapping) {
         let ctxt = Context::get();
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self)));
+        verify!(ctxt.bind_texture(Some(&self)));
         let wrap: u32 = wrapping.into();
         verify!(ctxt.tex_parameteri(Context::TEXTURE_2D, Context::TEXTURE_WRAP_T, wrap as i32));
     }
@@ -196,7 +196,7 @@ impl TextureManager {
         let default_tex = Texture::new();
         let default_tex_pixels: [u8; 12] = [255; 12];
         verify!(ctxt.active_texture(Context::TEXTURE0));
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&*default_tex)));
+        verify!(ctxt.bind_texture(Some(&*default_tex)));
         // verify!(ctxt.tex_parameteri(Context::TEXTURE_2D, Context::TEXTURE_BASE_LEVEL, 0));
         // verify!(ctxt.tex_parameteri(Context::TEXTURE_2D, Context::TEXTURE_MAX_LEVEL, 0));
         verify!(ctxt.tex_parameteri(
@@ -327,7 +327,7 @@ impl TextureManager {
 
         unsafe {
             verify!(ctxt.active_texture(Context::TEXTURE0));
-            verify!(ctxt.bind_cubemap(Context::TEXTURE_CUBE_MAP, Some(&*cubemap)));
+            verify!(ctxt.bind_cubemap(Some(&*cubemap)));
 
             for (dynamic_image, dir) in images.iter().zip(directions.iter()) {
                 let u_dir: u32 = (*dir).into();
@@ -407,7 +407,7 @@ impl TextureManager {
 
         unsafe {
             verify!(ctxt.active_texture(Context::TEXTURE0));
-            verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&*tex)));
+            verify!(ctxt.bind_texture(Some(&*tex)));
 
             match dynamic_image {
                 DynamicImage::ImageRgb8(image) => {
