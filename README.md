@@ -20,7 +20,7 @@ An online version of this documentation is available [here](http://kiss3d.org).
 
 ## Features
 
-* WASM compatibile
+* WASM compatible.
 * Out of the box, open a window with a default arc-ball camera and a point light.
 * First-person camera available as well, and user-defined cameras are possible.
 * Render boxes, spheres, cones, cylinders, quads and lines simply
