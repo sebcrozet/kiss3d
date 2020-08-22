@@ -317,9 +317,6 @@ impl TextureManager {
 
     fn load_cubemap_into_context(images: [DynamicImage; 6], directions: [CubemapDirection; 6])
             -> Result<(Rc<Cubemap>, (u32, u32)), &'static str> {
-        // FIXME: this isn't typesafe right now -- a user could create a texture for a 2D texture
-        // and swap it with a cubemap later on.
-
         let ctxt = Context::get();
         let cubemap = Cubemap::new();
         let mut width = 0;
