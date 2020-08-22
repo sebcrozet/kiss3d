@@ -19,6 +19,7 @@ fn main() {
     let mut window = Window::new("Kiss3d: cube_map");
     let mut c = window.add_cube(400.0, 400.0, 400.0);
 
+    // Load the different cubemap faces textures into a Cubemap texture
     let cubemap = TextureManager::get_global_manager(|tm| {
         tm.add_cubemap(
             [
@@ -29,7 +30,7 @@ fn main() {
                 &Path::new("./examples/media/cubemap_positivez.png"),
                 &Path::new("./examples/media/cubemap_negativez.png"),
             ],
-            [
+            [ // specify the face each texture is for
                 CubemapDirection::PositiveX, // right
                 CubemapDirection::NegativeX, // left
                 CubemapDirection::PositiveY, // up

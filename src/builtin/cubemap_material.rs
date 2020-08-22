@@ -10,7 +10,7 @@ use std::rc::Rc;
 #[path = "../error.rs"]
 mod error;
 
-/// A material that draws skybox
+/// A material that draws a cubemap (useful for a skybox)
 pub struct CubemapMaterial {
     shader: Effect,
     position: ShaderAttribute<Point3<f32>>,
@@ -22,6 +22,7 @@ pub struct CubemapMaterial {
 }
 
 impl CubemapMaterial {
+    /// Create a new cubemap material
     pub fn new(c: Rc<Cubemap>) -> CubemapMaterial {
         let mut shader = Effect::new_from_str(NORMAL_VERTEX_SRC, NORMAL_FRAGMENT_SRC);
 
