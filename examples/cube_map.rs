@@ -26,20 +26,20 @@ fn main() {
     let cubemap = TextureManager::get_global_manager(|tm| {
         tm.add_cubemap(
             [
-                &Path::new("./examples/media/kitten.png"),
-                &Path::new("./examples/media/kitten.png"),
-                &Path::new("./examples/media/kitten.png"),
-                &Path::new("./examples/media/kitten.png"),
-                &Path::new("./examples/media/kitten.png"),
-                &Path::new("./examples/media/kitten.png"),
+                &Path::new("./examples/media/cubemap_positivex.png"),
+                &Path::new("./examples/media/cubemap_negativex.png"),
+                &Path::new("./examples/media/cubemap_positivey.png"),
+                &Path::new("./examples/media/cubemap_negativey.png"),
+                &Path::new("./examples/media/cubemap_positivez.png"),
+                &Path::new("./examples/media/cubemap_negativez.png"),
             ],
             [
-                CubemapDirection::PositiveX,
-                CubemapDirection::NegativeX,
-                CubemapDirection::PositiveY,
-                CubemapDirection::NegativeY,
-                CubemapDirection::PositiveZ,
-                CubemapDirection::NegativeZ,
+                CubemapDirection::PositiveX, // right
+                CubemapDirection::NegativeX, // left
+                CubemapDirection::PositiveY, // up
+                CubemapDirection::NegativeY, // down
+                CubemapDirection::PositiveZ, // front
+                CubemapDirection::NegativeZ, // back
             ],
             "skybox",
         )
