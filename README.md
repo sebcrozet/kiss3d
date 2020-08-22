@@ -2,34 +2,34 @@
 
 Keep It Simple, Stupid 3d graphics engine.
 
-This library is born from the frustration in front of the fact that today’s 3D
-graphics library are:
+This library is born from the frustration that today’s 3D
+graphics library are either:
 
-* either too low level: you have to write your own shaders and opening a
-  window steals you 8 hours, 300 lines of code and 10L of coffee.
-* or high level but too hard to understand/use: those are libraries made to
-  write beautiful animations or games. They have a lot of feature; too much
-  feature if you only want to draw a few geometries on the screen.
+* **Too low level**: you have to write your own shaders and opening a
+  window takes 8 hours, 300 lines of code and 10L of coffee.
+* High level, but **too hard to understand/use**: these libraries are made to
+  create beautiful photoreal (or close to it) animations or games.
+  They have many features; too many, in fact, if you just want to draw a few objects
+  on the screen with as little friction as possible.
 
 **kiss3d** is not designed to be feature-complete or fast.
-It is designed to be able to draw simple geometric figures and play with them
-with one-liners.
+It is designed to let you draw simple geometric figures and play with them
+with as little friction as possible.
 
-An on-line version of this documentation is available [here](http://kiss3d.org).
+An online version of this documentation is available [here](http://kiss3d.org).
 
 ## Features
-Most features are one-liners.
 
-* WASM compatibility.
-* open a window with a default arc-ball camera and a point light.
-* a first-person camera is available too and user-defined cameras are possible.
-* display boxes, spheres, cones, cylinders, quads and lines.
-* change an object color or texture.
-* change an object transform (we use the [nalgebra](http://nalgebra.org) library
-  to do that).
-* create basic post-processing effects.
+* WASM compatibile
+* Out of the box, open a window with a default arc-ball camera and a point light.
+* First-person camera available as well, and user-defined cameras are possible.
+* Render boxes, spheres, cones, cylinders, quads and lines simply
+* Change an object's color or texture.
+* Change an object's transform (we use [nalgebra](http://nalgebra.org) to do that).
+* Create basic post-processing effects.
 
-As an example, having a red, rotating cube with the light attached to the camera is as simple as (NOTE: this will **not** compile when targeting WASM):
+As an example, creating a scene with a red, rotating cube with a light attached
+to the camera is as simple as (NOTE: this will **not** compile when targeting WASM):
 
 ```rust
 extern crate kiss3d;
@@ -55,7 +55,7 @@ fn main() {
 }
 ```
 
-The same example, but that will compile for both WASM and native platforms is slightly more complicated because **kiss3d** must control the render loop:
+Making the same example compatible with both WASM and native platforms is slightly more complicated because **kiss3d** must control the render loop:
 
 ```rust
 extern crate kiss3d;
