@@ -32,6 +32,23 @@ pub struct Shader(<ContextImpl as AbstractContext>::Shader);
 pub struct Framebuffer(<ContextImpl as AbstractContext>::Framebuffer);
 pub struct Renderbuffer(<ContextImpl as AbstractContext>::Renderbuffer);
 pub struct Texture(<ContextImpl as AbstractContext>::Texture);
+pub struct Cubemap(<ContextImpl as AbstractContext>::Texture);
+
+pub trait TextureHandle {
+    fn get_handle(&self) -> &u32;
+}
+
+impl TextureHandle for Texture {
+    fn get_handle(&self) -> &u32 {
+        return &self.0;
+    }
+}
+
+impl TextureHandle for Cubemap {
+    fn get_handle(&self) -> &u32 {
+        return &self.0;
+    }
+}
 
 impl Drop for Buffer {
     fn drop(&mut self) {
@@ -67,11 +84,19 @@ impl Context {
     pub const DEPTH_ATTACHMENT: u32 = ContextImpl::DEPTH_ATTACHMENT;
     pub const COLOR_ATTACHMENT0: u32 = ContextImpl::COLOR_ATTACHMENT0;
     pub const TEXTURE_2D: u32 = ContextImpl::TEXTURE_2D;
+    pub const TEXTURE_CUBE_MAP: u32 = ContextImpl::TEXTURE_CUBE_MAP;
+    pub const TEXTURE_CUBE_MAP_POSITIVE_X: u32 = ContextImpl::TEXTURE_CUBE_MAP_POSITIVE_X;
+    pub const TEXTURE_CUBE_MAP_NEGATIVE_X: u32 = ContextImpl::TEXTURE_CUBE_MAP_NEGATIVE_X;
+    pub const TEXTURE_CUBE_MAP_POSITIVE_Y: u32 = ContextImpl::TEXTURE_CUBE_MAP_POSITIVE_Y;
+    pub const TEXTURE_CUBE_MAP_NEGATIVE_Y: u32 = ContextImpl::TEXTURE_CUBE_MAP_NEGATIVE_Y;
+    pub const TEXTURE_CUBE_MAP_POSITIVE_Z: u32 = ContextImpl::TEXTURE_CUBE_MAP_POSITIVE_Z;
+    pub const TEXTURE_CUBE_MAP_NEGATIVE_Z: u32 = ContextImpl::TEXTURE_CUBE_MAP_NEGATIVE_Z;
     pub const DEPTH_COMPONENT: u32 = ContextImpl::DEPTH_COMPONENT;
     pub const DEPTH_COMPONENT16: u32 = ContextImpl::DEPTH_COMPONENT16;
     pub const UNSIGNED_BYTE: u32 = ContextImpl::UNSIGNED_BYTE;
     pub const TEXTURE_WRAP_S: u32 = ContextImpl::TEXTURE_WRAP_S;
     pub const TEXTURE_WRAP_T: u32 = ContextImpl::TEXTURE_WRAP_T;
+    pub const TEXTURE_WRAP_R: u32 = ContextImpl::TEXTURE_WRAP_R;
     pub const TEXTURE_MIN_FILTER: u32 = ContextImpl::TEXTURE_MIN_FILTER;
     pub const TEXTURE_MAG_FILTER: u32 = ContextImpl::TEXTURE_MAG_FILTER;
     pub const LINEAR: u32 = ContextImpl::LINEAR;
@@ -87,6 +112,7 @@ impl Context {
     pub const TRIANGLES: u32 = ContextImpl::TRIANGLES;
     pub const CULL_FACE: u32 = ContextImpl::CULL_FACE;
     pub const FRONT_AND_BACK: u32 = ContextImpl::FRONT_AND_BACK;
+    pub const FRONT: u32 = ContextImpl::FRONT;
     pub const FILL: u32 = ContextImpl::FILL;
     pub const LINE: u32 = ContextImpl::LINE;
     pub const POINT: u32 = ContextImpl::POINT;
@@ -331,8 +357,7 @@ impl Context {
         level: i32,
     ) {
         self.ctxt
-            .framebuffer_texture2d(target, attachment, textarget, texture.map(|e| &e.0), level)
-    }
+            .framebuffer_texture2d(target, attachment, textarget, texture.map(|e| e.get_handle()), level) }
 
     pub fn create_renderbuffer(&self) -> Option<Renderbuffer> {
         self.ctxt.create_renderbuffer().map(|b| Renderbuffer(b))
@@ -364,8 +389,12 @@ impl Context {
             .framebuffer_renderbuffer(attachment, renderbuffer.map(|b| &b.0))
     }
 
-    pub fn bind_texture(&self, target: GLenum, texture: Option<&Texture>) {
-        self.ctxt.bind_texture(target, texture.map(|e| &e.0))
+    pub fn bind_texture(&self, texture: Option<&Texture>) {
+        self.ctxt.bind_texture(Context::TEXTURE_2D, texture.map(|e| e.get_handle()));
+    }
+
+    pub fn bind_cubemap(&self, texture: Option<&Cubemap>) {
+        self.ctxt.bind_texture(Context::TEXTURE_CUBE_MAP, texture.map(|e| e.get_handle()));
     }
 
     pub fn tex_image2d(
@@ -434,16 +463,20 @@ impl Context {
         self.ctxt.tex_parameteri(target, pname, param)
     }
 
-    pub fn is_texture(&self, texture: Option<&Texture>) -> bool {
-        self.ctxt.is_texture(texture.map(|e| &e.0))
+    pub fn is_texture(&self, texture: Option<&dyn TextureHandle>) -> bool {
+        self.ctxt.is_texture(texture.map(|e| e.get_handle()))
     }
 
     pub fn create_texture(&self) -> Option<Texture> {
         self.ctxt.create_texture().map(|e| Texture(e))
     }
 
-    pub fn delete_texture(&self, texture: Option<&Texture>) {
-        self.ctxt.delete_texture(texture.map(|e| &e.0))
+    pub fn create_cubemap(&self) -> Option<Cubemap> {
+        self.ctxt.create_texture().map(|e| Cubemap(e))
+    }
+
+    pub fn delete_texture(&self, texture: Option<&dyn TextureHandle>) {
+        self.ctxt.delete_texture(texture.map(|e| e.get_handle()))
     }
 
     pub fn active_texture(&self, texture: GLenum) {
@@ -544,11 +577,19 @@ pub(crate) trait AbstractContextConst {
     const DEPTH_ATTACHMENT: u32;
     const COLOR_ATTACHMENT0: u32;
     const TEXTURE_2D: u32;
+    const TEXTURE_CUBE_MAP: u32;
+    const TEXTURE_CUBE_MAP_POSITIVE_X: u32;
+    const TEXTURE_CUBE_MAP_NEGATIVE_X: u32;
+    const TEXTURE_CUBE_MAP_POSITIVE_Y: u32;
+    const TEXTURE_CUBE_MAP_NEGATIVE_Y: u32;
+    const TEXTURE_CUBE_MAP_POSITIVE_Z: u32;
+    const TEXTURE_CUBE_MAP_NEGATIVE_Z: u32;
     const DEPTH_COMPONENT: u32;
     const DEPTH_COMPONENT16: u32;
     const UNSIGNED_BYTE: u32;
     const TEXTURE_WRAP_S: u32;
     const TEXTURE_WRAP_T: u32;
+    const TEXTURE_WRAP_R: u32;
     const TEXTURE_MIN_FILTER: u32;
     const TEXTURE_MAG_FILTER: u32;
     const LINEAR: u32;
@@ -564,6 +605,7 @@ pub(crate) trait AbstractContextConst {
     const TRIANGLES: u32;
     const CULL_FACE: u32;
     const FRONT_AND_BACK: u32;
+    const FRONT: u32;
     const FILL: u32;
     const LINE: u32;
     const POINT: u32;

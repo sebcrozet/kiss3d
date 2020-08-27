@@ -52,7 +52,7 @@ impl RenderTarget {
             }
             RenderTarget::Offscreen(ref o) => {
                 // Update the fbo
-                verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&o.texture)));
+                verify!(ctxt.bind_texture(Some(&o.texture)));
                 verify!(ctxt.tex_image2d(
                     Context::TEXTURE_2D,
                     0,
@@ -63,11 +63,11 @@ impl RenderTarget {
                     Context::RGBA,
                     None
                 ));
-                verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
+                verify!(ctxt.bind_texture(None));
 
                 match &o.depth {
                     Either::Left(texture) => {
-                        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(texture)));
+                        verify!(ctxt.bind_texture(Some(texture)));
                         verify!(ctxt.tex_image2d(
                             Context::TEXTURE_2D,
                             0,
@@ -78,7 +78,7 @@ impl RenderTarget {
                             Context::DEPTH_COMPONENT,
                             None
                         ));
-                        verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
+                        verify!(ctxt.bind_texture(None));
                     }
                     Either::Right(renderbuffer) => {
                         verify!(ctxt.bind_renderbuffer(Some(renderbuffer)));
@@ -135,7 +135,7 @@ impl FramebufferManager {
         let fbo_texture = verify!(ctxt
             .create_texture()
             .expect("Failde to create framebuffer object texture."));
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&fbo_texture)));
+        verify!(ctxt.bind_texture(Some(&fbo_texture)));
         verify!(ctxt.tex_parameteri(
             Context::TEXTURE_2D,
             Context::TEXTURE_MAG_FILTER,
@@ -166,13 +166,13 @@ impl FramebufferManager {
             Context::RGBA,
             None
         ));
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
+        verify!(ctxt.bind_texture(None));
 
         /* Depth buffer */
         if create_depth_texture && cfg!(not(any(target_arch = "wasm32", target_arch = "asmjs"))) {
             verify!(ctxt.active_texture(Context::TEXTURE1));
             let fbo_depth = verify!(ctxt.create_texture().expect("Failed to create a texture."));
-            verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&fbo_depth)));
+            verify!(ctxt.bind_texture(Some(&fbo_depth)));
             verify!(ctxt.tex_parameteri(
                 Context::TEXTURE_2D,
                 Context::TEXTURE_MAG_FILTER,
@@ -203,7 +203,7 @@ impl FramebufferManager {
                 Context::DEPTH_COMPONENT,
                 None
             ));
-            verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
+            verify!(ctxt.bind_texture(None));
 
             RenderTarget::Offscreen(OffscreenBuffers {
                 texture: fbo_texture,

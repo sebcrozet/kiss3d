@@ -1,6 +1,6 @@
 //! GPU resource managers
 
-pub use crate::context::Texture;
+pub use crate::context::{Texture, Cubemap};
 pub use crate::resource::effect::{Effect, ShaderAttribute, ShaderUniform};
 pub use crate::resource::framebuffer_manager::{FramebufferManager, OffscreenBuffers, RenderTarget};
 pub use crate::resource::gl_primitive::{GLPrimitive, PrimitiveArray};
@@ -12,7 +12,7 @@ pub use crate::resource::mesh_manager::MeshManager;
 pub use crate::resource::planar_material_manager::PlanarMaterialManager;
 pub use crate::resource::planar_mesh::PlanarMesh;
 pub use crate::resource::planar_mesh_manager::PlanarMeshManager;
-pub use crate::resource::texture_manager::{TextureManager, TextureWrapping};
+pub use crate::resource::texture_manager::{TextureManager, TextureWrapping, CubemapDirection};
 
 mod effect;
 mod framebuffer_manager;

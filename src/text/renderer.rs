@@ -60,7 +60,7 @@ impl TextRenderer {
         let texture = verify!(ctxt
             .create_texture()
             .expect("Font texture creation failed."));
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&texture)));
+        verify!(ctxt.bind_texture(Some(&texture)));
         verify!(ctxt.tex_image2d(
             Context::TEXTURE_2D,
             0,
@@ -162,7 +162,7 @@ impl TextRenderer {
         self.tex.upload(&0);
         self.invsz.upload(&Vector2::new(1.0 / width, -1.0 / height));
 
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self.texture)));
+        verify!(ctxt.bind_texture(Some(&self.texture)));
         verify!(ctxt.tex_parameteri(
             Context::TEXTURE_2D,
             Context::TEXTURE_WRAP_S,
