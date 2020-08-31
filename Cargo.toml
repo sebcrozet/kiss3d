@@ -39,7 +39,7 @@ bitflags     = "1.2"
 num-traits   = "0.2"
 nalgebra     = "0.22"
 ncollide3d   = "0.24"
-image        = "0.22"
+image        = "0.23.9"
 serde        = "1"
 serde_derive = "1"
 rusttype     = { version = "0.8", features = [ "gpu_cache" ] }
