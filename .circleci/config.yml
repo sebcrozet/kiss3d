@@ -31,6 +31,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: add wasm32 target
+          command: rustup target add wasm32-unknown-unknown;
+      - run:
           name: build kiss3d
           command: cargo build --verbose --target wasm32-unknown-unknown -p kiss3d;
 
