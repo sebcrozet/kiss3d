@@ -11,7 +11,9 @@ use crate::window::{AbstractCanvas, CanvasSetup};
 use image::{GenericImage, Pixel};
 use wasm_bindgen::closure::Closure;
 use wasm_bindgen::{JsCast, JsValue};
-use web_sys::{HtmlCanvasElement, KeyboardEvent, MouseEvent, TouchEvent, UiEvent, WheelEvent};
+use web_sys::{
+    EventTarget, HtmlCanvasElement, KeyboardEvent, MouseEvent, TouchEvent, UiEvent, WheelEvent,
+};
 
 struct WebGLCanvasData {
     canvas: HtmlCanvasElement,
@@ -31,18 +33,58 @@ enum MouseCaptureState {
     OtherElement,
 }
 
-enum EventClosure {
-    Ui(Closure<dyn FnMut(UiEvent)>),
-    Mouse(Closure<dyn FnMut(MouseEvent)>),
-    Touch(Closure<dyn FnMut(TouchEvent)>),
-    Wheel(Closure<dyn FnMut(WheelEvent)>),
-    Keyboard(Closure<dyn FnMut(KeyboardEvent)>),
+enum EventListener {
+    Ui(EventListenerHandle<dyn FnMut(UiEvent)>),
+    Mouse(EventListenerHandle<dyn FnMut(MouseEvent)>),
+    Touch(EventListenerHandle<dyn FnMut(TouchEvent)>),
+    Wheel(EventListenerHandle<dyn FnMut(WheelEvent)>),
+    Keyboard(EventListenerHandle<dyn FnMut(KeyboardEvent)>),
+}
+
+struct EventListenerHandle<T: ?Sized> {
+    target: EventTarget,
+    event_type: &'static str,
+    listener: Closure<T>,
+}
+
+impl<T: ?Sized> EventListenerHandle<T> {
+    fn new<U>(target: &U, event_type: &'static str, listener: Closure<T>) -> Self
+    where
+        U: Clone + Into<EventTarget>,
+    {
+        let target = target.clone().into();
+        target
+            .add_event_listener_with_callback(event_type, listener.as_ref().unchecked_ref())
+            .expect("Failed to add event listener");
+        EventListenerHandle {
+            target,
+            event_type,
+            listener,
+        }
+    }
+}
+
+impl<T: ?Sized> Drop for EventListenerHandle<T> {
+    fn drop(&mut self) {
+        self.target
+            .remove_event_listener_with_callback(
+                self.event_type,
+                self.listener.as_ref().unchecked_ref(),
+            )
+            .unwrap_or_else(|e| {
+                web_sys::console::error_2(
+                    &format!("Error removing event listener {}", self.event_type).into(),
+                    &e,
+                )
+            });
+    }
 }
 
 /// A canvas based on WebGL and stdweb.
 pub struct WebGLCanvas {
     data: Rc<RefCell<WebGLCanvasData>>,
-    event_listeners: Vec<EventClosure>,
+    #[allow(dead_code)]
+    event_listeners: Vec<EventListener>,
 }
 
 impl Drop for WebGLCanvas {
@@ -136,8 +178,8 @@ impl AbstractCanvas for WebGLCanvas {
                 .push(WindowEvent::FramebufferSize(w, h));
             let _ = edata.pending_events.push(WindowEvent::Size(w, h));
         }) as Box<dyn FnMut(_)>);
-        window.set_onresize(Some(callback.as_ref().unchecked_ref()));
-        event_listeners.push(EventClosure::Ui(callback));
+        let listener = EventListenerHandle::new(&window, "resize", callback);
+        event_listeners.push(EventListener::Ui(listener));
 
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: MouseEvent| {
@@ -169,8 +211,8 @@ impl AbstractCanvas for WebGLCanvas {
             ));
             edata.button_states[button as usize] = Action::Press;
         }) as Box<dyn FnMut(_)>);
-        window.set_onmousedown(Some(callback.as_ref().unchecked_ref()));
-        event_listeners.push(EventClosure::Mouse(callback));
+        let listener = EventListenerHandle::new(&window, "mousedown", callback);
+        event_listeners.push(EventListener::Mouse(listener));
 
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: MouseEvent| {
@@ -206,8 +248,8 @@ impl AbstractCanvas for WebGLCanvas {
                 edata.mouse_capture_state = MouseCaptureState::NotCaptured;
             }
         }) as Box<dyn FnMut(_)>);
-        window.set_onmouseup(Some(callback.as_ref().unchecked_ref()));
-        event_listeners.push(EventClosure::Mouse(callback));
+        let listener = EventListenerHandle::new(&window, "mouseup", callback);
+        event_listeners.push(EventListener::Mouse(listener));
 
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: MouseEvent| {
@@ -239,8 +281,8 @@ impl AbstractCanvas for WebGLCanvas {
                 translate_mouse_modifiers(&e),
             ));
         }) as Box<dyn FnMut(_)>);
-        window.set_onmousemove(Some(callback.as_ref().unchecked_ref()));
-        event_listeners.push(EventClosure::Mouse(callback));
+        let listener = EventListenerHandle::new(&window, "mousemove", callback);
+        event_listeners.push(EventListener::Mouse(listener));
 
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: TouchEvent| {
@@ -258,8 +300,8 @@ impl AbstractCanvas for WebGLCanvas {
                 ));
             }
         }) as Box<dyn FnMut(_)>);
-        window.set_ontouchstart(Some(callback.as_ref().unchecked_ref()));
-        event_listeners.push(EventClosure::Touch(callback));
+        let listener = EventListenerHandle::new(&window, "touchstart", callback);
+        event_listeners.push(EventListener::Touch(listener));
 
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: TouchEvent| {
@@ -277,8 +319,8 @@ impl AbstractCanvas for WebGLCanvas {
                 ));
             }
         }) as Box<dyn FnMut(_)>);
-        window.set_ontouchend(Some(callback.as_ref().unchecked_ref()));
-        event_listeners.push(EventClosure::Touch(callback));
+        let listener = EventListenerHandle::new(&window, "touchend", callback);
+        event_listeners.push(EventListener::Touch(listener));
 
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: TouchEvent| {
@@ -296,8 +338,8 @@ impl AbstractCanvas for WebGLCanvas {
                 ));
             }
         }) as Box<dyn FnMut(_)>);
-        window.set_ontouchcancel(Some(callback.as_ref().unchecked_ref()));
-        event_listeners.push(EventClosure::Touch(callback));
+        let listener = EventListenerHandle::new(&window, "touchcancel", callback);
+        event_listeners.push(EventListener::Touch(listener));
 
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: TouchEvent| {
@@ -319,8 +361,8 @@ impl AbstractCanvas for WebGLCanvas {
                 ));
             }
         }) as Box<dyn FnMut(_)>);
-        window.set_ontouchmove(Some(callback.as_ref().unchecked_ref()));
-        event_listeners.push(EventClosure::Touch(callback));
+        let listener = EventListenerHandle::new(&window, "touchmove", callback);
+        event_listeners.push(EventListener::Touch(listener));
 
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: WheelEvent| {
@@ -345,10 +387,8 @@ impl AbstractCanvas for WebGLCanvas {
                 translate_mouse_modifiers(&e),
             ));
         }) as Box<dyn FnMut(_)>);
-        data.borrow_mut()
-            .canvas
-            .set_onwheel(Some(callback.as_ref().unchecked_ref()));
-        event_listeners.push(EventClosure::Wheel(callback));
+        let listener = EventListenerHandle::new(&data.borrow().canvas, "wheel", callback);
+        event_listeners.push(EventListener::Wheel(listener));
 
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: KeyboardEvent| {
@@ -361,10 +401,8 @@ impl AbstractCanvas for WebGLCanvas {
             ));
             edata.key_states[key as usize] = Action::Press;
         }) as Box<dyn FnMut(_)>);
-        data.borrow_mut()
-            .canvas
-            .set_onkeydown(Some(callback.as_ref().unchecked_ref()));
-        event_listeners.push(EventClosure::Keyboard(callback));
+        let listener = EventListenerHandle::new(&data.borrow().canvas, "keydown", callback);
+        event_listeners.push(EventListener::Keyboard(listener));
 
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: KeyboardEvent| {
@@ -377,10 +415,8 @@ impl AbstractCanvas for WebGLCanvas {
             ));
             edata.key_states[key as usize] = Action::Release;
         }) as Box<dyn FnMut(_)>);
-        data.borrow_mut()
-            .canvas
-            .set_onkeyup(Some(callback.as_ref().unchecked_ref()));
-        event_listeners.push(EventClosure::Keyboard(callback));
+        let listener = EventListenerHandle::new(&data.borrow().canvas, "keyup", callback);
+        event_listeners.push(EventListener::Keyboard(listener));
 
         WebGLCanvas {
             data,
