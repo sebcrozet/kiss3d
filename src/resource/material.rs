@@ -2,10 +2,10 @@
 
 use crate::camera::Camera;
 use crate::light::Light;
-use na::{Isometry2, Isometry3, Vector2, Vector3};
 use crate::planar_camera::PlanarCamera;
 use crate::resource::{Mesh, PlanarMesh};
 use crate::scene::{ObjectData, PlanarObjectData};
+use na::{Isometry2, Isometry3, Vector2, Vector3};
 
 /// Trait implemented by materials.
 pub trait Material {

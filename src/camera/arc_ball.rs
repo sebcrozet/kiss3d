@@ -1,9 +1,9 @@
 use crate::camera::Camera;
 use crate::event::{Action, Key, Modifiers, MouseButton, WindowEvent};
-use na::{self, Isometry3, Matrix4, Perspective3, Point3, Unit, UnitQuaternion, Vector2, Vector3};
 use crate::resource::ShaderUniform;
-use std::f32;
 use crate::window::Canvas;
+use na::{self, Isometry3, Matrix4, Perspective3, Point3, Unit, UnitQuaternion, Vector2, Vector3};
+use std::f32;
 
 /// Arc-ball camera mode.
 ///

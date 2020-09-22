@@ -139,18 +139,10 @@ extern crate rusttype;
 extern crate serde_derive;
 extern crate serde;
 
-#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
-extern crate gl;
-#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
-extern crate glutin;
-#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
-#[macro_use]
-extern crate stdweb;
-#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
-#[macro_use]
-extern crate stdweb_derive;
 #[cfg(feature = "conrod")]
 pub extern crate conrod_core as conrod;
+#[cfg(not(target_arch = "wasm32"))]
+extern crate glutin;
 extern crate instant;
 #[cfg(feature = "conrod")]
 pub use conrod::widget_ids;

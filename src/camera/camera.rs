@@ -1,7 +1,7 @@
 use crate::event::WindowEvent;
-use na::{Isometry3, Matrix4, Point2, Point3, Point4, Vector2, Vector3};
 use crate::resource::ShaderUniform;
 use crate::window::Canvas;
+use na::{Isometry3, Matrix4, Point2, Point3, Point4, Vector2, Vector3};
 
 /// Trait every camera must implement.
 pub trait Camera {

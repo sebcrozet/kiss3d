@@ -34,7 +34,7 @@ impl RenderTarget {
     /// Returns an opengl handle to the off-screen depth buffer.
     ///
     /// Returns `None` if the texture is off-screen.
-    #[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn depth_id(&self) -> Option<&Either<Texture, Renderbuffer>> {
         match *self {
             RenderTarget::Screen => None,
@@ -288,7 +288,7 @@ impl FramebufferManager {
 impl Drop for FramebufferManager {
     fn drop(&mut self) {
         let ctxt = Context::get();
-        if ctxt.is_framebuffer(Some(&self.fbo)) {
+        if verify!(ctxt.is_framebuffer(Some(&self.fbo))) {
             verify!(ctxt.bind_framebuffer(Context::FRAMEBUFFER, None));
             verify!(ctxt.delete_framebuffer(Some(&self.fbo)));
         }
@@ -298,18 +298,18 @@ impl Drop for FramebufferManager {
 impl Drop for OffscreenBuffers {
     fn drop(&mut self) {
         let ctxt = Context::get();
-        if ctxt.is_texture(Some(&self.texture)) {
+        if verify!(ctxt.is_texture(Some(&self.texture))) {
             verify!(ctxt.delete_texture(Some(&self.texture)));
         }
 
         match &self.depth {
             Either::Left(texture) => {
-                if ctxt.is_texture(Some(texture)) {
+                if verify!(ctxt.is_texture(Some(texture))) {
                     verify!(ctxt.delete_texture(Some(texture)));
                 }
             }
             Either::Right(renderbuffer) => {
-                if ctxt.is_renderbuffer(Some(renderbuffer)) {
+                if verify!(ctxt.is_renderbuffer(Some(renderbuffer))) {
                     verify!(ctxt.delete_renderbuffer(Some(renderbuffer)));
                 }
             }

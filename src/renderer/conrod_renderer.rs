@@ -1,15 +1,15 @@
 //! A renderer for Conrod primitives.
 
+use crate::context::{Context, Texture};
+use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
+use crate::text::Font;
 use conrod::position::Rect;
 use conrod::text::GlyphCache;
 use conrod::{render::PrimitiveKind, Ui};
-use crate::context::{Context, Texture};
 use na::{Point2, Point3, Point4, Vector2};
-use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 use rusttype::gpu_cache::Cache;
 use std::collections::HashMap;
 use std::rc::Rc;
-use crate::text::Font;
 
 #[path = "../error.rs"]
 mod error;
@@ -247,7 +247,7 @@ impl ConrodRenderer {
 
             if render {
                 let (x, y, w, h) = rect_to_gl_rect(curr_scizzor);
-                ctxt.scissor(x as i32, y as i32, w as i32, h as i32);
+                verify!(ctxt.scissor(x as i32, y as i32, w as i32, h as i32));
                 match mode {
                     RenderMode::Shape => {
                         self.triangle_shader.use_program();
@@ -578,7 +578,7 @@ impl ConrodRenderer {
 
         verify!(ctxt.enable(Context::DEPTH_TEST));
         verify!(ctxt.disable(Context::BLEND));
-        ctxt.scissor(0, 0, width as i32, height as i32);
+        verify!(ctxt.scissor(0, 0, width as i32, height as i32));
     }
 }
 

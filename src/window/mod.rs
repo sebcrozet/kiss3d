@@ -2,17 +2,17 @@
 
 pub(crate) use self::canvas::AbstractCanvas;
 pub use self::canvas::{Canvas, CanvasSetup, NumSamples};
-#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+#[cfg(not(target_arch = "wasm32"))]
 pub use self::gl_canvas::GLCanvas;
 pub use self::state::State;
-#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
+#[cfg(target_arch = "wasm32")]
 pub use self::webgl_canvas::WebGLCanvas;
 pub use self::window::Window;
 
 mod canvas;
-#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
+#[cfg(not(target_arch = "wasm32"))]
 mod gl_canvas;
 mod state;
-#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
+#[cfg(target_arch = "wasm32")]
 mod webgl_canvas;
 mod window;

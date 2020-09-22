@@ -2,29 +2,16 @@
 
 use std::sync::Once;
 
-#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
 use crate::context::GLContext as ContextImpl;
-#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
-use crate::context::WebGLContext as ContextImpl;
-
-#[cfg(any(target_arch = "wasm32", target_arch = "asmjs"))]
-use super::webgl_bindings::{
-    GLenum as GLenumTy, GLintptr as GLintptrTy, GLsizeiptr as GLsizeiptrTy,
-};
-#[cfg(not(any(target_arch = "wasm32", target_arch = "asmjs")))]
-use gl::{
-    types::GLenum as GLenumTy, types::GLintptr as GLintptrTy, types::GLsizeiptr as GLsizeiptrTy,
-};
-
-use na::{Matrix2, Matrix3, Matrix4};
 use crate::resource::GLPrimitive;
+use na::{Matrix2, Matrix3, Matrix4};
 
 #[path = "../error.rs"]
 mod error;
 
-pub type GLenum = GLenumTy;
-pub type GLintptr = GLintptrTy;
-pub type GLsizeiptr = GLsizeiptrTy;
+pub type GLenum = u32;
+pub type GLintptr = isize;
+pub type GLsizeiptr = isize;
 pub struct UniformLocation(<ContextImpl as AbstractContext>::UniformLocation);
 pub struct Buffer(<ContextImpl as AbstractContext>::Buffer);
 pub struct Program(<ContextImpl as AbstractContext>::Program);
@@ -32,6 +19,7 @@ pub struct Shader(<ContextImpl as AbstractContext>::Shader);
 pub struct Framebuffer(<ContextImpl as AbstractContext>::Framebuffer);
 pub struct Renderbuffer(<ContextImpl as AbstractContext>::Renderbuffer);
 pub struct Texture(<ContextImpl as AbstractContext>::Texture);
+pub struct VertexArray(<ContextImpl as AbstractContext>::VertexArray);
 
 impl Drop for Buffer {
     fn drop(&mut self) {
@@ -44,9 +32,12 @@ impl Drop for Buffer {
     }
 }
 
+static mut CONTEXT_SINGLETON: Option<Context> = None;
+static CONTEXT_INIT: Once = Once::new();
+
 #[derive(Clone)]
 pub struct Context {
-    ctxt: ContextImpl,
+    pub ctxt: ContextImpl,
 }
 
 impl Context {
@@ -110,18 +101,22 @@ impl Context {
     pub const ALPHA: u32 = ContextImpl::ALPHA;
     pub const RED: u32 = ContextImpl::RED;
 
-    pub fn get() -> Context {
-        static mut CONTEXT_SINGLETON: Option<Context> = None;
-        static INIT: Once = Once::new();
-
+    pub fn init(get_ctxt: impl Fn() -> glow::Context) {
         unsafe {
-            INIT.call_once(|| {
+            CONTEXT_INIT.call_once(|| {
+                let ctxt = get_ctxt();
                 CONTEXT_SINGLETON = Some(Context {
-                    ctxt: ContextImpl::new(),
+                    ctxt: ContextImpl::new(ctxt),
                 });
             });
+        }
+    }
 
-            CONTEXT_SINGLETON.clone().unwrap()
+    pub fn get() -> Context {
+        unsafe {
+            CONTEXT_SINGLETON
+                .clone()
+                .expect("GL context not initialized.")
         }
     }
 
@@ -185,6 +180,18 @@ impl Context {
 
     pub fn uniform1i(&self, location: Option<&UniformLocation>, x: i32) {
         self.ctxt.uniform1i(location.map(|e| &e.0), x)
+    }
+
+    pub fn create_vertex_array(&self) -> Option<VertexArray> {
+        self.ctxt.create_vertex_array().map(|e| VertexArray(e))
+    }
+
+    pub fn delete_vertex_array(&self, vertex_array: Option<&VertexArray>) {
+        self.ctxt.delete_vertex_array(vertex_array.map(|e| &e.0))
+    }
+
+    pub fn bind_vertex_array(&self, vertex_array: Option<&VertexArray>) {
+        self.ctxt.bind_vertex_array(vertex_array.map(|e| &e.0))
     }
 
     pub fn create_buffer(&self) -> Option<Buffer> {
@@ -596,6 +603,7 @@ pub(crate) trait AbstractContext {
     type Texture;
     type Framebuffer;
     type Renderbuffer;
+    type VertexArray;
 
     fn get_error(&self) -> GLenum;
     fn uniform_matrix2fv(
@@ -624,6 +632,9 @@ pub(crate) trait AbstractContext {
     fn uniform2i(&self, location: Option<&Self::UniformLocation>, x: i32, y: i32);
     fn uniform1i(&self, location: Option<&Self::UniformLocation>, x: i32);
 
+    fn create_vertex_array(&self) -> Option<Self::VertexArray>;
+    fn delete_vertex_array(&self, vertex_array: Option<&Self::VertexArray>);
+    fn bind_vertex_array(&self, vertex_array: Option<&Self::VertexArray>);
     fn create_buffer(&self) -> Option<Self::Buffer>;
     fn delete_buffer(&self, buffer: Option<&Self::Buffer>);
     fn is_buffer(&self, buffer: Option<&Self::Buffer>) -> bool;

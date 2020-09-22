@@ -5,32 +5,18 @@ use std::ops::DerefMut;
 use std::rc::Rc;
 use std::sync::mpsc::Sender;
 
+use crate::context::Context;
 use crate::event::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent};
-use image::{GenericImage, Pixel};
-use stdweb::web::event as webevent;
-use stdweb::web::event::{
-    ConcreteEvent, IEvent, IKeyboardEvent, IMouseEvent, ITouchEvent, IUiEvent,
-};
-use stdweb::web::{
-    self, html_element::CanvasElement, EventListenerHandle, IElement, IEventTarget, IHtmlElement,
-    IParentNode,
-};
-use stdweb::{unstable::TryInto, Reference};
 use crate::window::{AbstractCanvas, CanvasSetup};
-
-#[derive(Clone, Debug, PartialEq, Eq, ReferenceType)]
-#[reference(instance_of = "Event")] // TODO: Better type check.
-pub struct WheelEvent(Reference);
-
-impl IEvent for WheelEvent {}
-impl IUiEvent for WheelEvent {}
-impl IMouseEvent for WheelEvent {}
-impl ConcreteEvent for WheelEvent {
-    const EVENT_TYPE: &'static str = "wheel";
-}
+use image::{GenericImage, Pixel};
+use wasm_bindgen::closure::Closure;
+use wasm_bindgen::{JsCast, JsValue};
+use web_sys::{
+    EventTarget, HtmlCanvasElement, KeyboardEvent, MouseEvent, TouchEvent, UiEvent, WheelEvent,
+};
 
 struct WebGLCanvasData {
-    canvas: CanvasElement,
+    canvas: HtmlCanvasElement,
     cursor_pos: Option<(f64, f64)>,
     key_states: [Action; Key::Unknown as usize + 1],
     button_states: [Action; MouseButton::Button8 as usize + 1],
@@ -47,20 +33,62 @@ enum MouseCaptureState {
     OtherElement,
 }
 
+enum EventListener {
+    Ui(EventListenerHandle<dyn FnMut(UiEvent)>),
+    Mouse(EventListenerHandle<dyn FnMut(MouseEvent)>),
+    Touch(EventListenerHandle<dyn FnMut(TouchEvent)>),
+    Wheel(EventListenerHandle<dyn FnMut(WheelEvent)>),
+    Keyboard(EventListenerHandle<dyn FnMut(KeyboardEvent)>),
+}
+
+struct EventListenerHandle<T: ?Sized> {
+    target: EventTarget,
+    event_type: &'static str,
+    listener: Closure<T>,
+}
+
+impl<T: ?Sized> EventListenerHandle<T> {
+    fn new<U>(target: &U, event_type: &'static str, listener: Closure<T>) -> Self
+    where
+        U: Clone + Into<EventTarget>,
+    {
+        let target = target.clone().into();
+        target
+            .add_event_listener_with_callback(event_type, listener.as_ref().unchecked_ref())
+            .expect("Failed to add event listener");
+        EventListenerHandle {
+            target,
+            event_type,
+            listener,
+        }
+    }
+}
+
+impl<T: ?Sized> Drop for EventListenerHandle<T> {
+    fn drop(&mut self) {
+        self.target
+            .remove_event_listener_with_callback(
+                self.event_type,
+                self.listener.as_ref().unchecked_ref(),
+            )
+            .unwrap_or_else(|e| {
+                web_sys::console::error_2(
+                    &format!("Error removing event listener {}", self.event_type).into(),
+                    &e,
+                )
+            });
+    }
+}
+
 /// A canvas based on WebGL and stdweb.
 pub struct WebGLCanvas {
     data: Rc<RefCell<WebGLCanvasData>>,
-    event_listeners: Vec<EventListenerHandle>,
+    #[allow(dead_code)]
+    event_listeners: Vec<EventListener>,
 }
 
 impl Drop for WebGLCanvas {
     fn drop(&mut self) {
-        use crate::context::Context;
-        // Remove event listeners to free memory:
-        let event_listeners = std::mem::replace(&mut self.event_listeners, Vec::new());
-        for listener in event_listeners {
-            listener.remove();
-        }
         // Clear the remnants of the last frame:
         // HACK: This uses the global context.
         let ctxt = Context::get();
@@ -78,45 +106,60 @@ impl AbstractCanvas for WebGLCanvas {
         _: bool,
         _: u32,
         _: u32,
-        setup: Option<CanvasSetup>,
+        _setup: Option<CanvasSetup>,
         out_events: Sender<WindowEvent>,
     ) -> Self {
         fn get_hidpi_factor() -> f64 {
-            (js! { return window.devicePixelRatio; })
-                .try_into()
-                .unwrap()
+            web_sys::window().unwrap().device_pixel_ratio()
         }
+
+        let window = web_sys::window().unwrap();
+        let document = window.document().unwrap();
         let initial_hidpi_factor = get_hidpi_factor();
-        let canvas: CanvasElement = web::document()
-            .query_selector("#canvas")
+        let canvas: HtmlCanvasElement = document
+            .get_element_by_id("canvas")
             .expect("No canvas found.")
-            .unwrap()
-            .try_into()
-            .unwrap();
-        canvas.set_width((canvas.offset_width() as f64 * initial_hidpi_factor) as u32);
-        canvas.set_height((canvas.offset_height() as f64 * initial_hidpi_factor) as u32);
+            .dyn_into::<HtmlCanvasElement>()
+            .expect("Canvas element is not an actual canvas.");
+
+        Context::init(|| {
+            let webgl_context = canvas
+                .get_context("webgl")
+                .unwrap()
+                .unwrap()
+                .dyn_into::<web_sys::WebGlRenderingContext>()
+                .unwrap();
+            glow::Context::from_webgl1_context(webgl_context)
+        });
+
+        let w = (canvas.offset_width() as f64 * initial_hidpi_factor) as u32;
+        let h = (canvas.offset_height() as f64 * initial_hidpi_factor) as u32;
+        canvas.set_width(w);
+        canvas.set_height(h);
         // We set tabIndex to make the canvas focusable to allow keyboard
         // events to be received, but only if it is not already set to any
         // specific values. This is done to keep old code working without
         // changes since the keyboard event listeners are now added to the
         // canvas element instead of the window.
-        if !canvas.has_attribute("tabindex") {
-            canvas.set_attribute("tabindex", "0");
+        if canvas.tab_index() <= 0 {
+            canvas.set_tab_index(0)
         }
+
         let data = Rc::new(RefCell::new(WebGLCanvasData {
             canvas,
             cursor_pos: None,
             key_states: [Action::Release; Key::Unknown as usize + 1],
             button_states: [Action::Release; MouseButton::Button8 as usize + 1],
-            pending_events: Vec::new(),
+            pending_events: vec![WindowEvent::FramebufferSize(w, h)],
             out_events,
             hidpi_factor: initial_hidpi_factor,
             mouse_capture_state: MouseCaptureState::NotCaptured,
         }));
+
         let mut event_listeners = Vec::new();
 
         let edata = data.clone();
-        let listener = web::window().add_event_listener(move |_: webevent::ResizeEvent| {
+        let callback = Closure::wrap(Box::new(move |_: UiEvent| {
             let mut edata = edata.borrow_mut();
             // Here we update the hidpi factor with the assumption that a resize
             // event will always be triggered whenever window.devicePixelRatio
@@ -134,17 +177,20 @@ impl AbstractCanvas for WebGLCanvas {
                 .pending_events
                 .push(WindowEvent::FramebufferSize(w, h));
             let _ = edata.pending_events.push(WindowEvent::Size(w, h));
-        });
-        event_listeners.push(listener);
+        }) as Box<dyn FnMut(_)>);
+        let listener = EventListenerHandle::new(&window, "resize", callback);
+        event_listeners.push(EventListener::Ui(listener));
 
         let edata = data.clone();
-        let listener = web::window().add_event_listener(move |e: webevent::MouseDownEvent| {
+        let callback = Closure::wrap(Box::new(move |e: MouseEvent| {
             let mut edata = edata.borrow_mut();
             match edata.mouse_capture_state {
                 MouseCaptureState::NotCaptured => {
-                    if e.target()
-                        .map_or(false, |target| target.as_ref() != edata.canvas.as_ref())
-                    {
+                    if e.target().map_or(false, |target| {
+                        let target: &JsValue = target.as_ref();
+                        let canvas: &JsValue = edata.canvas.as_ref();
+                        target != canvas
+                    }) {
                         // Stop handling mouse events after the mouse is pressed
                         // outside of the canvas.
                         edata.mouse_capture_state = MouseCaptureState::OtherElement;
@@ -164,11 +210,12 @@ impl AbstractCanvas for WebGLCanvas {
                 translate_mouse_modifiers(&e),
             ));
             edata.button_states[button as usize] = Action::Press;
-        });
-        event_listeners.push(listener);
+        }) as Box<dyn FnMut(_)>);
+        let listener = EventListenerHandle::new(&window, "mousedown", callback);
+        event_listeners.push(EventListener::Mouse(listener));
 
         let edata = data.clone();
-        let listener = web::window().add_event_listener(move |e: webevent::MouseUpEvent| {
+        let callback = Closure::wrap(Box::new(move |e: MouseEvent| {
             let mut edata = edata.borrow_mut();
             match edata.mouse_capture_state {
                 MouseCaptureState::NotCaptured => {
@@ -177,12 +224,8 @@ impl AbstractCanvas for WebGLCanvas {
                 }
                 MouseCaptureState::Captured => {}
                 MouseCaptureState::OtherElement => {
-                    use stdweb::web::event::MouseButton::*;
                     let buttons = e.buttons();
-                    if [Left, Wheel, Right, Button4, Button5]
-                        .iter()
-                        .all(|&button| !buttons.is_down(button))
-                    {
+                    if buttons & 0b011111 == 0 {
                         // Resume handling mouse events after mouse buttons are
                         // released.
                         edata.mouse_capture_state = MouseCaptureState::NotCaptured;
@@ -204,17 +247,20 @@ impl AbstractCanvas for WebGLCanvas {
             {
                 edata.mouse_capture_state = MouseCaptureState::NotCaptured;
             }
-        });
-        event_listeners.push(listener);
+        }) as Box<dyn FnMut(_)>);
+        let listener = EventListenerHandle::new(&window, "mouseup", callback);
+        event_listeners.push(EventListener::Mouse(listener));
 
         let edata = data.clone();
-        let listener = web::window().add_event_listener(move |e: webevent::MouseMoveEvent| {
+        let callback = Closure::wrap(Box::new(move |e: MouseEvent| {
             let mut edata = edata.borrow_mut();
             match edata.mouse_capture_state {
                 MouseCaptureState::NotCaptured => {
-                    if e.target()
-                        .map_or(false, |target| target.as_ref() != edata.canvas.as_ref())
-                    {
+                    if e.target().map_or(false, |target| {
+                        let target: &JsValue = target.as_ref();
+                        let canvas: &JsValue = edata.canvas.as_ref();
+                        target != canvas
+                    }) {
                         // Don't handle hover events outside of the canvas.
                         return;
                     }
@@ -226,22 +272,25 @@ impl AbstractCanvas for WebGLCanvas {
             }
             let hidpi_factor = edata.hidpi_factor;
             let bounding_client_rect = edata.canvas.get_bounding_client_rect();
-            let x = (e.client_x() as f64 - bounding_client_rect.get_x()) * hidpi_factor;
-            let y = (e.client_y() as f64 - bounding_client_rect.get_y()) * hidpi_factor;
+            let x = (e.client_x() as f64 - bounding_client_rect.x()) * hidpi_factor;
+            let y = (e.client_y() as f64 - bounding_client_rect.y()) * hidpi_factor;
             edata.cursor_pos = Some((x, y));
             let _ = edata.pending_events.push(WindowEvent::CursorPos(
                 x,
                 y,
                 translate_mouse_modifiers(&e),
             ));
-        });
-        event_listeners.push(listener);
+        }) as Box<dyn FnMut(_)>);
+        let listener = EventListenerHandle::new(&window, "mousemove", callback);
+        event_listeners.push(EventListener::Mouse(listener));
 
         let edata = data.clone();
-        let listener = web::window().add_event_listener(move |e: webevent::TouchStart| {
+        let callback = Closure::wrap(Box::new(move |e: TouchEvent| {
             let mut edata = edata.borrow_mut();
             let hidpi_factor = edata.hidpi_factor;
-            for t in e.changed_touches() {
+            let changed_touches = e.changed_touches();
+            for i in 0..changed_touches.length() {
+                let t = changed_touches.get(i).unwrap();
                 let _ = edata.pending_events.push(WindowEvent::Touch(
                     t.identifier() as u64,
                     t.client_x() as f64 * hidpi_factor,
@@ -250,14 +299,17 @@ impl AbstractCanvas for WebGLCanvas {
                     translate_touch_modifiers(&e),
                 ));
             }
-        });
-        event_listeners.push(listener);
+        }) as Box<dyn FnMut(_)>);
+        let listener = EventListenerHandle::new(&window, "touchstart", callback);
+        event_listeners.push(EventListener::Touch(listener));
 
         let edata = data.clone();
-        let listener = web::window().add_event_listener(move |e: webevent::TouchEnd| {
+        let callback = Closure::wrap(Box::new(move |e: TouchEvent| {
             let mut edata = edata.borrow_mut();
             let hidpi_factor = edata.hidpi_factor;
-            for t in e.changed_touches() {
+            let changed_touches = e.changed_touches();
+            for i in 0..changed_touches.length() {
+                let t = changed_touches.get(i).unwrap();
                 let _ = edata.pending_events.push(WindowEvent::Touch(
                     t.identifier() as u64,
                     t.client_x() as f64 * hidpi_factor,
@@ -266,14 +318,17 @@ impl AbstractCanvas for WebGLCanvas {
                     translate_touch_modifiers(&e),
                 ));
             }
-        });
-        event_listeners.push(listener);
+        }) as Box<dyn FnMut(_)>);
+        let listener = EventListenerHandle::new(&window, "touchend", callback);
+        event_listeners.push(EventListener::Touch(listener));
 
         let edata = data.clone();
-        let listener = web::window().add_event_listener(move |e: webevent::TouchCancel| {
+        let callback = Closure::wrap(Box::new(move |e: TouchEvent| {
             let mut edata = edata.borrow_mut();
             let hidpi_factor = edata.hidpi_factor;
-            for t in e.changed_touches() {
+            let changed_touches = e.changed_touches();
+            for i in 0..changed_touches.length() {
+                let t = changed_touches.get(i).unwrap();
                 let _ = edata.pending_events.push(WindowEvent::Touch(
                     t.identifier() as u64,
                     t.client_x() as f64 * hidpi_factor,
@@ -282,15 +337,17 @@ impl AbstractCanvas for WebGLCanvas {
                     translate_touch_modifiers(&e),
                 ));
             }
-        });
-        event_listeners.push(listener);
+        }) as Box<dyn FnMut(_)>);
+        let listener = EventListenerHandle::new(&window, "touchcancel", callback);
+        event_listeners.push(EventListener::Touch(listener));
 
         let edata = data.clone();
-        let listener = web::window().add_event_listener(move |e: webevent::TouchMove| {
+        let callback = Closure::wrap(Box::new(move |e: TouchEvent| {
             let mut edata = edata.borrow_mut();
             let hidpi_factor = edata.hidpi_factor;
-
-            for t in e.changed_touches() {
+            let changed_touches = e.changed_touches();
+            for i in 0..changed_touches.length() {
+                let t = changed_touches.get(i).unwrap();
                 edata.cursor_pos = Some((
                     t.client_x() as f64 * hidpi_factor,
                     t.client_y() as f64 * hidpi_factor,
@@ -303,83 +360,63 @@ impl AbstractCanvas for WebGLCanvas {
                     translate_touch_modifiers(&e),
                 ));
             }
-        });
-        event_listeners.push(listener);
+        }) as Box<dyn FnMut(_)>);
+        let listener = EventListenerHandle::new(&window, "touchmove", callback);
+        event_listeners.push(EventListener::Touch(listener));
 
         let edata = data.clone();
-        let listener = data
-            .borrow()
-            .canvas
-            .add_event_listener(move |e: WheelEvent| {
-                let delta_x: f64 = js!(
-                    return @{e.as_ref()}.deltaX;
-                )
-                .try_into()
-                .ok()
-                .unwrap_or(0.0);
-                let delta_y: f64 = js!(
-                    return @{e.as_ref()}.deltaY;
-                )
-                .try_into()
-                .ok()
-                .unwrap_or(0.0);
-                // The values of deltaMode:
-                // 0x00 => DOM_DELTA_PIXEL
-                // 0x01 => DOM_DELTA_LINE
-                // 0x02 => DOM_DELTA_PAGE
-                let delta_mode = js!(
-                    return @{e.as_ref()}.deltaMode;
-                )
-                .try_into()
-                .ok()
-                .unwrap_or(0u32);
-                let (delta_x, delta_y) = match delta_mode {
-                    // It doesn't really make much sense to scroll a "page" in
-                    // case of scrolling the cameras so we treat DOM_DELTA_PAGE
-                    // the same way as DOM_DELTA_LINE.
-                    0x01 | 0x02 => (delta_x * 10.0, delta_y * 10.0),
-                    _ => (delta_x, delta_y),
-                };
-                let mut edata = edata.borrow_mut();
-                let _ = edata.pending_events.push(WindowEvent::Scroll(
-                    delta_x / 10.0,
-                    -delta_y / 10.0,
-                    translate_mouse_modifiers(&e),
-                ));
-            });
-        event_listeners.push(listener);
+        let callback = Closure::wrap(Box::new(move |e: WheelEvent| {
+            let delta_x: f64 = e.delta_x();
+            let delta_y: f64 = e.delta_y();
+            // The values of deltaMode:
+            // 0x00 => DOM_DELTA_PIXEL
+            // 0x01 => DOM_DELTA_LINE
+            // 0x02 => DOM_DELTA_PAGE
+            let delta_mode = e.delta_mode();
+            let (delta_x, delta_y) = match delta_mode {
+                // It doesn't really make much sense to scroll a "page" in
+                // case of scrolling the cameras so we treat DOM_DELTA_PAGE
+                // the same way as DOM_DELTA_LINE.
+                0x01 | 0x02 => (delta_x * 10.0, delta_y * 10.0),
+                _ => (delta_x, delta_y),
+            };
+            let mut edata = edata.borrow_mut();
+            let _ = edata.pending_events.push(WindowEvent::Scroll(
+                delta_x / 10.0,
+                -delta_y / 10.0,
+                translate_mouse_modifiers(&e),
+            ));
+        }) as Box<dyn FnMut(_)>);
+        let listener = EventListenerHandle::new(&data.borrow().canvas, "wheel", callback);
+        event_listeners.push(EventListener::Wheel(listener));
 
         let edata = data.clone();
-        let listener = data
-            .borrow()
-            .canvas
-            .add_event_listener(move |e: webevent::KeyDownEvent| {
-                let mut edata = edata.borrow_mut();
-                let key = translate_key(&e);
-                let _ = edata.pending_events.push(WindowEvent::Key(
-                    key,
-                    Action::Press,
-                    translate_key_modifiers(&e),
-                ));
-                edata.key_states[key as usize] = Action::Press;
-            });
-        event_listeners.push(listener);
+        let callback = Closure::wrap(Box::new(move |e: KeyboardEvent| {
+            let mut edata = edata.borrow_mut();
+            let key = translate_key(&e);
+            let _ = edata.pending_events.push(WindowEvent::Key(
+                key,
+                Action::Press,
+                translate_key_modifiers(&e),
+            ));
+            edata.key_states[key as usize] = Action::Press;
+        }) as Box<dyn FnMut(_)>);
+        let listener = EventListenerHandle::new(&data.borrow().canvas, "keydown", callback);
+        event_listeners.push(EventListener::Keyboard(listener));
 
         let edata = data.clone();
-        let listener = data
-            .borrow()
-            .canvas
-            .add_event_listener(move |e: webevent::KeyUpEvent| {
-                let mut edata = edata.borrow_mut();
-                let key = translate_key(&e);
-                let _ = edata.pending_events.push(WindowEvent::Key(
-                    key,
-                    Action::Release,
-                    translate_key_modifiers(&e),
-                ));
-                edata.key_states[key as usize] = Action::Release;
-            });
-        event_listeners.push(listener);
+        let callback = Closure::wrap(Box::new(move |e: KeyboardEvent| {
+            let mut edata = edata.borrow_mut();
+            let key = translate_key(&e);
+            let _ = edata.pending_events.push(WindowEvent::Key(
+                key,
+                Action::Release,
+                translate_key_modifiers(&e),
+            ));
+            edata.key_states[key as usize] = Action::Release;
+        }) as Box<dyn FnMut(_)>);
+        let listener = EventListenerHandle::new(&data.borrow().canvas, "keyup", callback);
+        event_listeners.push(EventListener::Keyboard(listener));
 
         WebGLCanvas {
             data,
@@ -388,11 +425,25 @@ impl AbstractCanvas for WebGLCanvas {
     }
 
     fn render_loop(mut callback: impl FnMut(f64) -> bool + 'static) {
-        let _ = web::window().request_animation_frame(move |t| {
-            if callback(t) {
-                let _ = Self::render_loop(callback);
-            }
-        });
+        // See https://rustwasm.github.io/docs/wasm-bindgen/examples/request-animation-frame.html
+        if let Some(window) = web_sys::window() {
+            let f = Rc::new(RefCell::new(None));
+            let g: Rc<RefCell<Option<Closure<_>>>> = f.clone();
+            *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
+                if callback(0.0) {
+                    let _ = window.request_animation_frame(
+                        f.borrow().as_ref().unwrap().as_ref().unchecked_ref(),
+                    );
+                } else {
+                    // Drop the closure.
+                    f.borrow_mut().take();
+                }
+            }) as Box<dyn FnMut()>));
+
+            let _ = web_sys::window()
+                .unwrap()
+                .request_animation_frame(g.borrow().as_ref().unwrap().as_ref().unchecked_ref());
+        }
     }
 
     fn hidpi_factor(&self) -> f64 {
@@ -428,11 +479,11 @@ impl AbstractCanvas for WebGLCanvas {
         // Not supported.
     }
 
-    fn set_icon(&mut self, icon: impl GenericImage<Pixel = impl Pixel<Subpixel = u8>>) {
+    fn set_icon(&mut self, _icon: impl GenericImage<Pixel = impl Pixel<Subpixel = u8>>) {
         // Not supported.
     }
 
-    fn set_cursor_grab(&self, grab: bool) {
+    fn set_cursor_grab(&self, _: bool) {
         // Not supported.
     }
 
@@ -452,7 +503,7 @@ impl AbstractCanvas for WebGLCanvas {
     }
 }
 
-fn translate_mouse_modifiers<E: IMouseEvent>(event: &E) -> Modifiers {
+fn translate_mouse_modifiers(event: &MouseEvent) -> Modifiers {
     let mut res = Modifiers::empty();
     if event.shift_key() {
         res.insert(Modifiers::Shift)
@@ -470,7 +521,7 @@ fn translate_mouse_modifiers<E: IMouseEvent>(event: &E) -> Modifiers {
     res
 }
 
-fn translate_touch_modifiers<E: ITouchEvent>(event: &E) -> Modifiers {
+fn translate_touch_modifiers(event: &TouchEvent) -> Modifiers {
     let mut res = Modifiers::empty();
     if event.shift_key() {
         res.insert(Modifiers::Shift)
@@ -488,7 +539,7 @@ fn translate_touch_modifiers<E: ITouchEvent>(event: &E) -> Modifiers {
     res
 }
 
-fn translate_key_modifiers<E: IKeyboardEvent>(event: &E) -> Modifiers {
+fn translate_key_modifiers(event: &KeyboardEvent) -> Modifiers {
     let mut res = Modifiers::empty();
     if event.shift_key() {
         res.insert(Modifiers::Shift)
@@ -506,17 +557,18 @@ fn translate_key_modifiers<E: IKeyboardEvent>(event: &E) -> Modifiers {
     res
 }
 
-fn translate_mouse_button<E: IMouseEvent>(event: &E) -> MouseButton {
+fn translate_mouse_button(event: &MouseEvent) -> MouseButton {
     match event.button() {
-        webevent::MouseButton::Left => MouseButton::Button1,
-        webevent::MouseButton::Right => MouseButton::Button2,
-        webevent::MouseButton::Wheel => MouseButton::Button3,
-        webevent::MouseButton::Button4 => MouseButton::Button4,
-        webevent::MouseButton::Button5 => MouseButton::Button5,
+        0 => MouseButton::Button1,
+        1 => MouseButton::Button3, // NOTE: 2 is the right-button and 1 the auxiliary button.
+        2 => MouseButton::Button2,
+        3 => MouseButton::Button4,
+        4 => MouseButton::Button5,
+        _ => MouseButton::Button5,
     }
 }
 
-fn translate_key<E: IKeyboardEvent>(event: &E) -> Key {
+fn translate_key(event: &KeyboardEvent) -> Key {
     // FIXME: some of thos mapping may not be correct.
     match event.key().as_str() {
         "1" => Key::Key1,

@@ -90,13 +90,13 @@ impl Effect {
 impl Drop for Effect {
     fn drop(&mut self) {
         let ctxt = Context::get();
-        if ctxt.is_program(Some(&self.program)) {
+        if verify!(ctxt.is_program(Some(&self.program))) {
             verify!(ctxt.delete_program(Some(&self.program)));
         }
-        if ctxt.is_shader(Some(&self.fshader)) {
+        if verify!(ctxt.is_shader(Some(&self.fshader))) {
             verify!(ctxt.delete_shader(Some(&self.fshader)));
         }
-        if ctxt.is_shader(Some(&self.vshader)) {
+        if verify!(ctxt.is_shader(Some(&self.vshader))) {
             verify!(ctxt.delete_shader(Some(&self.vshader)));
         }
     }
