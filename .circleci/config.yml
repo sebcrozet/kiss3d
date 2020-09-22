@@ -31,11 +31,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install cargo-web
-          command: cargo install -f cargo-web;
-      - run:
           name: build kiss3d
-          command: cargo web build --verbose --target wasm32-unknown-unknown -p kiss3d;
+          command: cargo build --verbose --target wasm32-unknown-unknown -p kiss3d;
 
 
 workflows:
