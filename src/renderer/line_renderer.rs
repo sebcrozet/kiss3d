@@ -2,9 +2,9 @@
 
 use crate::camera::Camera;
 use crate::context::Context;
-use na::{Matrix4, Point3};
 use crate::renderer::Renderer;
 use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
+use na::{Matrix4, Point3};
 
 #[path = "../error.rs"]
 mod error;

@@ -1,8 +1,8 @@
 //! Data structure of a scene node.
 
-use na::{Isometry2, Point2, Point3, Vector2};
 use crate::planar_camera::PlanarCamera;
 use crate::resource::{PlanarMaterial, PlanarMesh, Texture, TextureManager};
+use na::{Isometry2, Point2, Point3, Vector2};
 use std::any::Any;
 use std::cell::RefCell;
 use std::path::Path;

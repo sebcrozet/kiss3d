@@ -1,7 +1,7 @@
 use crate::event::WindowEvent;
-use na::{Matrix3, Point2, Vector2};
 use crate::resource::ShaderUniform;
 use crate::window::Canvas;
+use na::{Matrix3, Point2, Vector2};
 
 /// Trait every 2D camera must implement.
 pub trait PlanarCamera {

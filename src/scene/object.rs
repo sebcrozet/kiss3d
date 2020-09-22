@@ -2,8 +2,8 @@
 
 use crate::camera::Camera;
 use crate::light::Light;
-use na::{Isometry3, Point2, Point3, Vector3};
 use crate::resource::{Material, Mesh, Texture, TextureManager};
+use na::{Isometry3, Point2, Point3, Vector3};
 use std::any::Any;
 use std::cell::RefCell;
 use std::path::Path;

@@ -1,15 +1,15 @@
 //! A renderer for Conrod primitives.
 
+use crate::context::{Context, Texture};
+use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
+use crate::text::Font;
 use conrod::position::Rect;
 use conrod::text::GlyphCache;
 use conrod::{render::PrimitiveKind, Ui};
-use crate::context::{Context, Texture};
 use na::{Point2, Point3, Point4, Vector2};
-use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 use rusttype::gpu_cache::Cache;
 use std::collections::HashMap;
 use std::rc::Rc;
-use crate::text::Font;
 
 #[path = "../error.rs"]
 mod error;

@@ -2,9 +2,9 @@
 use std::iter;
 use std::sync::{Arc, RwLock};
 
-use na::{Point2, Point3};
 use crate::resource::gpu_vector::{AllocationType, BufferType, GPUVec};
 use crate::resource::ShaderAttribute;
+use na::{Point2, Point3};
 
 #[path = "../error.rs"]
 mod error;

@@ -1,10 +1,10 @@
 use crate::camera::Camera;
 use crate::context::Context;
 use crate::light::Light;
-use na::{Isometry3, Matrix3, Matrix4, Point3, Vector3};
 use crate::resource::Material;
 use crate::resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
 use crate::scene::ObjectData;
+use na::{Isometry3, Matrix3, Matrix4, Point3, Vector3};
 
 #[path = "../error.rs"]
 mod error;

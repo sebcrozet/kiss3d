@@ -2,9 +2,9 @@
 
 use crate::loader::mtl::MtlMaterial;
 use crate::loader::obj;
+use crate::resource::Mesh;
 use ncollide3d::procedural;
 use ncollide3d::procedural::TriMesh;
-use crate::resource::Mesh;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::io::Result as IoResult;
