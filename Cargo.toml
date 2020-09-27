@@ -1,6 +1,6 @@
 [package]
 name    = "kiss3d"
-version = "0.25.0"
+version = "0.26.0"
 authors = [ "Sébastien Crozet <developer@crozet.re>" ]
 
 description = "3D graphics engine for Rust."
@@ -39,7 +39,7 @@ libc         = "0.2"
 bitflags     = "1.2"
 num-traits   = "0.2"
 nalgebra     = "0.22"
-ncollide3d   = "0.24"
+ncollide3d   = "0.25"
 image        = "0.22"
 serde        = "1"
 serde_derive = "1"
@@ -60,4 +60,4 @@ web-sys = { version = "0.3", features = [ "console", "KeyEvent", "KeyboardEvent"
 
 [dev-dependencies]
 rand = "0.7"
-ncollide2d = "0.24"
+ncollide2d = "0.25"
