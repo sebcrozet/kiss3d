@@ -112,7 +112,6 @@ impl Window {
         Vector2::new(w, h)
     }
 
-
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
     #[inline]
     pub fn set_framerate_limit(&mut self, fps: Option<u64>) {

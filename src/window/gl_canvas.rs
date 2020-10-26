@@ -5,14 +5,14 @@ use crate::event::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent
 use crate::window::canvas::{CanvasSetup, NumSamples};
 use crate::window::AbstractCanvas;
 use glutin::{
-    self, dpi::LogicalSize, ContextBuilder, EventsLoop, GlContext, GlRequest, GlWindow, TouchPhase,
-    WindowBuilder,
+    self, dpi::LogicalSize, ContextBuilder, EventsLoop, GlRequest, TouchPhase,
+    WindowBuilder, WindowedContext, PossiblyCurrent
 };
 use image::{GenericImage, Pixel};
 
 /// A canvas based on glutin and OpenGL.
 pub struct GLCanvas {
-    window: GlWindow,
+    window: WindowedContext<PossiblyCurrent>,
     events: EventsLoop,
     cursor_pos: Option<(f64, f64)>,
     key_states: [Action; Key::Unknown as usize + 1],
@@ -39,18 +39,18 @@ impl AbstractCanvas for GLCanvas {
             vsync: true,
             samples: NumSamples::Zero,
         });
-        let context = ContextBuilder::new()
+        let window = ContextBuilder::new()
             .with_vsync(canvas_setup.vsync)
             .with_multisampling(canvas_setup.samples as u16)
             .with_gl(GlRequest::GlThenGles {
                 opengl_version: (3, 2),
                 opengles_version: (2, 0),
-            });
-        let window = GlWindow::new(window, context, &events).unwrap();
-        let _ = unsafe { window.make_current().unwrap() };
+            })
+            .build_windowed(window, &events).unwrap();
+        let window = unsafe { window.make_current().unwrap() };
         Context::init(|| unsafe {
             glow::Context::from_loader_function(|name| {
-                window.context().get_proc_address(name) as *const _
+                window.get_proc_address(name) as *const _
             })
         });
 
@@ -89,7 +89,7 @@ impl AbstractCanvas for GLCanvas {
                     let _ = out_events.send(WindowEvent::Close);
                 }
                 glutin::WindowEvent::Resized(logical_size) => {
-                    let dpi_factor = window.get_hidpi_factor();
+                    let dpi_factor = window.window().get_hidpi_factor();
                     let physical_size = logical_size.to_physical(dpi_factor);
                     window.resize(physical_size);
                     let fb_size: (u32, u32) = physical_size.into();
@@ -101,7 +101,7 @@ impl AbstractCanvas for GLCanvas {
                     ..
                 } => {
                     let modifiers = translate_modifiers(modifiers);
-                    let dpi_factor = window.get_hidpi_factor();
+                    let dpi_factor = window.window().get_hidpi_factor();
                     let physical_pos = position.to_physical(dpi_factor);
                     *cursor_pos = Some(physical_pos.into());
                     let _ = out_events.send(WindowEvent::CursorPos(
@@ -171,9 +171,10 @@ impl AbstractCanvas for GLCanvas {
     }
 
     fn size(&self) -> (u32, u32) {
-        let hidpi = self.window.get_hidpi_factor();
+        let hidpi = self.window.window().get_hidpi_factor();
         let logical_size = self
             .window
+            .window()
             .get_inner_size()
             .expect("The window was closed.");
         logical_size.to_physical(hidpi).into()
@@ -184,11 +185,11 @@ impl AbstractCanvas for GLCanvas {
     }
 
     fn hidpi_factor(&self) -> f64 {
-        self.window.get_hidpi_factor() as f64
+        self.window.window().get_hidpi_factor() as f64
     }
 
     fn set_title(&mut self, title: &str) {
-        self.window.set_title(title)
+        self.window.window().set_title(title)
     }
 
     fn set_icon(&mut self, icon: impl GenericImage<Pixel = impl Pixel<Subpixel = u8>>) {
@@ -198,7 +199,7 @@ impl AbstractCanvas for GLCanvas {
             rgba.extend_from_slice(&pixel.to_rgba().0);
         }
         let icon = glutin::Icon::from_rgba(rgba, width, height).unwrap();
-        self.window.set_window_icon(Some(icon))
+        self.window.window().set_window_icon(Some(icon))
     }
 
     fn set_cursor_grab(&self, grab: bool) {
@@ -206,21 +207,21 @@ impl AbstractCanvas for GLCanvas {
     }
 
     fn set_cursor_position(&self, x: f64, y: f64) {
-        let dpi = self.window.get_hidpi_factor();
-        self.window.set_cursor_position(glutin::dpi::LogicalPosition::new(x / dpi, y / dpi)).unwrap();
+        let dpi = self.window.window().get_hidpi_factor();
+        self.window.window().set_cursor_position(glutin::dpi::LogicalPosition::new(x / dpi, y / dpi)).unwrap();
     }
 
 
     fn hide_cursor(&self, hide: bool) {
-        self.window.hide_cursor(hide);
+        self.window.window().hide_cursor(hide);
     }
 
     fn hide(&mut self) {
-        self.window.hide()
+        self.window.window().hide()
     }
 
     fn show(&mut self) {
-        self.window.show()
+        self.window.window().show()
     }
 
     fn get_mouse_button(&self, button: MouseButton) -> Action {
