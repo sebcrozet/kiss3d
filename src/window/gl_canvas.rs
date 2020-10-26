@@ -205,6 +205,16 @@ impl AbstractCanvas for GLCanvas {
         let _ = self.window.window().grab_cursor(grab);
     }
 
+    fn set_cursor_position(&self, x: f64, y: f64) {
+        let dpi = self.window.get_hidpi_factor();
+        self.window.set_cursor_position(glutin::dpi::LogicalPosition::new(x / dpi, y / dpi)).unwrap();
+    }
+
+
+    fn hide_cursor(&self, hide: bool) {
+        self.window.hide_cursor(hide);
+    }
+
     fn hide(&mut self) {
         self.window.hide()
     }
