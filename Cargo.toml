@@ -1,6 +1,6 @@
 [package]
 name    = "kiss3d"
-version = "0.26.0"
+version = "0.27.0"
 authors = [ "Sébastien Crozet <developer@crozet.re>" ]
 
 description = "3D graphics engine for Rust."
