@@ -785,6 +785,7 @@ impl Window {
                         Key::Up => CKey::Up,
                         Key::Right => CKey::Right,
                         Key::Down => CKey::Down,
+                        Key::Back => CKey::Backspace,
                         Key::Return => CKey::Return,
                         Key::Space => CKey::Space,
                         Key::Caret => CKey::Caret,
@@ -838,6 +839,18 @@ impl Window {
                         Action::Press => Some(Input::Press(Button::Keyboard(key))),
                         Action::Release => Some(Input::Release(Button::Keyboard(key))),
                     }
+                }
+                WindowEvent::Char(ch) => {
+                    // Shamelessly taken from kiss3d_conrod/backends/conrod_winit/src/macros.rs:175.
+                    let string = match ch {
+                        // Ignore control characters and return ascii for Text event (like sdl2).
+                        '\u{7f}' | // Delete
+                        '\u{1b}' | // Escape
+                        '\u{8}'  | // Backspace
+                        '\r' | '\n' | '\t' => "".to_string(),
+                        _ => ch.to_string()
+                    };
+                    Some(Input::Text(string))
                 }
                 _ => None,
             }

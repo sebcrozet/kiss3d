@@ -157,6 +157,9 @@ impl AbstractCanvas for GLCanvas {
                     key_states[key as usize] = action;
                     let _ = out_events.send(WindowEvent::Key(key, action, modifiers));
                 }
+                glutin::WindowEvent::ReceivedCharacter(c) => {
+                    let _ = out_events.send(WindowEvent::Char(c));
+                }
                 _ => {}
             },
             _ => {}
