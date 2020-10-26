@@ -38,18 +38,18 @@ either       = "1"
 libc         = "0.2"
 bitflags     = "1.2"
 num-traits   = "0.2"
-nalgebra     = "0.22"
-ncollide3d   = "0.25"
-image        = "0.22"
+nalgebra     = "0.23"
+ncollide3d   = "0.26"
+image        = "0.23"
 serde        = "1"
 serde_derive = "1"
 rusttype     = { version = "0.8", features = [ "gpu_cache" ] }
 instant      = { version = "0.1", features = [ "wasm-bindgen" ]}
-conrod_core  = { version = "0.70", features = [ "wasm-bindgen" ], optional = true }
+conrod_core  = { version = "0.71", features = [ "wasm-bindgen" ], optional = true }
 glow = "0.6"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-glutin = "0.19"
+glutin = "0.21"
 
 # We repeat all three targets instead of any(target_arch = "wasm32", target_arch = "asmjs")
 # to avoid https://github.com/koute/stdweb/issues/135
@@ -60,4 +60,4 @@ web-sys = { version = "0.3", features = [ "console", "KeyEvent", "KeyboardEvent"
 
 [dev-dependencies]
 rand = "0.7"
-ncollide2d = "0.25"
+ncollide2d = "0.26"

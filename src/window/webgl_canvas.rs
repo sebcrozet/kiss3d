@@ -487,6 +487,14 @@ impl AbstractCanvas for WebGLCanvas {
         // Not supported.
     }
 
+    fn set_cursor_position(&self, _: f64, _: f64) {
+        // Not supported.
+    }
+
+    fn hide_cursor(&self, _: bool) {
+        // Not supported.
+    }
+
     fn hide(&mut self) {
         // Not supported.
     }
