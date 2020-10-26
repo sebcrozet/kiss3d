@@ -5,8 +5,8 @@ use crate::event::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent
 use crate::window::canvas::{CanvasSetup, NumSamples};
 use crate::window::AbstractCanvas;
 use glutin::{
-    self, dpi::LogicalSize, ContextBuilder, EventsLoop, GlRequest, TouchPhase,
-    WindowBuilder, WindowedContext, PossiblyCurrent
+    self, dpi::LogicalSize, ContextBuilder, EventsLoop, GlRequest, PossiblyCurrent, TouchPhase,
+    WindowBuilder, WindowedContext,
 };
 use image::{GenericImage, Pixel};
 
@@ -46,12 +46,11 @@ impl AbstractCanvas for GLCanvas {
                 opengl_version: (3, 2),
                 opengles_version: (2, 0),
             })
-            .build_windowed(window, &events).unwrap();
+            .build_windowed(window, &events)
+            .unwrap();
         let window = unsafe { window.make_current().unwrap() };
         Context::init(|| unsafe {
-            glow::Context::from_loader_function(|name| {
-                window.get_proc_address(name) as *const _
-            })
+            glow::Context::from_loader_function(|name| window.get_proc_address(name) as *const _)
         });
 
         let ctxt = Context::get();
@@ -208,9 +207,11 @@ impl AbstractCanvas for GLCanvas {
 
     fn set_cursor_position(&self, x: f64, y: f64) {
         let dpi = self.window.window().get_hidpi_factor();
-        self.window.window().set_cursor_position(glutin::dpi::LogicalPosition::new(x / dpi, y / dpi)).unwrap();
+        self.window
+            .window()
+            .set_cursor_position(glutin::dpi::LogicalPosition::new(x / dpi, y / dpi))
+            .unwrap();
     }
-
 
     fn hide_cursor(&self, hide: bool) {
         self.window.window().hide_cursor(hide);
