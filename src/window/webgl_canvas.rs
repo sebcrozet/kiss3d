@@ -22,7 +22,7 @@ struct WebGLCanvasData {
     button_states: [Action; MouseButton::Button8 as usize + 1],
     pending_events: Vec<WindowEvent>,
     out_events: Sender<WindowEvent>,
-    hidpi_factor: f64,
+    scale_factor: f64,
     mouse_capture_state: MouseCaptureState,
 }
 
@@ -109,13 +109,13 @@ impl AbstractCanvas for WebGLCanvas {
         _setup: Option<CanvasSetup>,
         out_events: Sender<WindowEvent>,
     ) -> Self {
-        fn get_hidpi_factor() -> f64 {
+        fn get_scale_factor() -> f64 {
             web_sys::window().unwrap().device_pixel_ratio()
         }
 
         let window = web_sys::window().unwrap();
         let document = window.document().unwrap();
-        let initial_hidpi_factor = get_hidpi_factor();
+        let initial_scale_factor = get_scale_factor();
         let canvas: HtmlCanvasElement = document
             .get_element_by_id("canvas")
             .expect("No canvas found.")
@@ -132,8 +132,8 @@ impl AbstractCanvas for WebGLCanvas {
             glow::Context::from_webgl1_context(webgl_context)
         });
 
-        let w = (canvas.offset_width() as f64 * initial_hidpi_factor) as u32;
-        let h = (canvas.offset_height() as f64 * initial_hidpi_factor) as u32;
+        let w = (canvas.offset_width() as f64 * initial_scale_factor) as u32;
+        let h = (canvas.offset_height() as f64 * initial_scale_factor) as u32;
         canvas.set_width(w);
         canvas.set_height(h);
         // We set tabIndex to make the canvas focusable to allow keyboard
@@ -152,7 +152,7 @@ impl AbstractCanvas for WebGLCanvas {
             button_states: [Action::Release; MouseButton::Button8 as usize + 1],
             pending_events: vec![WindowEvent::FramebufferSize(w, h)],
             out_events,
-            hidpi_factor: initial_hidpi_factor,
+            scale_factor: initial_scale_factor,
             mouse_capture_state: MouseCaptureState::NotCaptured,
         }));
 
@@ -161,15 +161,15 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |_: UiEvent| {
             let mut edata = edata.borrow_mut();
-            // Here we update the hidpi factor with the assumption that a resize
+            // Here we update the scale factor with the assumption that a resize
             // event will always be triggered whenever window.devicePixelRatio
-            // changes. This is the easiest way to detect a change of the hidpi
+            // changes. This is the easiest way to detect a change of the scale
             // factor.
-            let hidpi_factor = get_hidpi_factor();
-            edata.hidpi_factor = hidpi_factor;
+            let scale_factor = get_scale_factor();
+            edata.scale_factor = scale_factor;
             let (w, h) = (
-                (edata.canvas.offset_width() as f64 * hidpi_factor) as u32,
-                (edata.canvas.offset_height() as f64 * hidpi_factor) as u32,
+                (edata.canvas.offset_width() as f64 * scale_factor) as u32,
+                (edata.canvas.offset_height() as f64 * scale_factor) as u32,
             );
             edata.canvas.set_width(w);
             edata.canvas.set_height(h);
@@ -270,10 +270,10 @@ impl AbstractCanvas for WebGLCanvas {
                     return;
                 }
             }
-            let hidpi_factor = edata.hidpi_factor;
+            let scale_factor = edata.scale_factor;
             let bounding_client_rect = edata.canvas.get_bounding_client_rect();
-            let x = (e.client_x() as f64 - bounding_client_rect.x()) * hidpi_factor;
-            let y = (e.client_y() as f64 - bounding_client_rect.y()) * hidpi_factor;
+            let x = (e.client_x() as f64 - bounding_client_rect.x()) * scale_factor;
+            let y = (e.client_y() as f64 - bounding_client_rect.y()) * scale_factor;
             edata.cursor_pos = Some((x, y));
             let _ = edata.pending_events.push(WindowEvent::CursorPos(
                 x,
@@ -287,14 +287,14 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: TouchEvent| {
             let mut edata = edata.borrow_mut();
-            let hidpi_factor = edata.hidpi_factor;
+            let scale_factor = edata.scale_factor;
             let changed_touches = e.changed_touches();
             for i in 0..changed_touches.length() {
                 let t = changed_touches.get(i).unwrap();
                 let _ = edata.pending_events.push(WindowEvent::Touch(
                     t.identifier() as u64,
-                    t.client_x() as f64 * hidpi_factor,
-                    t.client_y() as f64 * hidpi_factor,
+                    t.client_x() as f64 * scale_factor,
+                    t.client_y() as f64 * scale_factor,
                     TouchAction::Start,
                     translate_touch_modifiers(&e),
                 ));
@@ -306,14 +306,14 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: TouchEvent| {
             let mut edata = edata.borrow_mut();
-            let hidpi_factor = edata.hidpi_factor;
+            let scale_factor = edata.scale_factor;
             let changed_touches = e.changed_touches();
             for i in 0..changed_touches.length() {
                 let t = changed_touches.get(i).unwrap();
                 let _ = edata.pending_events.push(WindowEvent::Touch(
                     t.identifier() as u64,
-                    t.client_x() as f64 * hidpi_factor,
-                    t.client_y() as f64 * hidpi_factor,
+                    t.client_x() as f64 * scale_factor,
+                    t.client_y() as f64 * scale_factor,
                     TouchAction::End,
                     translate_touch_modifiers(&e),
                 ));
@@ -325,14 +325,14 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: TouchEvent| {
             let mut edata = edata.borrow_mut();
-            let hidpi_factor = edata.hidpi_factor;
+            let scale_factor = edata.scale_factor;
             let changed_touches = e.changed_touches();
             for i in 0..changed_touches.length() {
                 let t = changed_touches.get(i).unwrap();
                 let _ = edata.pending_events.push(WindowEvent::Touch(
                     t.identifier() as u64,
-                    t.client_x() as f64 * hidpi_factor,
-                    t.client_y() as f64 * hidpi_factor,
+                    t.client_x() as f64 * scale_factor,
+                    t.client_y() as f64 * scale_factor,
                     TouchAction::Cancel,
                     translate_touch_modifiers(&e),
                 ));
@@ -344,18 +344,18 @@ impl AbstractCanvas for WebGLCanvas {
         let edata = data.clone();
         let callback = Closure::wrap(Box::new(move |e: TouchEvent| {
             let mut edata = edata.borrow_mut();
-            let hidpi_factor = edata.hidpi_factor;
+            let scale_factor = edata.scale_factor;
             let changed_touches = e.changed_touches();
             for i in 0..changed_touches.length() {
                 let t = changed_touches.get(i).unwrap();
                 edata.cursor_pos = Some((
-                    t.client_x() as f64 * hidpi_factor,
-                    t.client_y() as f64 * hidpi_factor,
+                    t.client_x() as f64 * scale_factor,
+                    t.client_y() as f64 * scale_factor,
                 ));
                 let _ = edata.pending_events.push(WindowEvent::Touch(
                     t.identifier() as u64,
-                    t.client_x() as f64 * hidpi_factor,
-                    t.client_y() as f64 * hidpi_factor,
+                    t.client_x() as f64 * scale_factor,
+                    t.client_y() as f64 * scale_factor,
                     TouchAction::Move,
                     translate_touch_modifiers(&e),
                 ));
@@ -446,8 +446,8 @@ impl AbstractCanvas for WebGLCanvas {
         }
     }
 
-    fn hidpi_factor(&self) -> f64 {
-        self.data.borrow().hidpi_factor
+    fn scale_factor(&self) -> f64 {
+        self.data.borrow().scale_factor
     }
 
     fn poll_events(&mut self) {
@@ -464,10 +464,10 @@ impl AbstractCanvas for WebGLCanvas {
     }
 
     fn size(&self) -> (u32, u32) {
-        let hidpi_factor = self.hidpi_factor();
+        let scale_factor = self.scale_factor();
         (
-            (self.data.borrow().canvas.offset_width() as f64 * hidpi_factor) as u32,
-            (self.data.borrow().canvas.offset_height() as f64 * hidpi_factor) as u32,
+            (self.data.borrow().canvas.offset_width() as f64 * scale_factor) as u32,
+            (self.data.borrow().canvas.offset_height() as f64 * scale_factor) as u32,
         )
     }
 

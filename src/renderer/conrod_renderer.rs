@@ -174,14 +174,14 @@ impl ConrodRenderer {
         &mut self,
         width: f32,
         height: f32,
-        hidpi_factor: f32,
+        scale_factor: f32,
         texture_map: &conrod::image::Map<(Rc<Texture>, (u32, u32))>,
     ) {
         // NOTE: this seems necessary for WASM.
         if !self.resized_once {
             self.ui.handle_event(conrod::event::Input::Resize(
-                width as f64 / hidpi_factor as f64,
-                height as f64 / hidpi_factor as f64,
+                width as f64 / scale_factor as f64,
+                height as f64 / scale_factor as f64,
             ));
             self.resized_once = true;
         }
@@ -207,10 +207,10 @@ impl ConrodRenderer {
 
         let rect_to_gl_rect = |rect: Rect| {
             let (w, h) = rect.w_h();
-            let l = rect.left() as f32 * hidpi_factor + width / 2.0;
-            let b = rect.bottom() as f32 * hidpi_factor + height / 2.0;
-            let w = w as f32 * hidpi_factor;
-            let h = h as f32 * hidpi_factor;
+            let l = rect.left() as f32 * scale_factor + width / 2.0;
+            let b = rect.bottom() as f32 * scale_factor + height / 2.0;
+            let w = w as f32 * scale_factor;
+            let h = h as f32 * scale_factor;
 
             (l.max(0.0), b.max(0.0), w.min(width), h.min(height))
         };
@@ -360,26 +360,26 @@ impl ConrodRenderer {
                     let tr = (primitive.rect.x.end, primitive.rect.y.end);
 
                     vertices.extend_from_slice(&[
-                        tl.0 as f32 * hidpi_factor,
-                        tl.1 as f32 * hidpi_factor,
+                        tl.0 as f32 * scale_factor,
+                        tl.1 as f32 * scale_factor,
                         color.0,
                         color.1,
                         color.2,
                         color.3,
-                        bl.0 as f32 * hidpi_factor,
-                        bl.1 as f32 * hidpi_factor,
+                        bl.0 as f32 * scale_factor,
+                        bl.1 as f32 * scale_factor,
                         color.0,
                         color.1,
                         color.2,
                         color.3,
-                        br.0 as f32 * hidpi_factor,
-                        br.1 as f32 * hidpi_factor,
+                        br.0 as f32 * scale_factor,
+                        br.1 as f32 * scale_factor,
                         color.0,
                         color.1,
                         color.2,
                         color.3,
-                        tr.0 as f32 * hidpi_factor,
-                        tr.1 as f32 * hidpi_factor,
+                        tr.0 as f32 * scale_factor,
+                        tr.1 as f32 * scale_factor,
                         color.0,
                         color.1,
                         color.2,
@@ -398,20 +398,20 @@ impl ConrodRenderer {
                         let pts = triangle.points();
 
                         vertices.extend_from_slice(&[
-                            pts[0][0] as f32 * hidpi_factor,
-                            pts[0][1] as f32 * hidpi_factor,
+                            pts[0][0] as f32 * scale_factor,
+                            pts[0][1] as f32 * scale_factor,
                             color.0,
                             color.1,
                             color.2,
                             color.3,
-                            pts[1][0] as f32 * hidpi_factor,
-                            pts[1][1] as f32 * hidpi_factor,
+                            pts[1][0] as f32 * scale_factor,
+                            pts[1][1] as f32 * scale_factor,
                             color.0,
                             color.1,
                             color.2,
                             color.3,
-                            pts[2][0] as f32 * hidpi_factor,
-                            pts[2][1] as f32 * hidpi_factor,
+                            pts[2][0] as f32 * scale_factor,
+                            pts[2][1] as f32 * scale_factor,
                             color.0,
                             color.1,
                             color.2,
@@ -429,20 +429,20 @@ impl ConrodRenderer {
                         let ((a, ca), (b, cb), (c, cc)) =
                             (triangle.0[0], triangle.0[1], triangle.0[2]);
                         vertices.extend_from_slice(&[
-                            a[0] as f32 * hidpi_factor,
-                            a[1] as f32 * hidpi_factor,
+                            a[0] as f32 * scale_factor,
+                            a[1] as f32 * scale_factor,
                             ca.0,
                             ca.1,
                             ca.2,
                             ca.3,
-                            b[0] as f32 * hidpi_factor,
-                            b[1] as f32 * hidpi_factor,
+                            b[0] as f32 * scale_factor,
+                            b[1] as f32 * scale_factor,
                             cb.0,
                             cb.1,
                             cb.2,
                             cb.3,
-                            c[0] as f32 * hidpi_factor,
-                            c[1] as f32 * hidpi_factor,
+                            c[0] as f32 * scale_factor,
+                            c[1] as f32 * scale_factor,
                             cc.0,
                             cc.1,
                             cc.2,
@@ -465,10 +465,10 @@ impl ConrodRenderer {
                             texture: image_id,
                         };
 
-                        let min_px = primitive.rect.x.start as f32 * hidpi_factor;
-                        let min_py = primitive.rect.y.start as f32 * hidpi_factor;
-                        let max_px = primitive.rect.x.end as f32 * hidpi_factor;
-                        let max_py = primitive.rect.y.end as f32 * hidpi_factor;
+                        let min_px = primitive.rect.x.start as f32 * scale_factor;
+                        let min_py = primitive.rect.y.start as f32 * scale_factor;
+                        let max_px = primitive.rect.x.end as f32 * scale_factor;
+                        let max_py = primitive.rect.y.end as f32 * scale_factor;
 
                         let w = (texture.1).0 as f64;
                         let h = (texture.1).1 as f64;
@@ -534,7 +534,7 @@ impl ConrodRenderer {
                     /*
                      * Update the text image.
                      */
-                    let positioned_glyphs = text.positioned_glyphs(hidpi_factor);
+                    let positioned_glyphs = text.positioned_glyphs(scale_factor);
                     for glyph in positioned_glyphs.iter() {
                         self.cache.queue_glyph(font_id.index(), glyph.clone());
                     }

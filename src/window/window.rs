@@ -422,9 +422,9 @@ impl Window {
         false // FIXME
     }
 
-    /// The hidpi factor of this screen.
-    pub fn hidpi_factor(&self) -> f64 {
-        self.canvas.hidpi_factor()
+    /// The scale factor of this screen.
+    pub fn scale_factor(&self) -> f64 {
+        self.canvas.scale_factor()
     }
 
     /// Sets the light mode. Only one light is supported.
@@ -682,21 +682,21 @@ impl Window {
         fn window_event_to_conrod_input(
             event: WindowEvent,
             size: Vector2<u32>,
-            hidpi: f64,
+            scale: f64,
         ) -> Option<conrod::event::Input> {
             use conrod::event::Input;
             use conrod::input::{Button, Key as CKey, Motion, MouseButton};
 
             let transform_coords = |x: f64, y: f64| {
                 (
-                    (x - size.x as f64 / 2.0) / hidpi,
-                    -(y - size.y as f64 / 2.0) / hidpi,
+                    (x - size.x as f64 / 2.0) / scale,
+                    -(y - size.y as f64 / 2.0) / scale,
                 )
             };
 
             match event {
                 WindowEvent::FramebufferSize(w, h) => {
-                    Some(Input::Resize(w as f64 / hidpi, h as f64 / hidpi))
+                    Some(Input::Resize(w as f64 / scale, h as f64 / scale))
                 }
                 WindowEvent::Focus(focus) => Some(Input::Focus(focus)),
                 WindowEvent::CursorPos(x, y, _) => {
@@ -868,9 +868,9 @@ impl Window {
 
         #[cfg(feature = "conrod")]
         {
-            let (size, hidpi) = (self.size(), self.hidpi_factor());
+            let (size, scale) = (self.size(), self.scale_factor());
             let conrod_ui = self.conrod_ui_mut();
-            if let Some(input) = window_event_to_conrod_input(*event, size, hidpi) {
+            if let Some(input) = window_event_to_conrod_input(*event, size, scale) {
                 conrod_ui.handle_event(input);
             }
 
@@ -1104,7 +1104,7 @@ impl Window {
         self.conrod_context.renderer.render(
             w as f32,
             h as f32,
-            self.canvas.hidpi_factor() as f32,
+            self.canvas.scale_factor() as f32,
             &self.conrod_context.textures,
         );
 
