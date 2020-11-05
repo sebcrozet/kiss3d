@@ -193,6 +193,12 @@ impl Window {
         self.point_renderer.set_point_size(pt_size);
     }
 
+    /// Set the width of all subsequent lines to be drawn until the next time this function is envoked.
+    #[inline]
+    pub fn set_line_width(&mut self, line_width: f32) {
+        self.point_renderer.set_line_width(line_width);
+    }
+
     /// Adds a 3D line to be drawn during the next render.
     ///
     /// The line is being drawn only during the next frame after this call.

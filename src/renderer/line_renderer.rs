@@ -17,6 +17,7 @@ pub struct LineRenderer {
     view: ShaderUniform<Matrix4<f32>>,
     proj: ShaderUniform<Matrix4<f32>>,
     lines: GPUVec<Point3<f32>>,
+    line_width: u32,
 }
 
 impl LineRenderer {
@@ -59,6 +60,11 @@ impl LineRenderer {
             lines.push(color);
         }
     }
+
+    /// Sets the line width for the rendered lines.
+    pub fn set_line_width(&mut self, line_width: f32) {
+        self.line_width = line_width;
+    }
 }
 
 impl Renderer for LineRenderer {
@@ -79,6 +85,7 @@ impl Renderer for LineRenderer {
 
         let ctxt = Context::get();
         verify!(ctxt.draw_arrays(Context::LINES, 0, (self.lines.len() / 2) as i32));
+        verify!(ctxt.line_width(self.line_width));
 
         self.pos.disable();
         self.color.disable();
