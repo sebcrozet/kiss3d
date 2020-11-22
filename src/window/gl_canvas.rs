@@ -35,7 +35,19 @@ impl AbstractCanvas for GLCanvas {
         canvas_setup: Option<CanvasSetup>,
         out_events: Sender<WindowEvent>,
     ) -> Self {
+        #[cfg(unix)]
+        let events = {
+            use glutin::platform::unix::EventLoopExtUnix;
+            EventLoop::new_any_thread()
+        };
+        #[cfg(windows)]
+        let events = {
+            use glutin::platform::windows::EventLoopExtWindows;
+            EventLoop::new_any_thread()
+        };
+        #[cfg(not(any(unix, windows)))]
         let events = EventLoop::new();
+
         let window = WindowBuilder::new()
             .with_title(title)
             .with_inner_size(LogicalSize::new(width as f64, height as f64))
