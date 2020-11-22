@@ -49,7 +49,7 @@ conrod_core  = { version = "0.71", features = [ "wasm-bindgen" ], optional = tru
 glow = "0.6"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-glutin = "0.21"
+glutin = "0.25"
 
 # We repeat all three targets instead of any(target_arch = "wasm32", target_arch = "asmjs")
 # to avoid https://github.com/koute/stdweb/issues/135

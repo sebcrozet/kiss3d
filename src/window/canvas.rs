@@ -97,9 +97,9 @@ impl Canvas {
         self.canvas.cursor_pos()
     }
 
-    /// The high-dpi factor.
-    pub fn hidpi_factor(&self) -> f64 {
-        self.canvas.hidpi_factor()
+    /// The scale factor.
+    pub fn scale_factor(&self) -> f64 {
+        self.canvas.scale_factor()
     }
 
     /// Set the window title.
@@ -160,7 +160,7 @@ pub(crate) trait AbstractCanvas {
     fn swap_buffers(&mut self);
     fn size(&self) -> (u32, u32);
     fn cursor_pos(&self) -> Option<(f64, f64)>;
-    fn hidpi_factor(&self) -> f64;
+    fn scale_factor(&self) -> f64;
 
     fn set_title(&mut self, title: &str);
     fn set_icon(&mut self, icon: impl GenericImage<Pixel = impl Pixel<Subpixel = u8>>);

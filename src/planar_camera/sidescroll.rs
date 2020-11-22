@@ -120,7 +120,7 @@ impl Sidescroll {
 
 impl PlanarCamera for Sidescroll {
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
-        let hidpi = 1.0; // canvas.hidpi_factor();
+        let scale = 1.0; // canvas.scale_factor();
 
         match *event {
             WindowEvent::CursorPos(x, y, _) => {
@@ -138,11 +138,11 @@ impl PlanarCamera for Sidescroll {
             WindowEvent::Scroll(_, off, _) => self.handle_scroll(off as f32),
             WindowEvent::FramebufferSize(w, h) => {
                 self.proj = Matrix3::new(
-                    2.0 * (hidpi as f32) / (w as f32),
+                    2.0 * (scale as f32) / (w as f32),
                     0.0,
                     0.0,
                     0.0,
-                    2.0 * (hidpi as f32) / (h as f32),
+                    2.0 * (scale as f32) / (h as f32),
                     0.0,
                     0.0,
                     0.0,

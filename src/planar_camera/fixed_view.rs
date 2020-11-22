@@ -24,13 +24,13 @@ impl FixedView {
 
 impl PlanarCamera for FixedView {
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
-        let hidpi = canvas.hidpi_factor();
+        let scale = canvas.scale_factor();
 
         match *event {
             WindowEvent::FramebufferSize(w, h) => {
                 let diag = Vector3::new(
-                    2.0 * (hidpi as f32) / (w as f32),
-                    2.0 * (hidpi as f32) / (h as f32),
+                    2.0 * (scale as f32) / (w as f32),
+                    2.0 * (scale as f32) / (h as f32),
                     1.0,
                 );
                 let inv_diag = Vector3::new(1.0 / diag.x, 1.0 / diag.y, 1.0);
