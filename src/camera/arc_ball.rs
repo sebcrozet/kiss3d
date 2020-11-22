@@ -190,6 +190,11 @@ impl ArcBall {
         self.max_dist = max_dist;
     }
 
+    /// Set the increment for a unit scroll (default at 40).
+    pub fn set_dist_step(&mut self, dist_step: f32) {
+        self.dist_step = dist_step;
+    }
+
     /// Move and orient the camera such that it looks at a specific point.
     pub fn look_at(&mut self, eye: Point3<f32>, at: Point3<f32>) {
         let dist = (eye - at).norm();
