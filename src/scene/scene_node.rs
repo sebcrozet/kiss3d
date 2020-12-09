@@ -537,6 +537,18 @@ impl SceneNodeData {
         self.local_transform.append_rotation_wrt_center_mut(r)
     }
 
+    /// Appends a rotation in given angle and axis, hiding complicated UnitQuaternion implementation.
+    pub fn add_rotation_in_axis(&mut self, angle: f32, axis: char) {
+        let rot;
+        match axis {
+            'x' | 'X' => rot = UnitQuaternion::from_axis_angle(&Vector3::x_axis(), angle),
+            'y' | 'Y' => rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), angle),
+            'z' | 'Z' => rot = UnitQuaternion::from_axis_angle(&Vector3::z_axis(), angle),
+            _ => return,
+        }
+        self.prepend_to_local_rotation(&rot);
+    }
+
     /// Prepends a rotation to this node local transformation.
     #[inline]
     pub fn prepend_to_local_rotation(&mut self, r: &UnitQuaternion<f32>) {
