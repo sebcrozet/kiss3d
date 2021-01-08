@@ -100,6 +100,7 @@ Some controls are handled by default by the engine (they can be overridden by th
 * `enter`: look at the origin (0.0, 0.0, 0.0).
 
 ## Compilation
+
 You will need the last stable build of the [rust compiler](http://www.rust-lang.org)
 and the official package manager: [cargo](https://github.com/rust-lang/cargo).
 
@@ -107,7 +108,7 @@ Simply add the following to your `Cargo.toml` file:
 
 ```
 [dependencies]
-kiss3d = "0.25"
+kiss3d = "0.29"
 ```
 
 
