@@ -323,9 +323,9 @@ impl ArcBall {
         self.view = self.view_transform().to_homogeneous();
         self.proj_view = self.proj * self.view;
         self.inverse_proj_view = self
-	    .proj_view
-	    .try_inverse()
-	    .expect("Failed to inverse projection view matrix");
+            .proj_view
+            .try_inverse()
+            .expect("Failed to inverse projection view matrix");
     }
 
     /// Sets the up vector of this camera. Prefer using [`set_up_axis_dir`](#method.set_up_axis_dir)
