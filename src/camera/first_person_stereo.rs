@@ -170,7 +170,10 @@ impl FirstPersonStereo {
 
     fn update_projviews(&mut self) {
         self.proj_view = *self.projection.as_matrix() * self.view_transform().to_homogeneous();
-        self.inverse_proj_view = self.proj_view.try_inverse().expect("Failed to inverse projection view matrix");
+        self.inverse_proj_view = self
+	    .proj_view
+	    .try_inverse()
+	    .expect("Failed to inverse projection view matrix");
         self.proj = *self.projection.as_matrix();
         self.view_left = self.view_transform_left().to_homogeneous();
         self.view_right = self.view_transform_right().to_homogeneous();
