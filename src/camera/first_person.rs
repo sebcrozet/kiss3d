@@ -267,10 +267,7 @@ impl FirstPerson {
         self.view = self.view_transform().to_homogeneous();
         self.proj = *self.projection.as_matrix();
         self.proj_view = self.proj * self.view;
-        let _ = self
-            .proj_view
-            .try_inverse()
-            .map(|inverse_proj| self.inverse_proj_view = inverse_proj);
+	self.inverse_proj_view = self.proj_view.try_inverse().expect("Failed to inverse projection view matrix");
     }
 
     /// The direction this camera is looking at.
