@@ -9,7 +9,7 @@ use glutin::{
     dpi::LogicalSize,
     event::TouchPhase,
     event_loop::{ControlFlow, EventLoop},
-    platform::desktop::EventLoopExtDesktop,
+    platform::run_return::EventLoopExtRunReturn,
     window::WindowBuilder,
     ContextBuilder, GlRequest, PossiblyCurrent, WindowedContext,
 };
