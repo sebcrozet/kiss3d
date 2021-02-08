@@ -29,8 +29,10 @@ include = [
 name = "kiss3d"
 path = "src/lib.rs"
 
-[features]
-conrod = [ "conrod_core" ]
+[workspace]
+members = [
+    "ui/conrod",
+]
 
 
 [dependencies]
@@ -45,7 +47,6 @@ serde        = "1"
 serde_derive = "1"
 rusttype     = { version = "0.8", features = [ "gpu_cache" ] }
 instant      = { version = "0.1", features = [ "wasm-bindgen" ]}
-conrod_core  = { version = "0.71", features = [ "wasm-bindgen" ], optional = true }
 glow = "0.7"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
