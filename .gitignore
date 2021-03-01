@@ -27,3 +27,7 @@ bin/text
 bin/relativity
 bin/custom_material
 bin/procedural
+
+examples/wasm/
+
+.idea/
