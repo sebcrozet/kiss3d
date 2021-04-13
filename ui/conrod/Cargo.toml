@@ -1,0 +1,19 @@
+[package]
+name    = "kiss3d_ui_conrod"
+version = "0.29.0"
+authors = [ "Sébastien Crozet <developer@crozet.re>" ]
+
+description = "Conrod GUI integration for Kiss3d."
+repository = "https://github.com/sebcrozet/kiss3d"
+
+license = "BSD-3-Clause"
+edition = "2018"
+
+[dependencies]
+conrod_core = { version = "0.71", features = [ "wasm-bindgen" ] }
+kiss3d = { version = "0.29", path = "../.." }
+nalgebra = "0.24"
+rusttype = { version = "0.8", features = [ "gpu_cache" ] }
+
+[dev-dependencies]
+rand = "0.7"

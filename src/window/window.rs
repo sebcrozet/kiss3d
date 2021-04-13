@@ -20,8 +20,6 @@ use crate::light::Light;
 use crate::planar_camera::{FixedView, PlanarCamera};
 use crate::planar_line_renderer::PlanarLineRenderer;
 use crate::post_processing::PostProcessingEffect;
-#[cfg(feature = "conrod")]
-use crate::renderer::ConrodRenderer;
 use crate::renderer::{LineRenderer, PointRenderer, Renderer};
 use crate::resource::{
     FramebufferManager, Mesh, PlanarMesh, RenderTarget, Texture, TextureManager,
@@ -35,28 +33,20 @@ use image::{GenericImage, Pixel};
 use image::{ImageBuffer, Rgb};
 use ncollide3d::procedural::TriMesh;
 
-#[cfg(feature = "conrod")]
-use std::collections::HashMap;
-
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
 
-#[cfg(feature = "conrod")]
-struct ConrodContext {
-    renderer: ConrodRenderer,
-    textures: conrod::image::Map<(Rc<Texture>, (u32, u32))>,
-    texture_ids: HashMap<String, conrod::image::Id>,
-}
-
-#[cfg(feature = "conrod")]
-impl ConrodContext {
-    fn new(width: f64, height: f64) -> Self {
-        Self {
-            renderer: ConrodRenderer::new(width, height),
-            textures: conrod::image::Map::new(),
-            texture_ids: HashMap::new(),
-        }
-    }
+pub trait UiContext: 'static {
+    fn as_any(&self) -> &dyn std::any::Any;
+    fn as_any_mut(&mut self) -> &mut dyn std::any::Any;
+    fn handle_event(
+        &mut self,
+        event: &WindowEvent,
+        framebuffer_width: u32,
+        framebuffer_height: u32,
+        scale_factor: f64,
+    ) -> bool;
+    fn render(&mut self, framebuffer_width: u32, framebuffer_height: u32, scale_factor: f64);
 }
 
 /// Structure representing a window and a 3D scene.
@@ -81,8 +71,7 @@ pub struct Window {
     planar_camera: Rc<RefCell<FixedView>>,
     camera: Rc<RefCell<ArcBall>>,
     should_close: bool,
-    #[cfg(feature = "conrod")]
-    conrod_context: ConrodContext,
+    ui_context: Option<Box<dyn UiContext>>,
     canvas: Canvas,
 }
 
@@ -438,50 +427,20 @@ impl Window {
         self.light_mode = pos;
     }
 
-    /// Retrieve a mutable reference to the UI based on Conrod.
-    #[cfg(feature = "conrod")]
-    pub fn conrod_ui_mut(&mut self) -> &mut conrod::Ui {
-        self.conrod_context.renderer.ui_mut()
+    pub fn set_ui(&mut self, ui_context: Box<dyn UiContext>) {
+        self.ui_context = Some(ui_context);
     }
 
-    /// Attributes a conrod ID to the given texture and returns it if it exists.
-    #[cfg(feature = "conrod")]
-    pub fn conrod_texture_id(&mut self, name: &str) -> Option<conrod::image::Id> {
-        let tex = TextureManager::get_global_manager(|tm| tm.get_with_size(name))?;
-        let textures = &mut self.conrod_context.textures;
-        Some(
-            *self
-                .conrod_context
-                .texture_ids
-                .entry(name.to_string())
-                .or_insert_with(|| textures.insert(tex)),
-        )
+    pub fn ui<T: UiContext>(&self) -> Option<&T> {
+        self.ui_context
+            .as_ref()
+            .and_then(|ui| ui.as_any().downcast_ref())
     }
 
-    /// Retrieve a reference to the UI based on Conrod.
-    #[cfg(feature = "conrod")]
-    pub fn conrod_ui(&self) -> &conrod::Ui {
-        self.conrod_context.renderer.ui()
-    }
-
-    /// Returns `true` if the mouse is currently interacting with a Conrod widget.
-    #[cfg(feature = "conrod")]
-    pub fn is_conrod_ui_capturing_mouse(&self) -> bool {
-        let ui = self.conrod_ui();
-        let state = &ui.global_input().current;
-        let window_id = Some(ui.window);
-
-        state.widget_capturing_mouse.is_some() && state.widget_capturing_mouse != window_id
-    }
-
-    /// Returns `true` if the keyboard is currently interacting with a Conrod widget.
-    #[cfg(feature = "conrod")]
-    pub fn is_conrod_ui_capturing_keyboard(&self) -> bool {
-        let ui = self.conrod_ui();
-        let state = &ui.global_input().current;
-        let window_id = Some(ui.window);
-
-        state.widget_capturing_keyboard.is_some() && state.widget_capturing_keyboard != window_id
+    pub fn ui_mut<T: UiContext>(&mut self) -> Option<&mut T> {
+        self.ui_context
+            .as_mut()
+            .and_then(|ui| ui.as_any_mut().downcast_mut())
     }
 
     /// Opens a window, hide it then calls a user-defined procedure.
@@ -542,8 +501,7 @@ impl Window {
             planar_line_renderer: PlanarLineRenderer::new(),
             point_renderer: PointRenderer::new(),
             text_renderer: TextRenderer::new(),
-            #[cfg(feature = "conrod")]
-            conrod_context: ConrodContext::new(width as f64, height as f64),
+            ui_context: None,
             post_process_render_target: FramebufferManager::new_render_target(
                 width as usize,
                 height as usize,
@@ -684,217 +642,13 @@ impl Window {
             _ => {}
         }
 
-        #[cfg(feature = "conrod")]
-        fn window_event_to_conrod_input(
-            event: WindowEvent,
-            size: Vector2<u32>,
-            scale: f64,
-        ) -> Option<conrod::event::Input> {
-            use conrod::event::Input;
-            use conrod::input::{Button, Key as CKey, Motion, MouseButton};
-
-            let transform_coords = |x: f64, y: f64| {
-                (
-                    (x - size.x as f64 / 2.0) / scale,
-                    -(y - size.y as f64 / 2.0) / scale,
-                )
-            };
-
-            match event {
-                WindowEvent::FramebufferSize(w, h) => {
-                    Some(Input::Resize(w as f64 / scale, h as f64 / scale))
-                }
-                WindowEvent::Focus(focus) => Some(Input::Focus(focus)),
-                WindowEvent::CursorPos(x, y, _) => {
-                    let (x, y) = transform_coords(x, y);
-                    Some(Input::Motion(Motion::MouseCursor { x, y }))
-                }
-                WindowEvent::Scroll(x, y, _) => Some(Input::Motion(Motion::Scroll { x, y: -y })),
-                WindowEvent::MouseButton(button, action, _) => {
-                    let button = match button {
-                        crate::event::MouseButton::Button1 => MouseButton::Left,
-                        crate::event::MouseButton::Button2 => MouseButton::Right,
-                        crate::event::MouseButton::Button3 => MouseButton::Middle,
-                        crate::event::MouseButton::Button4 => MouseButton::X1,
-                        crate::event::MouseButton::Button5 => MouseButton::X2,
-                        crate::event::MouseButton::Button6 => MouseButton::Button6,
-                        crate::event::MouseButton::Button7 => MouseButton::Button7,
-                        crate::event::MouseButton::Button8 => MouseButton::Button8,
-                    };
-
-                    match action {
-                        Action::Press => Some(Input::Press(Button::Mouse(button))),
-                        Action::Release => Some(Input::Release(Button::Mouse(button))),
-                    }
-                }
-                WindowEvent::Key(key, action, _) => {
-                    let key = match key {
-                        Key::Key1 => CKey::D1,
-                        Key::Key2 => CKey::D2,
-                        Key::Key3 => CKey::D3,
-                        Key::Key4 => CKey::D4,
-                        Key::Key5 => CKey::D5,
-                        Key::Key6 => CKey::D6,
-                        Key::Key7 => CKey::D7,
-                        Key::Key8 => CKey::D8,
-                        Key::Key9 => CKey::D9,
-                        Key::Key0 => CKey::D0,
-                        Key::A => CKey::A,
-                        Key::B => CKey::B,
-                        Key::C => CKey::C,
-                        Key::D => CKey::D,
-                        Key::E => CKey::E,
-                        Key::F => CKey::F,
-                        Key::G => CKey::G,
-                        Key::H => CKey::H,
-                        Key::I => CKey::I,
-                        Key::J => CKey::J,
-                        Key::K => CKey::K,
-                        Key::L => CKey::L,
-                        Key::M => CKey::M,
-                        Key::N => CKey::N,
-                        Key::O => CKey::O,
-                        Key::P => CKey::P,
-                        Key::Q => CKey::Q,
-                        Key::R => CKey::R,
-                        Key::S => CKey::S,
-                        Key::T => CKey::T,
-                        Key::U => CKey::U,
-                        Key::V => CKey::V,
-                        Key::W => CKey::W,
-                        Key::X => CKey::X,
-                        Key::Y => CKey::Y,
-                        Key::Z => CKey::Z,
-                        Key::Escape => CKey::Escape,
-                        Key::F1 => CKey::F1,
-                        Key::F2 => CKey::F2,
-                        Key::F3 => CKey::F3,
-                        Key::F4 => CKey::F4,
-                        Key::F5 => CKey::F5,
-                        Key::F6 => CKey::F6,
-                        Key::F7 => CKey::F7,
-                        Key::F8 => CKey::F8,
-                        Key::F9 => CKey::F9,
-                        Key::F10 => CKey::F10,
-                        Key::F11 => CKey::F11,
-                        Key::F12 => CKey::F12,
-                        Key::F13 => CKey::F13,
-                        Key::F14 => CKey::F14,
-                        Key::F15 => CKey::F15,
-                        Key::F16 => CKey::F16,
-                        Key::F17 => CKey::F17,
-                        Key::F18 => CKey::F18,
-                        Key::F19 => CKey::F19,
-                        Key::F20 => CKey::F20,
-                        Key::F21 => CKey::F21,
-                        Key::F22 => CKey::F22,
-                        Key::F23 => CKey::F23,
-                        Key::F24 => CKey::F24,
-                        Key::Pause => CKey::Pause,
-                        Key::Insert => CKey::Insert,
-                        Key::Home => CKey::Home,
-                        Key::Delete => CKey::Delete,
-                        Key::End => CKey::End,
-                        Key::PageDown => CKey::PageDown,
-                        Key::PageUp => CKey::PageUp,
-                        Key::Left => CKey::Left,
-                        Key::Up => CKey::Up,
-                        Key::Right => CKey::Right,
-                        Key::Down => CKey::Down,
-                        Key::Back => CKey::Backspace,
-                        Key::Return => CKey::Return,
-                        Key::Space => CKey::Space,
-                        Key::Caret => CKey::Caret,
-                        Key::Numpad0 => CKey::NumPad0,
-                        Key::Numpad1 => CKey::NumPad1,
-                        Key::Numpad2 => CKey::NumPad2,
-                        Key::Numpad3 => CKey::NumPad3,
-                        Key::Numpad4 => CKey::NumPad4,
-                        Key::Numpad5 => CKey::NumPad5,
-                        Key::Numpad6 => CKey::NumPad6,
-                        Key::Numpad7 => CKey::NumPad7,
-                        Key::Numpad8 => CKey::NumPad8,
-                        Key::Numpad9 => CKey::NumPad9,
-                        Key::Add => CKey::Plus,
-                        Key::At => CKey::At,
-                        Key::Backslash => CKey::Backslash,
-                        Key::Calculator => CKey::Calculator,
-                        Key::Colon => CKey::Colon,
-                        Key::Comma => CKey::Comma,
-                        Key::Equals => CKey::Equals,
-                        Key::LBracket => CKey::LeftBracket,
-                        Key::LControl => CKey::LCtrl,
-                        Key::LShift => CKey::LShift,
-                        Key::Mail => CKey::Mail,
-                        Key::MediaSelect => CKey::MediaSelect,
-                        Key::Minus => CKey::Minus,
-                        Key::Mute => CKey::Mute,
-                        Key::NumpadComma => CKey::NumPadComma,
-                        Key::NumpadEnter => CKey::NumPadEnter,
-                        Key::NumpadEquals => CKey::NumPadEquals,
-                        Key::Period => CKey::Period,
-                        Key::Power => CKey::Power,
-                        Key::RAlt => CKey::RAlt,
-                        Key::RBracket => CKey::RightBracket,
-                        Key::RControl => CKey::RCtrl,
-                        Key::RShift => CKey::RShift,
-                        Key::Semicolon => CKey::Semicolon,
-                        Key::Slash => CKey::Slash,
-                        Key::Sleep => CKey::Sleep,
-                        Key::Stop => CKey::Stop,
-                        Key::Tab => CKey::Tab,
-                        Key::VolumeDown => CKey::VolumeDown,
-                        Key::VolumeUp => CKey::VolumeUp,
-                        Key::Copy => CKey::Copy,
-                        Key::Paste => CKey::Paste,
-                        Key::Cut => CKey::Cut,
-                        _ => CKey::Unknown,
-                    };
-
-                    match action {
-                        Action::Press => Some(Input::Press(Button::Keyboard(key))),
-                        Action::Release => Some(Input::Release(Button::Keyboard(key))),
-                    }
-                }
-                WindowEvent::Char(ch) => {
-                    // Shamelessly taken from kiss3d_conrod/backends/conrod_winit/src/macros.rs:175.
-                    let string = match ch {
-                        // Ignore control characters and return ascii for Text event (like sdl2).
-                        '\u{7f}' | // Delete
-                        '\u{1b}' | // Escape
-                        '\u{8}'  | // Backspace
-                        '\r' | '\n' | '\t' => "".to_string(),
-                        _ => ch.to_string()
-                    };
-                    Some(Input::Text(string))
-                }
-                _ => None,
-            }
-        }
-
-        #[cfg(feature = "conrod")]
         {
             let (size, scale) = (self.size(), self.scale_factor());
-            let conrod_ui = self.conrod_ui_mut();
-            if let Some(input) = window_event_to_conrod_input(*event, size, scale) {
-                conrod_ui.handle_event(input);
-            }
-
-            let state = &conrod_ui.global_input().current;
-            let window_id = Some(conrod_ui.window);
-
-            if event.is_keyboard_event()
-                && state.widget_capturing_keyboard.is_some()
-                && state.widget_capturing_keyboard != window_id
-            {
-                return;
-            }
-
-            if event.is_mouse_event()
-                && state.widget_capturing_mouse.is_some()
-                && state.widget_capturing_mouse != window_id
-            {
-                return;
+            if let Some(ui_context) = &mut self.ui_context {
+                let is_handled = ui_context.handle_event(event, size.x, size.y, scale);
+                if is_handled {
+                    return;
+                }
             }
         }
 
@@ -1106,13 +860,9 @@ impl Window {
         }
 
         self.text_renderer.render(w as f32, h as f32);
-        #[cfg(feature = "conrod")]
-        self.conrod_context.renderer.render(
-            w as f32,
-            h as f32,
-            self.canvas.scale_factor() as f32,
-            &self.conrod_context.textures,
-        );
+        if let Some(ui_context) = &mut self.ui_context {
+            ui_context.render(w, h, self.canvas.scale_factor());
+        }
 
         // We are done: swap buffers
         self.canvas.swap_buffers();

@@ -1,18 +1,26 @@
 //! A renderer for Conrod primitives.
 
-use crate::context::{Context, Texture};
-use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
-use crate::text::Font;
-use conrod::position::Rect;
-use conrod::text::GlyphCache;
-use conrod::{render::PrimitiveKind, Ui};
-use na::{Point2, Point3, Point4, Vector2};
+use conrod::{position::Rect, render::PrimitiveKind, text::GlyphCache, Ui};
+use conrod_core as conrod;
+use kiss3d::{
+    context::{Context, Texture},
+    resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform},
+    text::Font,
+};
+use nalgebra::{Point2, Point3, Point4, Vector2};
 use rusttype::gpu_cache::Cache;
-use std::collections::HashMap;
 use std::rc::Rc;
 
-#[path = "../error.rs"]
-mod error;
+macro_rules! verify(
+    ($e: expr) => {
+        {
+            let res = $e;
+            #[cfg(not(target_arch = "wasm32"))]
+            { assert_eq!(kiss3d::context::Context::get().get_error(), 0); }
+            res
+        }
+    }
+);
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 enum RenderMode {
