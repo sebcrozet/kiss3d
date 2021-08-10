@@ -37,7 +37,7 @@ impl PlanarObjectMaterial {
             model: effect.get_uniform("model").unwrap(),
             view: effect.get_uniform("view").unwrap(),
             proj: effect.get_uniform("proj").unwrap(),
-            effect: effect,
+            effect,
         }
     }
 
@@ -159,11 +159,11 @@ impl PlanarMaterial for PlanarObjectMaterial {
 }
 
 /// Vertex shader of the default object material.
-static OBJECT_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
+static OBJECT_VERTEX_SRC: &str = A_VERY_LONG_STRING;
 /// Fragment shader of the default object material.
-static OBJECT_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
+static OBJECT_FRAGMENT_SRC: &str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str = "#version 100
+const A_VERY_LONG_STRING: &str = "#version 100
 attribute vec2 position;
 attribute vec2 tex_coord;
 
@@ -180,7 +180,7 @@ void main(){
     tex_coord_v = tex_coord;
 }";
 
-const ANOTHER_VERY_LONG_STRING: &'static str = "#version 100
+const ANOTHER_VERY_LONG_STRING: &str = "#version 100
 #ifdef GL_FRAGMENT_PRECISION_HIGH
    precision highp float;
 #else

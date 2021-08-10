@@ -41,8 +41,8 @@ impl Grayscales {
         Grayscales {
             fbo_texture: shader.get_uniform("fbo_texture").unwrap(),
             v_coord: shader.get_attrib("v_coord").unwrap(),
-            fbo_vertices: fbo_vertices,
-            shader: shader,
+            fbo_vertices,
+            shader,
         }
     }
 }
@@ -71,7 +71,7 @@ impl PostProcessingEffect for Grayscales {
     }
 }
 
-static VERTEX_SHADER: &'static str = "#version 100
+static VERTEX_SHADER: &str = "#version 100
     attribute vec2    v_coord;
     uniform sampler2D fbo_texture;
     varying vec2      f_texcoord;
@@ -81,7 +81,7 @@ static VERTEX_SHADER: &'static str = "#version 100
       f_texcoord  = (v_coord + 1.0) / 2.0;
     }";
 
-static FRAGMENT_SHADER: &'static str = "#version 100
+static FRAGMENT_SHADER: &str = "#version 100
 #ifdef GL_FRAGMENT_PRECISION_HIGH
    precision highp float;
 #else

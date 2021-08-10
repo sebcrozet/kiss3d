@@ -138,7 +138,7 @@ impl Renderer for PointCloudRenderer {
     }
 }
 
-const VERTEX_SHADER_SRC: &'static str = "#version 100
+const VERTEX_SHADER_SRC: &str = "#version 100
     attribute vec3 position;
     attribute vec3 color;
     varying   vec3 Color;
@@ -149,7 +149,7 @@ const VERTEX_SHADER_SRC: &'static str = "#version 100
         Color = color;
     }";
 
-const FRAGMENT_SHADER_SRC: &'static str = "#version 100
+const FRAGMENT_SHADER_SRC: &str = "#version 100
 #ifdef GL_FRAGMENT_PRECISION_HIGH
    precision highp float;
 #else

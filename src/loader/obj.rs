@@ -95,7 +95,7 @@ pub fn parse(
         match tag {
             None => {}
             Some(w) => {
-                if w.len() != 0 && w.as_bytes()[0] != ('#' as u8) {
+                if !w.is_empty() && w.as_bytes()[0] != b'#' {
                     match w {
                         "v" => coords.push(Point3::from(parse_v_or_vn(l, words))),
                         "vn" => {
@@ -285,7 +285,7 @@ fn parse_f<'a>(
         let mut curr_ids: Vector3<i32> = Bounded::max_value();
 
         for (i, w) in word.split('/').enumerate() {
-            if i == 0 || w.len() != 0 {
+            if i == 0 || !w.is_empty() {
                 let idx: Result<i32, _> = FromStr::from_str(w);
                 match idx {
                     Ok(id) => curr_ids[i] = id - 1,
@@ -337,13 +337,13 @@ fn parse_f<'a>(
         assert!(x >= 0 && y >= 0 && z >= 0);
         groups_ids[curr_group].push(Point3::new(x as u16, y as u16, z as u16));
 
-        i = i + 1;
+        i += 1;
     }
 
     // there is not enough vertex to form a triangle. Complete it.
     if i < 2 {
         for _ in 0usize..3 - i {
-            let last = (*groups_ids)[curr_group].last().unwrap().clone();
+            let last = *(*groups_ids)[curr_group].last().unwrap();
             groups_ids[curr_group].push(last);
         }
     }
@@ -381,7 +381,7 @@ fn parse_g<'a>(
 ) -> usize {
     let suffix: Vec<&'a str> = ws.collect();
     let suffix = suffix.join(" ");
-    let name = if suffix.len() == 0 {
+    let name = if suffix.is_empty() {
         prefix.to_string()
     } else {
         format!("{}/{}", prefix, suffix)
@@ -418,7 +418,7 @@ fn reformat(
 
     for (name, i) in groups.into_iter() {
         names.push(name);
-        mtls.push(group2mtl.get(&i).map(|m| m.clone()));
+        mtls.push(group2mtl.get(&i).cloned());
 
         for point in groups_ids[i].iter() {
             let idx = match vt2id.get(point) {
@@ -444,7 +444,7 @@ fn reformat(
                 }
             };
 
-            let _ = idx.map(|i| vt2id.insert(point.clone(), i));
+            let _ = idx.map(|i| vt2id.insert(*point, i));
         }
 
         let mut resf = Vec::with_capacity(vertex_ids.len() / 3);
@@ -484,7 +484,7 @@ fn reformat(
         .zip(names.into_iter())
         .zip(mtls.into_iter())
     {
-        if fs.len() != 0 {
+        if !fs.is_empty() {
             let fs = Arc::new(RwLock::new(GPUVec::new(
                 fs,
                 BufferType::ElementArray,

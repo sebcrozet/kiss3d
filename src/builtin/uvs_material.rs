@@ -34,7 +34,7 @@ impl UvsMaterial {
             scale: shader.get_uniform("scale").unwrap(),
             view: shader.get_uniform("view").unwrap(),
             proj: shader.get_uniform("proj").unwrap(),
-            shader: shader,
+            shader,
         }
     }
 }
@@ -105,12 +105,12 @@ impl Material for UvsMaterial {
 }
 
 /// A vertex shader for coloring each point of an object depending on its texture coordinates.
-pub static UVS_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
+pub static UVS_VERTEX_SRC: &str = A_VERY_LONG_STRING;
 
 /// A fragment shader for coloring each point of an object depending on its texture coordinates.
-pub static UVS_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
+pub static UVS_FRAGMENT_SRC: &str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str = "#version 100
+const A_VERY_LONG_STRING: &str = "#version 100
 attribute vec3 position;
 attribute vec3 uvs;
 uniform mat4 proj;
@@ -125,7 +125,7 @@ void main() {
 }
 ";
 
-const ANOTHER_VERY_LONG_STRING: &'static str = "#version 100
+const ANOTHER_VERY_LONG_STRING: &str = "#version 100
 #ifdef GL_FRAGMENT_PRECISION_HIGH
    precision highp float;
 #else

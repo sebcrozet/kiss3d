@@ -117,7 +117,7 @@ impl FramebufferManager {
 
         FramebufferManager {
             fbo_onscreen: true,
-            fbo: fbo,
+            fbo,
         }
     }
 

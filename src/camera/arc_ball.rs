@@ -294,8 +294,8 @@ impl ArcBall {
     }
 
     fn handle_left_button_displacement(&mut self, dpos: &Vector2<f32>) {
-        self.yaw = self.yaw + dpos.x * self.yaw_step;
-        self.pitch = self.pitch - dpos.y * self.pitch_step;
+        self.yaw += dpos.x * self.yaw_step;
+        self.pitch -= dpos.y * self.pitch_step;
 
         self.update_restrictions();
         self.update_projviews();
@@ -313,7 +313,7 @@ impl ArcBall {
     }
 
     fn handle_scroll(&mut self, off: f32) {
-        self.dist = self.dist + self.dist_step * (off) / 120.0;
+        self.dist += self.dist_step * (off) / 120.0;
         self.update_restrictions();
         self.update_projviews();
     }

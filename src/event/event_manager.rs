@@ -19,7 +19,7 @@ impl<'a> Drop for Event<'a> {
     #[inline]
     fn drop(&mut self) {
         if !self.inhibited {
-            self.inhibitor.borrow_mut().push(self.value.clone())
+            self.inhibitor.borrow_mut().push(self.value)
         }
     }
 }

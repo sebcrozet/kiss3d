@@ -52,7 +52,7 @@ impl NormalMaterial {
             scale: shader.get_uniform("scale").unwrap(),
             view: shader.get_uniform("view").unwrap(),
             proj: shader.get_uniform("proj").unwrap(),
-            shader: shader,
+            shader,
         }
     }
 }
@@ -108,7 +108,7 @@ impl Material for NormalMaterial {
     }
 }
 
-static NORMAL_VERTEX_SRC: &'static str = "#version 100
+static NORMAL_VERTEX_SRC: &str = "#version 100
 attribute vec3 position;
 attribute vec3 normal;
 uniform mat4 view;
@@ -123,7 +123,7 @@ void main() {
 }
 ";
 
-static NORMAL_FRAGMENT_SRC: &'static str = "#version 100
+static NORMAL_FRAGMENT_SRC: &str = "#version 100
 #ifdef GL_FRAGMENT_PRECISION_HIGH
    precision highp float;
 #else

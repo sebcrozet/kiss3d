@@ -21,7 +21,7 @@ fn main() {
     let cube = ncollide3d::procedural::cuboid(&Vector3::new(0.7f32, 0.2, 0.4));
     let mut c = window.add_trimesh(cube, Vector3::from_element(1.0));
     c.append_translation(&Translation3::new(1.0, 0.0, 0.0));
-    c.set_texture_from_file(&Path::new("./examples/media/kitten.png"), "kitten");
+    c.set_texture_from_file(Path::new("./examples/media/kitten.png"), "kitten");
 
     /*
      * A sphere.
