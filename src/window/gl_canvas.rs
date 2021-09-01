@@ -267,16 +267,16 @@ fn translate_action(action: glutin::event::ElementState) -> Action {
 fn translate_modifiers(modifiers: glutin::event::ModifiersState) -> Modifiers {
     let mut res = Modifiers::empty();
     if modifiers.shift() {
-        res.insert(Modifiers::Shift)
+        res.insert(Modifiers::SHIFT)
     }
     if modifiers.ctrl() {
-        res.insert(Modifiers::Control)
+        res.insert(Modifiers::CONTROL)
     }
     if modifiers.alt() {
-        res.insert(Modifiers::Alt)
+        res.insert(Modifiers::ALT)
     }
     if modifiers.logo() {
-        res.insert(Modifiers::Super)
+        res.insert(Modifiers::SUPER)
     }
 
     res
@@ -405,10 +405,10 @@ fn translate_key(button: Option<glutin::event::VirtualKeyCode>) -> Key {
             glutin::event::VirtualKeyCode::Grave => Key::Grave,
             glutin::event::VirtualKeyCode::Kana => Key::Kana,
             glutin::event::VirtualKeyCode::Kanji => Key::Kanji,
-            glutin::event::VirtualKeyCode::LAlt => Key::LAlt,
+            glutin::event::VirtualKeyCode::LAlt => Key::LALT,
             glutin::event::VirtualKeyCode::LBracket => Key::LBracket,
-            glutin::event::VirtualKeyCode::LControl => Key::LControl,
-            glutin::event::VirtualKeyCode::LShift => Key::LShift,
+            glutin::event::VirtualKeyCode::LControl => Key::LCONTROL,
+            glutin::event::VirtualKeyCode::LShift => Key::LSHIFT,
             glutin::event::VirtualKeyCode::LWin => Key::LWin,
             glutin::event::VirtualKeyCode::Mail => Key::Mail,
             glutin::event::VirtualKeyCode::MediaSelect => Key::MediaSelect,
@@ -429,10 +429,10 @@ fn translate_key(button: Option<glutin::event::VirtualKeyCode>) -> Key {
             glutin::event::VirtualKeyCode::PlayPause => Key::PlayPause,
             glutin::event::VirtualKeyCode::Power => Key::Power,
             glutin::event::VirtualKeyCode::PrevTrack => Key::PrevTrack,
-            glutin::event::VirtualKeyCode::RAlt => Key::RAlt,
+            glutin::event::VirtualKeyCode::RAlt => Key::RALT,
             glutin::event::VirtualKeyCode::RBracket => Key::RBracket,
-            glutin::event::VirtualKeyCode::RControl => Key::RControl,
-            glutin::event::VirtualKeyCode::RShift => Key::RShift,
+            glutin::event::VirtualKeyCode::RControl => Key::RCONTROL,
+            glutin::event::VirtualKeyCode::RShift => Key::RSHIFT,
             glutin::event::VirtualKeyCode::RWin => Key::RWin,
             glutin::event::VirtualKeyCode::Semicolon => Key::Semicolon,
             glutin::event::VirtualKeyCode::Slash => Key::Slash,

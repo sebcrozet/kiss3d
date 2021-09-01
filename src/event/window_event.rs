@@ -160,10 +160,10 @@ pub enum Key {
     Grave,
     Kana,
     Kanji,
-    LAlt,
+    LALT,
     LBracket,
-    LControl,
-    LShift,
+    LCONTROL,
+    LSHIFT,
     LWin,
     Mail,
     MediaSelect,
@@ -184,10 +184,10 @@ pub enum Key {
     PlayPause,
     Power,
     PrevTrack,
-    RAlt,
+    RALT,
     RBracket,
-    RControl,
-    RShift,
+    RCONTROL,
+    RSHIFT,
     RWin,
     Semicolon,
     Slash,
@@ -245,12 +245,12 @@ bitflags! {
     #[derive(Serialize, Deserialize)]
     pub struct Modifiers: i32 {
         #[allow(non_upper_case_globals)]
-        const Shift       = 0b0001;
+        const SHIFT       = 0b0001;
         #[allow(non_upper_case_globals)]
-        const Control     = 0b0010;
+        const CONTROL     = 0b0010;
         #[allow(non_upper_case_globals)]
-        const Alt         = 0b0100;
+        const ALT         = 0b0100;
         #[allow(non_upper_case_globals)]
-        const Super       = 0b1000;
+        const SUPER       = 0b1000;
     }
 }

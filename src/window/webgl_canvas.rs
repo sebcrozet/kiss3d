@@ -514,16 +514,16 @@ impl AbstractCanvas for WebGLCanvas {
 fn translate_mouse_modifiers(event: &MouseEvent) -> Modifiers {
     let mut res = Modifiers::empty();
     if event.shift_key() {
-        res.insert(Modifiers::Shift)
+        res.insert(Modifiers::SHIFT)
     }
     if event.ctrl_key() {
-        res.insert(Modifiers::Control)
+        res.insert(Modifiers::CONTROL)
     }
     if event.alt_key() {
-        res.insert(Modifiers::Alt)
+        res.insert(Modifiers::ALT)
     }
     if event.meta_key() {
-        res.insert(Modifiers::Super)
+        res.insert(Modifiers::SUPER)
     }
 
     res
@@ -532,16 +532,16 @@ fn translate_mouse_modifiers(event: &MouseEvent) -> Modifiers {
 fn translate_touch_modifiers(event: &TouchEvent) -> Modifiers {
     let mut res = Modifiers::empty();
     if event.shift_key() {
-        res.insert(Modifiers::Shift)
+        res.insert(Modifiers::SHIFT)
     }
     if event.ctrl_key() {
-        res.insert(Modifiers::Control)
+        res.insert(Modifiers::CONTROL)
     }
     if event.alt_key() {
-        res.insert(Modifiers::Alt)
+        res.insert(Modifiers::ALT)
     }
     if event.meta_key() {
-        res.insert(Modifiers::Super)
+        res.insert(Modifiers::SUPER)
     }
 
     res
@@ -550,16 +550,16 @@ fn translate_touch_modifiers(event: &TouchEvent) -> Modifiers {
 fn translate_key_modifiers(event: &KeyboardEvent) -> Modifiers {
     let mut res = Modifiers::empty();
     if event.shift_key() {
-        res.insert(Modifiers::Shift)
+        res.insert(Modifiers::SHIFT)
     }
     if event.ctrl_key() {
-        res.insert(Modifiers::Control)
+        res.insert(Modifiers::CONTROL)
     }
     if event.alt_key() {
-        res.insert(Modifiers::Alt)
+        res.insert(Modifiers::ALT)
     }
     if event.meta_key() {
-        res.insert(Modifiers::Super)
+        res.insert(Modifiers::SUPER)
     }
 
     res
@@ -688,10 +688,10 @@ fn translate_key(event: &KeyboardEvent) -> Key {
         "Grave" => Key::Grave,
         "Kana" => Key::Kana,
         "Kanji" => Key::Kanji,
-        "LAlt" => Key::LAlt,
+        "LALT" => Key::LALT,
         "{" => Key::LBracket,
-        "LControl" => Key::LControl,
-        "LShift" => Key::LShift,
+        "LCONTROL" => Key::LCONTROL,
+        "LSHIFT" => Key::LSHIFT,
         "LWin" => Key::LWin,
         "Mail" => Key::Mail,
         "MediaSelect" => Key::MediaSelect,
@@ -712,10 +712,10 @@ fn translate_key(event: &KeyboardEvent) -> Key {
         "PlayPause" => Key::PlayPause,
         "Power" => Key::Power,
         "PrevTrack" => Key::PrevTrack,
-        "RAlt" => Key::RAlt,
+        "RALT" => Key::RALT,
         "}" => Key::RBracket,
-        "RControl" => Key::RControl,
-        "RShift" => Key::RShift,
+        "RCONTROL" => Key::RCONTROL,
+        "RSHIFT" => Key::RSHIFT,
         "RWin" => Key::RWin,
         ";" => Key::Semicolon,
         "/" => Key::Slash,
