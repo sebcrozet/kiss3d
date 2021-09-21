@@ -7,7 +7,7 @@ use std::sync::mpsc::Sender;
 
 use crate::context::Context;
 use crate::event::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent};
-use crate::window::{AbstractCanvas, CanvasSetup};
+use crate::window::{AbstractCanvas, CanvasSetup, RenderLoopClosure};
 use image::{GenericImage, Pixel};
 use wasm_bindgen::closure::Closure;
 use wasm_bindgen::{JsCast, JsValue};
@@ -424,13 +424,13 @@ impl AbstractCanvas for WebGLCanvas {
         }
     }
 
-    fn render_loop(mut callback: impl FnMut(f64) -> bool + 'static) {
+    fn render_loop(mut callback: impl RenderLoopClosure) {
         // See https://rustwasm.github.io/docs/wasm-bindgen/examples/request-animation-frame.html
         if let Some(window) = web_sys::window() {
             let f = Rc::new(RefCell::new(None));
             let g: Rc<RefCell<Option<Closure<_>>>> = f.clone();
             *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
-                if callback(0.0) {
+                if callback.call(0.0) {
                     let _ = window.request_animation_frame(
                         f.borrow().as_ref().unwrap().as_ref().unchecked_ref(),
                     );

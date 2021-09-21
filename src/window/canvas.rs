@@ -70,7 +70,7 @@ impl Canvas {
     }
 
     /// Run the platform-specific render loop.
-    pub fn render_loop(data: impl FnMut(f64) -> bool + 'static) {
+    pub fn render_loop(data: impl RenderLoopClosure) {
         CanvasImpl::render_loop(data)
     }
 
@@ -146,6 +146,12 @@ impl Canvas {
     }
 }
 
+// Note: the closure must have static lifetime because of the constraints imposed by wasm-bindgen:
+// https://rustwasm.github.io/wasm-bindgen/api/wasm_bindgen/closure/struct.Closure.html
+pub trait RenderLoopClosure: 'static {
+    fn call(&mut self, x: f64) -> bool;
+}
+
 pub(crate) trait AbstractCanvas {
     fn open(
         title: &str,
@@ -155,7 +161,7 @@ pub(crate) trait AbstractCanvas {
         window_setup: Option<CanvasSetup>,
         out_events: Sender<WindowEvent>,
     ) -> Self;
-    fn render_loop(data: impl FnMut(f64) -> bool + 'static);
+    fn render_loop(data: impl RenderLoopClosure);
     fn poll_events(&mut self);
     fn swap_buffers(&mut self);
     fn size(&self) -> (u32, u32);

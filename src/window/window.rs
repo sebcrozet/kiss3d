@@ -29,7 +29,7 @@ use crate::resource::{
 use crate::scene::{PlanarSceneNode, SceneNode};
 use crate::text::{Font, TextRenderer};
 use crate::window::canvas::CanvasSetup;
-use crate::window::{Canvas, State};
+use crate::window::{Canvas, State, RenderLoopClosure};
 use image::imageops;
 use image::{GenericImage, Pixel};
 use image::{ImageBuffer, Rgb};
@@ -56,6 +56,26 @@ impl ConrodContext {
             textures: conrod::image::Map::new(),
             texture_ids: HashMap::new(),
         }
+    }
+}
+
+// Note: this struct, and the RenderLoopClosure trait it implements, were created solely to control
+// the drop order of its members.
+// Since the Window contains the OpenGL context, it must be dropped _after_ the state, and there's
+// no way to control that in a plain old closure.
+struct RenderLoopClosureImpl<S: State, F: Fn(f64, &mut Window, &mut S) -> bool> {
+    pub state: S,
+    pub window: Window,
+    pub closure: F,
+}
+
+impl<S, F> RenderLoopClosure for RenderLoopClosureImpl<S, F>
+where
+    S: State,
+    F: Fn(f64, &mut Window, &mut S) -> bool + 'static,
+{
+    fn call(&mut self, x: f64) -> bool {
+        (self.closure)(x, &mut self.window, &mut self.state)
     }
 }
 
@@ -911,7 +931,11 @@ impl Window {
 
     /// Runs the render and event loop until the window is closed.
     pub fn render_loop<S: State>(mut self, mut state: S) {
-        Canvas::render_loop(move |_| self.do_render_with_state(&mut state))
+        Canvas::render_loop(RenderLoopClosureImpl {
+            window: self,
+            state,
+            closure: |_, window, state| window.do_render_with_state(state),
+        });
     }
 
     /// Render one frame using the specified state.
