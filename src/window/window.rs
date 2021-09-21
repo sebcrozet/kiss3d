@@ -29,7 +29,7 @@ use crate::resource::{
 use crate::scene::{PlanarSceneNode, SceneNode};
 use crate::text::{Font, TextRenderer};
 use crate::window::canvas::CanvasSetup;
-use crate::window::{Canvas, State, RenderLoopClosure};
+use crate::window::{Canvas, RenderLoopClosure, State};
 use image::imageops;
 use image::{GenericImage, Pixel};
 use image::{ImageBuffer, Rgb};
