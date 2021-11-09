@@ -23,10 +23,10 @@ pub enum TextureWrapping {
     ClampToEdge,
 }
 
-impl Into<u32> for TextureWrapping {
+impl From<TextureWrapping> for u32 {
     #[inline]
-    fn into(self) -> u32 {
-        match self {
+    fn from(val: TextureWrapping) -> Self {
+        match val {
             TextureWrapping::Repeat => Context::REPEAT,
             TextureWrapping::MirroredRepeat => Context::MIRRORED_REPEAT,
             TextureWrapping::ClampToEdge => Context::CLAMP_TO_EDGE,
@@ -185,7 +185,7 @@ impl TextureManager {
     /// Allocates a new texture read from a file.
     fn load_texture_from_file(path: &Path) -> (Rc<Texture>, (u32, u32)) {
         TextureManager::load_texture_into_context(image::open(path).unwrap())
-            .expect(path.to_str().unwrap())
+            .unwrap_or_else(|e| panic!("Unable to load texture from file {:?}: {:?}", path, e))
     }
 
     fn load_texture_into_context(

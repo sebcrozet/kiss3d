@@ -247,19 +247,19 @@ impl AbstractContext for GLContext {
 
     fn delete_program(&self, program: Option<&Self::Program>) {
         if let Some(p) = program {
-            unsafe { self.context.delete_program(p.clone()) }
+            unsafe { self.context.delete_program(*p) }
         }
     }
 
     fn delete_shader(&self, shader: Option<&Self::Shader>) {
         if let Some(s) = shader {
-            unsafe { self.context.delete_shader(s.clone()) }
+            unsafe { self.context.delete_shader(*s) }
         }
     }
 
     fn is_shader(&self, shader: Option<&Self::Shader>) -> bool {
         if let Some(s) = shader {
-            unsafe { self.context.is_shader(s.clone()) }
+            unsafe { self.context.is_shader(*s) }
         } else {
             false
         }
@@ -267,7 +267,7 @@ impl AbstractContext for GLContext {
 
     fn is_program(&self, program: Option<&Self::Program>) -> bool {
         if let Some(p) = program {
-            unsafe { self.context.is_program(p.clone()) }
+            unsafe { self.context.is_program(*p) }
         } else {
             false
         }
@@ -374,7 +374,7 @@ impl AbstractContext for GLContext {
 
     fn delete_framebuffer(&self, framebuffer: Option<&Self::Framebuffer>) {
         if let Some(f) = framebuffer {
-            unsafe { self.context.delete_framebuffer(f.clone()) }
+            unsafe { self.context.delete_framebuffer(*f) }
         }
     }
 
@@ -407,7 +407,7 @@ impl AbstractContext for GLContext {
 
     fn delete_renderbuffer(&self, buffer: Option<&Self::Renderbuffer>) {
         if let Some(b) = buffer {
-            unsafe { self.context.delete_renderbuffer(b.clone()) }
+            unsafe { self.context.delete_renderbuffer(*b) }
         }
     }
 

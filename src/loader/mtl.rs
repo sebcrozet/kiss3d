@@ -124,16 +124,10 @@ fn parse_color(l: usize, mut ws: Words) -> Vector3<f32> {
 }
 
 fn parse_scalar(l: usize, mut ws: Words) -> f32 {
-    let sx = ws
-        .next()
-        .unwrap_or_else(|| error(l, "1 component was expected, found 0."));
-
-    let x: Result<f32, _> = FromStr::from_str(sx);
-
-    let x =
-        x.unwrap_or_else(|e| error(l, &format!("failed to parse `{}' as a f32: {}", sx, e)[..]));
-
-    x
+    ws.next()
+        .unwrap_or_else(|| error(l, "1 component was expected, found 0."))
+        .parse()
+        .unwrap_or_else(|e| error(l, &format!("failed to parse as f32: {}", e)[..]))
 }
 
 /// Material informations read from a `.mtl` file.

@@ -183,7 +183,7 @@ impl Context {
     }
 
     pub fn create_vertex_array(&self) -> Option<VertexArray> {
-        self.ctxt.create_vertex_array().map(|e| VertexArray(e))
+        self.ctxt.create_vertex_array().map(VertexArray)
     }
 
     pub fn delete_vertex_array(&self, vertex_array: Option<&VertexArray>) {
@@ -195,7 +195,7 @@ impl Context {
     }
 
     pub fn create_buffer(&self) -> Option<Buffer> {
-        self.ctxt.create_buffer().map(|e| Buffer(e))
+        self.ctxt.create_buffer().map(Buffer)
     }
 
     pub fn delete_buffer(&self, buffer: Option<&Buffer>) {
@@ -223,11 +223,11 @@ impl Context {
     }
 
     pub fn create_shader(&self, type_: GLenum) -> Option<Shader> {
-        self.ctxt.create_shader(type_).map(|e| Shader(e))
+        self.ctxt.create_shader(type_).map(Shader)
     }
 
     pub fn create_program(&self) -> Option<Program> {
-        self.ctxt.create_program().map(|e| Program(e))
+        self.ctxt.create_program().map(Program)
     }
 
     pub fn delete_program(&self, program: Option<&Program>) {
@@ -301,7 +301,7 @@ impl Context {
     pub fn get_uniform_location(&self, program: &Program, name: &str) -> Option<UniformLocation> {
         self.ctxt
             .get_uniform_location(&program.0, name)
-            .map(|e| UniformLocation(e))
+            .map(UniformLocation)
     }
 
     pub fn viewport(&self, x: i32, y: i32, width: i32, height: i32) {
@@ -313,7 +313,7 @@ impl Context {
     }
 
     pub fn create_framebuffer(&self) -> Option<Framebuffer> {
-        self.ctxt.create_framebuffer().map(|e| Framebuffer(e))
+        self.ctxt.create_framebuffer().map(Framebuffer)
     }
 
     pub fn is_framebuffer(&self, framebuffer: Option<&Framebuffer>) -> bool {
@@ -342,7 +342,7 @@ impl Context {
     }
 
     pub fn create_renderbuffer(&self) -> Option<Renderbuffer> {
-        self.ctxt.create_renderbuffer().map(|b| Renderbuffer(b))
+        self.ctxt.create_renderbuffer().map(Renderbuffer)
     }
 
     pub fn delete_renderbuffer(&self, buffer: Option<&Renderbuffer>) {

@@ -221,8 +221,7 @@ impl TextRenderer {
                 {
                     let coords = self.coords.data_mut().as_mut().unwrap();
                     for glyph in layout {
-                        if let Some(Some((tex, rect))) = self.cache.rect_for(font_uid, &glyph).ok()
-                        {
+                        if let Ok(Some((tex, rect))) = self.cache.rect_for(font_uid, &glyph) {
                             let min_px = rect.min.x as f32;
                             let min_py = rect.min.y as f32 + vmetrics.ascent;
                             let max_px = rect.max.x as f32;
