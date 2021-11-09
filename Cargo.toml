@@ -38,8 +38,8 @@ either       = "1"
 libc         = "0.2"
 bitflags     = "1.2"
 num-traits   = "0.2"
-nalgebra     = "0.26"
-ncollide3d   = "0.29"
+nalgebra     = "0.29"
+ncollide3d   = "0.32"
 image        = "0.23"
 serde        = "1"
 serde_derive = "1"
@@ -60,5 +60,5 @@ web-sys = { version = "0.3", features = [ "console", "KeyEvent", "KeyboardEvent"
 
 [dev-dependencies]
 rand = "0.8"
-ncollide2d = "0.29"
-nalgebra   = { version = "0.26", features = [ "rand" ] }
+ncollide2d = "0.32"
+nalgebra   = { version = "0.29", features = [ "rand" ] }
