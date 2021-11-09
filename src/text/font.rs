@@ -32,7 +32,7 @@ impl Font {
 
     /// Instanciate a default font.
     pub fn default() -> Rc<Font> {
-        const DATA: &'static [u8] = include_bytes!("WorkSans-Regular.ttf");
+        const DATA: &[u8] = include_bytes!("WorkSans-Regular.ttf");
         static mut DEFAULT_FONT_SINGLETON: Option<Rc<Font>> = None;
         static INIT: Once = Once::new();
 

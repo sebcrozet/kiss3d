@@ -48,7 +48,7 @@ impl OculusStereo {
 
         OculusStereo {
             fbo_texture: shader.get_uniform("fbo_texture").unwrap(),
-            fbo_vertices: fbo_vertices,
+            fbo_vertices,
             v_coord: shader.get_attrib("v_coord").unwrap(),
             kappa_0: shader.get_uniform("kappa_0").unwrap(),
             kappa_1: shader.get_uniform("kappa_1").unwrap(),
@@ -56,7 +56,7 @@ impl OculusStereo {
             kappa_3: shader.get_uniform("kappa_3").unwrap(),
             scale: shader.get_uniform("Scale").unwrap(),
             scale_in: shader.get_uniform("ScaleIn").unwrap(),
-            shader: shader,
+            shader,
             h: 1f32, // will be updated in the first update
             w: 1f32, // ditto
         }
@@ -110,7 +110,7 @@ impl PostProcessingEffect for OculusStereo {
     }
 }
 
-static VERTEX_SHADER: &'static str = "
+static VERTEX_SHADER: &str = "
 #version 100
 attribute vec2    v_coord;
 uniform sampler2D fbo_texture;
@@ -122,7 +122,7 @@ void main(void) {
 }
 ";
 
-static FRAGMENT_SHADER: &'static str = "
+static FRAGMENT_SHADER: &str = "
 #version 100
 #ifdef GL_FRAGMENT_PRECISION_HIGH
    precision highp float;

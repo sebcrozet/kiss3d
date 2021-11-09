@@ -20,7 +20,7 @@ use std::sync::{Arc, RwLock};
 
 fn usage(exe_name: &str) {
     println!("Usage: {} obj_file scale clusters concavity", exe_name);
-    println!("");
+    println!();
     println!("Options:");
     println!("    obj_file  - the obj file to decompose.");
     println!("    scale     - the scale to apply to the displayed model.");
@@ -57,9 +57,9 @@ fn main() {
      */
     let obj_path = Path::new(path);
     let mtl_path = Path::new("none");
-    let teapot = obj::parse_file(&obj_path, &mtl_path, "none").unwrap();
+    let teapot = obj::parse_file(obj_path, mtl_path, "none").unwrap();
 
-    let mut m = window.add_obj(&obj_path, &mtl_path, scale);
+    let mut m = window.add_obj(obj_path, mtl_path, scale);
     m.set_surface_rendering_activation(false);
     // m.set_lines_width(1.0);
     let data = m.data();

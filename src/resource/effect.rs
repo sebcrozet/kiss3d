@@ -64,7 +64,7 @@ impl Effect {
             }
         }
 
-        return None;
+        None
     }
 
     /// Gets an attribute from the shader program.
@@ -78,7 +78,7 @@ impl Effect {
             return Some(ShaderAttribute { id, data_type });
         }
 
-        return None;
+        None
     }
 
     /// Make this program active.

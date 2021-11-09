@@ -54,7 +54,7 @@ impl SobelEdgeHighlight {
             shifty: 0.0,
             zn: 0.0,
             zf: 0.0,
-            threshold: threshold,
+            threshold,
             gl_nx: shader.get_uniform("nx").unwrap(),
             gl_ny: shader.get_uniform("ny").unwrap(),
             gl_fbo_depth: shader.get_uniform("fbo_depth").unwrap(),
@@ -64,7 +64,7 @@ impl SobelEdgeHighlight {
             gl_threshold: shader.get_uniform("threshold").unwrap(),
             gl_v_coord: shader.get_attrib("v_coord").unwrap(),
             gl_fbo_vertices: fbo_vertices,
-            shader: shader,
+            shader,
         }
     }
 }
@@ -115,7 +115,7 @@ impl PostProcessingEffect for SobelEdgeHighlight {
     }
 }
 
-static VERTEX_SHADER: &'static str = "#version 100
+static VERTEX_SHADER: &str = "#version 100
     attribute vec2    v_coord;
     uniform sampler2D fbo_depth;
     uniform sampler2D fbo_texture;
@@ -131,7 +131,7 @@ static VERTEX_SHADER: &'static str = "#version 100
         f_texcoord  = (v_coord + 1.0) / 2.0;
     }";
 
-static FRAGMENT_SHADER: &'static str = "#version 100
+static FRAGMENT_SHADER: &str = "#version 100
 #ifdef GL_FRAGMENT_PRECISION_HIGH
    precision highp float;
 #else

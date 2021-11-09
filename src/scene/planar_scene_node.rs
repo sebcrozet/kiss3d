@@ -372,7 +372,7 @@ impl PlanarSceneNodeData {
     /// This node local transformation.
     #[inline]
     pub fn local_transformation(&self) -> Isometry2<f32> {
-        self.local_transform.clone()
+        self.local_transform
     }
 
     /// Inverse of this node local transformation.
@@ -393,7 +393,7 @@ impl PlanarSceneNodeData {
             let mself: &mut PlanarSceneNodeData = mem::transmute(self);
             mself.update();
         }
-        self.world_transform.clone()
+        self.world_transform
     }
 
     /// The inverse of this node world transformation.
@@ -550,14 +550,14 @@ impl PlanarSceneNode {
         object: Option<PlanarObject>,
     ) -> PlanarSceneNode {
         let data = PlanarSceneNodeData {
-            local_scale: local_scale,
-            local_transform: local_transform,
+            local_scale,
+            local_transform,
             world_transform: local_transform,
             world_scale: local_scale,
             visible: true,
             up_to_date: false,
             children: Vec::new(),
-            object: object,
+            object,
             parent: None,
         };
 

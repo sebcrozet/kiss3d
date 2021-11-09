@@ -25,8 +25,8 @@ impl Drop for Buffer {
     fn drop(&mut self) {
         unsafe {
             let ctxt = Context::get();
-            if ctxt.is_buffer(Some(&self)) {
-                verify!(ctxt.delete_buffer(Some(&self)))
+            if ctxt.is_buffer(Some(self)) {
+                verify!(ctxt.delete_buffer(Some(self)))
             }
         }
     }

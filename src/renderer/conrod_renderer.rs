@@ -1,5 +1,7 @@
 //! A renderer for Conrod primitives.
 
+#![allow(clippy::identity_op)]
+
 use crate::context::{Context, Texture};
 use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 use crate::text::Font;
@@ -548,7 +550,7 @@ impl ConrodRenderer {
                             rect.width() as i32,
                             rect.height() as i32,
                             Context::RED,
-                            Some(&data)
+                            Some(data)
                         ));
                     });
 
@@ -557,7 +559,7 @@ impl ConrodRenderer {
                      */
                     for glyph in positioned_glyphs {
                         if let Some(Some((tex, rect))) =
-                            self.cache.rect_for(font_id.index(), &glyph).ok()
+                            self.cache.rect_for(font_id.index(), glyph).ok()
                         {
                             let min_px = rect.min.x as f32;
                             let min_py = rect.min.y as f32;
@@ -582,7 +584,7 @@ impl ConrodRenderer {
     }
 }
 
-static TRIANGLES_VERTEX_SRC: &'static str = "#version 100
+static TRIANGLES_VERTEX_SRC: &str = "#version 100
 attribute vec2 position;
 attribute vec4 color;
 
@@ -595,7 +597,7 @@ void main(){
     v_color = color;
 }";
 
-static TRIANGLES_FRAGMENT_SRC: &'static str = "#version 100
+static TRIANGLES_FRAGMENT_SRC: &str = "#version 100
 #ifdef GL_FRAGMENT_PRECISION_HIGH
    precision highp float;
 #else
@@ -608,7 +610,7 @@ void main() {
   gl_FragColor = v_color;
 }";
 
-const TEXT_VERTEX_SRC: &'static str = "
+const TEXT_VERTEX_SRC: &str = "
 #version 100
 
 uniform vec2 window_size;
@@ -627,7 +629,7 @@ void main() {
 }
 ";
 
-const TEXT_FRAGMENT_SRC: &'static str = "
+const TEXT_FRAGMENT_SRC: &str = "
 #version 100
 
 #ifdef GL_FRAGMENT_PRECISION_HIGH
@@ -646,7 +648,7 @@ void main() {
 }
 ";
 
-const IMAGE_VERTEX_SRC: &'static str = "
+const IMAGE_VERTEX_SRC: &str = "
 #version 100
 
 uniform vec2 window_size;
@@ -665,7 +667,7 @@ void main() {
 }
 ";
 
-const IMAGE_FRAGMENT_SRC: &'static str = "
+const IMAGE_FRAGMENT_SRC: &str = "
 #version 100
 
 #ifdef GL_FRAGMENT_PRECISION_HIGH

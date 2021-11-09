@@ -44,7 +44,7 @@ impl ObjectMaterial {
             ntransform: effect.get_uniform("ntransform").unwrap(),
             view: effect.get_uniform("view").unwrap(),
             proj: effect.get_uniform("proj").unwrap(),
-            effect: effect,
+            effect,
         }
     }
 
@@ -84,7 +84,7 @@ impl Material for ObjectMaterial {
         camera.upload(pass, &mut self.proj, &mut self.view);
 
         let pos = match *light {
-            Light::Absolute(ref p) => p.clone(),
+            Light::Absolute(ref p) => *p,
             Light::StickToCamera => camera.eye(),
         };
 
@@ -183,12 +183,12 @@ impl Material for ObjectMaterial {
 }
 
 /// Vertex shader of the default object material.
-pub static OBJECT_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
+pub static OBJECT_VERTEX_SRC: &str = A_VERY_LONG_STRING;
 /// Fragment shader of the default object material.
-pub static OBJECT_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
+pub static OBJECT_FRAGMENT_SRC: &str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str = include_str!("default.vert");
+const A_VERY_LONG_STRING: &str = include_str!("default.vert");
 
 // phong-like lighting (heavily) inspired
 // http://www.mathematik.uni-marburg.de/~thormae/lectures/graphics1/code/WebGLShaderLightMat/ShaderLightMat.html
-const ANOTHER_VERY_LONG_STRING: &'static str = include_str!("default.frag");
+const ANOTHER_VERY_LONG_STRING: &str = include_str!("default.frag");

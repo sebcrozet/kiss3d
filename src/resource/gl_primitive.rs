@@ -68,7 +68,7 @@ unsafe impl GLPrimitive for f32 {
 
     #[inline]
     fn upload(&self, location: &UniformLocation) {
-        verify!(Context::get().uniform1f(Some(location), self.clone()));
+        verify!(Context::get().uniform1f(Some(location), *self));
     }
 }
 
@@ -94,7 +94,7 @@ unsafe impl GLPrimitive for i32 {
 
     #[inline]
     fn upload(&self, location: &UniformLocation) {
-        verify!(Context::get().uniform1i(Some(location), self.clone()));
+        verify!(Context::get().uniform1i(Some(location), *self));
     }
 }
 

@@ -88,7 +88,7 @@ impl Mesh {
             indices
                 .unwrap_unified()
                 .into_iter()
-                .map(|e| na::convert(e))
+                .map(na::convert)
                 .collect(),
             normals,
             uvs,
@@ -182,10 +182,10 @@ impl Mesh {
         uvs: Arc<RwLock<GPUVec<Point2<f32>>>>,
     ) -> Mesh {
         Mesh {
-            coords: coords,
-            faces: faces,
-            normals: normals,
-            uvs: uvs,
+            coords,
+            faces,
+            normals,
+            uvs,
             edges: None,
         }
     }

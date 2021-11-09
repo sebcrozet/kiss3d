@@ -531,7 +531,7 @@ impl Window {
         let mut usr_window = Window {
             should_close: false,
             max_dur_per_frame: None,
-            canvas: canvas,
+            canvas,
             events: Rc::new(event_receive),
             unhandled_events: Rc::new(RefCell::new(Vec::new())),
             scene: SceneNode::new_empty(),

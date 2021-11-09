@@ -37,7 +37,7 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
         match tag {
             None => {}
             Some(w) => {
-                if w.len() != 0 && w.as_bytes()[0] != ('#' as u8) {
+                if !w.is_empty() && w.as_bytes()[0] != b'#' {
                     let mut p = obj::split_words(line).peekable();
                     let _ = p.next();
 
@@ -53,7 +53,7 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
                                 MtlMaterial::new_default(parse_name(l, words)),
                             );
 
-                            if old.name.len() != 0 {
+                            if !old.name.is_empty() {
                                 res.push(old);
                             }
                         }
@@ -86,7 +86,7 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
         }
     }
 
-    if curr_material.name.len() != 0 {
+    if !curr_material.name.is_empty() {
         res.push(curr_material);
     }
 
@@ -165,7 +165,7 @@ impl MtlMaterial {
     /// Creates a new mtl material with a name and default values.
     pub fn new_default(name: String) -> MtlMaterial {
         MtlMaterial {
-            name: name,
+            name,
             shininess: 60.0,
             alpha: 1.0,
             ambiant_texture: None,
@@ -192,16 +192,16 @@ impl MtlMaterial {
         opacity_map: Option<String>,
     ) -> MtlMaterial {
         MtlMaterial {
-            name: name,
-            ambiant: ambiant,
-            diffuse: diffuse,
-            specular: specular,
-            ambiant_texture: ambiant_texture,
-            diffuse_texture: diffuse_texture,
-            specular_texture: specular_texture,
-            opacity_map: opacity_map,
-            shininess: shininess,
-            alpha: alpha,
+            name,
+            ambiant,
+            diffuse,
+            specular,
+            ambiant_texture,
+            diffuse_texture,
+            specular_texture,
+            opacity_map,
+            shininess,
+            alpha,
         }
     }
 }

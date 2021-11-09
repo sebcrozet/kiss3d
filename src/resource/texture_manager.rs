@@ -46,7 +46,7 @@ impl Texture {
     /// Sets the wrapping of this texture along the `s` texture coordinate.
     pub fn set_wrapping_s(&mut self, wrapping: TextureWrapping) {
         let ctxt = Context::get();
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self)));
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(self)));
         let wrap: u32 = wrapping.into();
         verify!(ctxt.tex_parameteri(Context::TEXTURE_2D, Context::TEXTURE_WRAP_S, wrap as i32));
     }
@@ -54,7 +54,7 @@ impl Texture {
     /// Sets the wrapping of this texture along the `t` texture coordinate.
     pub fn set_wrapping_t(&mut self, wrapping: TextureWrapping) {
         let ctxt = Context::get();
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self)));
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(self)));
         let wrap: u32 = wrapping.into();
         verify!(ctxt.tex_parameteri(Context::TEXTURE_2D, Context::TEXTURE_WRAP_T, wrap as i32));
     }
