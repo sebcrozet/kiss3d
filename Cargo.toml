@@ -1,15 +1,15 @@
 [package]
+authors = ["Sébastien Crozet <developer@crozet.re>"]
 name    = "kiss3d"
-version = "0.31.0"
-authors = [ "Sébastien Crozet <developer@crozet.re>" ]
+version = "0.32.0"
 
-description = "3D graphics engine for Rust."
-repository = "https://github.com/sebcrozet/kiss3d"
-readme = "README.md"
-keywords = [ "3D", "graphics", "OpenGL", "KISS" ]
-license = "BSD-3-Clause"
 autoexamples = true
-edition = "2018"
+description  = "3D graphics engine for Rust."
+edition      = "2018"
+keywords     = ["3D", "graphics", "OpenGL", "KISS"]
+license      = "BSD-3-Clause"
+readme       = "README.md"
+repository   = "https://github.com/sebcrozet/kiss3d"
 
 include = [
     "src/**/*.rs",
@@ -21,7 +21,7 @@ include = [
     "examples/Cargo.toml",
     "Cargo.toml",
     "LICENSE",
-    "Readme.md"
+    "Readme.md",
 ]
 
 
@@ -30,23 +30,23 @@ name = "kiss3d"
 path = "src/lib.rs"
 
 [features]
-conrod = [ "conrod_core" ]
+conrod = ["conrod_core"]
 
 
 [dependencies]
-either       = "1"
-libc         = "0.2"
 bitflags     = "1.2"
-num-traits   = "0.2"
+conrod_core  = { version = "0.71", features = ["wasm-bindgen"], optional = true }
+either       = "1"
+glow         = "0.7"
+image        = "0.23"
+instant      = { version = "0.1", features = ["wasm-bindgen"] }
+libc         = "0.2"
 nalgebra     = "0.29"
 ncollide3d   = "0.32"
-image        = "0.23"
+num-traits   = "0.2"
+rusttype     = { version = "0.9", features = ["gpu_cache"] }
 serde        = "1"
 serde_derive = "1"
-rusttype     = { version = "0.8", features = [ "gpu_cache" ] }
-instant      = { version = "0.1", features = [ "wasm-bindgen" ]}
-conrod_core  = { version = "0.71", features = [ "wasm-bindgen" ], optional = true }
-glow = "0.7"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 glutin = "0.26"
@@ -54,11 +54,28 @@ glutin = "0.26"
 # We repeat all three targets instead of any(target_arch = "wasm32", target_arch = "asmjs")
 # to avoid https://github.com/koute/stdweb/issues/135
 [target.wasm32-unknown-unknown.dependencies]
-wasm-bindgen = "0.2"
-web-sys = { version = "0.3", features = [ "console", "KeyEvent", "KeyboardEvent", "MouseEvent", "WheelEvent", "Touch", "TouchEvent", "TouchList", "HtmlCanvasElement", "HtmlElement", "Window", "UiEvent", "Event", "EventTarget", "Element", "DomRect" ] }
 getrandom = { version = "0.2", features = ["js"] }
+wasm-bindgen = "0.2"
+web-sys = { version = "0.3", features = [
+    "console",
+    "KeyEvent",
+    "KeyboardEvent",
+    "MouseEvent",
+    "WheelEvent",
+    "Touch",
+    "TouchEvent",
+    "TouchList",
+    "HtmlCanvasElement",
+    "HtmlElement",
+    "Window",
+    "UiEvent",
+    "Event",
+    "EventTarget",
+    "Element",
+    "DomRect",
+] }
 
 [dev-dependencies]
-rand = "0.8"
+nalgebra   = { version = "0.29", features = ["rand"] }
 ncollide2d = "0.32"
-nalgebra   = { version = "0.29", features = [ "rand" ] }
+rand       = "0.8"

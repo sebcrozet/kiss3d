@@ -19,32 +19,24 @@ pub enum WindowEvent {
     Touch(u64, f64, f64, TouchAction, Modifiers),
 }
 
+use WindowEvent::*;
 impl WindowEvent {
     /// Tests if this event is related to the keyboard.
     pub fn is_keyboard_event(&self) -> bool {
-        match self {
-            WindowEvent::Key(..) | WindowEvent::Char(..) | WindowEvent::CharModifiers(..) => true,
-            _ => false,
-        }
+        matches!(self, Key(..) | Char(..) | CharModifiers(..))
     }
 
     /// Tests if this event is related to the mouse.
     pub fn is_mouse_event(&self) -> bool {
-        match self {
-            WindowEvent::MouseButton(..)
-            | WindowEvent::CursorPos(..)
-            | WindowEvent::CursorEnter(..)
-            | WindowEvent::Scroll(..) => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            MouseButton(..) | CursorPos(..) | CursorEnter(..) | Scroll(..)
+        )
     }
 
     /// Tests if this event is related to the touch.
     pub fn is_touch_event(&self) -> bool {
-        match self {
-            WindowEvent::Touch(..) => true,
-            _ => false,
-        }
+        matches!(self, Touch(..))
     }
 }
 
@@ -244,13 +236,9 @@ bitflags! {
     #[doc = "Key modifiers"]
     #[derive(Serialize, Deserialize)]
     pub struct Modifiers: i32 {
-        #[allow(non_upper_case_globals)]
         const Shift       = 0b0001;
-        #[allow(non_upper_case_globals)]
         const Control     = 0b0010;
-        #[allow(non_upper_case_globals)]
         const Alt         = 0b0100;
-        #[allow(non_upper_case_globals)]
         const Super       = 0b1000;
     }
 }

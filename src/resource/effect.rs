@@ -139,7 +139,7 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
         verify!(Context::get().vertex_attrib_pointer(
             self.id,
             T::size() as i32,
-            T::gl_type(),
+            T::GLTYPE,
             false,
             0,
             0
@@ -165,7 +165,7 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
         verify!(Context::get().vertex_attrib_pointer(
             self.id,
             T::size() as i32,
-            T::gl_type(),
+            T::GLTYPE,
             false,
             ((strides + 1) * mem::size_of::<T2>()) as i32,
             (start_index * mem::size_of::<T2>()) as GLintptr

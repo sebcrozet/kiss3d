@@ -58,14 +58,12 @@ impl PlanarSceneNodeData {
     }
 
     fn remove(&mut self, o: &PlanarSceneNode) {
-        match self.children.iter().rposition(|e| {
-            &*o.data as *const RefCell<PlanarSceneNodeData> as usize
-                == &*e.data as *const RefCell<PlanarSceneNodeData> as usize
-        }) {
-            Some(i) => {
-                let _ = self.children.swap_remove(i);
-            }
-            None => {}
+        if let Some(i) = self
+            .children
+            .iter()
+            .rposition(|e| std::ptr::eq(&*o.data, &*e.data))
+        {
+            let _ = self.children.swap_remove(i);
         }
     }
 
@@ -100,9 +98,8 @@ impl PlanarSceneNodeData {
             self.world_scale = scale.component_mul(&self.local_scale);
         }
 
-        match self.object {
-            Some(ref o) => o.render(&self.world_transform, &self.world_scale, camera),
-            None => {}
+        if let Some(ref o) = self.object {
+            o.render(&self.world_transform, &self.world_scale, camera)
         }
 
         for c in self.children.iter_mut() {
@@ -331,9 +328,8 @@ impl PlanarSceneNodeData {
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
     pub fn apply_to_objects_mut<F: FnMut(&mut PlanarObject)>(&mut self, f: &mut F) {
-        match self.object {
-            Some(ref mut o) => f(o),
-            None => {}
+        if let Some(ref mut o) = self.object {
+            f(o)
         }
 
         for c in self.children.iter_mut() {
@@ -344,9 +340,8 @@ impl PlanarSceneNodeData {
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
     pub fn apply_to_objects<F: FnMut(&PlanarObject)>(&self, f: &mut F) {
-        match self.object {
-            Some(ref o) => f(o),
-            None => {}
+        if let Some(ref o) = self.object {
+            f(o)
         }
 
         for c in self.children.iter() {

@@ -102,7 +102,7 @@ impl Sidescroll {
     }
 
     fn handle_scroll(&mut self, off: f32) {
-        self.zoom = self.zoom / self.zoom_step.pow(off / 120.0);
+        self.zoom /= self.zoom_step.pow(off / 120.0);
         self.update_restrictions();
         self.update_projviews();
     }
