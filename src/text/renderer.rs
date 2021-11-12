@@ -111,7 +111,7 @@ impl TextRenderer {
             color: shader.get_uniform("color").expect("Could not find color"),
             pos: shader.get_attrib("pos").expect("Could not find pos"),
             uvs: shader.get_attrib("uvs").expect("Could not find uvs"),
-            shader: shader,
+            shader,
             contexts: Vec::new(),
             coords: GPUVec::new(Vec::new(), BufferType::Array, AllocationType::StreamDraw),
         }
@@ -140,7 +140,7 @@ impl TextRenderer {
 
     /// Actually draws the text.
     pub fn render(&mut self, width: f32, height: f32) {
-        if self.contexts.len() == 0 {
+        if self.contexts.is_empty() {
             return;
         }
 
@@ -212,7 +212,7 @@ impl TextRenderer {
                         rect.width() as i32,
                         rect.height() as i32,
                         Context::RED,
-                        Some(&data)
+                        Some(data)
                     ));
                 });
 
@@ -221,8 +221,7 @@ impl TextRenderer {
                 {
                     let coords = self.coords.data_mut().as_mut().unwrap();
                     for glyph in layout {
-                        if let Some(Some((tex, rect))) = self.cache.rect_for(font_uid, &glyph).ok()
-                        {
+                        if let Ok(Some((tex, rect))) = self.cache.rect_for(font_uid, &glyph) {
                             let min_px = rect.min.x as f32;
                             let min_py = rect.min.y as f32 + vmetrics.ascent;
                             let max_px = rect.max.x as f32;
@@ -272,11 +271,11 @@ impl TextRenderer {
 }
 
 /// Vertex shader used by the material to display line.
-pub static TEXT_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
+pub static TEXT_VERTEX_SRC: &str = A_VERY_LONG_STRING;
 /// Fragment shader used by the material to display line.
-pub static TEXT_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
+pub static TEXT_FRAGMENT_SRC: &str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str = "
+const A_VERY_LONG_STRING: &str = "
 #version 100
 
 uniform vec2 invsz;
@@ -295,7 +294,7 @@ void main() {
 }
 ";
 
-const ANOTHER_VERY_LONG_STRING: &'static str = "
+const ANOTHER_VERY_LONG_STRING: &str = "
 #version 100
 
 #ifdef GL_FRAGMENT_PRECISION_HIGH

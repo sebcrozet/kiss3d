@@ -13,13 +13,13 @@ fn main() {
     // Teapot
     let obj_path = Path::new("media/teapot/teapot.obj");
     let mtl_path = Path::new("media/teapot");
-    let mut teapot = window.add_obj(&obj_path, &mtl_path, Vector3::new(0.001, 0.001, 0.001));
+    let mut teapot = window.add_obj(obj_path, mtl_path, Vector3::new(0.001, 0.001, 0.001));
     teapot.append_translation(&Translation3::new(0.0, -0.05, -0.2));
 
     // Rust logo
     let obj_path = Path::new("media/rust_logo/rust_logo.obj");
     let mtl_path = Path::new("media/rust_logo");
-    let mut rust = window.add_obj(&obj_path, &mtl_path, Vector3::new(0.05, 0.05, 0.05));
+    let mut rust = window.add_obj(obj_path, mtl_path, Vector3::new(0.05, 0.05, 0.05));
     rust.prepend_to_local_rotation(&UnitQuaternion::from_axis_angle(
         &Vector3::x_axis(),
         -f32::consts::FRAC_PI_2,

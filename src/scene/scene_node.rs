@@ -58,14 +58,12 @@ impl SceneNodeData {
     }
 
     fn remove(&mut self, o: &SceneNode) {
-        match self.children.iter().rposition(|e| {
-            &*o.data as *const RefCell<SceneNodeData> as usize
-                == &*e.data as *const RefCell<SceneNodeData> as usize
-        }) {
-            Some(i) => {
-                let _ = self.children.swap_remove(i);
-            }
-            None => {}
+        if let Some(i) = self
+            .children
+            .iter()
+            .rposition(|e| std::ptr::eq(&*o.data, &*e.data))
+        {
+            let _ = self.children.swap_remove(i);
         }
     }
 
@@ -102,15 +100,14 @@ impl SceneNodeData {
             self.world_scale = scale.component_mul(&self.local_scale);
         }
 
-        match self.object {
-            Some(ref o) => o.render(
+        if let Some(ref o) = self.object {
+            o.render(
                 &self.world_transform,
                 &self.world_scale,
                 pass,
                 camera,
                 light,
-            ),
-            None => {}
+            )
         }
 
         for c in self.children.iter_mut() {
@@ -368,9 +365,8 @@ impl SceneNodeData {
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
     pub fn apply_to_objects_mut<F: FnMut(&mut Object)>(&mut self, f: &mut F) {
-        match self.object {
-            Some(ref mut o) => f(o),
-            None => {}
+        if let Some(ref mut o) = self.object {
+            f(o)
         }
 
         for c in self.children.iter_mut() {
@@ -381,9 +377,8 @@ impl SceneNodeData {
     /// Applies a closure to each object contained by this node and its children.
     #[inline]
     pub fn apply_to_objects<F: FnMut(&Object)>(&self, f: &mut F) {
-        match self.object {
-            Some(ref o) => f(o),
-            None => {}
+        if let Some(ref o) = self.object {
+            f(o)
         }
 
         for c in self.children.iter() {
@@ -418,7 +413,7 @@ impl SceneNodeData {
     /// This node local transformation.
     #[inline]
     pub fn local_transformation(&self) -> Isometry3<f32> {
-        self.local_transform.clone()
+        self.local_transform
     }
 
     /// Inverse of this node local transformation.
@@ -439,7 +434,7 @@ impl SceneNodeData {
             let mself: &mut SceneNodeData = mem::transmute(self);
             mself.update();
         }
-        self.world_transform.clone()
+        self.world_transform
     }
 
     /// The inverse of this node world transformation.
@@ -596,14 +591,14 @@ impl SceneNode {
         object: Option<Object>,
     ) -> SceneNode {
         let data = SceneNodeData {
-            local_scale: local_scale,
-            local_transform: local_transform,
+            local_scale,
+            local_transform,
             world_transform: local_transform,
             world_scale: local_scale,
             visible: true,
             up_to_date: false,
             children: Vec::new(),
-            object: object,
+            object,
             parent: None,
         };
 

@@ -117,10 +117,12 @@ impl Canvas {
         self.canvas.set_cursor_grab(grab);
     }
 
+    /// Set the cursor position.
     pub fn set_cursor_position(&self, x: f64, y: f64) {
         self.canvas.set_cursor_position(x, y);
     }
 
+    /// Toggle the cursor visibility.
     pub fn hide_cursor(&self, hide: bool) {
         self.canvas.hide_cursor(hide);
     }

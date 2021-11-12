@@ -61,9 +61,9 @@ impl PlanarMesh {
         uvs: Arc<RwLock<GPUVec<Point2<f32>>>>,
     ) -> PlanarMesh {
         PlanarMesh {
-            coords: coords,
-            faces: faces,
-            uvs: uvs,
+            coords,
+            faces,
+            uvs,
             edges: None,
         }
     }

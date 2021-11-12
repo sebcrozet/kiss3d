@@ -24,8 +24,8 @@ impl<T: GLPrimitive> GPUVec<T> {
         GPUVec {
             trash: true,
             len: data.len(),
-            buf_type: buf_type,
-            alloc_type: alloc_type,
+            buf_type,
+            alloc_type,
             buffer: None,
             data: Some(data),
         }
@@ -175,7 +175,7 @@ impl<T: Clone + GLPrimitive> GPUVec<T> {
     /// make the data accessible.
     #[inline]
     pub fn to_owned(&self) -> Option<Vec<T>> {
-        self.data.as_ref().map(|d| d.clone())
+        self.data.as_ref().cloned()
     }
 }
 

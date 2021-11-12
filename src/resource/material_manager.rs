@@ -44,7 +44,7 @@ impl MaterialManager {
 
         MaterialManager {
             default_material: om,
-            materials: materials,
+            materials,
         }
     }
 
@@ -60,7 +60,7 @@ impl MaterialManager {
 
     /// Get a material with the specified name. Returns `None` if the material is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Box<dyn Material + 'static>>>> {
-        self.materials.get(&name.to_string()).map(|t| t.clone())
+        self.materials.get(&name.to_string()).cloned()
     }
 
     /// Adds a material with the specified name to this cache.

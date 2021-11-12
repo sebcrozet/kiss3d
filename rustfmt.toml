@@ -1,3 +1,8 @@
+edition = "2018"
+use_try_shorthand = true
+use_field_init_shorthand = true
+hard_tabs = false
+
 #indent_style = "Block"
 #where_single_line = true
 #brace_style = "PreferSameLine"

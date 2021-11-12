@@ -53,15 +53,15 @@ impl Waves {
             offset: shader.get_uniform("offset").unwrap(),
             fbo_texture: shader.get_uniform("fbo_texture").unwrap(),
             v_coord: shader.get_attrib("v_coord").unwrap(),
-            fbo_vertices: fbo_vertices,
-            shader: shader,
+            fbo_vertices,
+            shader,
         }
     }
 }
 
 impl PostProcessingEffect for Waves {
     fn update(&mut self, dt: f32, _: f32, _: f32, _: f32, _: f32) {
-        self.time = self.time + dt;
+        self.time += dt;
     }
 
     fn draw(&mut self, target: &RenderTarget) {
@@ -93,7 +93,7 @@ impl PostProcessingEffect for Waves {
     }
 }
 
-static VERTEX_SHADER: &'static str = "#version 100
+static VERTEX_SHADER: &str = "#version 100
     attribute vec2    v_coord;
     uniform sampler2D fbo_texture;
     varying vec2      f_texcoord;
@@ -103,7 +103,7 @@ static VERTEX_SHADER: &'static str = "#version 100
       f_texcoord  = (v_coord + 1.0) / 2.0;
     }";
 
-static FRAGMENT_SHADER: &'static str = "#version 100
+static FRAGMENT_SHADER: &str = "#version 100
 #ifdef GL_FRAGMENT_PRECISION_HIGH
    precision highp float;
 #else

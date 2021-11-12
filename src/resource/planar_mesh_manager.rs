@@ -78,7 +78,7 @@ impl PlanarMeshManager {
 
     /// Get a mesh with the specified name. Returns `None` if the mesh is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<PlanarMesh>>> {
-        self.meshes.get(&name.to_string()).map(|t| t.clone())
+        self.meshes.get(&name.to_string()).cloned()
     }
 
     /// Adds a mesh with the specified name to this cache.

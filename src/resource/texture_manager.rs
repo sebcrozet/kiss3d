@@ -23,10 +23,10 @@ pub enum TextureWrapping {
     ClampToEdge,
 }
 
-impl Into<u32> for TextureWrapping {
+impl From<TextureWrapping> for u32 {
     #[inline]
-    fn into(self) -> u32 {
-        match self {
+    fn from(val: TextureWrapping) -> Self {
+        match val {
             TextureWrapping::Repeat => Context::REPEAT,
             TextureWrapping::MirroredRepeat => Context::MIRRORED_REPEAT,
             TextureWrapping::ClampToEdge => Context::CLAMP_TO_EDGE,
@@ -46,7 +46,7 @@ impl Texture {
     /// Sets the wrapping of this texture along the `s` texture coordinate.
     pub fn set_wrapping_s(&mut self, wrapping: TextureWrapping) {
         let ctxt = Context::get();
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self)));
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(self)));
         let wrap: u32 = wrapping.into();
         verify!(ctxt.tex_parameteri(Context::TEXTURE_2D, Context::TEXTURE_WRAP_S, wrap as i32));
     }
@@ -54,7 +54,7 @@ impl Texture {
     /// Sets the wrapping of this texture along the `t` texture coordinate.
     pub fn set_wrapping_t(&mut self, wrapping: TextureWrapping) {
         let ctxt = Context::get();
-        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self)));
+        verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(self)));
         let wrap: u32 = wrapping.into();
         verify!(ctxt.tex_parameteri(Context::TEXTURE_2D, Context::TEXTURE_WRAP_T, wrap as i32));
     }
@@ -185,7 +185,7 @@ impl TextureManager {
     /// Allocates a new texture read from a file.
     fn load_texture_from_file(path: &Path) -> (Rc<Texture>, (u32, u32)) {
         TextureManager::load_texture_into_context(image::open(path).unwrap())
-            .expect(path.to_str().unwrap())
+            .unwrap_or_else(|e| panic!("Unable to load texture from file {:?}: {:?}", path, e))
     }
 
     fn load_texture_into_context(

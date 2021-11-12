@@ -7,10 +7,8 @@ use std::iter::repeat;
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::mpsc::{self, Receiver};
-use std::thread;
 use std::time::Duration;
 
-use instant::Instant;
 use na::{Point2, Point3, Vector2, Vector3};
 
 use crate::camera::{ArcBall, Camera};
@@ -97,7 +95,7 @@ pub struct Window {
     framebuffer_manager: FramebufferManager,
     post_process_render_target: RenderTarget,
     #[cfg(not(target_arch = "wasm32"))]
-    curr_time: Instant,
+    curr_time: std::time::Instant,
     planar_camera: Rc<RefCell<FixedView>>,
     camera: Rc<RefCell<ArcBall>>,
     should_close: bool,
@@ -172,11 +170,13 @@ impl Window {
     }
 
     #[inline]
+    /// Set the cursor position.
     pub fn set_cursor_position(&self, x: f64, y: f64) {
         self.canvas.set_cursor_position(x, y);
     }
 
     #[inline]
+    /// Toggle the cursor visibility.
     pub fn hide_cursor(&self, hide: bool) {
         self.canvas.hide_cursor(hide);
     }
@@ -551,7 +551,7 @@ impl Window {
         let mut usr_window = Window {
             should_close: false,
             max_dur_per_frame: None,
-            canvas: canvas,
+            canvas,
             events: Rc::new(event_receive),
             unhandled_events: Rc::new(RefCell::new(Vec::new())),
             scene: SceneNode::new_empty(),
@@ -571,7 +571,7 @@ impl Window {
             ),
             framebuffer_manager: FramebufferManager::new(),
             #[cfg(not(target_arch = "wasm32"))]
-            curr_time: Instant::now(),
+            curr_time: std::time::Instant::now(),
             planar_camera: Rc::new(RefCell::new(FixedView::new())),
             camera: Rc::new(RefCell::new(ArcBall::new(
                 Point3::new(0.0f32, 0.0, -1.0),
@@ -1084,9 +1084,8 @@ impl Window {
         planar_camera.update(&self.canvas);
         camera.update(&self.canvas);
 
-        match self.light_mode {
-            Light::StickToCamera => self.set_light(Light::StickToCamera),
-            _ => {}
+        if let Light::StickToCamera = self.light_mode {
+            self.set_light(Light::StickToCamera)
         }
 
         if post_processing.is_some() {
@@ -1147,11 +1146,11 @@ impl Window {
             if let Some(dur) = self.max_dur_per_frame {
                 let elapsed = self.curr_time.elapsed();
                 if elapsed < dur {
-                    thread::sleep(dur - elapsed);
+                    std::thread::sleep(dur - elapsed);
                 }
             }
 
-            self.curr_time = Instant::now();
+            self.curr_time = std::time::Instant::now();
         }
 
         // self.transparent_objects.clear();

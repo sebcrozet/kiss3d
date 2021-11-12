@@ -41,7 +41,7 @@ impl PlanarLineRenderer {
             proj: shader
                 .get_uniform::<Matrix3<f32>>("proj")
                 .expect("Failed to get shader uniform."),
-            shader: shader,
+            shader,
         }
     }
 
@@ -95,11 +95,11 @@ impl PlanarLineRenderer {
 }
 
 /// Vertex shader used by the material to display line.
-static LINES_VERTEX_SRC: &'static str = A_VERY_LONG_STRING;
+static LINES_VERTEX_SRC: &str = A_VERY_LONG_STRING;
 /// Fragment shader used by the material to display line.
-static LINES_FRAGMENT_SRC: &'static str = ANOTHER_VERY_LONG_STRING;
+static LINES_FRAGMENT_SRC: &str = ANOTHER_VERY_LONG_STRING;
 
-const A_VERY_LONG_STRING: &'static str = "#version 100
+const A_VERY_LONG_STRING: &str = "#version 100
     attribute vec2 position;
     attribute vec3 color;
     varying   vec3 vColor;
@@ -114,7 +114,7 @@ const A_VERY_LONG_STRING: &'static str = "#version 100
         vColor = color;
     }";
 
-const ANOTHER_VERY_LONG_STRING: &'static str = "#version 100
+const ANOTHER_VERY_LONG_STRING: &str = "#version 100
 #ifdef GL_FRAGMENT_PRECISION_HIGH
    precision highp float;
 #else
