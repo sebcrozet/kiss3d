@@ -10,7 +10,6 @@ use conrod::text::GlyphCache;
 use conrod::{render::PrimitiveKind, Ui};
 use na::{Point2, Point3, Point4, Vector2};
 use rusttype::gpu_cache::Cache;
-use std::collections::HashMap;
 use std::rc::Rc;
 
 #[path = "../error.rs"]
@@ -557,7 +556,7 @@ impl ConrodRenderer {
                     /*
                      * Build the vertex buffer.
                      */
-                    for glyph in positioned_glyphs {
+                    for glyph in positioned_glyphs.iter() {
                         if let Some(Some((tex, rect))) =
                             self.cache.rect_for(font_id.index(), glyph).ok()
                         {

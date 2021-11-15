@@ -26,7 +26,7 @@ impl Font {
 
     /// Loads a new ttf font from the memory.
     pub fn from_bytes(memory: &[u8]) -> Option<Rc<Font>> {
-        let font = rusttype::Font::try_from_vec(memory.to_vec()).unwrap();
+        let font = rusttype::Font::from_bytes(memory.to_vec()).unwrap();
         Some(Rc::new(Font { font }))
     }
 
