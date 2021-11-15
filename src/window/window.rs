@@ -83,7 +83,7 @@ where
 pub struct Window {
     events: Rc<Receiver<WindowEvent>>,
     unhandled_events: Rc<RefCell<Vec<WindowEvent>>>,
-    max_dur_per_frame: Option<Duration>,
+    min_dur_per_frame: Option<Duration>,
     scene: SceneNode,
     scene2: PlanarSceneNode,
     light_mode: Light, // FIXME: move that to the scene graph
@@ -133,7 +133,7 @@ impl Window {
     /// Sets the maximum number of frames per second. Cannot be 0. `None` means there is no limit.
     #[inline]
     pub fn set_framerate_limit(&mut self, fps: Option<u64>) {
-        self.max_dur_per_frame = fps.map(|f| {
+        self.min_dur_per_frame = fps.map(|f| {
             assert!(f != 0);
             Duration::from_millis(1000 / f)
         })
@@ -550,7 +550,7 @@ impl Window {
 
         let mut usr_window = Window {
             should_close: false,
-            max_dur_per_frame: None,
+            min_dur_per_frame: None,
             canvas,
             events: Rc::new(event_receive),
             unhandled_events: Rc::new(RefCell::new(Vec::new())),
@@ -1143,7 +1143,7 @@ impl Window {
         #[cfg(not(target_arch = "wasm32"))]
         {
             // Limit the fps if needed.
-            if let Some(dur) = self.max_dur_per_frame {
+            if let Some(dur) = self.min_dur_per_frame {
                 let elapsed = self.curr_time.elapsed();
                 if elapsed < dur {
                     std::thread::sleep(dur - elapsed);
