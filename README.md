@@ -1,5 +1,9 @@
 # Kiss3d
 
+[![Crates.io](https://img.shields.io/crates/v/kiss3d.svg)](https://crates.io/crates/kiss3d)
+[![Docs](https://docs.rs/kiss3d/badge.svg)](https://docs.rs/kiss3d)
+[![License](https://img.shields.io/crates/l/kiss3d)](https://github.com/sebcrozet/kiss3d)
+
 Keep It Simple, Stupid 3d graphics engine.
 
 This library is born from the frustration that today’s 3D
