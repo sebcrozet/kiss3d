@@ -208,6 +208,8 @@ impl Window {
     }
 
     /// Set the size of all subsequent points to be drawn until the next time this function is envoked.
+    ///
+    /// Unfortunately, not all point sizes are supported by all graphics drivers.
     #[inline]
     pub fn set_point_size(&mut self, pt_size: f32) {
         self.point_renderer.set_point_size(pt_size);

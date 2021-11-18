@@ -9,7 +9,7 @@ fn main() {
     let mut window = Window::new("Kiss3d: points");
 
     window.set_light(Light::StickToCamera);
-    window.set_point_size(10.0);
+    window.set_point_size(10.0); // (Not supported by all graphic drivers)
 
     while window.render() {
         let a = Point3::new(-0.1, -0.1, 0.0);
