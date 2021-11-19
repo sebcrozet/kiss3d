@@ -80,7 +80,7 @@ impl ArcBall {
             pitch_step: 0.005,
             min_pitch: 0.01,
             max_pitch: std::f32::consts::PI - 0.01,
-            dist_step: 1.02,
+            dist_step: 1.01,
             rotate_button: Some(MouseButton::Button1),
             rotate_modifiers: None,
             drag_button: Some(MouseButton::Button2),
