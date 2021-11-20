@@ -58,7 +58,7 @@ pub struct ArcBall {
 impl ArcBall {
     /// Create a new arc-ball camera.
     pub fn new(eye: Point3<f32>, at: Point3<f32>) -> ArcBall {
-        ArcBall::new_with_frustrum(f32::consts::PI / 4.0, 0.1, 1024.0, eye, at)
+        ArcBall::new_with_frustrum(f32::consts::PI / 4.0, 0.001, 1024.0, eye, at)
     }
 
     /// Creates a new arc ball camera with default sensitivity values.
@@ -75,12 +75,12 @@ impl ArcBall {
             pitch: 0.0,
             dist: 0.0,
             min_dist: 0.00001,
-            max_dist: std::f32::MAX,
+            max_dist: 1.0e4,
             yaw_step: 0.005,
             pitch_step: 0.005,
             min_pitch: 0.01,
             max_pitch: std::f32::consts::PI - 0.01,
-            dist_step: 40.0,
+            dist_step: 1.01,
             rotate_button: Some(MouseButton::Button1),
             rotate_modifiers: None,
             drag_button: Some(MouseButton::Button2),
@@ -313,7 +313,7 @@ impl ArcBall {
     }
 
     fn handle_scroll(&mut self, off: f32) {
-        self.dist += self.dist_step * (off) / 120.0;
+        self.dist *= self.dist_step.powf(off);
         self.update_restrictions();
         self.update_projviews();
     }
