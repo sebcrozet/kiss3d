@@ -20,8 +20,6 @@ graphics library are either:
 It is designed to let you draw simple geometric figures and play with them
 with as little friction as possible.
 
-An online version of this documentation is available [here](http://kiss3d.org).
-
 ## Features
 
 * WASM compatible.
@@ -112,7 +110,7 @@ Simply add the following to your `Cargo.toml` file:
 
 ```
 [dependencies]
-kiss3d = "0.29"
+kiss3d = "0.32"
 ```
 
 
