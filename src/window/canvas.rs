@@ -148,9 +148,10 @@ impl Canvas {
     }
 }
 
-// Note: the closure must have static lifetime because of the constraints imposed by wasm-bindgen:
-// https://rustwasm.github.io/wasm-bindgen/api/wasm_bindgen/closure/struct.Closure.html
+/// Note: the closure must have static lifetime because of the constraints imposed by wasm-bindgen:
+/// https://rustwasm.github.io/wasm-bindgen/api/wasm_bindgen/closure/struct.Closure.html
 pub trait RenderLoopClosure: 'static {
+    /// Call the closure
     fn call(&mut self, x: f64) -> bool;
 }
 

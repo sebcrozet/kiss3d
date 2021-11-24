@@ -36,6 +36,8 @@ use ncollide3d::procedural::TriMesh;
 #[cfg(feature = "conrod")]
 use std::collections::HashMap;
 
+use super::window_cache::WindowCache;
+
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
 
@@ -102,6 +104,12 @@ pub struct Window {
     #[cfg(feature = "conrod")]
     conrod_context: ConrodContext,
     canvas: Canvas,
+}
+
+impl Drop for Window {
+    fn drop(&mut self) {
+        WindowCache::clear();
+    }
 }
 
 impl Window {
@@ -549,6 +557,7 @@ impl Window {
         let canvas = Canvas::open(title, hide, width, height, setup, event_send);
 
         init_gl();
+        WindowCache::populate();
 
         let mut usr_window = Window {
             should_close: false,
@@ -932,7 +941,7 @@ impl Window {
     }
 
     /// Runs the render and event loop until the window is closed.
-    pub fn render_loop<S: State>(mut self, mut state: S) {
+    pub fn render_loop<S: State>(self, state: S) {
         Canvas::render_loop(RenderLoopClosureImpl {
             window: self,
             state,

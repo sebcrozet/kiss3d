@@ -1,7 +1,6 @@
 //! A resource manager to load textures.
 
 use image::{self, DynamicImage};
-use std::cell::RefCell;
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::path::Path;
@@ -71,7 +70,7 @@ impl Drop for Texture {
     }
 }
 
-thread_local!(static KEY_TEXTURE_MANAGER: RefCell<TextureManager> = RefCell::new(TextureManager::new()));
+// thread_local!(static KEY_TEXTURE_MANAGER: RefCell<Option<TextureManager>> = RefCell::new(Some(TextureManager::new())));
 
 /// The texture manager.
 ///
@@ -131,7 +130,8 @@ impl TextureManager {
 
     /// Mutably applies a function to the texture manager.
     pub fn get_global_manager<T, F: FnMut(&mut TextureManager) -> T>(mut f: F) -> T {
-        KEY_TEXTURE_MANAGER.with(|manager| f(&mut *manager.borrow_mut()))
+        crate::window::WINDOW_CACHE
+            .with(|manager| f(&mut *manager.borrow_mut().texture_manager.as_mut().unwrap()))
     }
 
     /// Gets the default, completely white, texture.

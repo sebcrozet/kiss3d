@@ -6,8 +6,6 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-thread_local!(static KEY_MATERIAL_MANAGER: RefCell<MaterialManager> = RefCell::new(MaterialManager::new()));
-
 /// The material manager.
 ///
 /// Upon construction, it contains:
@@ -50,7 +48,8 @@ impl MaterialManager {
 
     /// Mutably applies a function to the material manager.
     pub fn get_global_manager<T, F: FnMut(&mut MaterialManager) -> T>(mut f: F) -> T {
-        KEY_MATERIAL_MANAGER.with(|manager| f(&mut *manager.borrow_mut()))
+        crate::window::WINDOW_CACHE
+            .with(|manager| f(&mut *manager.borrow_mut().material_manager.as_mut().unwrap()))
     }
 
     /// Gets the default material to draw objects.
