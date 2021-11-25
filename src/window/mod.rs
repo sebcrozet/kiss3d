@@ -17,4 +17,4 @@ pub use state::State;
 #[cfg(target_arch = "wasm32")]
 pub use webgl_canvas::WebGLCanvas;
 pub use window::Window;
-pub(crate) use window_cache::{WINDOW_CACHE};
+pub(crate) use window_cache::WINDOW_CACHE;

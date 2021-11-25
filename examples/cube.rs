@@ -6,6 +6,7 @@ use kiss3d::window::Window;
 use na::{UnitQuaternion, Vector3};
 
 fn main() {
+    env_logger::init();
     let mut window = Window::new("Kiss3d: cube");
     let mut c = window.add_cube(1.0, 1.0, 1.0);
 

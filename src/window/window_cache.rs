@@ -13,7 +13,6 @@ pub(crate) struct WindowCache {
 thread_local!(pub(crate) static WINDOW_CACHE: RefCell<WindowCache>  = RefCell::new(WindowCache::default()));
 
 impl WindowCache {
-
     /// Initialize resource managers
     pub fn populate() {
         WINDOW_CACHE.with(|cache| {
