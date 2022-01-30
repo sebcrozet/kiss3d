@@ -11,8 +11,6 @@ use std::io::Result as IoResult;
 use std::path::Path;
 use std::rc::Rc;
 
-thread_local!(static KEY_MESH_MANAGER: RefCell<MeshManager> = RefCell::new(MeshManager::new()));
-
 /// The mesh manager.
 ///
 /// Upon construction, it contains:
@@ -40,7 +38,8 @@ impl MeshManager {
 
     /// Mutably applies a function to the mesh manager.
     pub fn get_global_manager<T, F: FnMut(&mut MeshManager) -> T>(mut f: F) -> T {
-        KEY_MESH_MANAGER.with(|manager| f(&mut *manager.borrow_mut()))
+        crate::window::WINDOW_CACHE
+            .with(|manager| f(&mut *manager.borrow_mut().mesh_manager.as_mut().unwrap()))
     }
 
     /// Get a mesh with the specified name. Returns `None` if the mesh is not registered.
