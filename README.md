@@ -111,8 +111,8 @@ Simply add the following to your `Cargo.toml` file:
 ```
 [dependencies]
 kiss3d = "0.32"
-nalgebra = "0.29"
 ```
+Note: If your project already uses nalgebra, you'll need the same version used by `kiss3d`, or you may run into compatibility issues.
 
 
 ## Contributions
