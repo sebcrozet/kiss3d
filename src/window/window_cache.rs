@@ -23,6 +23,7 @@ impl WindowCache {
     }
 
     /// Clear the cache dropping all resources
+    #[allow(unused_results)]
     pub fn clear() {
         WINDOW_CACHE.with(|cache| take(&mut *cache.borrow_mut()));
     }
