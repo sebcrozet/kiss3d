@@ -1,7 +1,7 @@
 [package]
 authors = ["Sébastien Crozet <developer@crozet.re>"]
 name    = "kiss3d"
-version = "0.33.0"
+version = "0.34.0"
 
 autoexamples = true
 description  = "3D graphics engine for Rust."
@@ -41,8 +41,8 @@ glow         = "0.11"
 image        = "0.23"
 instant      = { version = "0.1", features = ["wasm-bindgen"] }
 libc         = "0.2"
-nalgebra     = "0.29"
-ncollide3d   = "0.32"
+nalgebra     = "0.30"
+ncollide3d   = "0.33"
 num-traits   = "0.2"
 rusttype     = { version = "0.8.3", features = ["gpu_cache"] }
 serde        = "1"
@@ -77,6 +77,6 @@ web-sys = { version = "0.3", features = [
 
 [dev-dependencies]
 env_logger = "0.9"
-nalgebra   = { version = "0.29", features = ["rand"] }
-ncollide2d = "0.32"
+nalgebra   = { version = "0.30", features = ["rand"] }
+ncollide2d = "0.33"
 rand       = "0.8"
