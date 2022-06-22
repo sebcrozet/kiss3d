@@ -36,9 +36,9 @@ pub struct ArcBall {
     pitch_step: f32,
     /// Minimum pitch of the camera.
     min_pitch: f32,
-    /// Maximum pitch ofthe camera.
+    /// Maximum pitch of the camera.
     max_pitch: f32,
-    /// Increment of the distance per unit scrolling. The default value is 40.0.
+    /// Distance change factor per unit scrolling. The default value is 1.01.
     dist_step: f32,
     rotate_button: Option<MouseButton>,
     rotate_modifiers: Option<Modifiers>,
@@ -190,7 +190,7 @@ impl ArcBall {
         self.max_dist = max_dist;
     }
 
-    /// Set the increment for a unit scroll (default at 40).
+    /// Set the distance change factor for a unit scroll (default at 1.01).
     pub fn set_dist_step(&mut self, dist_step: f32) {
         self.dist_step = dist_step;
     }
