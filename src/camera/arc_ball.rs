@@ -52,6 +52,7 @@ pub struct ArcBall {
     proj_view: Matrix4<f32>,
     inverse_proj_view: Matrix4<f32>,
     last_cursor_pos: Vector2<f32>,
+    last_framebuffer_size: Vector2<f32>,
     coord_system: CoordSystemRh,
 }
 
@@ -91,6 +92,7 @@ impl ArcBall {
             proj: na::zero(),
             proj_view: na::zero(),
             inverse_proj_view: na::zero(),
+            last_framebuffer_size: Vector2::new(800.0, 600.0),
             last_cursor_pos: na::zero(),
             coord_system: CoordSystemRh::from_up_axis(Vector3::y_axis()),
         };
@@ -301,21 +303,34 @@ impl ArcBall {
         self.update_projviews();
     }
 
-    fn handle_right_button_displacement(&mut self, dpos: &Vector2<f32>) {
+    /// Performs a translation of the camera eye and focus.
+    /// The delta coordinates are expected to be normalized to the [-1, 1] range.
+    fn handle_right_button_displacement(&mut self, dpos_norm: &Vector2<f32>) {
         let eye = self.eye();
         let dir = (self.at - eye).normalize();
         let tangent = self.coord_system.up_axis.cross(&dir).normalize();
         let bitangent = dir.cross(&tangent);
-        let mult = self.dist / 1000.0;
-
-        self.at = self.at + tangent * (dpos.x * mult) + bitangent * (dpos.y * mult);
+        self.at =
+            self.at + tangent * (dpos_norm.x * self.dist) + bitangent * (dpos_norm.y * self.dist);
         self.update_projviews();
     }
 
     fn handle_scroll(&mut self, off: f32) {
+        // To "focus" the zoom towards the point under the cursor, first we
+        // translate the camera to bring that point in the center of the view
+        // and then undo the translation.
+        let mut dpos = Vector2::new(
+            0.5 - self.last_cursor_pos.x / self.last_framebuffer_size.x,
+            0.5 - self.last_cursor_pos.y / self.last_framebuffer_size.y,
+        );
+        self.handle_right_button_displacement(&dpos);
+
         self.dist *= self.dist_step.powf(off);
         self.update_restrictions();
         self.update_projviews();
+
+        dpos = -dpos;
+        self.handle_right_button_displacement(&dpos);
     }
 
     fn update_projviews(&mut self) {
@@ -386,7 +401,8 @@ impl Camera for ArcBall {
                         && self.drag_modifiers.map(|m| m == modifiers).unwrap_or(true)
                     {
                         let dpos = curr_pos - self.last_cursor_pos;
-                        self.handle_right_button_displacement(&dpos)
+                        let dpos_norm = dpos.component_div(&self.last_framebuffer_size);
+                        self.handle_right_button_displacement(&dpos_norm)
                     }
                 }
 
@@ -398,6 +414,7 @@ impl Camera for ArcBall {
             }
             WindowEvent::Scroll(_, off, _) => self.handle_scroll(off as f32),
             WindowEvent::FramebufferSize(w, h) => {
+                self.last_framebuffer_size = Vector2::new(w as f32, h as f32);
                 self.projection.set_aspect(w as f32 / h as f32);
                 self.update_projviews();
             }
