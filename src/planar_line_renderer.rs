@@ -17,6 +17,7 @@ pub struct PlanarLineRenderer {
     proj: ShaderUniform<Matrix3<f32>>,
     colors: GPUVec<Point3<f32>>,
     lines: GPUVec<Point2<f32>>,
+    line_width: f32,
 }
 
 impl PlanarLineRenderer {
@@ -42,6 +43,7 @@ impl PlanarLineRenderer {
                 .get_uniform::<Matrix3<f32>>("proj")
                 .expect("Failed to get shader uniform."),
             shader,
+            line_width: 1.0,
         }
     }
 
@@ -80,6 +82,7 @@ impl PlanarLineRenderer {
 
         let ctxt = Context::get();
         verify!(ctxt.draw_arrays(Context::LINES, 0, self.lines.len() as i32));
+        verify!(ctxt.line_width(self.line_width));
 
         self.pos.disable();
         self.color.disable();
@@ -91,6 +94,11 @@ impl PlanarLineRenderer {
         for colors in self.colors.data_mut().iter_mut() {
             colors.clear()
         }
+    }
+
+    /// Sets the line width for the rendered lines.
+    pub fn set_line_width(&mut self, line_width: f32) {
+        self.line_width = line_width;
     }
 }
 
