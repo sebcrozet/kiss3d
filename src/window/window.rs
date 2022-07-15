@@ -215,7 +215,7 @@ impl Window {
         self.background.z = b;
     }
 
-    /// Set the size of all subsequent points to be drawn until the next time this function is envoked.
+    /// Set the size of all points that will be rendered.
     ///
     /// Unfortunately, not all point sizes are supported by all graphics drivers.
     #[inline]
@@ -223,10 +223,11 @@ impl Window {
         self.point_renderer.set_point_size(pt_size);
     }
 
-    /// Set the width of all subsequent lines to be drawn until the next time this function is envoked.
+    /// Set the width of all lines that will be rendered.
     #[inline]
     pub fn set_line_width(&mut self, line_width: f32) {
         self.line_renderer.set_line_width(line_width);
+        self.planar_line_renderer.set_line_width(line_width);
     }
 
     /// Adds a 3D line to be drawn during the next render.
