@@ -35,9 +35,8 @@ to the camera is as simple as (NOTE: this will **not** compile when targeting WA
 
 ```rust
 extern crate kiss3d;
-extern crate nalgebra as na;
 
-use na::{Vector3, UnitQuaternion};
+use kiss3d::nalgebra::{Vector3, UnitQuaternion};
 use kiss3d::window::Window;
 use kiss3d::light::Light;
 
@@ -61,12 +60,11 @@ Making the same example compatible with both WASM and native platforms is slight
 
 ```rust
 extern crate kiss3d;
-extern crate nalgebra as na;
 
 use kiss3d::light::Light;
 use kiss3d::scene::SceneNode;
 use kiss3d::window::{State, Window};
-use na::{UnitQuaternion, Vector3};
+use kiss3d::nalgebra::{UnitQuaternion, Vector3};
 
 struct AppState {
     c: SceneNode,
