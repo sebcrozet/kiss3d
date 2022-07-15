@@ -64,7 +64,7 @@ impl LineRenderer {
 
     /// Sets the line width for the rendered lines.
     pub fn set_line_width(&mut self, line_width: f32) {
-        self.line_width = line_width;
+        self.line_width = line_width.max(f32::EPSILON /* Gl will usually round this to 1 pixel */);
     }
 }
 
