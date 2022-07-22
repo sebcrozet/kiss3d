@@ -4,8 +4,8 @@ extern crate nalgebra as na;
 use kiss3d::camera::{ArcBall, FirstPerson};
 use kiss3d::event::{Action, Key, WindowEvent};
 use kiss3d::light::Light;
-use kiss3d::window::Window;
 use kiss3d::nalgebra::Point3;
+use kiss3d::window::Window;
 
 fn main() {
     let eye = Point3::new(10.0f32, 10.0, 10.0);
