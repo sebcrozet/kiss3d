@@ -80,3 +80,18 @@ env_logger = "0.9"
 nalgebra   = { version = "0.30", features = ["rand"] }
 ncollide2d = "0.33"
 rand       = "0.8"
+
+[profile.dev.package.image]
+opt-level = 3
+debug-assertions = false
+overflow-checks = false
+
+[profile.dev.package.jpeg-decoder]
+opt-level = 3
+debug-assertions = false
+overflow-checks = false
+
+[profile.dev.package.png]
+opt-level = 3
+debug-assertions = false
+overflow-checks = false
