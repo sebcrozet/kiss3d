@@ -81,8 +81,8 @@ impl PlanarLineRenderer {
         self.pos.bind_sub_buffer(&mut self.lines, 0, 0);
 
         let ctxt = Context::get();
-        verify!(ctxt.draw_arrays(Context::LINES, 0, self.lines.len() as i32));
         verify!(ctxt.line_width(self.line_width));
+        verify!(ctxt.draw_arrays(Context::LINES, 0, self.lines.len() as i32));
 
         self.pos.disable();
         self.color.disable();
