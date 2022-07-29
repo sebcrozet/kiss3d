@@ -1,6 +1,6 @@
 //! A resource manager to load textures.
 
-use image::{self, DynamicImage};
+use image::{self, imageops::FilterType, DynamicImage, GenericImageView};
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::path::Path;
@@ -78,6 +78,9 @@ impl Drop for Texture {
 pub struct TextureManager {
     default_texture: Rc<Texture>,
     textures: HashMap<String, (Rc<Texture>, (u32, u32))>,
+    // If generate_mipmaps is true, mipmaps are generated for textures when they
+    // are loaded.
+    generate_mipmaps: bool,
 }
 
 impl TextureManager {
@@ -125,6 +128,7 @@ impl TextureManager {
         TextureManager {
             textures: HashMap::new(),
             default_texture: default_tex,
+            generate_mipmaps: false,
         }
     }
 
@@ -164,10 +168,13 @@ impl TextureManager {
     /// Allocates a new texture read from a `DynamicImage` object.
     ///
     /// If a texture with same name exists, nothing is created and the old texture is returned.
-    pub fn add_image(&mut self, dynamic_image: DynamicImage, name: &str) -> Rc<Texture> {
+    pub fn add_image(&mut self, image: DynamicImage, name: &str) -> Rc<Texture> {
+        let generate_mipmaps = self.generate_mipmaps;
         self.textures
             .entry(name.to_string())
-            .or_insert_with(|| TextureManager::load_texture_into_context(dynamic_image).unwrap())
+            .or_insert_with(|| {
+                TextureManager::load_texture_into_context(image, generate_mipmaps).unwrap()
+            })
             .0
             .clone()
     }
@@ -183,57 +190,43 @@ impl TextureManager {
     }
 
     /// Allocates a new texture read from a file.
-    fn load_texture_from_file(path: &Path) -> (Rc<Texture>, (u32, u32)) {
-        TextureManager::load_texture_into_context(image::open(path).unwrap())
-            .unwrap_or_else(|e| panic!("Unable to load texture from file {:?}: {:?}", path, e))
+    fn load_texture_from_file(path: &Path, generate_mipmaps: bool) -> (Rc<Texture>, (u32, u32)) {
+        let image = image::open(path)
+            .unwrap_or_else(|e| panic!("Unable to load texture from file {:?}: {:?}", path, e));
+        TextureManager::load_texture_into_context(image, generate_mipmaps)
+            .unwrap_or_else(|e| panic!("Unable to upload texture {:?}: {:?}", path, e))
     }
 
     fn load_texture_into_context(
-        dynamic_image: DynamicImage,
+        image: DynamicImage,
+        generate_mipmaps: bool,
     ) -> Result<(Rc<Texture>, (u32, u32)), &'static str> {
         let ctxt = Context::get();
         let tex = Texture::new();
-        let width;
-        let height;
+        let (width, height) = image.dimensions();
 
         unsafe {
             verify!(ctxt.active_texture(Context::TEXTURE0));
             verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&*tex)));
+            TextureManager::call_tex_image2d(&ctxt, &image, 0)?;
 
-            match dynamic_image {
-                DynamicImage::ImageRgb8(image) => {
-                    width = image.width();
-                    height = image.height();
+            let min_filter;
+            if generate_mipmaps {
+                let (mut w, mut h) = (width, height);
+                let mut image = image;
 
-                    verify!(ctxt.tex_image2d(
-                        Context::TEXTURE_2D,
-                        0,
-                        Context::RGB as i32,
-                        image.width() as i32,
-                        image.height() as i32,
-                        0,
-                        Context::RGB,
-                        Some(&image.into_raw()[..])
-                    ));
+                for level in 1.. {
+                    if w == 1 && h == 1 {
+                        break;
+                    }
+                    w = (w + 1) / 2;
+                    h = (h + 1) / 2;
+                    image = image.resize_exact(w, h, FilterType::CatmullRom);
+                    TextureManager::call_tex_image2d(&ctxt, &image, level)?;
                 }
-                DynamicImage::ImageRgba8(image) => {
-                    width = image.width();
-                    height = image.height();
-
-                    verify!(ctxt.tex_image2d(
-                        Context::TEXTURE_2D,
-                        0,
-                        Context::RGBA as i32,
-                        image.width() as i32,
-                        image.height() as i32,
-                        0,
-                        Context::RGBA,
-                        Some(&image.into_raw()[..])
-                    ));
-                }
-                _ => {
-                    return Err("Failed to load texture, unsuported pixel format.");
-                }
+                min_filter = Context::LINEAR_MIPMAP_LINEAR;
+            } else {
+                min_filter = Context::LINEAR;
             }
 
             verify!(ctxt.tex_parameteri(
@@ -249,7 +242,7 @@ impl TextureManager {
             verify!(ctxt.tex_parameteri(
                 Context::TEXTURE_2D,
                 Context::TEXTURE_MIN_FILTER,
-                Context::LINEAR as i32
+                min_filter as i32,
             ));
             verify!(ctxt.tex_parameteri(
                 Context::TEXTURE_2D,
@@ -260,13 +253,48 @@ impl TextureManager {
         Ok((tex, (width, height)))
     }
 
+    fn call_tex_image2d(
+        ctxt: &Context,
+        dynamic_image: &DynamicImage,
+        level: i32,
+    ) -> Result<(), &'static str> {
+        let (pixel_format, pixels) = match dynamic_image {
+            DynamicImage::ImageRgb8(image) => (Context::RGB, &image.as_raw()[..]),
+            DynamicImage::ImageRgba8(image) => (Context::RGBA, &image.as_raw()[..]),
+            _ => {
+                return Err("Failed to load texture, unsuported pixel format.");
+            }
+        };
+        let (width, height) = dynamic_image.dimensions();
+
+        verify!(ctxt.tex_image2d(
+            Context::TEXTURE_2D,
+            level,
+            pixel_format as i32,
+            width as i32,
+            height as i32,
+            0,
+            pixel_format,
+            Some(pixels)
+        ));
+        Ok(())
+    }
+
     /// Allocates a new texture read from a file. If a texture with same name exists, nothing is
     /// created and the old texture is returned.
     pub fn add(&mut self, path: &Path, name: &str) -> Rc<Texture> {
+        let generate_mipmaps = self.generate_mipmaps;
         self.textures
             .entry(name.to_string())
-            .or_insert_with(|| TextureManager::load_texture_from_file(path))
+            .or_insert_with(|| TextureManager::load_texture_from_file(path, generate_mipmaps))
             .0
             .clone()
+    }
+
+    /// Changes whether textures will have mipmaps generated when they are
+    /// loaded; does not affect already loaded textures.
+    /// Mipmap generation is disabled by default.
+    pub fn set_generate_mipmaps(&mut self, enabled: bool) {
+        self.generate_mipmaps = enabled;
     }
 }
