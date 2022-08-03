@@ -210,7 +210,7 @@ impl TextureManager {
             verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&*tex)));
             TextureManager::call_tex_image2d(&ctxt, &image, 0)?;
 
-            let min_filter;
+            let mut min_filter = Context::LINEAR;
             if generate_mipmaps {
                 let (mut w, mut h) = (width, height);
                 let mut image = image;
@@ -225,8 +225,6 @@ impl TextureManager {
                     TextureManager::call_tex_image2d(&ctxt, &image, level)?;
                 }
                 min_filter = Context::LINEAR_MIPMAP_LINEAR;
-            } else {
-                min_filter = Context::LINEAR;
             }
 
             verify!(ctxt.tex_parameteri(

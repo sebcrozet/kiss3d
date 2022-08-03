@@ -295,7 +295,6 @@ impl PlanarSceneNodeData {
     /// The texture is loaded from a byte slice and registered by the global `TextureManager`.
     ///
     /// # Arguments
-    ///   * `path` - relative path of the texture on the disk
     ///   * `image_data` - slice of bytes containing encoded image
     ///   * `name` - &str identifier to store this texture under
     #[inline]
@@ -899,12 +898,9 @@ impl PlanarSceneNode {
 
     /// Sets the texture of the objects contained by this node and its children.
     ///
-    /// The texture is loaded from a file and registered by the global `TextureManager`.
-    ///
     /// # Arguments
     ///   * `image_data` - slice of bytes containing encoded image
     ///   * `name` - &str to identify this texture in `TextureManager`
-
     pub fn set_texture_from_memory(&mut self, image_data: &[u8], name: &str) {
         self.data_mut().set_texture_from_memory(image_data, name)
     }
