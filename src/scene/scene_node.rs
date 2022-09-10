@@ -582,6 +582,12 @@ impl SceneNodeData {
     }
 }
 
+impl Default for SceneNode {
+    fn default() -> SceneNode {
+        SceneNode::new_empty()
+    }
+}
+
 impl SceneNode {
     /// Creates a new scene node that is not rooted.
     pub fn new(
