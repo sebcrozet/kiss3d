@@ -10,6 +10,7 @@ use std::cell::{Ref, RefCell, RefMut};
 use std::mem;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
+use std::rc::Weak;
 
 // XXX: once something like `fn foo(self: Rc<RefCell<SceneNode>>)` is allowed, this extra struct
 // will not be needed any more.
@@ -23,8 +24,7 @@ pub struct SceneNodeData {
     up_to_date: bool,
     children: Vec<SceneNode>,
     object: Option<Object>,
-    // FIXME: use Weak pointers instead of the raw pointer.
-    parent: Option<*const RefCell<SceneNodeData>>,
+    parent: Option<Weak<RefCell<SceneNodeData>>>,
 }
 
 /// A node of the scene graph.
@@ -45,15 +45,16 @@ impl SceneNodeData {
     // `std::option::Option<std::rc::Weak<std::cell::RefCell<scene::scene_node::SceneNodeData>>>`
     // (expe cted &-ptr but found enum std::option::Option)
     // ```
-    fn set_parent(&mut self, parent: *const RefCell<SceneNodeData>) {
+    fn set_parent(&mut self, parent: Weak<RefCell<SceneNodeData>>) {
         self.parent = Some(parent);
     }
 
     // XXX: this exists because of a similar bug as `set_parent`.
     fn remove_from_parent(&mut self, to_remove: &SceneNode) {
-        let _ = self.parent.as_ref().map(|p| unsafe {
-            let mut bp = (**p).borrow_mut();
-            bp.remove(to_remove)
+        let _ = self.parent.as_ref().map(|p| {
+            if let Some(bp) = p.upgrade(){
+                bp.borrow_mut().remove(to_remove);
+            }
         });
     }
 
@@ -562,14 +563,16 @@ impl SceneNodeData {
         // NOTE: makin this test
         if !self.up_to_date {
             match self.parent {
-                Some(ref mut p) => unsafe {
-                    let mut dp = (**p).borrow_mut();
-
-                    dp.update();
-                    self.world_transform = self.local_transform * dp.world_transform;
-                    self.world_scale = self.local_scale.component_mul(&dp.local_scale);
-                    self.up_to_date = true;
-                    return;
+                //unsafe
+                Some(ref mut p) => {
+                    if let Some(mut dp) = p.upgrade(){
+                        let mut dp = dp.borrow_mut();
+                        dp.update();
+                        self.world_transform = self.local_transform * dp.world_transform;
+                        self.world_scale = self.local_scale.component_mul(&dp.local_scale);
+                        self.up_to_date = true;
+                        return;
+                    }
                 },
                 None => {}
             }
@@ -653,7 +656,8 @@ impl SceneNode {
         );
 
         let mut node = node;
-        node.data_mut().set_parent(&*self.data);
+        let selfweakpointer = Rc::downgrade(&self.data);
+        node.data_mut().set_parent(selfweakpointer);
         self.data_mut().children.push(node)
     }
 
