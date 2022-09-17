@@ -52,7 +52,7 @@ impl SceneNodeData {
     // XXX: this exists because of a similar bug as `set_parent`.
     fn remove_from_parent(&mut self, to_remove: &SceneNode) {
         let _ = self.parent.as_ref().map(|p| {
-            if let Some(bp) = p.upgrade(){
+            if let Some(bp) = p.upgrade() {
                 bp.borrow_mut().remove(to_remove);
             }
         });
@@ -565,7 +565,7 @@ impl SceneNodeData {
             match self.parent {
                 //unsafe
                 Some(ref mut p) => {
-                    if let Some(mut dp) = p.upgrade(){
+                    if let Some(dp) = p.upgrade() {
                         let mut dp = dp.borrow_mut();
                         dp.update();
                         self.world_transform = self.local_transform * dp.world_transform;
@@ -573,7 +573,7 @@ impl SceneNodeData {
                         self.up_to_date = true;
                         return;
                     }
-                },
+                }
                 None => {}
             }
 
