@@ -180,26 +180,6 @@ impl FirstPerson {
         self.drag_button = new_button;
     }
 
-    /// The movement button for up.
-    pub fn up_key(&self) -> Option<Key> {
-        self.up_key
-    }
-
-    /// The movement button for down.
-    pub fn down_key(&self) -> Option<Key> {
-        self.down_key
-    }
-
-    /// The movement button for left.
-    pub fn left_key(&self) -> Option<Key> {
-        self.left_key
-    }
-
-    /// The movement button for right.
-    pub fn right_key(&self) -> Option<Key> {
-        self.right_key
-    }
-
     /// Set the movement button for up.
     /// Use None to disable movement in this direction.
     pub fn rebind_up_key(&mut self, new_key: Option<Key>) {
