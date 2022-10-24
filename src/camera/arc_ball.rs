@@ -379,7 +379,7 @@ impl Camera for ArcBall {
         self.coord_system.rotation_to_y_up.inverse() * Point3::new(px, py, pz)
     }
 
-    fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
+    pub fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
         match *event {
             WindowEvent::CursorPos(x, y, modifiers) => {
                 let curr_pos = Vector2::new(x as f32, y as f32);
