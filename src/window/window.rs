@@ -27,7 +27,7 @@ use crate::resource::{
 use crate::scene::{PlanarSceneNode, SceneNode};
 use crate::text::{Font, TextRenderer};
 use crate::window::canvas::CanvasSetup;
-use crate::window::{Canvas, RenderLoopClosure, State};
+use crate::window::{Canvas, State};
 use image::imageops;
 use image::{GenericImage, Pixel};
 use image::{ImageBuffer, Rgb};
@@ -56,26 +56,6 @@ impl ConrodContext {
             textures: conrod::image::Map::new(),
             texture_ids: HashMap::new(),
         }
-    }
-}
-
-// Note: this struct, and the RenderLoopClosure trait it implements, were created solely to control
-// the drop order of its members.
-// Since the Window contains the OpenGL context, it must be dropped _after_ the state, and there's
-// no way to control that in a plain old closure.
-struct RenderLoopClosureImpl<S: State, F: Fn(f64, &mut Window, &mut S) -> bool> {
-    pub state: S,
-    pub window: Window,
-    pub closure: F,
-}
-
-impl<S, F> RenderLoopClosure for RenderLoopClosureImpl<S, F>
-where
-    S: State,
-    F: Fn(f64, &mut Window, &mut S) -> bool + 'static,
-{
-    fn call(&mut self, x: f64) -> bool {
-        (self.closure)(x, &mut self.window, &mut self.state)
     }
 }
 
@@ -943,11 +923,27 @@ impl Window {
 
     /// Runs the render and event loop until the window is closed.
     pub fn render_loop<S: State>(self, state: S) {
-        Canvas::render_loop(RenderLoopClosureImpl {
-            window: self,
+        // We have to be really careful here about drop order.
+        //
+        // The State may contain various OpenGL objects (for example, shaders),
+        // that, when dropped, make calls to the OpenGL context.
+        // Since the Window contains the OpenGL context, we must not drop it
+        // until we are done dropping the state.
+        //
+        // Since we can't directly control the drop order of fields in a closure,
+        // we instead put the relevant objects into a struct, for which the
+        // drop order _is_ controllable (top-to-bottom).
+        struct DropControl<S> {
+            state: S,
+            window: Window,
+        }
+
+        let mut dc = DropControl {
             state,
-            closure: |_, window, state| window.do_render_with_state(state),
-        });
+            window: self,
+        };
+
+        Canvas::render_loop(move |_| dc.window.do_render_with_state(&mut dc.state));
     }
 
     /// Render one frame using the specified state.

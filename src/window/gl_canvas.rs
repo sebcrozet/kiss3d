@@ -2,7 +2,7 @@ use std::sync::mpsc::Sender;
 
 use crate::context::Context;
 use crate::event::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent};
-use crate::window::canvas::{CanvasSetup, NumSamples, RenderLoopClosure};
+use crate::window::canvas::{CanvasSetup, NumSamples};
 use crate::window::AbstractCanvas;
 use glutin::{
     self,
@@ -97,9 +97,9 @@ impl AbstractCanvas for GLCanvas {
         }
     }
 
-    fn render_loop(mut callback: impl RenderLoopClosure) {
+    fn render_loop(mut callback: impl FnMut(f64) -> bool + 'static) {
         loop {
-            if !callback.call(0.0) {
+            if !callback(0.0) {
                 break;
             } // XXX: timestamp
         }
