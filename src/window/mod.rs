@@ -10,7 +10,7 @@ mod window;
 mod window_cache;
 
 pub(crate) use canvas::AbstractCanvas;
-pub use canvas::{Canvas, CanvasSetup, NumSamples, RenderLoopClosure};
+pub use canvas::{Canvas, CanvasSetup, NumSamples};
 #[cfg(not(target_arch = "wasm32"))]
 pub use gl_canvas::GLCanvas;
 pub use state::State;
