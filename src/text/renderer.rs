@@ -160,7 +160,7 @@ impl TextRenderer {
         self.pos.enable();
         self.uvs.enable();
         self.tex.upload(&0);
-        self.invsz.upload(&Vector2::new(1.0 / width, -1.0 / height));
+        self.invsz.upload(&Vector2::new(2.0 / width, -2.0 / height));
 
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&self.texture)));
         verify!(ctxt.tex_parameteri(
