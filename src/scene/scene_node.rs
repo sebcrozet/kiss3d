@@ -1,5 +1,6 @@
 use crate::camera::Camera;
 use crate::light::Light;
+use crate::resource::vertex_index::VertexIndex;
 use crate::resource::{Material, MaterialManager, Mesh, MeshManager, Texture, TextureManager};
 use crate::scene::Object;
 use na;
@@ -263,7 +264,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u16>>)>(&mut self, f: &mut F) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Point3<VertexIndex>>)>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_faces(f))
     }
 
@@ -271,7 +272,7 @@ impl SceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_faces<F: FnMut(&[Point3<u16>])>(&self, f: &mut F) {
+    pub fn read_faces<F: FnMut(&[Point3<VertexIndex>])>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_faces(f))
     }
 
@@ -987,7 +988,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u16>>)>(&mut self, f: &mut F) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Point3<VertexIndex>>)>(&mut self, f: &mut F) {
         self.data_mut().modify_faces(f)
     }
 
@@ -995,7 +996,7 @@ impl SceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_faces<F: FnMut(&[Point3<u16>])>(&self, f: &mut F) {
+    pub fn read_faces<F: FnMut(&[Point3<VertexIndex>])>(&self, f: &mut F) {
         self.data().read_faces(f)
     }
 

@@ -1,6 +1,7 @@
 //! Data structure of a scene node.
 
 use crate::planar_camera::PlanarCamera;
+use crate::resource::vertex_index::VertexIndex;
 use crate::resource::{PlanarMaterial, PlanarMesh, Texture, TextureManager};
 use na::{Isometry2, Point2, Point3, Vector2};
 use std::any::Any;
@@ -246,7 +247,7 @@ impl PlanarObject {
 
     /// Mutably access the object's faces.
     #[inline(always)]
-    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u16>>)>(&mut self, f: &mut F) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Point3<VertexIndex>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
         let _ = bmesh
             .faces()
@@ -259,7 +260,7 @@ impl PlanarObject {
 
     /// Access the object's faces.
     #[inline(always)]
-    pub fn read_faces<F: FnMut(&[Point3<u16>])>(&self, f: &mut F) {
+    pub fn read_faces<F: FnMut(&[Point3<VertexIndex>])>(&self, f: &mut F) {
         let bmesh = self.mesh.borrow();
         let _ = bmesh
             .faces()

@@ -3,6 +3,7 @@ use std::f32;
 
 use na::{Point2, Point3};
 
+use crate::resource::vertex_index::VertexIndex;
 use crate::resource::PlanarMesh;
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -59,11 +60,11 @@ impl PlanarMeshManager {
             circle_vtx.push(Point2::new(ang.cos(), ang.sin()) * 0.5);
             circle_ids.push(Point3::new(
                 0,
-                circle_vtx.len() as u16 - 2,
-                circle_vtx.len() as u16 - 1,
+                circle_vtx.len() as VertexIndex - 2,
+                circle_vtx.len() as VertexIndex - 1,
             ));
         }
-        circle_ids.push(Point3::new(0, circle_vtx.len() as u16 - 1, 1));
+        circle_ids.push(Point3::new(0, circle_vtx.len() as VertexIndex - 1, 1));
 
         let circle = PlanarMesh::new(circle_vtx, circle_ids, None, false);
         res.add(Rc::new(RefCell::new(circle)), "circle");

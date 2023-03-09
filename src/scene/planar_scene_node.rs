@@ -1,6 +1,7 @@
 use na::{self, Isometry2, Point2, Point3, Translation2, UnitComplex, Vector2};
 
 use crate::planar_camera::PlanarCamera;
+use crate::resource::vertex_index::VertexIndex;
 use crate::resource::{
     PlanarMaterial, PlanarMaterialManager, PlanarMesh, PlanarMeshManager, Texture, TextureManager,
 };
@@ -225,7 +226,7 @@ impl PlanarSceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u16>>)>(&mut self, f: &mut F) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Point3<VertexIndex>>)>(&mut self, f: &mut F) {
         self.apply_to_objects_mut(&mut |o| o.modify_faces(f))
     }
 
@@ -233,7 +234,7 @@ impl PlanarSceneNodeData {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_faces<F: FnMut(&[Point3<u16>])>(&self, f: &mut F) {
+    pub fn read_faces<F: FnMut(&[Point3<VertexIndex>])>(&self, f: &mut F) {
         self.apply_to_objects(&mut |o| o.read_faces(f))
     }
 
@@ -668,8 +669,8 @@ impl PlanarSceneNode {
                     capsule_vtx.push(Point2::new(ang.cos() * r, ang.sin() * r + h / 2.0));
                     capsule_ids.push(Point3::new(
                         0,
-                        capsule_vtx.len() as u16 - 2,
-                        capsule_vtx.len() as u16 - 1,
+                        capsule_vtx.len() as VertexIndex - 2,
+                        capsule_vtx.len() as VertexIndex - 1,
                     ));
                 }
 
@@ -678,12 +679,12 @@ impl PlanarSceneNode {
                     capsule_vtx.push(Point2::new(ang.cos() * r, ang.sin() * r - h / 2.0));
                     capsule_ids.push(Point3::new(
                         0,
-                        capsule_vtx.len() as u16 - 2,
-                        capsule_vtx.len() as u16 - 1,
+                        capsule_vtx.len() as VertexIndex - 2,
+                        capsule_vtx.len() as VertexIndex - 1,
                     ));
                 }
 
-                capsule_ids.push(Point3::new(0, capsule_vtx.len() as u16 - 1, 1));
+                capsule_ids.push(Point3::new(0, capsule_vtx.len() as VertexIndex - 1, 1));
 
                 let capsule = PlanarMesh::new(capsule_vtx, capsule_ids, None, false);
                 let mesh = Rc::new(RefCell::new(capsule));
@@ -727,7 +728,7 @@ impl PlanarSceneNode {
         let mut indices = Vec::new();
 
         for i in 1..polygon.len() - 1 {
-            indices.push(Point3::new(0, i as u16, i as u16 + 1));
+            indices.push(Point3::new(0, i as VertexIndex, i as VertexIndex + 1));
         }
 
         let mesh = PlanarMesh::new(polygon, indices, None, false);
@@ -833,7 +834,7 @@ impl PlanarSceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn modify_faces<F: FnMut(&mut Vec<Point3<u16>>)>(&mut self, f: &mut F) {
+    pub fn modify_faces<F: FnMut(&mut Vec<Point3<VertexIndex>>)>(&mut self, f: &mut F) {
         self.data_mut().modify_faces(f)
     }
 
@@ -841,7 +842,7 @@ impl PlanarSceneNode {
     ///
     /// The provided closure is called once per object.
     #[inline(always)]
-    pub fn read_faces<F: FnMut(&[Point3<u16>])>(&self, f: &mut F) {
+    pub fn read_faces<F: FnMut(&[Point3<VertexIndex>])>(&self, f: &mut F) {
         self.data().read_faces(f)
     }
 

@@ -3,6 +3,7 @@ use std::iter;
 use std::sync::{Arc, RwLock};
 
 use crate::resource::gpu_vector::{AllocationType, BufferType, GPUVec};
+use crate::resource::vertex_index::VertexIndex;
 use crate::resource::ShaderAttribute;
 use na::{Point2, Point3};
 
@@ -14,9 +15,9 @@ mod error;
 /// It also contains the GPU location of those buffers.
 pub struct PlanarMesh {
     coords: Arc<RwLock<GPUVec<Point2<f32>>>>,
-    faces: Arc<RwLock<GPUVec<Point3<u16>>>>,
+    faces: Arc<RwLock<GPUVec<Point3<VertexIndex>>>>,
     uvs: Arc<RwLock<GPUVec<Point2<f32>>>>,
-    edges: Option<Arc<RwLock<GPUVec<Point2<u16>>>>>,
+    edges: Option<Arc<RwLock<GPUVec<Point2<VertexIndex>>>>>,
 }
 
 impl PlanarMesh {
@@ -25,7 +26,7 @@ impl PlanarMesh {
     /// If the normals and uvs are not given, they are automatically computed.
     pub fn new(
         coords: Vec<Point2<f32>>,
-        faces: Vec<Point3<u16>>,
+        faces: Vec<Point3<VertexIndex>>,
         uvs: Option<Vec<Point2<f32>>>,
         dynamic_draw: bool,
     ) -> PlanarMesh {
@@ -57,7 +58,7 @@ impl PlanarMesh {
     /// Creates a new mesh. Arguments set to `None` are automatically computed.
     pub fn new_with_gpu_vectors(
         coords: Arc<RwLock<GPUVec<Point2<f32>>>>,
-        faces: Arc<RwLock<GPUVec<Point3<u16>>>>,
+        faces: Arc<RwLock<GPUVec<Point3<VertexIndex>>>>,
         uvs: Arc<RwLock<GPUVec<Point2<f32>>>>,
     ) -> PlanarMesh {
         PlanarMesh {
@@ -125,7 +126,7 @@ impl PlanarMesh {
     }
 
     /// This mesh faces.
-    pub fn faces(&self) -> &Arc<RwLock<GPUVec<Point3<u16>>>> {
+    pub fn faces(&self) -> &Arc<RwLock<GPUVec<Point3<VertexIndex>>>> {
         &self.faces
     }
 

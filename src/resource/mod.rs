@@ -28,3 +28,4 @@ mod planar_material_manager;
 mod planar_mesh;
 mod planar_mesh_manager;
 mod texture_manager;
+pub mod vertex_index;
