@@ -1,5 +1,6 @@
 use crate::context::Context;
 use crate::planar_camera::PlanarCamera;
+use crate::resource::vertex_index::VERTEX_INDEX_TYPE;
 use crate::resource::PlanarMaterial;
 use crate::resource::{Effect, PlanarMesh, ShaderAttribute, ShaderUniform};
 use crate::scene::PlanarObjectData;
@@ -97,7 +98,7 @@ impl PlanarMaterial for PlanarObjectMaterial {
                 verify!(ctxt.draw_elements(
                     Context::TRIANGLES,
                     mesh.num_pts() as i32,
-                    Context::UNSIGNED_SHORT,
+                    VERTEX_INDEX_TYPE,
                     0
                 ));
             }
@@ -113,7 +114,7 @@ impl PlanarMaterial for PlanarObjectMaterial {
                     verify!(ctxt.draw_elements(
                         Context::TRIANGLES,
                         mesh.num_pts() as i32,
-                        Context::UNSIGNED_SHORT,
+                        VERTEX_INDEX_TYPE,
                         0
                     ));
                 } else {
@@ -121,7 +122,7 @@ impl PlanarMaterial for PlanarObjectMaterial {
                     verify!(ctxt.draw_elements(
                         Context::LINES,
                         mesh.num_pts() as i32 * 2,
-                        Context::UNSIGNED_SHORT,
+                        VERTEX_INDEX_TYPE,
                         0
                     ));
                 }
@@ -138,14 +139,14 @@ impl PlanarMaterial for PlanarObjectMaterial {
                     verify!(ctxt.draw_elements(
                         Context::TRIANGLES,
                         mesh.num_pts() as i32,
-                        Context::UNSIGNED_SHORT,
+                        VERTEX_INDEX_TYPE,
                         0
                     ));
                 } else {
                     verify!(ctxt.draw_elements(
                         Context::POINTS,
                         mesh.num_pts() as i32,
-                        Context::UNSIGNED_SHORT,
+                        VERTEX_INDEX_TYPE,
                         0
                     ));
                 }

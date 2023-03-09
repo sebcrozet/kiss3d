@@ -4,6 +4,7 @@ extern crate nalgebra as na;
 use kiss3d::camera::Camera;
 use kiss3d::context::Context;
 use kiss3d::light::Light;
+use kiss3d::resource::vertex_index::VERTEX_INDEX_TYPE;
 use kiss3d::resource::{Effect, Material, Mesh, ShaderAttribute, ShaderUniform};
 use kiss3d::scene::ObjectData;
 use kiss3d::window::Window;
@@ -97,7 +98,7 @@ impl Material for NormalMaterial {
         Context::get().draw_elements(
             Context::TRIANGLES,
             mesh.num_pts() as i32,
-            Context::UNSIGNED_SHORT,
+            VERTEX_INDEX_TYPE,
             0,
         );
 
