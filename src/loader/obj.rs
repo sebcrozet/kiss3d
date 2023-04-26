@@ -2,6 +2,7 @@
 
 use crate::loader::mtl;
 use crate::loader::mtl::MtlMaterial;
+use crate::resource::vertex_index::VertexIndex;
 use crate::resource::GPUVec;
 use crate::resource::{AllocationType, BufferType, Mesh};
 use na::{Point2, Point3, Vector3};
@@ -78,7 +79,7 @@ pub fn parse(
     let mut normals: Vec<Normal> = Vec::new();
     let mut uvs: Vec<UV> = Vec::new();
     let mut groups: HashMap<String, usize> = HashMap::new();
-    let mut groups_ids: Vec<Vec<Point3<u16>>> = Vec::new();
+    let mut groups_ids: Vec<Vec<Point3<VertexIndex>>> = Vec::new();
     let mut curr_group: usize = 0;
     let mut ignore_normals = false;
     let mut ignore_uvs = false;
@@ -172,7 +173,7 @@ fn parse_usemtl<'a>(
     mtllib: &HashMap<String, MtlMaterial>,
     group2mtl: &mut HashMap<usize, MtlMaterial>,
     groups: &mut HashMap<String, usize>,
-    groups_ids: &mut Vec<Vec<Point3<u16>>>,
+    groups_ids: &mut Vec<Vec<Point3<VertexIndex>>>,
     curr_mtl: &mut Option<MtlMaterial>,
 ) -> usize {
     let mname: Vec<&'a str> = ws.collect();
@@ -276,7 +277,7 @@ fn parse_f<'a>(
     normals: &[Vector3<f32>],
     ignore_uvs: &mut bool,
     ignore_normals: &mut bool,
-    groups_ids: &mut Vec<Vec<Point3<u16>>>,
+    groups_ids: &mut Vec<Vec<Point3<VertexIndex>>>,
     curr_group: usize,
 ) {
     // Four formats possible: v   v/t   v//n   v/t/n
@@ -335,7 +336,11 @@ fn parse_f<'a>(
         }
 
         assert!(x >= 0 && y >= 0 && z >= 0);
-        groups_ids[curr_group].push(Point3::new(x as u16, y as u16, z as u16));
+        groups_ids[curr_group].push(Point3::new(
+            x as VertexIndex,
+            y as VertexIndex,
+            z as VertexIndex,
+        ));
 
         i += 1;
     }
@@ -377,7 +382,7 @@ fn parse_g<'a>(
     ws: Words<'a>,
     prefix: &str,
     groups: &mut HashMap<String, usize>,
-    groups_ids: &mut Vec<Vec<Point3<u16>>>,
+    groups_ids: &mut Vec<Vec<Point3<VertexIndex>>>,
 ) -> usize {
     let suffix: Vec<&'a str> = ws.collect();
     let suffix = suffix.join(" ");
@@ -402,17 +407,17 @@ fn reformat(
     coords: Vec<Coord>,
     normals: Option<Vec<Normal>>,
     uvs: Option<Vec<UV>>,
-    groups_ids: Vec<Vec<Point3<u16>>>,
+    groups_ids: Vec<Vec<Point3<VertexIndex>>>,
     groups: HashMap<String, usize>,
     group2mtl: HashMap<usize, MtlMaterial>,
 ) -> Vec<(String, Mesh, Option<MtlMaterial>)> {
-    let mut vt2id: HashMap<Point3<u16>, u16> = HashMap::new();
-    let mut vertex_ids: Vec<u16> = Vec::new();
+    let mut vt2id: HashMap<Point3<VertexIndex>, VertexIndex> = HashMap::new();
+    let mut vertex_ids: Vec<VertexIndex> = Vec::new();
     let mut resc: Vec<Coord> = Vec::new();
     let mut resn: Option<Vec<Normal>> = normals.as_ref().map(|_| Vec::new());
     let mut resu: Option<Vec<UV>> = uvs.as_ref().map(|_| Vec::new());
-    let mut resfs: Vec<Vec<Point3<u16>>> = Vec::new();
-    let mut allfs: Vec<Point3<u16>> = Vec::new();
+    let mut resfs: Vec<Vec<Point3<VertexIndex>>> = Vec::new();
+    let mut allfs: Vec<Point3<VertexIndex>> = Vec::new();
     let mut names: Vec<String> = Vec::new();
     let mut mtls: Vec<Option<MtlMaterial>> = Vec::new();
 
@@ -427,7 +432,7 @@ fn reformat(
                     None
                 }
                 None => {
-                    let idx = resc.len() as u16;
+                    let idx = resc.len() as VertexIndex;
 
                     resc.push(coords[point.x as usize]);
 

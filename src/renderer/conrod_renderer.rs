@@ -48,7 +48,7 @@ pub struct ConrodRenderer {
     image_uvs: ShaderAttribute<Point2<f32>>,
     image_texture: ShaderUniform<i32>,
     points: GPUVec<f32>,
-    indices: GPUVec<Point3<u16>>,
+    indices: GPUVec<Point3<VertexIndex>>,
     cache: GlyphCache<'static>,
     texture: Texture,
     resized_once: bool,
@@ -270,7 +270,7 @@ impl ConrodRenderer {
                         verify!(ctxt.draw_elements(
                             Context::TRIANGLES,
                             self.indices.len() as i32 * 3,
-                            Context::UNSIGNED_SHORT,
+                            VERTEX_INDEX_TYPE,
                             0
                         ));
 
