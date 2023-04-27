@@ -37,8 +37,8 @@ vertex_index_u32 = []
 bitflags     = "1.2"
 conrod_core  = { version = "0.71", features = ["wasm-bindgen"], optional = true }
 either       = "1"
-glow         = "0.11"
-image        = "0.23"
+glow         = "0.12"
+image        = "0.24"
 instant      = { version = "0.1", features = ["wasm-bindgen"] }
 libc         = "0.2"
 nalgebra     = "0.30"
@@ -76,7 +76,7 @@ web-sys = { version = "0.3", features = [
 ] }
 
 [dev-dependencies]
-env_logger = "0.9"
+env_logger = "0.10"
 nalgebra   = { version = "0.30", features = ["rand"] }
 ncollide2d = "0.33"
 rand       = "0.8"
