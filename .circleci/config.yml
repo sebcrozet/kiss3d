@@ -25,7 +25,7 @@ jobs:
           command: cargo build --verbose -p kiss3d;
       - run:
            name: test kiss3d
-           command: cargo check --examples;
+           command: RUSTFLAGS="-D warnings" cargo check --all-targets --all-features;
   build-wasm:
     executor: rust-executor
     steps:

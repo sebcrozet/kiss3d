@@ -4,8 +4,6 @@ extern crate nalgebra as na;
 #[cfg(feature = "conrod")]
 use kiss3d::conrod;
 #[cfg(feature = "conrod")]
-use kiss3d::conrod::color::Color;
-#[cfg(feature = "conrod")]
 use kiss3d::conrod::position::Positionable;
 #[cfg(feature = "conrod")]
 use kiss3d::conrod::widget_ids;
@@ -320,13 +318,14 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
         app.ball_xy = [x, y];
     }
 
-    for (x, y) in widget::XYPad::new(app.ball_xy[0], min_x, max_x, app.ball_xy[1], min_y, max_y)
-        .label("BALL XY")
-        .wh_of(ids.button)
-        .align_middle_y_of(ids.button)
-        .align_middle_x_of(ids.canvas)
-        .parent(ids.canvas)
-        .set(ids.xy_pad, ui)
+    if let Some((x, y)) =
+        widget::XYPad::new(app.ball_xy[0], min_x, max_x, app.ball_xy[1], min_y, max_y)
+            .label("BALL XY")
+            .wh_of(ids.button)
+            .align_middle_y_of(ids.button)
+            .align_middle_x_of(ids.canvas)
+            .parent(ids.canvas)
+            .set(ids.xy_pad, ui)
     {
         app.ball_xy = [x, y];
     }
@@ -372,12 +371,13 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
     let min = 0.5;
     let max = 200.0;
     let decimal_precision = 1;
-    for new_freq in widget::NumberDialer::new(app.sine_frequency, min, max, decimal_precision)
-        .down(60.0)
-        .align_middle_x_of(ids.canvas)
-        .w_h(160.0, 40.0)
-        .label("F R E Q")
-        .set(ids.number_dialer, ui)
+    if let Some(new_freq) =
+        widget::NumberDialer::new(app.sine_frequency, min, max, decimal_precision)
+            .down(60.0)
+            .align_middle_x_of(ids.canvas)
+            .w_h(160.0, 40.0)
+            .label("F R E Q")
+            .set(ids.number_dialer, ui)
     {
         app.sine_frequency = new_freq;
     }
@@ -414,7 +414,7 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
         }
     }
 
-    for string in widget::TextEdit::new(&app.text_edit)
+    if let Some(string) = widget::TextEdit::new(&app.text_edit)
         .down_from(ids.text_box, 60.0)
         .align_middle_x_of(ids.canvas)
         .padded_w_of(ids.canvas, MARGIN)
