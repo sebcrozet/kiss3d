@@ -7,6 +7,7 @@ use std::sync::mpsc::Sender;
 
 use crate::context::Context;
 use crate::event::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent};
+use crate::verify;
 use crate::window::{AbstractCanvas, CanvasSetup};
 use image::{GenericImage, Pixel};
 use wasm_bindgen::closure::Closure;
