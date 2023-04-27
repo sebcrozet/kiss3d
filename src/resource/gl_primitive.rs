@@ -1,15 +1,15 @@
 //! Structures that a gpu buffer may contain.
 
-use crate::context::{Context, UniformLocation};
+use crate::{
+    context::{Context, UniformLocation},
+    verify,
+};
 use std::{mem, slice};
 
 use na::{
     Matrix2, Matrix3, Matrix4, Point2, Point3, Point4, Rotation2, Rotation3, Vector2, Vector3,
     Vector4,
 };
-
-#[path = "../error.rs"]
-mod error;
 
 /// Trait implemented by structures that can be uploaded to a uniform or contained by a gpu array.
 pub unsafe trait GLPrimitive: Copy {

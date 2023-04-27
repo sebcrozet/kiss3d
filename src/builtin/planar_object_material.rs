@@ -4,10 +4,8 @@ use crate::resource::vertex_index::VERTEX_INDEX_TYPE;
 use crate::resource::PlanarMaterial;
 use crate::resource::{Effect, PlanarMesh, ShaderAttribute, ShaderUniform};
 use crate::scene::PlanarObjectData;
+use crate::{ignore, verify};
 use na::{Isometry2, Matrix2, Matrix3, Point2, Point3, Vector2};
-
-#[path = "../error.rs"]
-mod error;
 
 /// The default material used to draw objects.
 pub struct PlanarObjectMaterial {

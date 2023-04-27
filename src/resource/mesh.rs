@@ -9,9 +9,6 @@ use na::{self, Point2, Point3, Vector3};
 use ncollide3d::procedural::{IndexBuffer, TriMesh};
 use num::Zero;
 
-#[path = "../error.rs"]
-mod error;
-
 /// Aggregation of vertices, indices, normals and texture coordinates.
 ///
 /// It also contains the GPU location of those buffers.

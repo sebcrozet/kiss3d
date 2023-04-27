@@ -9,9 +9,6 @@ use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
 
-#[path = "../error.rs"]
-mod error;
-
 /// Set of data identifying a scene node.
 pub struct PlanarObjectData {
     material: Rc<RefCell<Box<dyn PlanarMaterial + 'static>>>,

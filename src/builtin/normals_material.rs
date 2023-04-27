@@ -4,10 +4,8 @@ use crate::light::Light;
 use crate::resource::Material;
 use crate::resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
 use crate::scene::ObjectData;
+use crate::verify;
 use na::{Isometry3, Matrix3, Matrix4, Point3, Vector3};
-
-#[path = "../error.rs"]
-mod error;
 
 /// A material that draws normals of an object.
 pub struct NormalsMaterial {

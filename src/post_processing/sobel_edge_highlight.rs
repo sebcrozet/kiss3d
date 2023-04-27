@@ -7,9 +7,7 @@ use crate::post_processing::post_processing_effect::PostProcessingEffect;
 use crate::resource::{
     AllocationType, BufferType, Effect, GPUVec, RenderTarget, ShaderAttribute, ShaderUniform,
 };
-
-#[path = "../error.rs"]
-mod error;
+use crate::verify;
 
 /// Post processing effect which draws detected edges on top of the original buffer.
 pub struct SobelEdgeHighlight {

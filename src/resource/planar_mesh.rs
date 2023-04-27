@@ -7,9 +7,6 @@ use crate::resource::vertex_index::VertexIndex;
 use crate::resource::ShaderAttribute;
 use na::{Point2, Point3};
 
-#[path = "../error.rs"]
-mod error;
-
 /// Aggregation of vertices, indices, normals and texture coordinates.
 ///
 /// It also contains the GPU location of those buffers.

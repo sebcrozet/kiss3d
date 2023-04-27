@@ -6,10 +6,8 @@ use crate::camera::Camera;
 use crate::context::Context;
 use crate::event::{Action, Key, MouseButton, WindowEvent};
 use crate::resource::ShaderUniform;
+use crate::verify;
 use crate::window::Canvas;
-
-#[path = "../error.rs"]
-mod error;
 
 /// First-person camera mode.
 ///

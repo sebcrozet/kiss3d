@@ -7,9 +7,6 @@ use crate::resource::GLPrimitive;
 use glow::{Context, HasContext};
 use na::{Matrix2, Matrix3, Matrix4};
 
-#[path = "../error.rs"]
-mod error;
-
 /// An OpenGL context.
 #[derive(Clone)]
 pub struct GLContext {

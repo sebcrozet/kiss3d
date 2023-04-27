@@ -26,6 +26,7 @@ use crate::resource::{
 };
 use crate::scene::{PlanarSceneNode, SceneNode};
 use crate::text::{Font, TextRenderer};
+use crate::verify;
 use crate::window::canvas::CanvasSetup;
 use crate::window::{Canvas, State};
 use image::imageops;

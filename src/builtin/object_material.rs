@@ -5,10 +5,8 @@ use crate::resource::vertex_index::VERTEX_INDEX_TYPE;
 use crate::resource::Material;
 use crate::resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
 use crate::scene::ObjectData;
+use crate::{ignore, verify};
 use na::{Isometry3, Matrix3, Matrix4, Point2, Point3, Vector3};
-
-#[path = "../error.rs"]
-mod error;
 
 /// The default material used to draw objects.
 pub struct ObjectMaterial {

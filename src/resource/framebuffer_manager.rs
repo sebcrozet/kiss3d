@@ -1,10 +1,10 @@
 //! Resource manager to allocate and switch between framebuffers.
 
-use crate::context::{Context, Framebuffer, Renderbuffer, Texture};
+use crate::{
+    context::{Context, Framebuffer, Renderbuffer, Texture},
+    verify,
+};
 use either::Either;
-
-#[path = "../error.rs"]
-mod error;
 
 /// The target to every rendering call.
 pub enum RenderTarget {

@@ -10,9 +10,7 @@ use std::rc::Rc;
 use crate::context::{Context, Texture};
 use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 use crate::text::Font;
-
-#[path = "../error.rs"]
-mod error;
+use crate::verify;
 
 struct TextRenderContext {
     len: usize,

@@ -7,9 +7,7 @@ use crate::post_processing::post_processing_effect::PostProcessingEffect;
 use crate::resource::{
     AllocationType, BufferType, Effect, GPUVec, RenderTarget, ShaderAttribute, ShaderUniform,
 };
-
-#[path = "../error.rs"]
-mod error;
+use crate::verify;
 
 /// An post-processing effect to support the oculus rift.
 pub struct OculusStereo {

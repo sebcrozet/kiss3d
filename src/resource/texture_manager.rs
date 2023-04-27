@@ -6,10 +6,10 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::rc::Rc;
 
-use crate::context::{Context, Texture};
-
-#[path = "../error.rs"]
-mod error;
+use crate::{
+    context::{Context, Texture},
+    verify,
+};
 
 /// Wrapping parameters for a texture.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]

@@ -7,9 +7,6 @@ use std::sync::Once;
 
 use rusttype;
 
-#[path = "../error.rs"]
-mod error;
-
 /// A ttf font.
 pub struct Font {
     font: rusttype::Font<'static>,

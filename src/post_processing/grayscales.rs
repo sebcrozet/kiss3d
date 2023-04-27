@@ -7,9 +7,7 @@ use crate::post_processing::PostProcessingEffect;
 use crate::resource::{
     AllocationType, BufferType, Effect, GPUVec, RenderTarget, ShaderAttribute, ShaderUniform,
 };
-
-#[path = "../error.rs"]
-mod error;
+use crate::verify;
 
 /// Post processing effect which turns everything in gray scales.
 pub struct Grayscales {

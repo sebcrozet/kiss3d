@@ -2,9 +2,7 @@
 
 use crate::context::{Buffer, Context};
 use crate::resource::gl_primitive::GLPrimitive;
-
-#[path = "../error.rs"]
-mod error;
+use crate::verify;
 
 // FIXME: generalize this for any resource: GPUResource
 /// A vector of elements that can be loaded to the GPU, on the RAM, or both.

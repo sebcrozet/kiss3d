@@ -4,10 +4,8 @@ use crate::camera::Camera;
 use crate::context::Context;
 use crate::renderer::Renderer;
 use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
+use crate::verify;
 use na::{Matrix4, Point3};
-
-#[path = "../error.rs"]
-mod error;
 
 /// Structure which manages the display of short-living points.
 pub struct PointRenderer {

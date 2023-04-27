@@ -2,19 +2,16 @@
 
 #![allow(clippy::identity_op)]
 use crate::context::{Context, Texture};
-use crate::resource::vertex_index::VertexIndex;
-use crate::resource::vertex_index::VERTEX_INDEX_TYPE;
+use crate::resource::vertex_index::{VertexIndex, VERTEX_INDEX_TYPE};
 use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 use crate::text::Font;
+use crate::verify;
 use conrod::position::Rect;
 use conrod::text::GlyphCache;
 use conrod::{render::PrimitiveKind, Ui};
 use na::{Point2, Point3, Point4, Vector2};
 use rusttype::gpu_cache::Cache;
 use std::rc::Rc;
-
-#[path = "../error.rs"]
-mod error;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 enum RenderMode {

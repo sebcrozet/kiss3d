@@ -3,10 +3,8 @@
 use crate::context::Context;
 use crate::planar_camera::PlanarCamera;
 use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
+use crate::verify;
 use na::{Matrix3, Point2, Point3};
-
-#[path = "error.rs"]
-mod error;
 
 /// Structure which manages the display of short-living lines.
 pub struct PlanarLineRenderer {

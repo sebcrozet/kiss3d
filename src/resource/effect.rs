@@ -7,9 +7,7 @@ use std::str;
 
 use crate::context::{Context, GLintptr, Program, Shader, UniformLocation};
 use crate::resource::{GLPrimitive, GPUVec};
-
-#[path = "../error.rs"]
-mod error;
+use crate::verify;
 
 /// Structure encapsulating a program.
 pub struct Effect {

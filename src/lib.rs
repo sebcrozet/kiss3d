@@ -119,13 +119,8 @@ I’d love to see people improving this library for their own needs. However, ke
 
 Thanks to all the Rustaceans for their help, and their OpenGL bindings.
 */
-
-#![deny(non_camel_case_types)]
-#![deny(unused_parens)]
+#![deny(warnings)]
 #![allow(non_upper_case_globals)]
-#![deny(unused_qualifications)]
-#![warn(missing_docs)] // FIXME: should be denied.
-#![warn(unused_results)]
 #![allow(unused_unsafe)] // FIXME: should be denied
 #![allow(missing_copy_implementations)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]

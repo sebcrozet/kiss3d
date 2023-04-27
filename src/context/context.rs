@@ -2,12 +2,9 @@
 
 use std::sync::Once;
 
-use crate::context::GLContext as ContextImpl;
 use crate::resource::GLPrimitive;
+use crate::{context::GLContext as ContextImpl, verify};
 use na::{Matrix2, Matrix3, Matrix4};
-
-#[path = "../error.rs"]
-mod error;
 
 pub type GLenum = u32;
 pub type GLintptr = isize;

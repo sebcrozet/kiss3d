@@ -13,9 +13,7 @@ use crate::post_processing::post_processing_effect::PostProcessingEffect;
 use crate::resource::{
     AllocationType, BufferType, Effect, GPUVec, RenderTarget, ShaderAttribute, ShaderUniform,
 };
-
-#[path = "../error.rs"]
-mod error;
+use crate::verify;
 
 /// An useless post-processing effect mainly to test that everything works correctly.
 ///
