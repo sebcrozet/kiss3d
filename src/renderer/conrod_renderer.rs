@@ -1,8 +1,9 @@
 //! A renderer for Conrod primitives.
 
 #![allow(clippy::identity_op)]
-
 use crate::context::{Context, Texture};
+use crate::resource::vertex_index::VertexIndex;
+use crate::resource::vertex_index::VERTEX_INDEX_TYPE;
 use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 use crate::text::Font;
 use conrod::position::Rect;
