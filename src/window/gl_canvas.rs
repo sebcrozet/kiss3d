@@ -105,6 +105,7 @@ impl AbstractCanvas for GLCanvas {
         }
     }
 
+    #[allow(deprecated)] // todo: refactor to avoid using the deprecated `modifiers` field
     fn poll_events(&mut self) {
         let out_events = &mut self.out_events;
         let window = &mut self.window;
