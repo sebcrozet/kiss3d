@@ -13,6 +13,7 @@ use na::{Point2, Point3, Vector2, Vector3};
 
 use crate::camera::{ArcBall, Camera};
 use crate::context::Context;
+use crate::event::MouseButton;
 use crate::event::{Action, EventManager, Key, WindowEvent};
 use crate::light::Light;
 use crate::planar_camera::{FixedView, PlanarCamera};
@@ -651,6 +652,11 @@ impl Window {
     /// Gets the status of a key.
     pub fn get_key(&self, key: Key) -> Action {
         self.canvas.get_key(key)
+    }
+
+    /// Gets the state of a mouse button.
+    pub fn get_mouse_button(&self, button: MouseButton) -> Action {
+        self.canvas.get_mouse_button(button)
     }
 
     /// Gets the last known position of the mouse.
