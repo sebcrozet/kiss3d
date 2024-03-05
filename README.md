@@ -117,6 +117,8 @@ Note: If your project already uses nalgebra, you'll need the same version used b
 I’d love to see people improving this library for their own needs. However, keep in mind that
 **kiss3d** is KISS. One-liner features (from the user point of view) are preferred.
 
+Read the documentation here: https://docs.rs/kiss3d/latest/kiss3d/
+
 ## Acknowledgements
 
 Thanks to all the Rustaceans for their help, and their OpenGL bindings.
