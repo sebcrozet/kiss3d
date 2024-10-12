@@ -169,7 +169,7 @@ impl FramebufferManager {
         verify!(ctxt.bind_texture(Context::TEXTURE_2D, None));
 
         /* Depth buffer */
-        if create_depth_texture && cfg!(not(any(target_arch = "wasm32", target_arch = "asmjs"))) {
+        if create_depth_texture && cfg!(not(target_arch = "wasm32")) {
             verify!(ctxt.active_texture(Context::TEXTURE1));
             let fbo_depth = verify!(ctxt.create_texture().expect("Failed to create a texture."));
             verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&fbo_depth)));
