@@ -9,6 +9,7 @@ varying vec3 local_light_position;
 varying vec2 tex_coord_v;
 varying vec3 normalInterp;
 varying vec3 vertPos;
+varying vec4 vertColor;
 
 uniform vec3 color;
 uniform sampler2D tex;
@@ -28,8 +29,9 @@ void main() {
     specular = pow(specAngle, 30.0);
   }
 
+  vec4 base_color = vertColor * vec4(color, 1.0);
   vec4 tex_color = texture2D(tex, tex_coord_v);
-  gl_FragColor = tex_color * vec4(color / 3.0 +
-                                  lambertian * color / 3.0 +
-                                  specular * specColor / 3.0, 1.0);
+  gl_FragColor = tex_color * vec4(base_color.xyz / 3.0 +
+                                  lambertian * base_color.xyz / 3.0 +
+                                  specular * specColor / 3.0, base_color.w);
 }

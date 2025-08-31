@@ -1,6 +1,6 @@
 #![allow(missing_docs)]
 
-use std::sync::Once;
+use std::sync::{OnceLock};
 
 use crate::resource::GLPrimitive;
 use crate::{context::GLContext as ContextImpl, verify};
@@ -29,8 +29,7 @@ impl Drop for Buffer {
     }
 }
 
-static mut CONTEXT_SINGLETON: Option<Context> = None;
-static CONTEXT_INIT: Once = Once::new();
+static CONTEXT_SINGLETON: OnceLock<Context> = OnceLock::new();
 
 #[derive(Clone)]
 pub struct Context {
@@ -100,21 +99,20 @@ impl Context {
 
     pub fn init(get_ctxt: impl Fn() -> glow::Context) {
         unsafe {
-            CONTEXT_INIT.call_once(|| {
+            CONTEXT_SINGLETON.get_or_init(|| {
                 let ctxt = get_ctxt();
-                CONTEXT_SINGLETON = Some(Context {
+               Context {
                     ctxt: ContextImpl::new(ctxt),
-                });
+                }
             });
         }
     }
 
     pub fn get() -> Context {
-        unsafe {
             CONTEXT_SINGLETON
-                .clone()
+                .get()
                 .expect("GL context not initialized.")
-        }
+                .clone()
     }
 
     pub fn get_error(&self) -> GLenum {
@@ -301,6 +299,10 @@ impl Context {
             .map(UniformLocation)
     }
 
+    pub fn vertex_attrib_divisor(&self, id: u32, divisor: u32) {
+        self.ctxt.vertex_attrib_divisor(id, divisor)
+    }
+
     pub fn viewport(&self, x: i32, y: i32, width: i32, height: i32) {
         self.ctxt.viewport(x, y, width, height)
     }
@@ -464,6 +466,10 @@ impl Context {
 
     pub fn draw_elements(&self, mode: GLenum, count: i32, type_: GLenum, offset: GLintptr) {
         self.ctxt.draw_elements(mode, count, type_, offset)
+    }
+
+    pub fn draw_elements_instanced(&self, mode: GLenum, count: i32, type_: GLenum, offset: GLintptr, instance_count: i32) {
+        self.ctxt.draw_elements_instanced(mode, count, type_, offset, instance_count)
     }
 
     pub fn draw_arrays(&self, mode: GLenum, first: i32, count: i32) {
@@ -671,6 +677,11 @@ pub(crate) trait AbstractContext {
         program: &Self::Program,
         name: &str,
     ) -> Option<Self::UniformLocation>;
+    fn vertex_attrib_divisor(
+        &self,
+        id: u32,
+        divisor: u32
+    );
 
     fn viewport(&self, x: i32, y: i32, width: i32, height: i32);
     fn scissor(&self, x: i32, y: i32, width: i32, height: i32);
@@ -742,6 +753,7 @@ pub(crate) trait AbstractContext {
     fn disable(&self, cap: GLenum);
 
     fn draw_elements(&self, mode: GLenum, count: i32, type_: GLenum, offset: GLintptr);
+    fn draw_elements_instanced(&self, mode: GLenum, count: i32, type_: GLenum, offset: GLintptr, instance_count: i32);
     fn draw_arrays(&self, mode: GLenum, first: i32, count: i32);
 
     fn point_size(&self, size: f32);

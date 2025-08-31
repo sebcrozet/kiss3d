@@ -36,7 +36,7 @@ use ncollide3d::procedural::TriMesh;
 
 #[cfg(feature = "conrod")]
 use std::collections::HashMap;
-
+use std::sync::Arc;
 use super::window_cache::WindowCache;
 
 static DEFAULT_WIDTH: u32 = 800u32;
@@ -242,7 +242,7 @@ impl Window {
         text: &str,
         pos: &Point2<f32>,
         scale: f32,
-        font: &Rc<Font>,
+        font: &Arc<Font>,
         color: &Point3<f32>,
     ) {
         self.text_renderer.draw_text(text, pos, scale, font, color);

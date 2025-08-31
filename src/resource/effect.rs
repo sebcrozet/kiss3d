@@ -130,6 +130,11 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
         verify!(Context::get().enable_vertex_attrib_array(self.id));
     }
 
+    /// The binding index.
+    pub fn id(&self) -> u32 {
+        self.id
+    }
+
     /// Binds this attribute to a gpu vector.
     pub fn bind(&mut self, vector: &mut GPUVec<T>) {
         vector.bind();

@@ -349,6 +349,14 @@ impl AbstractContext for GLContext {
         unsafe { self.context.get_uniform_location(*program, name) }
     }
 
+    fn vertex_attrib_divisor(
+        &self,
+        id: u32,
+        divisor: u32
+    ) {
+        unsafe { self.context.vertex_attrib_divisor(id, divisor) }
+    }
+
     fn viewport(&self, x: i32, y: i32, width: i32, height: i32) {
         unsafe { self.context.viewport(x, y, width, height) }
     }
@@ -566,9 +574,14 @@ impl AbstractContext for GLContext {
         }
     }
 
+    fn draw_elements_instanced(&self, mode: GLenum, count: i32, type_: GLenum, offset: GLintptr, instance_count: i32) {
+        unsafe { self.context.draw_elements_instanced(mode, count, type_, offset as i32, instance_count) }
+    }
+
     fn draw_arrays(&self, mode: GLenum, first: i32, count: i32) {
         unsafe { self.context.draw_arrays(mode, first, count) }
     }
+
 
     fn point_size(&self, _size: f32) {
         //        unsafe { self.context.point_size(size) }

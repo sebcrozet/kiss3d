@@ -3,12 +3,13 @@
 use crate::camera::Camera;
 use crate::light::Light;
 use crate::resource::vertex_index::VertexIndex;
-use crate::resource::{Material, Mesh, Texture, TextureManager};
+use crate::resource::{AllocationType, BufferType, GPUVec, Material, Mesh, Texture, TextureManager};
 use na::{Isometry3, Point2, Point3, Vector3};
 use std::any::Any;
 use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
+use std::sync::{Arc, RwLock};
 
 /// Set of data identifying a scene node.
 pub struct ObjectData {
@@ -75,6 +76,29 @@ impl ObjectData {
     }
 }
 
+
+pub struct InstancesData {
+    pub positions: GPUVec<Point3<f32>>,
+    pub colors: GPUVec<[f32; 4]>,
+    // TODO: add other properties we want compatible with instancing.
+    //       (like rotations, color, or a full 4x4 matrix).
+}
+
+impl Default for InstancesData {
+    fn default() -> Self {
+        InstancesData {
+            positions: GPUVec::new(vec![Point3::origin()], BufferType::Array, AllocationType::StreamDraw),
+            colors: GPUVec::new(vec![[1.0; 4]], BufferType::Array, AllocationType::StreamDraw),
+        }
+    }
+}
+
+impl InstancesData {
+    pub fn len(&self) -> usize {
+        self.positions.len()
+    }
+}
+
 /// A 3d objects on the scene.
 ///
 /// This is the only interface to manipulate the object position, color, vertices and texture.
@@ -82,6 +106,7 @@ pub struct Object {
     // FIXME: should Mesh and Object be merged?
     // (thus removing the need of ObjectData at all.)
     data: ObjectData,
+    instances: Rc<RefCell<InstancesData>>,
     mesh: Rc<RefCell<Mesh>>,
 }
 
@@ -107,8 +132,9 @@ impl Object {
             material,
             user_data: Box::new(user_data),
         };
+        let instances = Rc::new(RefCell::new(InstancesData::default()));
 
-        Object { data, mesh }
+        Object { data, instances, mesh }
     }
 
     #[doc(hidden)]
@@ -127,6 +153,7 @@ impl Object {
             camera,
             light,
             &self.data,
+            &mut *self.instances.borrow_mut(),
             &mut *self.mesh.borrow_mut(),
         );
     }
@@ -141,6 +168,18 @@ impl Object {
     #[inline]
     pub fn data_mut(&mut self) -> &mut ObjectData {
         &mut self.data
+    }
+
+    /// Gets the instances of this object.
+    #[inline]
+    pub fn instances(&self) -> &Rc<RefCell<InstancesData>> {
+        &self.instances
+    }
+
+
+    pub fn set_instances(&mut self, inst_pos: Vec<Point3<f32>>, inst_color: Vec<[f32; 4]>) {
+        *self.instances.borrow_mut().positions.data_mut() = Some(inst_pos);
+        *self.instances.borrow_mut().colors.data_mut() = Some(inst_color);
     }
 
     /// Enables or disables backface culling for this object.

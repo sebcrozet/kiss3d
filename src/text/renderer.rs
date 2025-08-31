@@ -5,8 +5,7 @@
 use na::{Point2, Point3, Vector2};
 use rusttype;
 use rusttype::gpu_cache::Cache;
-use std::rc::Rc;
-
+use std::sync::Arc;
 use crate::context::{Context, Texture};
 use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 use crate::text::Font;
@@ -17,7 +16,7 @@ struct TextRenderContext {
     scale: f32,
     color: Point3<f32>,
     pos: Point2<f32>,
-    font: Rc<Font>,
+    font: Arc<Font>,
 }
 
 /// A ttf text renderer.
@@ -123,7 +122,7 @@ impl TextRenderer {
         text: &str,
         pos: &Point2<f32>,
         scale: f32,
-        font: &Rc<Font>,
+        font: &Arc<Font>,
         color: &Point3<f32>,
     ) {
         self.text.push_str(text);

@@ -1,7 +1,7 @@
 use crate::camera::Camera;
 use crate::light::Light;
 use crate::resource::vertex_index::VertexIndex;
-use crate::resource::{Material, MaterialManager, Mesh, MeshManager, Texture, TextureManager};
+use crate::resource::{AllocationType, BufferType, GPUVec, Material, MaterialManager, Mesh, MeshManager, Texture, TextureManager};
 use crate::scene::Object;
 use na;
 use na::{Isometry3, Point2, Point3, Translation3, UnitQuaternion, Vector3};
@@ -152,6 +152,8 @@ impl SceneNodeData {
     ///
     /// # Failure
     /// Fails of this node does not contains an object.
+    // TODO: this method should return `Option`, whereas `object_mut` is the one
+    //       that should return the naked ref.
     #[inline]
     pub fn get_object_mut(&mut self) -> &mut Object {
         self.object_mut()
