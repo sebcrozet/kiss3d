@@ -2,7 +2,7 @@
 
 use crate::planar_camera::PlanarCamera;
 use crate::resource::vertex_index::VertexIndex;
-use crate::resource::{PlanarMaterial, PlanarMesh, Texture, TextureManager};
+use crate::resource::{AllocationType, BufferType, GPUVec, PlanarMaterial, PlanarMesh, Texture, TextureManager};
 use na::{Isometry2, Point2, Point3, Vector2};
 use std::any::Any;
 use std::cell::RefCell;
@@ -74,6 +74,30 @@ impl PlanarObjectData {
     }
 }
 
+
+
+pub struct PlanarInstancesData {
+    pub positions: GPUVec<Point2<f32>>,
+    pub colors: GPUVec<[f32; 4]>,
+    // TODO: add other properties we want compatible with instancing.
+    //       (like rotations, color, or a full 4x4 matrix).
+}
+
+impl Default for PlanarInstancesData {
+    fn default() -> Self {
+        PlanarInstancesData {
+            positions: GPUVec::new(vec![Point2::origin()], BufferType::Array, AllocationType::StreamDraw),
+            colors: GPUVec::new(vec![[1.0; 4]], BufferType::Array, AllocationType::StreamDraw),
+        }
+    }
+}
+
+impl PlanarInstancesData {
+    pub fn len(&self) -> usize {
+        self.positions.len()
+    }
+}
+
 /// A 3d objects on the scene.
 ///
 /// This is the only interface to manipulate the object position, color, vertices and texture.
@@ -81,6 +105,7 @@ pub struct PlanarObject {
     // FIXME: should PlanarMesh and PlanarObject be merged?
     // (thus removing the need of PlanarObjectData at all.)
     data: PlanarObjectData,
+    instances: Rc<RefCell<PlanarInstancesData>>,
     mesh: Rc<RefCell<PlanarMesh>>,
 }
 
@@ -106,8 +131,9 @@ impl PlanarObject {
             material,
             user_data: Box::new(user_data),
         };
+        let instances = Rc::new(RefCell::new(PlanarInstancesData::default()));
 
-        PlanarObject { data, mesh }
+        PlanarObject { data, instances, mesh }
     }
 
     #[doc(hidden)]
@@ -122,6 +148,7 @@ impl PlanarObject {
             scale,
             camera,
             &self.data,
+            &mut *self.instances.borrow_mut(),
             &mut *self.mesh.borrow_mut(),
         );
     }
@@ -136,6 +163,17 @@ impl PlanarObject {
     #[inline]
     pub fn data_mut(&mut self) -> &mut PlanarObjectData {
         &mut self.data
+    }
+
+    /// Gets the instances of this object.
+    #[inline]
+    pub fn instances(&self) -> &Rc<RefCell<PlanarInstancesData>> {
+        &self.instances
+    }
+
+    pub fn set_instances(&mut self, inst_pos: Vec<Point2<f32>>, inst_color: Vec<[f32; 4]>) {
+        *self.instances.borrow_mut().positions.data_mut() = Some(inst_pos);
+        *self.instances.borrow_mut().colors.data_mut() = Some(inst_color);
     }
 
     /// Enables or disables backface culling for this object.

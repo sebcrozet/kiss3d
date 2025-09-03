@@ -4,7 +4,7 @@ use crate::camera::Camera;
 use crate::light::Light;
 use crate::planar_camera::PlanarCamera;
 use crate::resource::{Mesh, PlanarMesh};
-use crate::scene::{InstancesData, ObjectData, PlanarObjectData};
+use crate::scene::{InstancesData, ObjectData, PlanarInstancesData, PlanarObjectData};
 use na::{Isometry2, Isometry3, Vector2, Vector3};
 
 /// Trait implemented by materials.
@@ -33,6 +33,7 @@ pub trait PlanarMaterial {
         scale: &Vector2<f32>,
         camera: &mut dyn PlanarCamera, // FIXME: replace those two arguments by
         data: &PlanarObjectData,
+        instances: &mut PlanarInstancesData,
         mesh: &mut PlanarMesh,
     );
 }

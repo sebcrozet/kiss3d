@@ -176,7 +176,6 @@ impl Object {
         &self.instances
     }
 
-
     pub fn set_instances(&mut self, inst_pos: Vec<Point3<f32>>, inst_color: Vec<[f32; 4]>) {
         *self.instances.borrow_mut().positions.data_mut() = Some(inst_pos);
         *self.instances.borrow_mut().colors.data_mut() = Some(inst_color);
