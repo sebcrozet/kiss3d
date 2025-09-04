@@ -4,6 +4,9 @@ attribute vec2 tex_coord;
 attribute vec3 normal;
 attribute vec3 inst_tra;
 attribute vec4 inst_color;
+attribute vec3 inst_def_0;
+attribute vec3 inst_def_1;
+attribute vec3 inst_def_2;
 
 uniform mat3 ntransform, scale;
 uniform mat4 proj, view, transform;
@@ -16,7 +19,8 @@ varying vec3 vertPos;
 varying vec4 vertColor;
 
 void main(){
-    vec4 pt = vec4(inst_tra, 0.0) + transform * vec4(scale * position, 1.0);
+    mat3 deformation = mat3(inst_def_0, inst_def_1, inst_def_2);
+    vec4 pt = vec4(inst_tra, 0.0) + transform * vec4(deformation * scale * position, 1.0);
     gl_Position = proj * view * pt;
     vec4 vertPos4 = view * pt;
     vertPos = vec3(vertPos4) / vertPos4.w;

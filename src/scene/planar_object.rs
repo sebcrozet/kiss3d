@@ -3,11 +3,12 @@
 use crate::planar_camera::PlanarCamera;
 use crate::resource::vertex_index::VertexIndex;
 use crate::resource::{AllocationType, BufferType, GPUVec, PlanarMaterial, PlanarMesh, Texture, TextureManager};
-use na::{Isometry2, Point2, Point3, Vector2};
+use na::{Isometry2, Matrix2, Point2, Point3, Vector2};
 use std::any::Any;
 use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
+use crate::scene::object::InstanceData;
 
 /// Set of data identifying a scene node.
 pub struct PlanarObjectData {
@@ -74,25 +75,41 @@ impl PlanarObjectData {
     }
 }
 
+pub struct PlanarInstanceData {
+    pub position: Point2<f32>,
+    pub deformation: Matrix2<f32>,
+    pub color: [f32; 4],
+}
 
+impl Default for PlanarInstanceData {
+    fn default() -> Self {
+        Self {
+            position: Point2::origin(),
+            deformation: Matrix2::identity(),
+            color: [1.0; 4],
+        }
+    }
+}
 
-pub struct PlanarInstancesData {
+pub struct PlanarInstancesBuffers {
     pub positions: GPUVec<Point2<f32>>,
+    pub deformations: GPUVec<Matrix2<f32>>,
     pub colors: GPUVec<[f32; 4]>,
     // TODO: add other properties we want compatible with instancing.
     //       (like rotations, color, or a full 4x4 matrix).
 }
 
-impl Default for PlanarInstancesData {
+impl Default for PlanarInstancesBuffers {
     fn default() -> Self {
-        PlanarInstancesData {
+        PlanarInstancesBuffers {
             positions: GPUVec::new(vec![Point2::origin()], BufferType::Array, AllocationType::StreamDraw),
+            deformations: GPUVec::new(vec![Matrix2::identity()], BufferType::Array, AllocationType::StreamDraw),
             colors: GPUVec::new(vec![[1.0; 4]], BufferType::Array, AllocationType::StreamDraw),
         }
     }
 }
 
-impl PlanarInstancesData {
+impl PlanarInstancesBuffers {
     pub fn len(&self) -> usize {
         self.positions.len()
     }
@@ -105,7 +122,7 @@ pub struct PlanarObject {
     // FIXME: should PlanarMesh and PlanarObject be merged?
     // (thus removing the need of PlanarObjectData at all.)
     data: PlanarObjectData,
-    instances: Rc<RefCell<PlanarInstancesData>>,
+    instances: Rc<RefCell<PlanarInstancesBuffers>>,
     mesh: Rc<RefCell<PlanarMesh>>,
 }
 
@@ -131,7 +148,7 @@ impl PlanarObject {
             material,
             user_data: Box::new(user_data),
         };
-        let instances = Rc::new(RefCell::new(PlanarInstancesData::default()));
+        let instances = Rc::new(RefCell::new(PlanarInstancesBuffers::default()));
 
         PlanarObject { data, instances, mesh }
     }
@@ -167,13 +184,27 @@ impl PlanarObject {
 
     /// Gets the instances of this object.
     #[inline]
-    pub fn instances(&self) -> &Rc<RefCell<PlanarInstancesData>> {
+    pub fn instances(&self) -> &Rc<RefCell<PlanarInstancesBuffers>> {
         &self.instances
     }
 
-    pub fn set_instances(&mut self, inst_pos: Vec<Point2<f32>>, inst_color: Vec<[f32; 4]>) {
-        *self.instances.borrow_mut().positions.data_mut() = Some(inst_pos);
-        *self.instances.borrow_mut().colors.data_mut() = Some(inst_color);
+    pub fn set_instances(&mut self, instances: &[PlanarInstanceData]) {
+        let mut pos_data: Vec<_> = self.instances.borrow_mut().positions.data_mut().take().unwrap_or_default();
+        let mut col_data: Vec<_> = self.instances.borrow_mut().colors.data_mut().take().unwrap_or_default();
+        let mut def_data: Vec<_> = self.instances.borrow_mut().deformations.data_mut().take().unwrap_or_default();
+
+        pos_data.clear();
+        col_data.clear();
+        def_data.clear();
+
+        pos_data.extend(instances.iter().map(|i| i.position));
+        col_data.extend(instances.iter().map(|i| i.color));
+        def_data.extend(instances.iter().map(|i| i.deformation));
+
+
+        *self.instances.borrow_mut().positions.data_mut() = Some(pos_data);
+        *self.instances.borrow_mut().colors.data_mut() = Some(col_data);
+        *self.instances.borrow_mut().deformations.data_mut() = Some(def_data);
     }
 
     /// Enables or disables backface culling for this object.

@@ -4,7 +4,7 @@ use crate::camera::Camera;
 use crate::light::Light;
 use crate::resource::vertex_index::VertexIndex;
 use crate::resource::{AllocationType, BufferType, GPUVec, Material, Mesh, Texture, TextureManager};
-use na::{Isometry3, Point2, Point3, Vector3};
+use na::{Isometry3, Matrix3, Point2, Point3, Vector3};
 use std::any::Any;
 use std::cell::RefCell;
 use std::path::Path;
@@ -76,24 +76,41 @@ impl ObjectData {
     }
 }
 
+pub struct InstanceData {
+    pub position: Point3<f32>,
+    pub deformation: Matrix3<f32>,
+    pub color: [f32; 4],
+}
 
-pub struct InstancesData {
+impl Default for InstanceData {
+    fn default() -> Self {
+        Self {
+            position: Point3::origin(),
+            deformation: Matrix3::identity(),
+            color: [1.0; 4],
+        }
+    }
+}
+
+pub struct InstancesBuffer {
     pub positions: GPUVec<Point3<f32>>,
+    pub deformations: GPUVec<Vector3<f32>>,
     pub colors: GPUVec<[f32; 4]>,
     // TODO: add other properties we want compatible with instancing.
     //       (like rotations, color, or a full 4x4 matrix).
 }
 
-impl Default for InstancesData {
+impl Default for InstancesBuffer {
     fn default() -> Self {
-        InstancesData {
+        InstancesBuffer {
             positions: GPUVec::new(vec![Point3::origin()], BufferType::Array, AllocationType::StreamDraw),
+            deformations: GPUVec::new(vec![Vector3::x(), Vector3::y(), Vector3::z()], BufferType::Array, AllocationType::StreamDraw),
             colors: GPUVec::new(vec![[1.0; 4]], BufferType::Array, AllocationType::StreamDraw),
         }
     }
 }
 
-impl InstancesData {
+impl InstancesBuffer {
     pub fn len(&self) -> usize {
         self.positions.len()
     }
@@ -106,7 +123,7 @@ pub struct Object {
     // FIXME: should Mesh and Object be merged?
     // (thus removing the need of ObjectData at all.)
     data: ObjectData,
-    instances: Rc<RefCell<InstancesData>>,
+    instances: Rc<RefCell<InstancesBuffer>>,
     mesh: Rc<RefCell<Mesh>>,
 }
 
@@ -132,7 +149,7 @@ impl Object {
             material,
             user_data: Box::new(user_data),
         };
-        let instances = Rc::new(RefCell::new(InstancesData::default()));
+        let instances = Rc::new(RefCell::new(InstancesBuffer::default()));
 
         Object { data, instances, mesh }
     }
@@ -172,13 +189,27 @@ impl Object {
 
     /// Gets the instances of this object.
     #[inline]
-    pub fn instances(&self) -> &Rc<RefCell<InstancesData>> {
+    pub fn instances(&self) -> &Rc<RefCell<InstancesBuffer>> {
         &self.instances
     }
 
-    pub fn set_instances(&mut self, inst_pos: Vec<Point3<f32>>, inst_color: Vec<[f32; 4]>) {
-        *self.instances.borrow_mut().positions.data_mut() = Some(inst_pos);
-        *self.instances.borrow_mut().colors.data_mut() = Some(inst_color);
+    pub fn set_instances(&mut self, instances: &[InstanceData]) {
+        let mut pos_data: Vec<_> = self.instances.borrow_mut().positions.data_mut().take().unwrap_or_default();
+        let mut col_data: Vec<_> = self.instances.borrow_mut().colors.data_mut().take().unwrap_or_default();
+        let mut def_data: Vec<_> = self.instances.borrow_mut().deformations.data_mut().take().unwrap_or_default();
+
+        pos_data.clear();
+        col_data.clear();
+        def_data.clear();
+
+        pos_data.extend(instances.iter().map(|i| i.position));
+        col_data.extend(instances.iter().map(|i| i.color));
+        def_data.extend(instances.iter().flat_map(|i| i.deformation.column_iter().map(|c| c.into_owned())));
+
+
+        *self.instances.borrow_mut().positions.data_mut() = Some(pos_data);
+        *self.instances.borrow_mut().colors.data_mut() = Some(col_data);
+        *self.instances.borrow_mut().deformations.data_mut() = Some(def_data);
     }
 
     /// Enables or disables backface culling for this object.

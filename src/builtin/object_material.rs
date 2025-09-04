@@ -4,7 +4,7 @@ use crate::light::Light;
 use crate::resource::vertex_index::VERTEX_INDEX_TYPE;
 use crate::resource::Material;
 use crate::resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
-use crate::scene::{InstancesData, ObjectData};
+use crate::scene::{InstancesBuffer, ObjectData};
 use crate::{ignore, verify};
 use na::{Isometry3, Matrix3, Matrix4, Point2, Point3, Vector3};
 
@@ -16,6 +16,9 @@ pub struct ObjectMaterial {
     tex_coord: ShaderAttribute<Point2<f32>>,
     inst_tra: ShaderAttribute<Point3<f32>>,
     inst_color: ShaderAttribute<[f32; 4]>,
+    inst_def0: ShaderAttribute<Vector3<f32>>,
+    inst_def1: ShaderAttribute<Vector3<f32>>,
+    inst_def2: ShaderAttribute<Vector3<f32>>,
     light: ShaderUniform<Point3<f32>>,
     color: ShaderUniform<Point3<f32>>,
     transform: ShaderUniform<Matrix4<f32>>,
@@ -40,6 +43,9 @@ impl ObjectMaterial {
             tex_coord: effect.get_attrib("tex_coord").unwrap(),
             inst_tra: effect.get_attrib("inst_tra").unwrap(),
             inst_color: effect.get_attrib("inst_color").unwrap(),
+            inst_def0: effect.get_attrib("inst_def_0").unwrap(),
+            inst_def1: effect.get_attrib("inst_def_1").unwrap(),
+            inst_def2: effect.get_attrib("inst_def_2").unwrap(),
             light: effect.get_uniform("light_position").unwrap(),
             color: effect.get_uniform("color").unwrap(),
             transform: effect.get_uniform("transform").unwrap(),
@@ -58,6 +64,9 @@ impl ObjectMaterial {
         self.tex_coord.enable();
         self.inst_tra.enable();
         self.inst_color.enable();
+        self.inst_def0.enable();
+        self.inst_def1.enable();
+        self.inst_def2.enable();
     }
 
     fn deactivate(&mut self) {
@@ -66,6 +75,9 @@ impl ObjectMaterial {
         self.tex_coord.disable();
         self.inst_tra.disable();
         self.inst_color.disable();
+        self.inst_def0.disable();
+        self.inst_def1.disable();
+        self.inst_def2.disable();
     }
 }
 
@@ -78,7 +90,7 @@ impl Material for ObjectMaterial {
         camera: &mut dyn Camera,
         light: &Light,
         data: &ObjectData,
-        instances: &mut InstancesData,
+        instances: &mut InstancesBuffer,
         mesh: &mut Mesh,
     ) {
         let ctxt = Context::get();
@@ -114,10 +126,19 @@ impl Material for ObjectMaterial {
             self.scale.upload(&formated_scale);
 
             mesh.bind(&mut self.pos, &mut self.normal, &mut self.tex_coord);
+
+            // NOTE: attrib divisors different than 1 are very slow to render. So we
+            //       require all instanced attributes to be provided for each instance.
             self.inst_tra.bind(&mut instances.positions);
             verify!(ctxt.vertex_attrib_divisor(self.inst_tra.id(), 1));
             self.inst_color.bind(&mut instances.colors);
-            verify!(ctxt.vertex_attrib_divisor(self.inst_color.id(), (instance_count as usize).div_ceil(instances.colors.len()) as u32));
+            verify!(ctxt.vertex_attrib_divisor(self.inst_color.id(), 1));
+            self.inst_def0.bind_sub_buffer(&mut instances.deformations, 2, 0);
+            verify!(ctxt.vertex_attrib_divisor(self.inst_def0.id(), 1));
+            self.inst_def1.bind_sub_buffer(&mut instances.deformations, 2, 1);
+            verify!(ctxt.vertex_attrib_divisor(self.inst_def1.id(), 1));
+            self.inst_def2.bind_sub_buffer(&mut instances.deformations, 2, 2);
+            verify!(ctxt.vertex_attrib_divisor(self.inst_def2.id(), 1));
 
             verify!(ctxt.active_texture(Context::TEXTURE0));
             verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&*data.texture())));
@@ -194,6 +215,13 @@ impl Material for ObjectMaterial {
                 ctxt.point_size(1.0);
             }
         }
+
+        // Reset attrib divisors so they don’t affect other shaders.
+        verify!(ctxt.vertex_attrib_divisor(self.inst_tra.id(), 0));
+        verify!(ctxt.vertex_attrib_divisor(self.inst_color.id(), 0));
+        verify!(ctxt.vertex_attrib_divisor(self.inst_def0.id(), 0));
+        verify!(ctxt.vertex_attrib_divisor(self.inst_def1.id(), 0));
+        verify!(ctxt.vertex_attrib_divisor(self.inst_def2.id(), 0));
 
         mesh.unbind();
         self.deactivate();

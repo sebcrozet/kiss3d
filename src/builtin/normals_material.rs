@@ -3,7 +3,7 @@ use crate::context::Context;
 use crate::light::Light;
 use crate::resource::Material;
 use crate::resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
-use crate::scene::{InstancesData, ObjectData};
+use crate::scene::{InstancesBuffer, ObjectData};
 use crate::verify;
 use na::{Isometry3, Matrix3, Matrix4, Point3, Vector3};
 
@@ -46,7 +46,7 @@ impl Material for NormalsMaterial {
         camera: &mut dyn Camera,
         _: &Light,
         data: &ObjectData,
-        instances: &mut InstancesData,
+        instances: &mut InstancesBuffer,
         mesh: &mut Mesh,
     ) {
         let ctxt = Context::get();
