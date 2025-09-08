@@ -8,7 +8,6 @@ use std::any::Any;
 use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
-use crate::scene::object::InstanceData;
 
 /// Set of data identifying a scene node.
 pub struct PlanarObjectData {

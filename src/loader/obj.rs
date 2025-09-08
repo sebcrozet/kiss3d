@@ -31,7 +31,7 @@ pub type Words<'a> = Filter<Split<'a, fn(char) -> bool>, fn(&&str) -> bool>;
 
 // FIXME: replace by split_whitespaces from rust 1.1
 /// Returns an iterator through all the words of a string.
-pub fn split_words(s: &str) -> Words {
+pub fn split_words(s: &str) -> Words<'_> {
     fn is_not_empty(s: &&str) -> bool {
         !s.is_empty()
     }

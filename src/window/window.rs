@@ -15,7 +15,7 @@ use crate::camera::{ArcBall, Camera};
 use crate::context::Context;
 use crate::event::{Action, EventManager, Key, WindowEvent};
 use crate::light::Light;
-use crate::planar_camera::{FixedView, PlanarCamera};
+use crate::planar_camera::{PlanarFixedView, PlanarCamera};
 use crate::planar_line_renderer::PlanarLineRenderer;
 use crate::post_processing::PostProcessingEffect;
 #[cfg(feature = "conrod")]
@@ -79,7 +79,7 @@ pub struct Window {
     post_process_render_target: RenderTarget,
     #[cfg(not(target_arch = "wasm32"))]
     curr_time: std::time::Instant,
-    planar_camera: Rc<RefCell<FixedView>>,
+    planar_camera: Rc<RefCell<PlanarFixedView>>,
     camera: Rc<RefCell<ArcBall>>,
     should_close: bool,
     #[cfg(feature = "conrod")]
@@ -565,7 +565,7 @@ impl Window {
             framebuffer_manager: FramebufferManager::new(),
             #[cfg(not(target_arch = "wasm32"))]
             curr_time: std::time::Instant::now(),
-            planar_camera: Rc::new(RefCell::new(FixedView::new())),
+            planar_camera: Rc::new(RefCell::new(PlanarFixedView::new())),
             camera: Rc::new(RefCell::new(ArcBall::new(
                 Point3::new(0.0f32, 0.0, -1.0),
                 Point3::origin(),

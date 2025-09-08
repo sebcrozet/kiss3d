@@ -1,7 +1,7 @@
 use crate::camera::Camera;
 use crate::light::Light;
 use crate::resource::vertex_index::VertexIndex;
-use crate::resource::{AllocationType, BufferType, GPUVec, Material, MaterialManager, Mesh, MeshManager, Texture, TextureManager};
+use crate::resource::{Material, MaterialManager, Mesh, MeshManager, Texture, TextureManager};
 use crate::scene::Object;
 use na;
 use na::{Isometry3, Point2, Point3, Translation3, UnitQuaternion, Vector3};
@@ -631,12 +631,12 @@ impl SceneNode {
     }
 
     /// The data of this scene node.
-    pub fn data(&self) -> Ref<SceneNodeData> {
+    pub fn data(&self) -> Ref<'_, SceneNodeData> {
         self.data.borrow()
     }
 
     /// The data of this scene node.
-    pub fn data_mut(&mut self) -> RefMut<SceneNodeData> {
+    pub fn data_mut(&mut self) -> RefMut<'_, SceneNodeData> {
         self.data.borrow_mut()
     }
 

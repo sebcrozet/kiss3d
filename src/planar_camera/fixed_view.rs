@@ -7,22 +7,22 @@ use std::f32;
 
 /// A camera that cannot move.
 #[derive(Clone, Debug)]
-pub struct FixedView {
+pub struct PlanarFixedView {
     proj: Matrix3<f32>,
     inv_proj: Matrix3<f32>,
 }
 
-impl FixedView {
+impl PlanarFixedView {
     /// Create a new static camera.
-    pub fn new() -> FixedView {
-        FixedView {
+    pub fn new() -> PlanarFixedView {
+        PlanarFixedView {
             proj: na::one(),
             inv_proj: na::one(),
         }
     }
 }
 
-impl PlanarCamera for FixedView {
+impl PlanarCamera for PlanarFixedView {
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
         let scale = canvas.scale_factor();
 

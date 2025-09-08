@@ -46,7 +46,7 @@ impl Material for UvsMaterial {
         camera: &mut dyn Camera,
         _: &Light,
         data: &ObjectData,
-        instances: &mut InstancesBuffer,
+        _instances: &mut InstancesBuffer,
         mesh: &mut Mesh,
     ) {
         if !data.surface_rendering_active() {

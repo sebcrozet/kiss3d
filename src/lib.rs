@@ -164,3 +164,19 @@ pub mod resource;
 pub mod scene;
 pub mod text;
 pub mod window;
+
+pub mod prelude {
+    pub use crate::builtin::*;
+    pub use crate::camera::*;
+    pub use crate::context::*;
+    pub use crate::event::*;
+    pub use crate::light::*;
+    pub use crate::loader::*;
+    pub use crate::planar_camera::*;
+    pub use crate::planar_line_renderer::*;
+    pub use crate::renderer::*;
+    pub use crate::resource::*;
+    pub use crate::scene::*;
+    pub use crate::text::*;
+    pub use crate::window::*;
+}

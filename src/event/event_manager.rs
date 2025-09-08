@@ -26,7 +26,7 @@ impl<'a> Drop for Event<'a> {
 
 impl<'a> Event<'a> {
     #[inline]
-    fn new(value: WindowEvent, inhibitor: &RefCell<Vec<WindowEvent>>) -> Event {
+    fn new(value: WindowEvent, inhibitor: &RefCell<Vec<WindowEvent>>) -> Event<'_> {
         Event {
             value,
             inhibited: false,
@@ -83,7 +83,7 @@ impl EventManager {
 
     /// Gets an iterator to the glfw events already collected.
     #[inline]
-    pub fn iter(&mut self) -> Events {
+    pub fn iter(&mut self) -> Events<'_> {
         Events::new(self.events.try_iter(), &*self.inhibitor)
     }
 }

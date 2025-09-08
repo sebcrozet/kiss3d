@@ -46,7 +46,7 @@ impl Material for NormalsMaterial {
         camera: &mut dyn Camera,
         _: &Light,
         data: &ObjectData,
-        instances: &mut InstancesBuffer,
+        _instances: &mut InstancesBuffer,
         mesh: &mut Mesh,
     ) {
         let ctxt = Context::get();

@@ -574,12 +574,12 @@ impl PlanarSceneNode {
     }
 
     /// The data of this scene node.
-    pub fn data(&self) -> Ref<PlanarSceneNodeData> {
+    pub fn data(&self) -> Ref<'_, PlanarSceneNodeData> {
         self.data.borrow()
     }
 
     /// The data of this scene node.
-    pub fn data_mut(&mut self) -> RefMut<PlanarSceneNodeData> {
+    pub fn data_mut(&mut self) -> RefMut<'_, PlanarSceneNodeData> {
         self.data.borrow_mut()
     }
 
