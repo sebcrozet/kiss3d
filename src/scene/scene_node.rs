@@ -15,7 +15,7 @@ use std::rc::Weak;
 
 // XXX: once something like `fn foo(self: Rc<RefCell<SceneNode>>)` is allowed, this extra struct
 // will not be needed any more.
-/// The datas contained by a `SceneNode`.
+/// The data contained by a `SceneNode`.
 pub struct SceneNodeData {
     local_scale: Vector3<f32>,
     local_transform: Isometry3<f32>,
@@ -842,7 +842,7 @@ impl SceneNode {
                             object.set_texture_from_file(&tpath, tpath.to_str().unwrap())
                         }
 
-                        for t in mtl.ambiant_texture.iter() {
+                        for t in mtl.ambient_texture.iter() {
                             let mut tpath = PathBuf::new();
                             tpath.push(mtl_dir);
                             tpath.push(&t[..]);

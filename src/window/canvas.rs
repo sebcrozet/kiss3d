@@ -74,7 +74,7 @@ impl Canvas {
         CanvasImpl::render_loop(data)
     }
 
-    /// Poll all events tha occurred since the last call to this method.
+    /// Poll all events that occurred since the last call to this method.
     pub fn poll_events(&mut self) {
         self.canvas.poll_events()
     }

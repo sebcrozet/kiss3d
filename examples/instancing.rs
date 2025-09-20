@@ -4,7 +4,7 @@ extern crate nalgebra as na;
 use kiss3d::light::Light;
 use kiss3d::scene::InstanceData;
 use kiss3d::window::Window;
-use na::{Matrix3, Point3, Translation3, UnitQuaternion, Vector3};
+use na::{Matrix3, Point3, UnitQuaternion, Vector3};
 
 fn main() {
     env_logger::init();

@@ -43,11 +43,11 @@ pub struct FirstPerson {
 impl FirstPerson {
     /// Creates a first person camera with default sensitivity values.
     pub fn new(eye: Point3<f32>, at: Point3<f32>) -> FirstPerson {
-        FirstPerson::new_with_frustrum(f32::consts::PI / 4.0, 0.1, 1024.0, eye, at)
+        FirstPerson::new_with_frustum(f32::consts::PI / 4.0, 0.1, 1024.0, eye, at)
     }
 
     /// Creates a new first person camera with default sensitivity values.
-    pub fn new_with_frustrum(
+    pub fn new_with_frustum(
         fov: f32,
         znear: f32,
         zfar: f32,

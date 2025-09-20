@@ -95,13 +95,13 @@ impl PlanarMaterial for PlanarObjectMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform = model.to_homogeneous();
-        let formated_scale = Matrix2::from_diagonal(&Vector2::new(scale.x, scale.y));
+        let formatted_transform = model.to_homogeneous();
+        let formatted_scale = Matrix2::from_diagonal(&Vector2::new(scale.x, scale.y));
         let instance_count = instances.len() as i32;
 
         unsafe {
-            self.model.upload(&formated_transform);
-            self.scale.upload(&formated_scale);
+            self.model.upload(&formatted_transform);
+            self.scale.upload(&formatted_scale);
 
             mesh.bind(&mut self.pos, &mut self.tex_coord);
 

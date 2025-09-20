@@ -27,7 +27,7 @@ fn main() {
                         na::Vector2::new(window.size()[0] as f32, window.size()[1] as f32);
                     sel_pos = camera.unproject(&last_pos, &window_size);
                     println!(
-                        "conv {:?} to {:?} win siz {:?} ",
+                        "conv {:?} to {:?} win size {:?} ",
                         last_pos, sel_pos, window_size
                     );
                 }

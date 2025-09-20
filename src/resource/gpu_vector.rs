@@ -41,7 +41,7 @@ impl<T: GLPrimitive> GPUVec<T> {
         if self.trash {
             match self.data {
                 Some(ref d) => d.len(),
-                None => panic!("This should never happend."),
+                None => panic!("This should never happen."),
             }
         } else {
             self.len
@@ -256,7 +256,7 @@ pub fn upload_array<T: GLPrimitive>(
 
 /// Updates a buffer to the gpu.
 ///
-/// Returns the number of element the bufer on the gpu can hold.
+/// Returns the number of element the buffer on the gpu can hold.
 #[inline]
 pub fn update_buffer<T: GLPrimitive>(
     arr: &[T],

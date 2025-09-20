@@ -15,7 +15,7 @@ use std::rc::Rc;
 
 // XXX: once something like `fn foo(self: Rc<RefCell<PlanarSceneNode>>)` is allowed, this extra struct
 // will not be needed any more.
-/// The datas contained by a `PlanarSceneNode`.
+/// The data contained by a `PlanarSceneNode`.
 pub struct PlanarSceneNodeData {
     local_scale: Vector2<f32>,
     local_transform: Isometry2<f32>,

@@ -6,7 +6,7 @@ use kiss3d::context::Context;
 use kiss3d::light::Light;
 use kiss3d::resource::vertex_index::VERTEX_INDEX_TYPE;
 use kiss3d::resource::{Effect, Material, Mesh, ShaderAttribute, ShaderUniform};
-use kiss3d::scene::ObjectData;
+use kiss3d::scene::{InstancesBuffer, ObjectData};
 use kiss3d::window::Window;
 use na::{Isometry3, Matrix3, Matrix4, Point3, Translation3, UnitQuaternion, Vector3};
 use std::cell::RefCell;
@@ -67,6 +67,7 @@ impl Material for NormalMaterial {
         camera: &mut dyn Camera,
         _: &Light,
         _: &ObjectData,
+        _: &mut InstancesBuffer,
         mesh: &mut Mesh,
     ) {
         self.shader.use_program();
@@ -85,11 +86,11 @@ impl Material for NormalMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform = transform.to_homogeneous();
-        let formated_scale = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
+        let formatted_transform = transform.to_homogeneous();
+        let formatted_scale = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
 
-        self.transform.upload(&formated_transform);
-        self.scale.upload(&formated_scale);
+        self.transform.upload(&formatted_transform);
+        self.scale.upload(&formatted_scale);
 
         mesh.bind_coords(&mut self.position);
         mesh.bind_normals(&mut self.normal);

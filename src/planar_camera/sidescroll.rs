@@ -182,9 +182,9 @@ impl PlanarCamera for Sidescroll {
         );
 
         // Project normalized screen coordinate to screen space
-        let unprojected_hom = self.inv_scaled_proj * normalized_coords.to_homogeneous();
+        let unprojected_homogeneous = self.inv_scaled_proj * normalized_coords.to_homogeneous();
 
         // Convert from screen space to global space
-        Point2::from_homogeneous(unprojected_hom).unwrap() + self.at.coords
+        Point2::from_homogeneous(unprojected_homogeneous).unwrap() + self.at.coords
     }
 }

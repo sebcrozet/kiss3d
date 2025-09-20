@@ -121,15 +121,15 @@ impl Material for ObjectMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform = transform.to_homogeneous();
-        let formated_ntransform = transform.rotation.to_rotation_matrix().into_inner();
-        let formated_scale = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
+        let formatted_transform = transform.to_homogeneous();
+        let formatted_ntransform = transform.rotation.to_rotation_matrix().into_inner();
+        let formatted_scale = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
         let instance_count = instances.len() as i32;
 
         unsafe {
-            self.transform.upload(&formated_transform);
-            self.ntransform.upload(&formated_ntransform);
-            self.scale.upload(&formated_scale);
+            self.transform.upload(&formatted_transform);
+            self.ntransform.upload(&formatted_ntransform);
+            self.scale.upload(&formatted_scale);
 
             mesh.bind(&mut self.pos, &mut self.normal, &mut self.tex_coord);
 

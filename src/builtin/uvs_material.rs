@@ -83,11 +83,11 @@ impl Material for UvsMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform = transform.to_homogeneous();
-        let formated_scale = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
+        let formatted_transform = transform.to_homogeneous();
+        let formatted_scale = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
 
-        self.transform.upload(&formated_transform);
-        self.scale.upload(&formated_scale);
+        self.transform.upload(&formatted_transform);
+        self.scale.upload(&formatted_scale);
 
         mesh.bind_coords(&mut self.position);
         mesh.bind_uvs(&mut self.uvs);

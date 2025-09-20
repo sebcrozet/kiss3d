@@ -25,7 +25,7 @@ fn main() {
         let img = window.snap_image();
         let img_path = Path::new("screenshot.png");
         img.save(img_path).unwrap();
-        println!("Screeshot saved to `screenshot.png`");
+        println!("Screenshot saved to `screenshot.png`");
         break;
     }
 }

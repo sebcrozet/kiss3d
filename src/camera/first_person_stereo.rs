@@ -37,7 +37,7 @@ pub struct FirstPersonStereo {
     /// Increment of the translation per arrow press. The default value is 0.1.
     move_step: f32,
 
-    /// Low level datas
+    /// Low level data
     projection: Perspective3<f32>,
     view_left: Matrix4<f32>,
     view_right: Matrix4<f32>,
@@ -50,11 +50,11 @@ pub struct FirstPersonStereo {
 impl FirstPersonStereo {
     /// Creates a first person camera with default sensitivity values.
     pub fn new(eye: Point3<f32>, at: Point3<f32>, ipd: f32) -> FirstPersonStereo {
-        FirstPersonStereo::new_with_frustrum(f32::consts::PI / 4.0, 0.1, 1024.0, eye, at, ipd)
+        FirstPersonStereo::new_with_frustum(f32::consts::PI / 4.0, 0.1, 1024.0, eye, at, ipd)
     }
 
     /// Creates a new first person camera with default sensitivity values.
-    pub fn new_with_frustrum(
+    pub fn new_with_frustum(
         fov: f32,
         znear: f32,
         zfar: f32,
@@ -64,7 +64,7 @@ impl FirstPersonStereo {
     ) -> FirstPersonStereo {
         let mut res = FirstPersonStereo {
             eye: Point3::new(0.0, 0.0, 0.0),
-            // left & right are initially wrong, don't take ipd into accound
+            // left & right are initially wrong, don't take ipd into account
             eye_left: Point3::new(0.0, 0.0, 0.0),
             eye_right: Point3::new(0.0, 0.0, 0.0),
             ipd,

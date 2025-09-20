@@ -22,11 +22,11 @@ impl Default for FixedView {
 impl FixedView {
     /// Create a new static camera.
     pub fn new() -> FixedView {
-        FixedView::new_with_frustrum(f32::consts::PI / 4.0, 0.1, 1024.0)
+        FixedView::new_with_frustum(f32::consts::PI / 4.0, 0.1, 1024.0)
     }
 
     /// Creates a new arc ball camera with default sensitivity values.
-    pub fn new_with_frustrum(fov: f32, znear: f32, zfar: f32) -> FixedView {
+    pub fn new_with_frustum(fov: f32, znear: f32, zfar: f32) -> FixedView {
         FixedView {
             projection: Perspective3::new(800.0 / 600.0, fov, znear, zfar),
             proj: na::one(),

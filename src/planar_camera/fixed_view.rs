@@ -64,7 +64,7 @@ impl PlanarCamera for PlanarFixedView {
             2.0 * -window_coord.y / size.y + 1.0,
         );
 
-        let unprojected_hom = self.inv_proj * normalized_coords.to_homogeneous();
-        Point2::from_homogeneous(unprojected_hom).unwrap()
+        let unprojected_homogeneous = self.inv_proj * normalized_coords.to_homogeneous();
+        Point2::from_homogeneous(unprojected_homogeneous).unwrap()
     }
 }

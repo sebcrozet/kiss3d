@@ -264,7 +264,7 @@ impl TextureManager {
             DynamicImage::ImageRgb8(image) => (Context::RGB, &image.as_raw()[..]),
             DynamicImage::ImageRgba8(image) => (Context::RGBA, &image.as_raw()[..]),
             _ => {
-                return Err("Failed to load texture, unsuported pixel format.");
+                return Err("Failed to load texture, unsupported pixel format.");
             }
         };
         let (width, height) = dynamic_image.dimensions();

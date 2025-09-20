@@ -25,6 +25,6 @@ pub trait PlanarCamera {
         view: &mut ShaderUniform<Matrix3<f32>>,
     );
 
-    /// Computes the 2D world-space coordiates corresponding to the given screen-space coordiates.
+    /// Computes the 2D world-space coordinates corresponding to the given screen-space coordinates.
     fn unproject(&self, window_coord: &Point2<f32>, window_size: &Vector2<f32>) -> Point2<f32>;
 }

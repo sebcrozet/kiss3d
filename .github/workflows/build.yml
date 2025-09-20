@@ -48,15 +48,6 @@ jobs:
       - run: rustup target add wasm32-unknown-unknown
       - name: build kiss3d
         run: cargo build --verbose --target wasm32-unknown-unknown;
-  build-wasm-emscripten:
-    runs-on: ubuntu-latest
-    env:
-      RUSTFLAGS: -D warnings
-    steps:
-      - uses: actions/checkout@v4
-      - run: rustup target add wasm32-unknown-emscripten
-      - name: build kiss3d
-        run: cargo build --verbose --target wasm32-unknown-emscripten;
   # If this fails, consider changing your text or adding something to .typos.toml
   # You can find typos here: https://crates.io/crates/typos'
   typos:

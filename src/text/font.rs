@@ -26,7 +26,7 @@ impl Font {
         Some(Font { font })
     }
 
-    /// Instanciate a default font.
+    /// Instantiate a default font.
     #[allow(clippy::should_implement_trait)]
     pub fn default() -> Arc<Font> {
         const DATA: &[u8] = include_bytes!("WorkSans-Regular.ttf");
