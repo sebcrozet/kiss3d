@@ -34,6 +34,7 @@ enum MouseCaptureState {
     OtherElement,
 }
 
+#[cfg_attr(target_arch = "wasm32", allow(dead_code))]
 enum EventListener {
     Ui(EventListenerHandle<dyn FnMut(UiEvent)>),
     Mouse(EventListenerHandle<dyn FnMut(MouseEvent)>),

@@ -36,6 +36,12 @@ pub struct Context {
     pub ctxt: ContextImpl,
 }
 
+// FIXME: remove these once we switch to webgpu.
+#[cfg(target_arch = "wasm32")]
+unsafe impl Send for Context {}
+#[cfg(target_arch = "wasm32")]
+unsafe impl Sync for Context {}
+
 impl Context {
     pub const FLOAT: u32 = ContextImpl::FLOAT;
     pub const INT: u32 = ContextImpl::INT;
