@@ -18,6 +18,12 @@ pub struct PointRenderer {
     point_size: f32,
 }
 
+impl Default for PointRenderer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PointRenderer {
     /// Creates a new points manager.
     pub fn new() -> PointRenderer {
@@ -38,7 +44,7 @@ impl PointRenderer {
 
     /// Indicates whether some points have to be drawn.
     pub fn needs_rendering(&self) -> bool {
-        self.points.len() != 0
+        !self.points.is_empty()
     }
 
     /// Sets the point size for the rendered points.
@@ -59,7 +65,7 @@ impl PointRenderer {
 impl Renderer for PointRenderer {
     /// Actually draws the points.
     fn render(&mut self, pass: usize, camera: &mut dyn Camera) {
-        if self.points.len() == 0 {
+        if self.points.is_empty() {
             return;
         }
 

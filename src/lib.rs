@@ -119,11 +119,13 @@ I’d love to see people improving this library for their own needs. However, ke
 
 Thanks to all the Rustaceans for their help, and their OpenGL bindings.
 */
-#![deny(warnings)]
 #![allow(non_upper_case_globals)]
 #![allow(unused_unsafe)] // FIXME: should be denied
 #![allow(missing_copy_implementations)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
+#![allow(clippy::module_inception)]
+#![allow(clippy::too_many_arguments)]
+#![allow(clippy::type_complexity)]
 
 #[macro_use]
 extern crate bitflags;
@@ -165,3 +167,19 @@ pub mod resource;
 pub mod scene;
 pub mod text;
 pub mod window;
+
+pub mod prelude {
+    pub use crate::builtin::*;
+    pub use crate::camera::*;
+    pub use crate::context::*;
+    pub use crate::event::*;
+    pub use crate::light::*;
+    pub use crate::loader::*;
+    pub use crate::planar_camera::*;
+    pub use crate::planar_line_renderer::*;
+    pub use crate::renderer::*;
+    pub use crate::resource::*;
+    pub use crate::scene::*;
+    pub use crate::text::*;
+    pub use crate::window::*;
+}

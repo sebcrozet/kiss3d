@@ -2,7 +2,7 @@ use crate::camera::Camera;
 use crate::light::Light;
 use crate::resource::vertex_index::VertexIndex;
 use crate::resource::{Material, MaterialManager, Mesh, MeshManager, Texture, TextureManager};
-use crate::scene::Object;
+use crate::scene::{InstanceData, Object};
 use na;
 use na::{Isometry3, Point2, Point3, Translation3, UnitQuaternion, Vector3};
 use ncollide3d::procedural;
@@ -15,7 +15,7 @@ use std::rc::Weak;
 
 // XXX: once something like `fn foo(self: Rc<RefCell<SceneNode>>)` is allowed, this extra struct
 // will not be needed any more.
-/// The datas contained by a `SceneNode`.
+/// The data contained by a `SceneNode`.
 pub struct SceneNodeData {
     local_scale: Vector3<f32>,
     local_transform: Isometry3<f32>,
@@ -152,6 +152,8 @@ impl SceneNodeData {
     ///
     /// # Failure
     /// Fails of this node does not contains an object.
+    // TODO: this method should return `Option`, whereas `object_mut` is the one
+    //       that should return the naked ref.
     #[inline]
     pub fn get_object_mut(&mut self) -> &mut Object {
         self.object_mut()
@@ -563,19 +565,15 @@ impl SceneNodeData {
     fn update(&mut self) {
         // NOTE: makin this test
         if !self.up_to_date {
-            match self.parent {
-                //unsafe
-                Some(ref mut p) => {
-                    if let Some(dp) = p.upgrade() {
-                        let mut dp = dp.borrow_mut();
-                        dp.update();
-                        self.world_transform = self.local_transform * dp.world_transform;
-                        self.world_scale = self.local_scale.component_mul(&dp.local_scale);
-                        self.up_to_date = true;
-                        return;
-                    }
+            if let Some(ref mut p) = self.parent {
+                if let Some(dp) = p.upgrade() {
+                    let mut dp = dp.borrow_mut();
+                    dp.update();
+                    self.world_transform = self.local_transform * dp.world_transform;
+                    self.world_scale = self.local_scale.component_mul(&dp.local_scale);
+                    self.up_to_date = true;
+                    return;
                 }
-                None => {}
             }
 
             // no parent
@@ -629,12 +627,12 @@ impl SceneNode {
     }
 
     /// The data of this scene node.
-    pub fn data(&self) -> Ref<SceneNodeData> {
+    pub fn data(&self) -> Ref<'_, SceneNodeData> {
         self.data.borrow()
     }
 
     /// The data of this scene node.
-    pub fn data_mut(&mut self) -> RefMut<SceneNodeData> {
+    pub fn data_mut(&mut self) -> RefMut<'_, SceneNodeData> {
         self.data.borrow_mut()
     }
 
@@ -750,10 +748,10 @@ impl SceneNode {
     /// * `w` - the quad width.
     /// * `h` - the quad height.
     /// * `wsubdivs` - number of horizontal subdivisions. This correspond to the number of squares
-    /// which will be placed horizontally on each line. Must not be `0`.
+    ///   which will be placed horizontally on each line. Must not be `0`.
     /// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
-    /// which will be placed vertically on each line. Must not be `0`.
-    /// update.
+    ///   which will be placed vertically on each line. Must not be `0`.
+    ///   update.
     pub fn add_quad(&mut self, w: f32, h: f32, usubdivs: usize, vsubdivs: usize) -> SceneNode {
         let mut node = self.add_trimesh(
             procedural::quad(w, h, usubdivs, vsubdivs),
@@ -844,7 +842,7 @@ impl SceneNode {
                             object.set_texture_from_file(&tpath, tpath.to_str().unwrap())
                         }
 
-                        for t in mtl.ambiant_texture.iter() {
+                        for t in mtl.ambient_texture.iter() {
                             let mut tpath = PathBuf::new();
                             tpath.push(mtl_dir);
                             tpath.push(&t[..]);
@@ -1015,6 +1013,13 @@ impl SceneNode {
     #[inline(always)]
     pub fn read_uvs<F: FnMut(&[Point2<f32>])>(&self, f: &mut F) {
         self.data().read_uvs(f)
+    }
+
+    /// Sets the instances for rendering multiple duplicates of this scene node.
+    ///
+    /// This only duplicates this scene node, not any of its children.
+    pub fn set_instances(&mut self, instances: &[InstanceData]) {
+        self.data_mut().get_object_mut().set_instances(instances)
     }
 
     /// Get the visibility status of node.

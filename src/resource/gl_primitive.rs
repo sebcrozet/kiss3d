@@ -12,6 +12,7 @@ use na::{
 };
 
 /// Trait implemented by structures that can be uploaded to a uniform or contained by a gpu array.
+#[allow(clippy::missing_safety_doc)]
 pub unsafe trait GLPrimitive: Copy {
     /// The type of the elements of the gpu array.
     type Element;
@@ -148,6 +149,82 @@ unsafe impl GLPrimitive for Vector2<f32> {
     fn upload(&self, location: &UniformLocation) {
         verify!(Context::get().uniform2f(Some(location), self.x, self.y));
     }
+}
+
+/*
+ *
+ * Impl for arrays
+ *
+ */
+
+unsafe impl GLPrimitive for [f32; 4] {
+    type Element = f32;
+    const GLTYPE: u32 = Context::FLOAT;
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform4f(Some(location), self[0], self[1], self[2], self[3]));
+    }
+}
+
+unsafe impl GLPrimitive for [f32; 3] {
+    type Element = f32;
+    const GLTYPE: u32 = Context::FLOAT;
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform3f(Some(location), self[0], self[1], self[2]));
+    }
+}
+
+unsafe impl GLPrimitive for [f32; 2] {
+    type Element = f32;
+    const GLTYPE: u32 = Context::FLOAT;
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform2f(Some(location), self[0], self[1]));
+    }
+}
+
+unsafe impl GLPrimitive for [i32; 3] {
+    type Element = i32;
+    const GLTYPE: u32 = Context::INT;
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform3i(Some(location), self[0], self[1], self[2]));
+    }
+}
+
+unsafe impl GLPrimitive for [i32; 2] {
+    type Element = i32;
+    const GLTYPE: u32 = Context::INT;
+
+    #[inline]
+    fn upload(&self, location: &UniformLocation) {
+        verify!(Context::get().uniform2i(Some(location), self[0], self[1]));
+    }
+}
+
+unsafe impl GLPrimitive for [u16; 2] {
+    type Element = u16;
+    const GLTYPE: u32 = Context::UNSIGNED_SHORT;
+}
+
+unsafe impl GLPrimitive for [u16; 3] {
+    type Element = u16;
+    const GLTYPE: u32 = Context::UNSIGNED_SHORT;
+}
+
+unsafe impl GLPrimitive for [u32; 3] {
+    type Element = u32;
+    const GLTYPE: u32 = Context::UNSIGNED_INT;
+}
+
+unsafe impl GLPrimitive for [u32; 2] {
+    type Element = u32;
+    const GLTYPE: u32 = Context::UNSIGNED_INT;
 }
 
 /*

@@ -57,8 +57,8 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
                                 res.push(old);
                             }
                         }
-                        // ambiant color
-                        "Ka" => curr_material.ambiant = parse_color(l, words),
+                        // ambient color
+                        "Ka" => curr_material.ambient = parse_color(l, words),
                         // diffuse color
                         "Kd" => curr_material.diffuse = parse_color(l, words),
                         // specular color
@@ -67,8 +67,8 @@ pub fn parse(string: &str) -> Vec<MtlMaterial> {
                         "Ns" => curr_material.shininess = parse_scalar(l, words),
                         // alpha
                         "d" => curr_material.alpha = parse_scalar(l, words),
-                        // ambiant map
-                        "map_Ka" => curr_material.ambiant_texture = Some(parse_name(l, words)),
+                        // ambient map
+                        "map_Ka" => curr_material.ambient_texture = Some(parse_name(l, words)),
                         // diffuse texture map
                         "map_Kd" => curr_material.diffuse_texture = Some(parse_name(l, words)),
                         // specular texture map
@@ -130,21 +130,21 @@ fn parse_scalar(l: usize, mut ws: Words) -> f32 {
         .unwrap_or_else(|e| error(l, &format!("failed to parse as f32: {}", e)[..]))
 }
 
-/// Material informations read from a `.mtl` file.
+/// Material information read from a `.mtl` file.
 #[derive(Clone)]
 pub struct MtlMaterial {
     /// Name of the material.
     pub name: String,
-    /// Path to the ambiant texture.
-    pub ambiant_texture: Option<String>,
+    /// Path to the ambient texture.
+    pub ambient_texture: Option<String>,
     /// Path to the diffuse texture.
     pub diffuse_texture: Option<String>,
     /// Path to the specular texture.
     pub specular_texture: Option<String>,
     /// Path to the opacity map.
     pub opacity_map: Option<String>,
-    /// The ambiant color.
-    pub ambiant: Vector3<f32>,
+    /// The ambient color.
+    pub ambient: Vector3<f32>,
     /// The diffuse color.
     pub diffuse: Vector3<f32>,
     /// The specular color.
@@ -162,11 +162,11 @@ impl MtlMaterial {
             name,
             shininess: 60.0,
             alpha: 1.0,
-            ambiant_texture: None,
+            ambient_texture: None,
             diffuse_texture: None,
             specular_texture: None,
             opacity_map: None,
-            ambiant: Vector3::new(1.0, 1.0, 1.0),
+            ambient: Vector3::new(1.0, 1.0, 1.0),
             diffuse: Vector3::new(1.0, 1.0, 1.0),
             specular: Vector3::new(1.0, 1.0, 1.0),
         }
@@ -177,20 +177,20 @@ impl MtlMaterial {
         name: String,
         shininess: f32,
         alpha: f32,
-        ambiant: Vector3<f32>,
+        ambient: Vector3<f32>,
         diffuse: Vector3<f32>,
         specular: Vector3<f32>,
-        ambiant_texture: Option<String>,
+        ambient_texture: Option<String>,
         diffuse_texture: Option<String>,
         specular_texture: Option<String>,
         opacity_map: Option<String>,
     ) -> MtlMaterial {
         MtlMaterial {
             name,
-            ambiant,
+            ambient,
             diffuse,
             specular,
-            ambiant_texture,
+            ambient_texture,
             diffuse_texture,
             specular_texture,
             opacity_map,

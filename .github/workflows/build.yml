@@ -1,0 +1,58 @@
+name: Rapier CI build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check formatting
+        run: cargo fmt -- --check
+  doc:
+    runs-on: ubuntu-latest
+    env:
+      RUSTDOCFLAGS: -D warnings
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cargo doc
+        run: cargo doc
+  build-native:
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: -D warnings
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y cmake libxcb-composite0-dev
+      - name: Clippy
+        run: cargo clippy
+      - name: Clippy kiss3d
+        run: cargo clippy
+      - name: Build kiss3d
+        run: cargo build --verbose -p kiss3d;
+      - name: Run tests
+        run: cargo test
+  build-wasm:
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: -D warnings
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup target add wasm32-unknown-unknown
+      - name: build kiss3d
+        run: cargo build --verbose --target wasm32-unknown-unknown;
+  # If this fails, consider changing your text or adding something to .typos.toml
+  # You can find typos here: https://crates.io/crates/typos'
+  typos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: check typos
+        uses: crate-ci/typos@v1.23.2

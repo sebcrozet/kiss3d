@@ -13,7 +13,7 @@ use std::f32;
 ///
 ///   * Left button press + drag - look around
 ///   * Right button press + drag - translates the camera position on the plane orthogonal to the
-///   view direction
+///     view direction
 ///   * Scroll in/out - zoom in/out
 #[derive(Debug, Clone)]
 pub struct FirstPerson {
@@ -43,11 +43,11 @@ pub struct FirstPerson {
 impl FirstPerson {
     /// Creates a first person camera with default sensitivity values.
     pub fn new(eye: Point3<f32>, at: Point3<f32>) -> FirstPerson {
-        FirstPerson::new_with_frustrum(f32::consts::PI / 4.0, 0.1, 1024.0, eye, at)
+        FirstPerson::new_with_frustum(f32::consts::PI / 4.0, 0.1, 1024.0, eye, at)
     }
 
     /// Creates a new first person camera with default sensitivity values.
-    pub fn new_with_frustrum(
+    pub fn new_with_frustum(
         fov: f32,
         znear: f32,
         zfar: f32,
@@ -234,8 +234,8 @@ impl FirstPerson {
 
     #[doc(hidden)]
     pub fn handle_left_button_displacement(&mut self, dpos: &Vector2<f32>) {
-        self.yaw = self.yaw + dpos.x * self.yaw_step;
-        self.pitch = self.pitch + dpos.y * self.pitch_step;
+        self.yaw += dpos.x * self.yaw_step;
+        self.pitch += dpos.y * self.pitch_step;
 
         self.update_restrictions();
         self.update_projviews();
@@ -257,7 +257,7 @@ impl FirstPerson {
     pub fn handle_scroll(&mut self, yoff: f32) {
         let front = self.observer_frame() * Vector3::z();
 
-        self.eye = self.eye + front * (self.move_step * yoff);
+        self.eye += front * (self.move_step * yoff);
 
         self.update_restrictions();
         self.update_projviews();
@@ -287,19 +287,19 @@ impl FirstPerson {
         let mut movement = na::zero::<Vector3<f32>>();
 
         if up {
-            movement = movement + frontv
+            movement += frontv
         }
 
         if down {
-            movement = movement - frontv
+            movement -= frontv
         }
 
         if right {
-            movement = movement - rightv
+            movement -= rightv
         }
 
         if left {
-            movement = movement + rightv
+            movement += rightv
         }
 
         if movement.is_zero() {

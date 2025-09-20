@@ -83,6 +83,12 @@ pub struct TextureManager {
     generate_mipmaps: bool,
 }
 
+impl Default for TextureManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl TextureManager {
     /// Creates a new texture manager.
     pub fn new() -> TextureManager {
@@ -145,14 +151,12 @@ impl TextureManager {
 
     /// Get a texture with the specified name. Returns `None` if the texture is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<Texture>> {
-        self.textures.get(&name.to_string()).map(|t| t.0.clone())
+        self.textures.get(name).map(|t| t.0.clone())
     }
 
     /// Get a texture (and its size) with the specified name. Returns `None` if the texture is not registered.
     pub fn get_with_size(&mut self, name: &str) -> Option<(Rc<Texture>, (u32, u32))> {
-        self.textures
-            .get(&name.to_string())
-            .map(|t| (t.0.clone(), t.1))
+        self.textures.get(name).map(|t| (t.0.clone(), t.1))
     }
 
     /// Allocates a new texture that is not yet configured.
@@ -219,8 +223,8 @@ impl TextureManager {
                     if w == 1 && h == 1 {
                         break;
                     }
-                    w = (w + 1) / 2;
-                    h = (h + 1) / 2;
+                    w = w.div_ceil(2);
+                    h = h.div_ceil(2);
                     image = image.resize_exact(w, h, FilterType::CatmullRom);
                     TextureManager::call_tex_image2d(&ctxt, &image, level)?;
                 }
@@ -260,7 +264,7 @@ impl TextureManager {
             DynamicImage::ImageRgb8(image) => (Context::RGB, &image.as_raw()[..]),
             DynamicImage::ImageRgba8(image) => (Context::RGBA, &image.as_raw()[..]),
             _ => {
-                return Err("Failed to load texture, unsuported pixel format.");
+                return Err("Failed to load texture, unsupported pixel format.");
             }
         };
         let (width, height) = dynamic_image.dimensions();

@@ -2,22 +2,21 @@
 // available under the BSD-3 licence.
 // It has been modified to work with gl-rs, nalgebra, and rust-freetype
 
-use na::{Point2, Point3, Vector2};
-use rusttype;
-use rusttype::gpu_cache::Cache;
-use std::rc::Rc;
-
 use crate::context::{Context, Texture};
 use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 use crate::text::Font;
 use crate::verify;
+use na::{Point2, Point3, Vector2};
+use rusttype;
+use rusttype::gpu_cache::Cache;
+use std::sync::Arc;
 
 struct TextRenderContext {
     len: usize,
     scale: f32,
     color: Point3<f32>,
     pos: Point2<f32>,
-    font: Rc<Font>,
+    font: Arc<Font>,
 }
 
 /// A ttf text renderer.
@@ -33,6 +32,12 @@ pub struct TextRenderer {
     uvs: ShaderAttribute<Point2<f32>>,
     contexts: Vec<TextRenderContext>,
     coords: GPUVec<Point2<f32>>,
+}
+
+impl Default for TextRenderer {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl TextRenderer {
@@ -123,7 +128,7 @@ impl TextRenderer {
         text: &str,
         pos: &Point2<f32>,
         scale: f32,
-        font: &Rc<Font>,
+        font: &Arc<Font>,
         color: &Point3<f32>,
     ) {
         self.text.push_str(text);
@@ -188,7 +193,7 @@ impl TextRenderer {
                     y: context.pos.y + vshift,
                 };
 
-                vshift += line_height as f32;
+                vshift += line_height;
                 let layout = context.font.font().layout(line, scale, orig);
 
                 for glyph in layout {

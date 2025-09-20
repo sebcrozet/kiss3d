@@ -29,13 +29,19 @@ impl<T: GLPrimitive> GPUVec<T> {
         }
     }
 
+    /// Is this vector empty?
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
     /// The length of this vector.
     #[inline]
     pub fn len(&self) -> usize {
         if self.trash {
             match self.data {
                 Some(ref d) => d.len(),
-                None => panic!("This should never happend."),
+                None => panic!("This should never happen."),
             }
         } else {
             self.len
@@ -147,7 +153,7 @@ impl<T: GLPrimitive> GPUVec<T> {
         let _ = self
             .buffer
             .as_ref()
-            .map(|&(_, ref h)| unsafe { verify!(Context::get().delete_buffer(Some(h))) });
+            .map(|(_, h)| unsafe { verify!(Context::get().delete_buffer(Some(h))) });
         self.len = self.len();
         self.buffer = None;
         self.trash = false;
@@ -188,8 +194,8 @@ pub enum BufferType {
 
 impl BufferType {
     #[inline]
-    fn to_gl(&self) -> u32 {
-        match *self {
+    fn to_gl(self) -> u32 {
+        match self {
             BufferType::Array => Context::ARRAY_BUFFER,
             BufferType::ElementArray => Context::ELEMENT_ARRAY_BUFFER,
         }
@@ -209,8 +215,8 @@ pub enum AllocationType {
 
 impl AllocationType {
     #[inline]
-    fn to_gl(&self) -> u32 {
-        match *self {
+    fn to_gl(self) -> u32 {
+        match self {
             AllocationType::StaticDraw => Context::STATIC_DRAW,
             AllocationType::DynamicDraw => Context::DYNAMIC_DRAW,
             AllocationType::StreamDraw => Context::STREAM_DRAW,
@@ -250,7 +256,7 @@ pub fn upload_array<T: GLPrimitive>(
 
 /// Updates a buffer to the gpu.
 ///
-/// Returns the number of element the bufer on the gpu can hold.
+/// Returns the number of element the buffer on the gpu can hold.
 #[inline]
 pub fn update_buffer<T: GLPrimitive>(
     arr: &[T],

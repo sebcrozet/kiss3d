@@ -112,7 +112,7 @@ impl AbstractContext for GLContext {
             self.context.uniform_matrix_2_f32_slice(
                 location,
                 transpose,
-                mem::transmute::<_, &[f32; 4]>(m),
+                mem::transmute::<&Matrix2<f32>, &[f32; 4]>(m),
             )
         }
     }
@@ -127,7 +127,7 @@ impl AbstractContext for GLContext {
             self.context.uniform_matrix_3_f32_slice(
                 location,
                 transpose,
-                mem::transmute::<_, &[f32; 9]>(m),
+                mem::transmute::<&Matrix3<f32>, &[f32; 9]>(m),
             )
         }
     }
@@ -142,7 +142,7 @@ impl AbstractContext for GLContext {
             self.context.uniform_matrix_4_f32_slice(
                 location,
                 transpose,
-                mem::transmute::<_, &[f32; 16]>(m),
+                mem::transmute::<&Matrix4<f32>, &[f32; 16]>(m),
             )
         }
     }
@@ -181,7 +181,7 @@ impl AbstractContext for GLContext {
 
     fn delete_vertex_array(&self, vertex_array: Option<&Self::VertexArray>) {
         if let Some(v) = vertex_array {
-            unsafe { self.context.delete_vertex_array(v.clone()) }
+            unsafe { self.context.delete_vertex_array(*v) }
         }
     }
 
@@ -195,7 +195,7 @@ impl AbstractContext for GLContext {
 
     fn delete_buffer(&self, buffer: Option<&Self::Buffer>) {
         if let Some(b) = buffer {
-            unsafe { self.context.delete_buffer(b.clone()) }
+            unsafe { self.context.delete_buffer(*b) }
         }
     }
 
@@ -205,7 +205,7 @@ impl AbstractContext for GLContext {
 
     fn is_buffer(&self, buffer: Option<&Self::Buffer>) -> bool {
         if let Some(b) = buffer {
-            unsafe { self.context.is_buffer(b.clone()) }
+            unsafe { self.context.is_buffer(*b) }
         } else {
             false
         }
@@ -217,7 +217,7 @@ impl AbstractContext for GLContext {
 
     fn buffer_data<T: GLPrimitive>(&self, target: GLenum, data: &[T], usage: GLenum) {
         unsafe {
-            let len = data.len() * mem::size_of::<T>();
+            let len = std::mem::size_of_val(data);
             let ptr = data.as_ptr() as *const u8;
             let data = std::slice::from_raw_parts(ptr, len);
             self.context.buffer_data_u8_slice(target, data, usage)
@@ -226,7 +226,7 @@ impl AbstractContext for GLContext {
 
     fn buffer_sub_data<T: GLPrimitive>(&self, target: GLenum, offset: u32, data: &[T]) {
         unsafe {
-            let len = data.len() * mem::size_of::<T>();
+            let len = std::mem::size_of_val(data);
             let ptr = data.as_ptr() as *const u8;
             let data: &[u8] = std::slice::from_raw_parts(ptr, len);
             self.context
@@ -347,6 +347,10 @@ impl AbstractContext for GLContext {
         name: &str,
     ) -> Option<Self::UniformLocation> {
         unsafe { self.context.get_uniform_location(*program, name) }
+    }
+
+    fn vertex_attrib_divisor(&self, id: u32, divisor: u32) {
+        unsafe { self.context.vertex_attrib_divisor(id, divisor) }
     }
 
     fn viewport(&self, x: i32, y: i32, width: i32, height: i32) {
@@ -531,7 +535,7 @@ impl AbstractContext for GLContext {
 
     fn is_texture(&self, texture: Option<&Self::Texture>) -> bool {
         if let Some(t) = texture {
-            unsafe { self.context.is_texture(t.clone()) }
+            unsafe { self.context.is_texture(*t) }
         } else {
             false
         }
@@ -543,7 +547,7 @@ impl AbstractContext for GLContext {
 
     fn delete_texture(&self, texture: Option<&Self::Texture>) {
         if let Some(t) = texture {
-            unsafe { self.context.delete_texture(t.clone()) }
+            unsafe { self.context.delete_texture(*t) }
         }
     }
 
@@ -563,6 +567,20 @@ impl AbstractContext for GLContext {
         unsafe {
             self.context
                 .draw_elements(mode, count, type_, offset as i32)
+        }
+    }
+
+    fn draw_elements_instanced(
+        &self,
+        mode: GLenum,
+        count: i32,
+        type_: GLenum,
+        offset: GLintptr,
+        instance_count: i32,
+    ) {
+        unsafe {
+            self.context
+                .draw_elements_instanced(mode, count, type_, offset as i32, instance_count)
         }
     }
 

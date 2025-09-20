@@ -210,7 +210,7 @@ impl AbstractCanvas for GLCanvas {
     }
 
     fn scale_factor(&self) -> f64 {
-        self.window.window().scale_factor() as f64
+        self.window.window().scale_factor()
     }
 
     fn set_title(&mut self, title: &str) {

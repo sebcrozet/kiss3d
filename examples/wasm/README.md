@@ -5,12 +5,5 @@
 ```shell
 cargo install --locked trunk
 trunk build --release
-```
-
-## using npm
-
-```shell
-npm install
-npm run build
-npm run serve
+trunk serve
 ```

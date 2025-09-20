@@ -12,7 +12,7 @@ use std::f32;
 ///
 /// * Left button press + drag - rotates the camera around the focus point
 /// * Right button press + drag - translates the focus point on the plane orthogonal to the view
-/// direction
+///   direction
 /// * Scroll in/out - zoom in/out
 /// * Enter key - set the focus point to the origin
 #[derive(Clone, Debug)]
@@ -59,11 +59,11 @@ pub struct ArcBall {
 impl ArcBall {
     /// Create a new arc-ball camera.
     pub fn new(eye: Point3<f32>, at: Point3<f32>) -> ArcBall {
-        ArcBall::new_with_frustrum(f32::consts::PI / 4.0, 0.001, 1024.0, eye, at)
+        ArcBall::new_with_frustum(f32::consts::PI / 4.0, 0.001, 4096.0, eye, at)
     }
 
     /// Creates a new arc ball camera with default sensitivity values.
-    pub fn new_with_frustrum(
+    pub fn new_with_frustum(
         fov: f32,
         znear: f32,
         zfar: f32,
@@ -81,6 +81,9 @@ impl ArcBall {
             pitch_step: 0.005,
             min_pitch: 0.01,
             max_pitch: std::f32::consts::PI - 0.01,
+            #[cfg(target_os = "macos")]
+            dist_step: 1.0001,
+            #[cfg(not(target_os = "macos"))]
             dist_step: 1.01,
             rotate_button: Some(MouseButton::Button1),
             rotate_modifiers: None,

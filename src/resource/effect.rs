@@ -130,6 +130,11 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
         verify!(Context::get().enable_vertex_attrib_array(self.id));
     }
 
+    /// The binding index.
+    pub fn id(&self) -> u32 {
+        self.id
+    }
+
     /// Binds this attribute to a gpu vector.
     pub fn bind(&mut self, vector: &mut GPUVec<T>) {
         vector.bind();
@@ -152,6 +157,7 @@ impl<T: GLPrimitive> ShaderAttribute<T> {
     /// Binds this attribute to non contiguous parts of a gpu vector.
     ///
     /// The type of the provided GPU buffer is not forced to match the type of this attribute.
+    #[allow(clippy::missing_safety_doc)]
     pub unsafe fn bind_sub_buffer_generic<T2: GLPrimitive>(
         &mut self,
         vector: &mut GPUVec<T2>,

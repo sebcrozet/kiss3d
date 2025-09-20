@@ -3,7 +3,6 @@
  * FIXME: this file is too big. Some heavy refactoring need to be done here.
  */
 use std::cell::RefCell;
-use std::iter::repeat;
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::mpsc::{self, Receiver};
@@ -15,7 +14,7 @@ use crate::camera::{ArcBall, Camera};
 use crate::context::Context;
 use crate::event::{Action, EventManager, Key, WindowEvent};
 use crate::light::Light;
-use crate::planar_camera::{FixedView, PlanarCamera};
+use crate::planar_camera::{PlanarCamera, PlanarFixedView};
 use crate::planar_line_renderer::PlanarLineRenderer;
 use crate::post_processing::PostProcessingEffect;
 #[cfg(feature = "conrod")]
@@ -34,10 +33,10 @@ use image::{GenericImage, Pixel};
 use image::{ImageBuffer, Rgb};
 use ncollide3d::procedural::TriMesh;
 
+use super::window_cache::WindowCache;
 #[cfg(feature = "conrod")]
 use std::collections::HashMap;
-
-use super::window_cache::WindowCache;
+use std::sync::Arc;
 
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
@@ -79,7 +78,7 @@ pub struct Window {
     post_process_render_target: RenderTarget,
     #[cfg(not(target_arch = "wasm32"))]
     curr_time: std::time::Instant,
-    planar_camera: Rc<RefCell<FixedView>>,
+    planar_camera: Rc<RefCell<PlanarFixedView>>,
     camera: Rc<RefCell<ArcBall>>,
     should_close: bool,
     #[cfg(feature = "conrod")]
@@ -242,7 +241,7 @@ impl Window {
         text: &str,
         pos: &Point2<f32>,
         scale: f32,
-        font: &Rc<Font>,
+        font: &Arc<Font>,
         color: &Point3<f32>,
     ) {
         self.text_renderer.draw_text(text, pos, scale, font, color);
@@ -382,10 +381,10 @@ impl Window {
     /// * `w` - the quad width.
     /// * `h` - the quad height.
     /// * `wsubdivs` - number of horizontal subdivisions. This correspond to the number of squares
-    /// which will be placed horizontally on each line. Must not be `0`.
+    ///   which will be placed horizontally on each line. Must not be `0`.
     /// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
-    /// which will be placed vertically on each line. Must not be `0`.
-    /// update.
+    ///   which will be placed vertically on each line. Must not be `0`.
+    ///   update.
     pub fn add_quad(&mut self, w: f32, h: f32, usubdivs: usize, vsubdivs: usize) -> SceneNode {
         self.scene.add_quad(w, h, usubdivs, vsubdivs)
     }
@@ -565,7 +564,7 @@ impl Window {
             framebuffer_manager: FramebufferManager::new(),
             #[cfg(not(target_arch = "wasm32"))]
             curr_time: std::time::Instant::now(),
-            planar_camera: Rc::new(RefCell::new(FixedView::new())),
+            planar_camera: Rc::new(RefCell::new(PlanarFixedView::new())),
             camera: Rc::new(RefCell::new(ArcBall::new(
                 Point3::new(0.0f32, 0.0, -1.0),
                 Point3::origin(),
@@ -611,11 +610,11 @@ impl Window {
     /// * `out` - the output buffer. It is automatically resized
     /// * `x, y, width, height` - the rectangle to capture
     pub fn snap_rect(&self, out: &mut Vec<u8>, x: usize, y: usize, width: usize, height: usize) {
-        let size = (width * height * 3) as usize;
+        let size = width * height * 3;
 
         if out.len() < size {
             let diff = size - out.len();
-            out.extend(repeat(0).take(diff));
+            out.extend(std::iter::repeat_n(0, diff));
         } else {
             out.truncate(size)
         }
@@ -638,7 +637,7 @@ impl Window {
         let (width, height) = self.canvas.size();
         let mut buf = Vec::new();
         self.snap(&mut buf);
-        let img_opt = ImageBuffer::from_vec(width as u32, height as u32, buf);
+        let img_opt = ImageBuffer::from_vec(width, height, buf);
         let img = img_opt.expect("Buffer created from window was not big enough for image.");
         imageops::flip_vertical(&img)
     }

@@ -1,5 +1,4 @@
 //! Data structure of a scene node geometry.
-use std::iter;
 use std::sync::{Arc, RwLock};
 
 use crate::resource::gpu_vector::{AllocationType, BufferType, GPUVec};
@@ -38,7 +37,7 @@ impl Mesh {
 
         let uvs = match uvs {
             Some(us) => us,
-            None => iter::repeat(Point2::origin()).take(coords.len()).collect(),
+            None => vec![Point2::origin(); coords.len()],
         };
 
         let location = if dynamic_draw {
@@ -298,23 +297,25 @@ impl Mesh {
         faces: &[Point3<VertexIndex>],
         normals: &mut Vec<Vector3<f32>>,
     ) {
-        let mut divisor: Vec<f32> = iter::repeat(0f32).take(coordinates.len()).collect();
+        let mut divisor: Vec<f32> = vec![0f32; coordinates.len()];
 
         normals.clear();
-        normals.extend(iter::repeat(Vector3::<f32>::zero()).take(coordinates.len()));
+        normals.extend(std::iter::repeat_n(
+            Vector3::<f32>::zero(),
+            coordinates.len(),
+        ));
 
         // Accumulate normals ...
         for f in faces.iter() {
             let edge1 = coordinates[f.y as usize] - coordinates[f.x as usize];
             let edge2 = coordinates[f.z as usize] - coordinates[f.x as usize];
             let cross = edge1.cross(&edge2);
-            let normal;
 
-            if !cross.is_zero() {
-                normal = cross.normalize()
+            let normal = if !cross.is_zero() {
+                cross.normalize()
             } else {
-                normal = cross
-            }
+                cross
+            };
 
             normals[f.x as usize] += normal;
             normals[f.y as usize] += normal;

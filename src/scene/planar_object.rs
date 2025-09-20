@@ -2,8 +2,10 @@
 
 use crate::planar_camera::PlanarCamera;
 use crate::resource::vertex_index::VertexIndex;
-use crate::resource::{PlanarMaterial, PlanarMesh, Texture, TextureManager};
-use na::{Isometry2, Point2, Point3, Vector2};
+use crate::resource::{
+    AllocationType, BufferType, GPUVec, PlanarMaterial, PlanarMesh, Texture, TextureManager,
+};
+use na::{Isometry2, Matrix2, Point2, Point3, Vector2};
 use std::any::Any;
 use std::cell::RefCell;
 use std::path::Path;
@@ -74,6 +76,60 @@ impl PlanarObjectData {
     }
 }
 
+pub struct PlanarInstanceData {
+    pub position: Point2<f32>,
+    pub deformation: Matrix2<f32>,
+    pub color: [f32; 4],
+}
+
+impl Default for PlanarInstanceData {
+    fn default() -> Self {
+        Self {
+            position: Point2::origin(),
+            deformation: Matrix2::identity(),
+            color: [1.0; 4],
+        }
+    }
+}
+
+pub struct PlanarInstancesBuffers {
+    pub positions: GPUVec<Point2<f32>>,
+    pub deformations: GPUVec<Matrix2<f32>>,
+    pub colors: GPUVec<[f32; 4]>,
+}
+
+impl Default for PlanarInstancesBuffers {
+    fn default() -> Self {
+        PlanarInstancesBuffers {
+            positions: GPUVec::new(
+                vec![Point2::origin()],
+                BufferType::Array,
+                AllocationType::StreamDraw,
+            ),
+            deformations: GPUVec::new(
+                vec![Matrix2::identity()],
+                BufferType::Array,
+                AllocationType::StreamDraw,
+            ),
+            colors: GPUVec::new(
+                vec![[1.0; 4]],
+                BufferType::Array,
+                AllocationType::StreamDraw,
+            ),
+        }
+    }
+}
+
+impl PlanarInstancesBuffers {
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    pub fn len(&self) -> usize {
+        self.positions.len()
+    }
+}
+
 /// A 3d objects on the scene.
 ///
 /// This is the only interface to manipulate the object position, color, vertices and texture.
@@ -81,6 +137,7 @@ pub struct PlanarObject {
     // FIXME: should PlanarMesh and PlanarObject be merged?
     // (thus removing the need of PlanarObjectData at all.)
     data: PlanarObjectData,
+    instances: Rc<RefCell<PlanarInstancesBuffers>>,
     mesh: Rc<RefCell<PlanarMesh>>,
 }
 
@@ -106,8 +163,13 @@ impl PlanarObject {
             material,
             user_data: Box::new(user_data),
         };
+        let instances = Rc::new(RefCell::new(PlanarInstancesBuffers::default()));
 
-        PlanarObject { data, mesh }
+        PlanarObject {
+            data,
+            instances,
+            mesh,
+        }
     }
 
     #[doc(hidden)]
@@ -122,7 +184,8 @@ impl PlanarObject {
             scale,
             camera,
             &self.data,
-            &mut *self.mesh.borrow_mut(),
+            &mut self.instances.borrow_mut(),
+            &mut self.mesh.borrow_mut(),
         );
     }
 
@@ -136,6 +199,48 @@ impl PlanarObject {
     #[inline]
     pub fn data_mut(&mut self) -> &mut PlanarObjectData {
         &mut self.data
+    }
+
+    /// Gets the instances of this object.
+    #[inline]
+    pub fn instances(&self) -> &Rc<RefCell<PlanarInstancesBuffers>> {
+        &self.instances
+    }
+
+    pub fn set_instances(&mut self, instances: &[PlanarInstanceData]) {
+        let mut pos_data: Vec<_> = self
+            .instances
+            .borrow_mut()
+            .positions
+            .data_mut()
+            .take()
+            .unwrap_or_default();
+        let mut col_data: Vec<_> = self
+            .instances
+            .borrow_mut()
+            .colors
+            .data_mut()
+            .take()
+            .unwrap_or_default();
+        let mut def_data: Vec<_> = self
+            .instances
+            .borrow_mut()
+            .deformations
+            .data_mut()
+            .take()
+            .unwrap_or_default();
+
+        pos_data.clear();
+        col_data.clear();
+        def_data.clear();
+
+        pos_data.extend(instances.iter().map(|i| i.position));
+        col_data.extend(instances.iter().map(|i| i.color));
+        def_data.extend(instances.iter().map(|i| i.deformation));
+
+        *self.instances.borrow_mut().positions.data_mut() = Some(pos_data);
+        *self.instances.borrow_mut().colors.data_mut() = Some(col_data);
+        *self.instances.borrow_mut().deformations.data_mut() = Some(def_data);
     }
 
     /// Enables or disables backface culling for this object.
@@ -220,13 +325,7 @@ impl PlanarObject {
     #[inline(always)]
     pub fn modify_vertices<F: FnMut(&mut Vec<Point2<f32>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh
-            .coords()
-            .write()
-            .unwrap()
-            .data_mut()
-            .as_mut()
-            .map(|coords| f(coords));
+        let _ = bmesh.coords().write().unwrap().data_mut().as_mut().map(f);
     }
 
     /// Access the object's vertices.
@@ -246,13 +345,7 @@ impl PlanarObject {
     #[inline(always)]
     pub fn modify_faces<F: FnMut(&mut Vec<Point3<VertexIndex>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh
-            .faces()
-            .write()
-            .unwrap()
-            .data_mut()
-            .as_mut()
-            .map(|faces| f(faces));
+        let _ = bmesh.faces().write().unwrap().data_mut().as_mut().map(f);
     }
 
     /// Access the object's faces.
@@ -272,13 +365,7 @@ impl PlanarObject {
     #[inline(always)]
     pub fn modify_uvs<F: FnMut(&mut Vec<Point2<f32>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh
-            .uvs()
-            .write()
-            .unwrap()
-            .data_mut()
-            .as_mut()
-            .map(|uvs| f(uvs));
+        let _ = bmesh.uvs().write().unwrap().data_mut().as_mut().map(f);
     }
 
     /// Access the object's texture coordinates.

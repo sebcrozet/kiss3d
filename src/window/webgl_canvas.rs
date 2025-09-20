@@ -34,6 +34,7 @@ enum MouseCaptureState {
     OtherElement,
 }
 
+#[cfg_attr(target_arch = "wasm32", allow(dead_code))]
 enum EventListener {
     Ui(EventListenerHandle<dyn FnMut(UiEvent)>),
     Mouse(EventListenerHandle<dyn FnMut(MouseEvent)>),
@@ -578,7 +579,7 @@ fn translate_mouse_button(event: &MouseEvent) -> MouseButton {
 }
 
 fn translate_key(event: &KeyboardEvent) -> Key {
-    // FIXME: some of thos mapping may not be correct.
+    // FIXME: some of those mapping may not be correct.
     match event.key().as_str() {
         "1" => Key::Key1,
         "2" => Key::Key2,

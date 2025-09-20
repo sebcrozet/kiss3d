@@ -7,22 +7,28 @@ use std::f32;
 
 /// A camera that cannot move.
 #[derive(Clone, Debug)]
-pub struct FixedView {
+pub struct PlanarFixedView {
     proj: Matrix3<f32>,
     inv_proj: Matrix3<f32>,
 }
 
-impl FixedView {
+impl Default for PlanarFixedView {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl PlanarFixedView {
     /// Create a new static camera.
-    pub fn new() -> FixedView {
-        FixedView {
+    pub fn new() -> PlanarFixedView {
+        PlanarFixedView {
             proj: na::one(),
             inv_proj: na::one(),
         }
     }
 }
 
-impl PlanarCamera for FixedView {
+impl PlanarCamera for PlanarFixedView {
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent) {
         let scale = canvas.scale_factor();
 
@@ -58,7 +64,7 @@ impl PlanarCamera for FixedView {
             2.0 * -window_coord.y / size.y + 1.0,
         );
 
-        let unprojected_hom = self.inv_proj * normalized_coords.to_homogeneous();
-        Point2::from_homogeneous(unprojected_hom).unwrap()
+        let unprojected_homogeneous = self.inv_proj * normalized_coords.to_homogeneous();
+        Point2::from_homogeneous(unprojected_homogeneous).unwrap()
     }
 }

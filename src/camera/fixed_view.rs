@@ -13,14 +13,20 @@ pub struct FixedView {
     inv_proj: Matrix4<f32>,
 }
 
+impl Default for FixedView {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl FixedView {
     /// Create a new static camera.
     pub fn new() -> FixedView {
-        FixedView::new_with_frustrum(f32::consts::PI / 4.0, 0.1, 1024.0)
+        FixedView::new_with_frustum(f32::consts::PI / 4.0, 0.1, 1024.0)
     }
 
     /// Creates a new arc ball camera with default sensitivity values.
-    pub fn new_with_frustrum(fov: f32, znear: f32, zfar: f32) -> FixedView {
+    pub fn new_with_frustum(fov: f32, znear: f32, zfar: f32) -> FixedView {
         FixedView {
             projection: Perspective3::new(800.0 / 600.0, fov, znear, zfar),
             proj: na::one(),
@@ -51,12 +57,9 @@ impl Camera for FixedView {
     }
 
     fn handle_event(&mut self, _: &Canvas, event: &WindowEvent) {
-        match *event {
-            WindowEvent::FramebufferSize(w, h) => {
-                self.projection.set_aspect(w as f32 / h as f32);
-                self.update_projviews();
-            }
-            _ => {}
+        if let WindowEvent::FramebufferSize(w, h) = *event {
+            self.projection.set_aspect(w as f32 / h as f32);
+            self.update_projviews();
         }
     }
 

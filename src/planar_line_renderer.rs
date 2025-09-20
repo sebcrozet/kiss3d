@@ -18,6 +18,12 @@ pub struct PlanarLineRenderer {
     line_width: f32,
 }
 
+impl Default for PlanarLineRenderer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PlanarLineRenderer {
     /// Creates a new lines manager.
     pub fn new() -> PlanarLineRenderer {
@@ -47,7 +53,7 @@ impl PlanarLineRenderer {
 
     /// Indicates whether some lines have to be drawn.
     pub fn needs_rendering(&self) -> bool {
-        self.lines.len() != 0
+        !self.lines.is_empty()
     }
 
     /// Adds a line to be drawn during the next frame. Lines are not persistent between frames.
@@ -65,7 +71,7 @@ impl PlanarLineRenderer {
 
     /// Actually draws the lines.
     pub fn render(&mut self, camera: &mut dyn PlanarCamera) {
-        if self.lines.len() == 0 {
+        if self.lines.is_empty() {
             return;
         }
 

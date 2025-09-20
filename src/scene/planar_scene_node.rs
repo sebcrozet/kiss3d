@@ -1,6 +1,7 @@
 use na::{self, Isometry2, Point2, Point3, Translation2, UnitComplex, Vector2};
 
 use crate::planar_camera::PlanarCamera;
+use crate::prelude::PlanarInstanceData;
 use crate::resource::vertex_index::VertexIndex;
 use crate::resource::{
     PlanarMaterial, PlanarMaterialManager, PlanarMesh, PlanarMeshManager, Texture, TextureManager,
@@ -14,7 +15,7 @@ use std::rc::Rc;
 
 // XXX: once something like `fn foo(self: Rc<RefCell<PlanarSceneNode>>)` is allowed, this extra struct
 // will not be needed any more.
-/// The datas contained by a `PlanarSceneNode`.
+/// The data contained by a `PlanarSceneNode`.
 pub struct PlanarSceneNodeData {
     local_scale: Vector2<f32>,
     local_transform: Isometry2<f32>,
@@ -516,8 +517,8 @@ impl PlanarSceneNodeData {
     fn update(&mut self) {
         // NOTE: makin this test
         if !self.up_to_date {
-            match self.parent {
-                Some(ref mut p) => unsafe {
+            if let Some(ref mut p) = self.parent {
+                unsafe {
                     let mut dp = (**p).borrow_mut();
 
                     dp.update();
@@ -525,8 +526,7 @@ impl PlanarSceneNodeData {
                     self.world_scale = self.local_scale.component_mul(&dp.local_scale);
                     self.up_to_date = true;
                     return;
-                },
-                None => {}
+                }
             }
 
             // no parent
@@ -574,12 +574,12 @@ impl PlanarSceneNode {
     }
 
     /// The data of this scene node.
-    pub fn data(&self) -> Ref<PlanarSceneNodeData> {
+    pub fn data(&self) -> Ref<'_, PlanarSceneNodeData> {
         self.data.borrow()
     }
 
     /// The data of this scene node.
-    pub fn data_mut(&mut self) -> RefMut<PlanarSceneNodeData> {
+    pub fn data_mut(&mut self) -> RefMut<'_, PlanarSceneNodeData> {
         self.data.borrow_mut()
     }
 
@@ -983,5 +983,12 @@ impl PlanarSceneNode {
     #[inline]
     pub fn set_local_rotation(&mut self, r: UnitComplex<f32>) {
         self.data_mut().set_local_rotation(r)
+    }
+
+    /// Sets the instances for rendering multiple duplicates of this scene node.
+    ///
+    /// This only duplicates this scene node, not any of its children.
+    pub fn set_instances(&mut self, instances: &[PlanarInstanceData]) {
+        self.data_mut().get_object_mut().set_instances(instances)
     }
 }

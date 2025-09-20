@@ -2,8 +2,7 @@ use std::borrow::Borrow;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
-use std::rc::Rc;
-use std::sync::Once;
+use std::sync::{Arc, OnceLock};
 
 use rusttype;
 
@@ -14,7 +13,7 @@ pub struct Font {
 
 impl Font {
     /// Loads a new ttf font from a file.
-    pub fn new(path: &Path) -> Option<Rc<Font>> {
+    pub fn new(path: &Path) -> Option<Font> {
         let mut memory = Vec::new();
         let mut file = File::open(path).unwrap();
         let _ = file.read_to_end(&mut memory).unwrap();
@@ -22,25 +21,22 @@ impl Font {
     }
 
     /// Loads a new ttf font from the memory.
-    pub fn from_bytes(memory: &[u8]) -> Option<Rc<Font>> {
+    pub fn from_bytes(memory: &[u8]) -> Option<Font> {
         let font = rusttype::Font::from_bytes(memory.to_vec()).unwrap();
-        Some(Rc::new(Font { font }))
+        Some(Font { font })
     }
 
-    /// Instanciate a default font.
-    pub fn default() -> Rc<Font> {
+    /// Instantiate a default font.
+    #[allow(clippy::should_implement_trait)]
+    pub fn default() -> Arc<Font> {
         const DATA: &[u8] = include_bytes!("WorkSans-Regular.ttf");
-        static mut DEFAULT_FONT_SINGLETON: Option<Rc<Font>> = None;
-        static INIT: Once = Once::new();
+        static DEFAULT_FONT_SINGLETON: OnceLock<Arc<Font>> = OnceLock::new();
 
-        unsafe {
-            INIT.call_once(|| {
-                DEFAULT_FONT_SINGLETON =
-                    Some(Font::from_bytes(DATA).expect("Default font creation failed."));
-            });
-
-            DEFAULT_FONT_SINGLETON.clone().unwrap()
-        }
+        DEFAULT_FONT_SINGLETON
+            .get_or_init(|| {
+                Arc::new(Font::from_bytes(DATA).expect("Default font creation failed."))
+            })
+            .clone()
     }
 
     /// The underlying rusttype font.
@@ -51,7 +47,7 @@ impl Font {
 
     /// The unique identifier of the specified font instance.
     #[inline]
-    pub fn uid(font: &Rc<Font>) -> usize {
+    pub fn uid(font: &Arc<Font>) -> usize {
         (*font).borrow() as *const Font as usize
     }
 }

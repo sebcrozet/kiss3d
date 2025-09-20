@@ -3,8 +3,10 @@
 use crate::camera::Camera;
 use crate::light::Light;
 use crate::resource::vertex_index::VertexIndex;
-use crate::resource::{Material, Mesh, Texture, TextureManager};
-use na::{Isometry3, Point2, Point3, Vector3};
+use crate::resource::{
+    AllocationType, BufferType, GPUVec, Material, Mesh, Texture, TextureManager,
+};
+use na::{Isometry3, Matrix3, Point2, Point3, Vector3};
 use std::any::Any;
 use std::cell::RefCell;
 use std::path::Path;
@@ -75,6 +77,62 @@ impl ObjectData {
     }
 }
 
+pub struct InstanceData {
+    pub position: Point3<f32>,
+    pub deformation: Matrix3<f32>,
+    pub color: [f32; 4],
+}
+
+impl Default for InstanceData {
+    fn default() -> Self {
+        Self {
+            position: Point3::origin(),
+            deformation: Matrix3::identity(),
+            color: [1.0; 4],
+        }
+    }
+}
+
+pub struct InstancesBuffer {
+    pub positions: GPUVec<Point3<f32>>,
+    pub deformations: GPUVec<Vector3<f32>>,
+    pub colors: GPUVec<[f32; 4]>,
+    // TODO: add other properties we want compatible with instancing.
+    //       (like rotations, color, or a full 4x4 matrix).
+}
+
+impl Default for InstancesBuffer {
+    fn default() -> Self {
+        InstancesBuffer {
+            positions: GPUVec::new(
+                vec![Point3::origin()],
+                BufferType::Array,
+                AllocationType::StreamDraw,
+            ),
+            deformations: GPUVec::new(
+                vec![Vector3::x(), Vector3::y(), Vector3::z()],
+                BufferType::Array,
+                AllocationType::StreamDraw,
+            ),
+            colors: GPUVec::new(
+                vec![[1.0; 4]],
+                BufferType::Array,
+                AllocationType::StreamDraw,
+            ),
+        }
+    }
+}
+
+impl InstancesBuffer {
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    pub fn len(&self) -> usize {
+        self.positions.len()
+    }
+}
+
 /// A 3d objects on the scene.
 ///
 /// This is the only interface to manipulate the object position, color, vertices and texture.
@@ -82,6 +140,7 @@ pub struct Object {
     // FIXME: should Mesh and Object be merged?
     // (thus removing the need of ObjectData at all.)
     data: ObjectData,
+    instances: Rc<RefCell<InstancesBuffer>>,
     mesh: Rc<RefCell<Mesh>>,
 }
 
@@ -107,8 +166,13 @@ impl Object {
             material,
             user_data: Box::new(user_data),
         };
+        let instances = Rc::new(RefCell::new(InstancesBuffer::default()));
 
-        Object { data, mesh }
+        Object {
+            data,
+            instances,
+            mesh,
+        }
     }
 
     #[doc(hidden)]
@@ -127,7 +191,8 @@ impl Object {
             camera,
             light,
             &self.data,
-            &mut *self.mesh.borrow_mut(),
+            &mut self.instances.borrow_mut(),
+            &mut self.mesh.borrow_mut(),
         );
     }
 
@@ -141,6 +206,52 @@ impl Object {
     #[inline]
     pub fn data_mut(&mut self) -> &mut ObjectData {
         &mut self.data
+    }
+
+    /// Gets the instances of this object.
+    #[inline]
+    pub fn instances(&self) -> &Rc<RefCell<InstancesBuffer>> {
+        &self.instances
+    }
+
+    pub fn set_instances(&mut self, instances: &[InstanceData]) {
+        let mut pos_data: Vec<_> = self
+            .instances
+            .borrow_mut()
+            .positions
+            .data_mut()
+            .take()
+            .unwrap_or_default();
+        let mut col_data: Vec<_> = self
+            .instances
+            .borrow_mut()
+            .colors
+            .data_mut()
+            .take()
+            .unwrap_or_default();
+        let mut def_data: Vec<_> = self
+            .instances
+            .borrow_mut()
+            .deformations
+            .data_mut()
+            .take()
+            .unwrap_or_default();
+
+        pos_data.clear();
+        col_data.clear();
+        def_data.clear();
+
+        pos_data.extend(instances.iter().map(|i| i.position));
+        col_data.extend(instances.iter().map(|i| i.color));
+        def_data.extend(
+            instances
+                .iter()
+                .flat_map(|i| i.deformation.column_iter().map(|c| c.into_owned())),
+        );
+
+        *self.instances.borrow_mut().positions.data_mut() = Some(pos_data);
+        *self.instances.borrow_mut().colors.data_mut() = Some(col_data);
+        *self.instances.borrow_mut().deformations.data_mut() = Some(def_data);
     }
 
     /// Enables or disables backface culling for this object.
@@ -225,13 +336,7 @@ impl Object {
     #[inline(always)]
     pub fn modify_vertices<F: FnMut(&mut Vec<Point3<f32>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh
-            .coords()
-            .write()
-            .unwrap()
-            .data_mut()
-            .as_mut()
-            .map(|coords| f(coords));
+        let _ = bmesh.coords().write().unwrap().data_mut().as_mut().map(f);
     }
 
     /// Access the object's vertices.
@@ -257,13 +362,7 @@ impl Object {
     #[inline(always)]
     pub fn modify_normals<F: FnMut(&mut Vec<Vector3<f32>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh
-            .normals()
-            .write()
-            .unwrap()
-            .data_mut()
-            .as_mut()
-            .map(|normals| f(normals));
+        let _ = bmesh.normals().write().unwrap().data_mut().as_mut().map(f);
     }
 
     /// Access the object's normals.
@@ -283,13 +382,7 @@ impl Object {
     #[inline(always)]
     pub fn modify_faces<F: FnMut(&mut Vec<Point3<VertexIndex>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh
-            .faces()
-            .write()
-            .unwrap()
-            .data_mut()
-            .as_mut()
-            .map(|faces| f(faces));
+        let _ = bmesh.faces().write().unwrap().data_mut().as_mut().map(f);
     }
 
     /// Access the object's faces.
@@ -309,13 +402,7 @@ impl Object {
     #[inline(always)]
     pub fn modify_uvs<F: FnMut(&mut Vec<Point2<f32>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh
-            .uvs()
-            .write()
-            .unwrap()
-            .data_mut()
-            .as_mut()
-            .map(|uvs| f(uvs));
+        let _ = bmesh.uvs().write().unwrap().data_mut().as_mut().map(f);
     }
 
     /// Access the object's texture coordinates.

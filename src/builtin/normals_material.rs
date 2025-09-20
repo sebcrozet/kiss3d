@@ -3,7 +3,7 @@ use crate::context::Context;
 use crate::light::Light;
 use crate::resource::Material;
 use crate::resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
-use crate::scene::ObjectData;
+use crate::scene::{InstancesBuffer, ObjectData};
 use crate::verify;
 use na::{Isometry3, Matrix3, Matrix4, Point3, Vector3};
 
@@ -16,6 +16,12 @@ pub struct NormalsMaterial {
     view: ShaderUniform<Matrix4<f32>>,
     transform: ShaderUniform<Matrix4<f32>>,
     scale: ShaderUniform<Matrix3<f32>>,
+}
+
+impl Default for NormalsMaterial {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl NormalsMaterial {
@@ -46,6 +52,7 @@ impl Material for NormalsMaterial {
         camera: &mut dyn Camera,
         _: &Light,
         data: &ObjectData,
+        _instances: &mut InstancesBuffer,
         mesh: &mut Mesh,
     ) {
         let ctxt = Context::get();
@@ -75,11 +82,11 @@ impl Material for NormalsMaterial {
          * Setup object-related stuffs.
          *
          */
-        let formated_transform = transform.to_homogeneous();
-        let formated_scale = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
+        let formatted_transform = transform.to_homogeneous();
+        let formatted_scale = Matrix3::from_diagonal(&Vector3::new(scale.x, scale.y, scale.z));
 
-        self.transform.upload(&formated_transform);
-        self.scale.upload(&formated_scale);
+        self.transform.upload(&formatted_transform);
+        self.scale.upload(&formatted_scale);
 
         mesh.bind_coords(&mut self.position);
         mesh.bind_normals(&mut self.normal);
