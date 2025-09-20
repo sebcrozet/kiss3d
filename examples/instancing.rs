@@ -10,9 +10,6 @@ fn main() {
     env_logger::init();
     let mut window = Window::new("Kiss3d: instancing 3D");
     let mut c = window.add_cube(1.0, 1.0, 1.0);
-
-    // TODO: that API needs to be simplified!
-
     let mut instances = vec![];
 
     for i in 0..100 {
@@ -35,7 +32,7 @@ fn main() {
         }
     }
 
-    c.data_mut().get_object_mut().set_instances(&instances);
+    c.set_instances(&instances);
 
     window.set_light(Light::StickToCamera);
 

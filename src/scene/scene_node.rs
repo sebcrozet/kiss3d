@@ -2,7 +2,7 @@ use crate::camera::Camera;
 use crate::light::Light;
 use crate::resource::vertex_index::VertexIndex;
 use crate::resource::{Material, MaterialManager, Mesh, MeshManager, Texture, TextureManager};
-use crate::scene::Object;
+use crate::scene::{InstanceData, Object};
 use na;
 use na::{Isometry3, Point2, Point3, Translation3, UnitQuaternion, Vector3};
 use ncollide3d::procedural;
@@ -1017,6 +1017,13 @@ impl SceneNode {
     #[inline(always)]
     pub fn read_uvs<F: FnMut(&[Point2<f32>])>(&self, f: &mut F) {
         self.data().read_uvs(f)
+    }
+
+    /// Sets the instances for rendering multiple duplicates of this scene node.
+    ///
+    /// This only duplicates this scene node, not any of its children.
+    pub fn set_instances(&mut self, instances: &[InstanceData]) {
+        self.data_mut().get_object_mut().set_instances(instances)
     }
 
     /// Get the visibility status of node.

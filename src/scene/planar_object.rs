@@ -94,8 +94,6 @@ pub struct PlanarInstancesBuffers {
     pub positions: GPUVec<Point2<f32>>,
     pub deformations: GPUVec<Matrix2<f32>>,
     pub colors: GPUVec<[f32; 4]>,
-    // TODO: add other properties we want compatible with instancing.
-    //       (like rotations, color, or a full 4x4 matrix).
 }
 
 impl Default for PlanarInstancesBuffers {

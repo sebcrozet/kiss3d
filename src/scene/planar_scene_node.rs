@@ -11,6 +11,7 @@ use std::f32;
 use std::mem;
 use std::path::Path;
 use std::rc::Rc;
+use crate::prelude::PlanarInstanceData;
 
 // XXX: once something like `fn foo(self: Rc<RefCell<PlanarSceneNode>>)` is allowed, this extra struct
 // will not be needed any more.
@@ -983,5 +984,12 @@ impl PlanarSceneNode {
     #[inline]
     pub fn set_local_rotation(&mut self, r: UnitComplex<f32>) {
         self.data_mut().set_local_rotation(r)
+    }
+
+    /// Sets the instances for rendering multiple duplicates of this scene node.
+    ///
+    /// This only duplicates this scene node, not any of its children.
+    pub fn set_instances(&mut self, instances: &[PlanarInstanceData]) {
+        self.data_mut().get_object_mut().set_instances(instances)
     }
 }

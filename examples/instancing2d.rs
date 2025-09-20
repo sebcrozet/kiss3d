@@ -4,15 +4,14 @@ extern crate nalgebra as na;
 use kiss3d::window::Window;
 use kiss3d::planar_camera::Sidescroll;
 use kiss3d::camera::FixedView;
-use na::{Translation2, UnitComplex, Point2, Matrix2};
-use kiss3d::scene::{InstanceData, PlanarInstanceData};
+use na::{UnitComplex, Point2, Matrix2};
+use kiss3d::scene::{PlanarInstanceData};
 
 fn main() {
     let mut window = Window::new("Kiss3d: instancing 2D");
     let mut rect = window.add_rectangle(50.0, 150.0);
 
     let rot_rect = UnitComplex::new(0.014);
-    let rot_circ = UnitComplex::new(-0.014);
 
     let mut instances = vec![];
     let count = 100;
@@ -33,7 +32,7 @@ fn main() {
         }
     }
 
-    rect.data_mut().get_object_mut().set_instances(&instances);
+    rect.set_instances(&instances);
 
     let mut camera2d = Sidescroll::new();
     let mut camera3d = FixedView::new();
