@@ -1,10 +1,10 @@
 [package]
 authors = ["Sébastien Crozet <developer@crozet.re>"]
 name    = "kiss3d"
-version = "0.35.0"
+version = "0.36.0"
 
 autoexamples = true
-description  = "3D graphics engine for Rust."
+description  = "Keep it simple, stupid, 2D and 3D graphics engine for Rust."
 edition      = "2018"
 keywords     = ["3D", "graphics", "OpenGL", "KISS"]
 license      = "BSD-3-Clause"
