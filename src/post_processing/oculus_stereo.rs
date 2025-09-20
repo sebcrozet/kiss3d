@@ -25,6 +25,12 @@ pub struct OculusStereo {
     h: f32,
 }
 
+impl Default for OculusStereo {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl OculusStereo {
     /// Creates a new OculusStereo post processing effect.
     pub fn new() -> OculusStereo {

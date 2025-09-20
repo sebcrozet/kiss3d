@@ -19,6 +19,12 @@ pub struct MaterialManager {
     materials: HashMap<String, Rc<RefCell<Box<dyn Material + 'static>>>>,
 }
 
+impl Default for MaterialManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl MaterialManager {
     /// Creates a new material manager.
     pub fn new() -> MaterialManager {
@@ -59,7 +65,7 @@ impl MaterialManager {
 
     /// Get a material with the specified name. Returns `None` if the material is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Box<dyn Material + 'static>>>> {
-        self.materials.get(&name.to_string()).cloned()
+        self.materials.get(name).cloned()
     }
 
     /// Adds a material with the specified name to this cache.
@@ -69,6 +75,6 @@ impl MaterialManager {
 
     /// Removes a mesh from this cache.
     pub fn remove(&mut self, name: &str) {
-        let _ = self.materials.remove(&name.to_string());
+        let _ = self.materials.remove(name);
     }
 }

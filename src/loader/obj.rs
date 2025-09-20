@@ -12,7 +12,6 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
 use std::io::Result as IoResult;
-use std::iter::repeat;
 use std::iter::Filter;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
@@ -304,36 +303,33 @@ fn parse_f<'a>(
             g.push(p2);
         }
 
-        if curr_ids.y == i32::max_value() as i32 {
+        if curr_ids.y == i32::MAX {
             *ignore_uvs = true;
         }
 
-        if curr_ids.z == i32::max_value() as i32 {
+        if curr_ids.z == i32::MAX {
             *ignore_normals = true;
         }
 
         // Handle relatives indice
-        let x;
-        let y;
-        let z;
 
-        if curr_ids.x < 0 {
-            x = coords.len() as i32 + curr_ids.x + 1;
+        let x = if curr_ids.x < 0 {
+            coords.len() as i32 + curr_ids.x + 1
         } else {
-            x = curr_ids.x;
-        }
+            curr_ids.x
+        };
 
-        if curr_ids.y < 0 {
-            y = uvs.len() as i32 + curr_ids.y + 1;
+        let y = if curr_ids.y < 0 {
+            uvs.len() as i32 + curr_ids.y + 1
         } else {
-            y = curr_ids.y;
-        }
+            curr_ids.y
+        };
 
-        if curr_ids.z < 0 {
-            z = normals.len() as i32 + curr_ids.z + 1;
+        let z = if curr_ids.z < 0 {
+            normals.len() as i32 + curr_ids.z + 1
         } else {
-            z = curr_ids.z;
-        }
+            curr_ids.z
+        };
 
         assert!(x >= 0 && y >= 0 && z >= 0);
         groups_ids[curr_group].push(Point3::new(
@@ -467,7 +463,7 @@ fn reformat(
         BufferType::Array,
         AllocationType::StaticDraw,
     )));
-    let resu = resu.unwrap_or_else(|| repeat(Point2::origin()).take(resc.len()).collect());
+    let resu = resu.unwrap_or_else(|| std::iter::repeat_n(Point2::origin(), resc.len()).collect());
     let resu = Arc::new(RwLock::new(GPUVec::new(
         resu,
         BufferType::Array,

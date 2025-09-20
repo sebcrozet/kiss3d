@@ -18,6 +18,12 @@ pub struct UvsMaterial {
     scale: ShaderUniform<Matrix3<f32>>,
 }
 
+impl Default for UvsMaterial {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl UvsMaterial {
     /// Creates a new UvsMaterial.
     pub fn new() -> UvsMaterial {

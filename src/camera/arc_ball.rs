@@ -12,7 +12,7 @@ use std::f32;
 ///
 /// * Left button press + drag - rotates the camera around the focus point
 /// * Right button press + drag - translates the focus point on the plane orthogonal to the view
-/// direction
+///   direction
 /// * Scroll in/out - zoom in/out
 /// * Enter key - set the focus point to the origin
 #[derive(Clone, Debug)]

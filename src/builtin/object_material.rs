@@ -28,6 +28,12 @@ pub struct ObjectMaterial {
     view: ShaderUniform<Matrix4<f32>>,
 }
 
+impl Default for ObjectMaterial {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ObjectMaterial {
     /// Creates a new `ObjectMaterial`.
     pub fn new() -> ObjectMaterial {
@@ -144,7 +150,7 @@ impl Material for ObjectMaterial {
             verify!(ctxt.vertex_attrib_divisor(self.inst_def2.id(), 1));
 
             verify!(ctxt.active_texture(Context::TEXTURE0));
-            verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&*data.texture())));
+            verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&**data.texture())));
 
             if data.surface_rendering_active() {
                 self.color.upload(data.color());

@@ -13,6 +13,12 @@ pub struct FixedView {
     inv_proj: Matrix4<f32>,
 }
 
+impl Default for FixedView {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl FixedView {
     /// Create a new static camera.
     pub fn new() -> FixedView {
@@ -51,12 +57,9 @@ impl Camera for FixedView {
     }
 
     fn handle_event(&mut self, _: &Canvas, event: &WindowEvent) {
-        match *event {
-            WindowEvent::FramebufferSize(w, h) => {
-                self.projection.set_aspect(w as f32 / h as f32);
-                self.update_projviews();
-            }
-            _ => {}
+        if let WindowEvent::FramebufferSize(w, h) = *event {
+            self.projection.set_aspect(w as f32 / h as f32);
+            self.update_projviews();
         }
     }
 

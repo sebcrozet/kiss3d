@@ -565,19 +565,15 @@ impl SceneNodeData {
     fn update(&mut self) {
         // NOTE: makin this test
         if !self.up_to_date {
-            match self.parent {
-                //unsafe
-                Some(ref mut p) => {
-                    if let Some(dp) = p.upgrade() {
-                        let mut dp = dp.borrow_mut();
-                        dp.update();
-                        self.world_transform = self.local_transform * dp.world_transform;
-                        self.world_scale = self.local_scale.component_mul(&dp.local_scale);
-                        self.up_to_date = true;
-                        return;
-                    }
+            if let Some(ref mut p) = self.parent {
+                if let Some(dp) = p.upgrade() {
+                    let mut dp = dp.borrow_mut();
+                    dp.update();
+                    self.world_transform = self.local_transform * dp.world_transform;
+                    self.world_scale = self.local_scale.component_mul(&dp.local_scale);
+                    self.up_to_date = true;
+                    return;
                 }
-                None => {}
             }
 
             // no parent
@@ -752,10 +748,10 @@ impl SceneNode {
     /// * `w` - the quad width.
     /// * `h` - the quad height.
     /// * `wsubdivs` - number of horizontal subdivisions. This correspond to the number of squares
-    /// which will be placed horizontally on each line. Must not be `0`.
+    ///   which will be placed horizontally on each line. Must not be `0`.
     /// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
-    /// which will be placed vertically on each line. Must not be `0`.
-    /// update.
+    ///   which will be placed vertically on each line. Must not be `0`.
+    ///   update.
     pub fn add_quad(&mut self, w: f32, h: f32, usubdivs: usize, vsubdivs: usize) -> SceneNode {
         let mut node = self.add_trimesh(
             procedural::quad(w, h, usubdivs, vsubdivs),

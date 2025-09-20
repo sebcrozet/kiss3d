@@ -517,8 +517,8 @@ impl PlanarSceneNodeData {
     fn update(&mut self) {
         // NOTE: makin this test
         if !self.up_to_date {
-            match self.parent {
-                Some(ref mut p) => unsafe {
+            if let Some(ref mut p) = self.parent {
+                unsafe {
                     let mut dp = (**p).borrow_mut();
 
                     dp.update();
@@ -526,8 +526,7 @@ impl PlanarSceneNodeData {
                     self.world_scale = self.local_scale.component_mul(&dp.local_scale);
                     self.up_to_date = true;
                     return;
-                },
-                None => {}
+                }
             }
 
             // no parent

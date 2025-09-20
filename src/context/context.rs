@@ -445,7 +445,7 @@ impl Context {
     }
 
     pub fn create_texture(&self) -> Option<Texture> {
-        self.ctxt.create_texture().map(|e| Texture(e))
+        self.ctxt.create_texture().map(Texture)
     }
 
     pub fn delete_texture(&self, texture: Option<&Texture>) {

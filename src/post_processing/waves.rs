@@ -27,6 +27,12 @@ pub struct Waves {
     fbo_vertices: GPUVec<Vector2<f32>>,
 }
 
+impl Default for Waves {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Waves {
     /// Creates a new Waves post processing effect.
     pub fn new() -> Waves {

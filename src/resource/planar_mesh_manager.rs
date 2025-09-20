@@ -21,6 +21,12 @@ pub struct PlanarMeshManager {
     meshes: HashMap<String, Rc<RefCell<PlanarMesh>>>,
 }
 
+impl Default for PlanarMeshManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PlanarMeshManager {
     /// Creates a new mesh manager.
     pub fn new() -> PlanarMeshManager {
@@ -74,12 +80,12 @@ impl PlanarMeshManager {
 
     /// Mutably applies a function to the mesh manager.
     pub fn get_global_manager<T, F: FnMut(&mut PlanarMeshManager) -> T>(mut f: F) -> T {
-        KEY_MESH_MANAGER.with(|manager| f(&mut *manager.borrow_mut()))
+        KEY_MESH_MANAGER.with(|manager| f(&mut manager.borrow_mut()))
     }
 
     /// Get a mesh with the specified name. Returns `None` if the mesh is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<PlanarMesh>>> {
-        self.meshes.get(&name.to_string()).cloned()
+        self.meshes.get(name).cloned()
     }
 
     /// Adds a mesh with the specified name to this cache.
@@ -89,6 +95,6 @@ impl PlanarMeshManager {
 
     /// Removes a mesh from this cache.
     pub fn remove(&mut self, name: &str) {
-        let _ = self.meshes.remove(&name.to_string());
+        let _ = self.meshes.remove(name);
     }
 }

@@ -17,6 +17,12 @@ pub struct Grayscales {
     fbo_vertices: GPUVec<Vector2<f32>>,
 }
 
+impl Default for Grayscales {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Grayscales {
     /// Creates a new `Grayscales` post processing effect.
     pub fn new() -> Grayscales {

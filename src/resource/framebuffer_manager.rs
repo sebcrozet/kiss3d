@@ -102,6 +102,12 @@ pub struct FramebufferManager {
     fbo: Framebuffer,
 }
 
+impl Default for FramebufferManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl FramebufferManager {
     /// Creates a new framebuffer manager.
     pub fn new() -> FramebufferManager {

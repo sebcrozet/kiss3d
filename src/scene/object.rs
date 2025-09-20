@@ -124,6 +124,10 @@ impl Default for InstancesBuffer {
 }
 
 impl InstancesBuffer {
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
     pub fn len(&self) -> usize {
         self.positions.len()
     }
@@ -187,8 +191,8 @@ impl Object {
             camera,
             light,
             &self.data,
-            &mut *self.instances.borrow_mut(),
-            &mut *self.mesh.borrow_mut(),
+            &mut self.instances.borrow_mut(),
+            &mut self.mesh.borrow_mut(),
         );
     }
 
@@ -332,13 +336,7 @@ impl Object {
     #[inline(always)]
     pub fn modify_vertices<F: FnMut(&mut Vec<Point3<f32>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh
-            .coords()
-            .write()
-            .unwrap()
-            .data_mut()
-            .as_mut()
-            .map(|coords| f(coords));
+        let _ = bmesh.coords().write().unwrap().data_mut().as_mut().map(f);
     }
 
     /// Access the object's vertices.
@@ -364,13 +362,7 @@ impl Object {
     #[inline(always)]
     pub fn modify_normals<F: FnMut(&mut Vec<Vector3<f32>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh
-            .normals()
-            .write()
-            .unwrap()
-            .data_mut()
-            .as_mut()
-            .map(|normals| f(normals));
+        let _ = bmesh.normals().write().unwrap().data_mut().as_mut().map(f);
     }
 
     /// Access the object's normals.
@@ -390,13 +382,7 @@ impl Object {
     #[inline(always)]
     pub fn modify_faces<F: FnMut(&mut Vec<Point3<VertexIndex>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh
-            .faces()
-            .write()
-            .unwrap()
-            .data_mut()
-            .as_mut()
-            .map(|faces| f(faces));
+        let _ = bmesh.faces().write().unwrap().data_mut().as_mut().map(f);
     }
 
     /// Access the object's faces.
@@ -416,13 +402,7 @@ impl Object {
     #[inline(always)]
     pub fn modify_uvs<F: FnMut(&mut Vec<Point2<f32>>)>(&mut self, f: &mut F) {
         let bmesh = self.mesh.borrow_mut();
-        let _ = bmesh
-            .uvs()
-            .write()
-            .unwrap()
-            .data_mut()
-            .as_mut()
-            .map(|uvs| f(uvs));
+        let _ = bmesh.uvs().write().unwrap().data_mut().as_mut().map(f);
     }
 
     /// Access the object's texture coordinates.

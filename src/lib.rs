@@ -123,6 +123,9 @@ Thanks to all the Rustaceans for their help, and their OpenGL bindings.
 #![allow(unused_unsafe)] // FIXME: should be denied
 #![allow(missing_copy_implementations)]
 #![doc(html_root_url = "http://kiss3d.org/doc")]
+#![allow(clippy::module_inception)]
+#![allow(clippy::too_many_arguments)]
+#![allow(clippy::type_complexity)]
 
 #[macro_use]
 extern crate bitflags;

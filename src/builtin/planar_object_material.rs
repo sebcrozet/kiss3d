@@ -22,6 +22,12 @@ pub struct PlanarObjectMaterial {
     proj: ShaderUniform<Matrix3<f32>>,
 }
 
+impl Default for PlanarObjectMaterial {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PlanarObjectMaterial {
     /// Creates a new `PlanarObjectMaterial`.
     pub fn new() -> PlanarObjectMaterial {
@@ -109,7 +115,7 @@ impl PlanarMaterial for PlanarObjectMaterial {
             verify!(ctxt.vertex_attrib_divisor(self.inst_deformation.id(), 1));
 
             verify!(ctxt.active_texture(Context::TEXTURE0));
-            verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(&*data.texture())));
+            verify!(ctxt.bind_texture(Context::TEXTURE_2D, Some(data.texture())));
             verify!(ctxt.disable(Context::CULL_FACE));
 
             if data.surface_rendering_active() {

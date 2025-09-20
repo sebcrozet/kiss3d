@@ -18,6 +18,12 @@ pub struct NormalsMaterial {
     scale: ShaderUniform<Matrix3<f32>>,
 }
 
+impl Default for NormalsMaterial {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl NormalsMaterial {
     /// Creates a new NormalsMaterial.
     pub fn new() -> NormalsMaterial {

@@ -21,6 +21,12 @@ pub struct PlanarMaterialManager {
     materials: HashMap<String, Rc<RefCell<Box<dyn PlanarMaterial + 'static>>>>,
 }
 
+impl Default for PlanarMaterialManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PlanarMaterialManager {
     /// Creates a new material manager.
     pub fn new() -> PlanarMaterialManager {
@@ -40,7 +46,7 @@ impl PlanarMaterialManager {
 
     /// Mutably applies a function to the material manager.
     pub fn get_global_manager<T, F: FnMut(&mut PlanarMaterialManager) -> T>(mut f: F) -> T {
-        KEY_MATERIAL_MANAGER.with(|manager| f(&mut *manager.borrow_mut()))
+        KEY_MATERIAL_MANAGER.with(|manager| f(&mut manager.borrow_mut()))
     }
 
     /// Gets the default material to draw objects.
@@ -50,7 +56,7 @@ impl PlanarMaterialManager {
 
     /// Get a material with the specified name. Returns `None` if the material is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Box<dyn PlanarMaterial + 'static>>>> {
-        self.materials.get(&name.to_string()).cloned()
+        self.materials.get(name).cloned()
     }
 
     /// Adds a material with the specified name to this cache.
@@ -60,6 +66,6 @@ impl PlanarMaterialManager {
 
     /// Removes a mesh from this cache.
     pub fn remove(&mut self, name: &str) {
-        let _ = self.materials.remove(&name.to_string());
+        let _ = self.materials.remove(name);
     }
 }

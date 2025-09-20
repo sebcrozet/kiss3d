@@ -1,5 +1,5 @@
 //! Data structure of a scene node geometry.
-use std::iter;
+
 use std::sync::{Arc, RwLock};
 
 use crate::resource::gpu_vector::{AllocationType, BufferType, GPUVec};
@@ -29,7 +29,7 @@ impl PlanarMesh {
     ) -> PlanarMesh {
         let uvs = match uvs {
             Some(us) => us,
-            None => iter::repeat(Point2::origin()).take(coords.len()).collect(),
+            None => std::iter::repeat_n(Point2::origin(), coords.len()).collect(),
         };
 
         let location = if dynamic_draw {

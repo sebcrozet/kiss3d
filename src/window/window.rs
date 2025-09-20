@@ -3,7 +3,6 @@
  * FIXME: this file is too big. Some heavy refactoring need to be done here.
  */
 use std::cell::RefCell;
-use std::iter::repeat;
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::mpsc::{self, Receiver};
@@ -382,10 +381,10 @@ impl Window {
     /// * `w` - the quad width.
     /// * `h` - the quad height.
     /// * `wsubdivs` - number of horizontal subdivisions. This correspond to the number of squares
-    /// which will be placed horizontally on each line. Must not be `0`.
+    ///   which will be placed horizontally on each line. Must not be `0`.
     /// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
-    /// which will be placed vertically on each line. Must not be `0`.
-    /// update.
+    ///   which will be placed vertically on each line. Must not be `0`.
+    ///   update.
     pub fn add_quad(&mut self, w: f32, h: f32, usubdivs: usize, vsubdivs: usize) -> SceneNode {
         self.scene.add_quad(w, h, usubdivs, vsubdivs)
     }
@@ -611,11 +610,11 @@ impl Window {
     /// * `out` - the output buffer. It is automatically resized
     /// * `x, y, width, height` - the rectangle to capture
     pub fn snap_rect(&self, out: &mut Vec<u8>, x: usize, y: usize, width: usize, height: usize) {
-        let size = (width * height * 3) as usize;
+        let size = width * height * 3;
 
         if out.len() < size {
             let diff = size - out.len();
-            out.extend(repeat(0).take(diff));
+            out.extend(std::iter::repeat_n(0, diff));
         } else {
             out.truncate(size)
         }
@@ -638,7 +637,7 @@ impl Window {
         let (width, height) = self.canvas.size();
         let mut buf = Vec::new();
         self.snap(&mut buf);
-        let img_opt = ImageBuffer::from_vec(width as u32, height as u32, buf);
+        let img_opt = ImageBuffer::from_vec(width, height, buf);
         let img = img_opt.expect("Buffer created from window was not big enough for image.");
         imageops::flip_vertical(&img)
     }

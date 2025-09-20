@@ -34,6 +34,12 @@ pub struct TextRenderer {
     coords: GPUVec<Point2<f32>>,
 }
 
+impl Default for TextRenderer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl TextRenderer {
     /// Creates a new text renderer with `font` as the default font.
     pub fn new() -> TextRenderer {
@@ -187,7 +193,7 @@ impl TextRenderer {
                     y: context.pos.y + vshift,
                 };
 
-                vshift += line_height as f32;
+                vshift += line_height;
                 let layout = context.font.font().layout(line, scale, orig);
 
                 for glyph in layout {

@@ -12,6 +12,7 @@ use na::{
 };
 
 /// Trait implemented by structures that can be uploaded to a uniform or contained by a gpu array.
+#[allow(clippy::missing_safety_doc)]
 pub unsafe trait GLPrimitive: Copy {
     /// The type of the elements of the gpu array.
     type Element;

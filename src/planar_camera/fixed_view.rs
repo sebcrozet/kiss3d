@@ -12,6 +12,12 @@ pub struct PlanarFixedView {
     inv_proj: Matrix3<f32>,
 }
 
+impl Default for PlanarFixedView {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PlanarFixedView {
     /// Create a new static camera.
     pub fn new() -> PlanarFixedView {

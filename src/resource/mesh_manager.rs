@@ -21,6 +21,12 @@ pub struct MeshManager {
     meshes: HashMap<String, Rc<RefCell<Mesh>>>,
 }
 
+impl Default for MeshManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl MeshManager {
     /// Creates a new mesh manager.
     pub fn new() -> MeshManager {
@@ -44,7 +50,7 @@ impl MeshManager {
 
     /// Get a mesh with the specified name. Returns `None` if the mesh is not registered.
     pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Mesh>>> {
-        self.meshes.get(&name.to_string()).cloned()
+        self.meshes.get(name).cloned()
     }
 
     /// Adds a mesh with the specified name to this cache.
@@ -69,7 +75,7 @@ impl MeshManager {
 
     /// Removes a mesh from this cache.
     pub fn remove(&mut self, name: &str) {
-        let _ = self.meshes.remove(&name.to_string());
+        let _ = self.meshes.remove(name);
     }
 
     // FIXME: is this the right place to put this?

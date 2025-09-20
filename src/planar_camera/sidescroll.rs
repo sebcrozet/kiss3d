@@ -24,6 +24,12 @@ pub struct Sidescroll {
     last_cursor_pos: Vector2<f32>,
 }
 
+impl Default for Sidescroll {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Sidescroll {
     /// Create a new arc-ball camera.
     pub fn new() -> Sidescroll {

@@ -27,6 +27,7 @@ impl Font {
     }
 
     /// Instanciate a default font.
+    #[allow(clippy::should_implement_trait)]
     pub fn default() -> Arc<Font> {
         const DATA: &[u8] = include_bytes!("WorkSans-Regular.ttf");
         static DEFAULT_FONT_SINGLETON: OnceLock<Arc<Font>> = OnceLock::new();

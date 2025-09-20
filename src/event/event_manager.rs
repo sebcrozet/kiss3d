@@ -84,6 +84,6 @@ impl EventManager {
     /// Gets an iterator to the glfw events already collected.
     #[inline]
     pub fn iter(&mut self) -> Events<'_> {
-        Events::new(self.events.try_iter(), &*self.inhibitor)
+        Events::new(self.events.try_iter(), &self.inhibitor)
     }
 }
