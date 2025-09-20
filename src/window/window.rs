@@ -15,7 +15,7 @@ use crate::camera::{ArcBall, Camera};
 use crate::context::Context;
 use crate::event::{Action, EventManager, Key, WindowEvent};
 use crate::light::Light;
-use crate::planar_camera::{PlanarFixedView, PlanarCamera};
+use crate::planar_camera::{PlanarCamera, PlanarFixedView};
 use crate::planar_line_renderer::PlanarLineRenderer;
 use crate::post_processing::PostProcessingEffect;
 #[cfg(feature = "conrod")]
@@ -34,10 +34,10 @@ use image::{GenericImage, Pixel};
 use image::{ImageBuffer, Rgb};
 use ncollide3d::procedural::TriMesh;
 
+use super::window_cache::WindowCache;
 #[cfg(feature = "conrod")]
 use std::collections::HashMap;
 use std::sync::Arc;
-use super::window_cache::WindowCache;
 
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;

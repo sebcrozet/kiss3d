@@ -133,11 +133,14 @@ impl Material for ObjectMaterial {
             verify!(ctxt.vertex_attrib_divisor(self.inst_tra.id(), 1));
             self.inst_color.bind(&mut instances.colors);
             verify!(ctxt.vertex_attrib_divisor(self.inst_color.id(), 1));
-            self.inst_def0.bind_sub_buffer(&mut instances.deformations, 2, 0);
+            self.inst_def0
+                .bind_sub_buffer(&mut instances.deformations, 2, 0);
             verify!(ctxt.vertex_attrib_divisor(self.inst_def0.id(), 1));
-            self.inst_def1.bind_sub_buffer(&mut instances.deformations, 2, 1);
+            self.inst_def1
+                .bind_sub_buffer(&mut instances.deformations, 2, 1);
             verify!(ctxt.vertex_attrib_divisor(self.inst_def1.id(), 1));
-            self.inst_def2.bind_sub_buffer(&mut instances.deformations, 2, 2);
+            self.inst_def2
+                .bind_sub_buffer(&mut instances.deformations, 2, 2);
             verify!(ctxt.vertex_attrib_divisor(self.inst_def2.id(), 1));
 
             verify!(ctxt.active_texture(Context::TEXTURE0));

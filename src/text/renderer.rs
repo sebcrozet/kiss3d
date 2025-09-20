@@ -2,14 +2,14 @@
 // available under the BSD-3 licence.
 // It has been modified to work with gl-rs, nalgebra, and rust-freetype
 
-use na::{Point2, Point3, Vector2};
-use rusttype;
-use rusttype::gpu_cache::Cache;
-use std::sync::Arc;
 use crate::context::{Context, Texture};
 use crate::resource::{AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform};
 use crate::text::Font;
 use crate::verify;
+use na::{Point2, Point3, Vector2};
+use rusttype;
+use rusttype::gpu_cache::Cache;
+use std::sync::Arc;
 
 struct TextRenderContext {
     len: usize,

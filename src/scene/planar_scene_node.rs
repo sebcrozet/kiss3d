@@ -1,6 +1,7 @@
 use na::{self, Isometry2, Point2, Point3, Translation2, UnitComplex, Vector2};
 
 use crate::planar_camera::PlanarCamera;
+use crate::prelude::PlanarInstanceData;
 use crate::resource::vertex_index::VertexIndex;
 use crate::resource::{
     PlanarMaterial, PlanarMaterialManager, PlanarMesh, PlanarMeshManager, Texture, TextureManager,
@@ -11,7 +12,6 @@ use std::f32;
 use std::mem;
 use std::path::Path;
 use std::rc::Rc;
-use crate::prelude::PlanarInstanceData;
 
 // XXX: once something like `fn foo(self: Rc<RefCell<PlanarSceneNode>>)` is allowed, this extra struct
 // will not be needed any more.

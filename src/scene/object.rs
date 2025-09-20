@@ -3,7 +3,9 @@
 use crate::camera::Camera;
 use crate::light::Light;
 use crate::resource::vertex_index::VertexIndex;
-use crate::resource::{AllocationType, BufferType, GPUVec, Material, Mesh, Texture, TextureManager};
+use crate::resource::{
+    AllocationType, BufferType, GPUVec, Material, Mesh, Texture, TextureManager,
+};
 use na::{Isometry3, Matrix3, Point2, Point3, Vector3};
 use std::any::Any;
 use std::cell::RefCell;
@@ -102,9 +104,21 @@ pub struct InstancesBuffer {
 impl Default for InstancesBuffer {
     fn default() -> Self {
         InstancesBuffer {
-            positions: GPUVec::new(vec![Point3::origin()], BufferType::Array, AllocationType::StreamDraw),
-            deformations: GPUVec::new(vec![Vector3::x(), Vector3::y(), Vector3::z()], BufferType::Array, AllocationType::StreamDraw),
-            colors: GPUVec::new(vec![[1.0; 4]], BufferType::Array, AllocationType::StreamDraw),
+            positions: GPUVec::new(
+                vec![Point3::origin()],
+                BufferType::Array,
+                AllocationType::StreamDraw,
+            ),
+            deformations: GPUVec::new(
+                vec![Vector3::x(), Vector3::y(), Vector3::z()],
+                BufferType::Array,
+                AllocationType::StreamDraw,
+            ),
+            colors: GPUVec::new(
+                vec![[1.0; 4]],
+                BufferType::Array,
+                AllocationType::StreamDraw,
+            ),
         }
     }
 }
@@ -150,7 +164,11 @@ impl Object {
         };
         let instances = Rc::new(RefCell::new(InstancesBuffer::default()));
 
-        Object { data, instances, mesh }
+        Object {
+            data,
+            instances,
+            mesh,
+        }
     }
 
     #[doc(hidden)]
@@ -193,9 +211,27 @@ impl Object {
     }
 
     pub fn set_instances(&mut self, instances: &[InstanceData]) {
-        let mut pos_data: Vec<_> = self.instances.borrow_mut().positions.data_mut().take().unwrap_or_default();
-        let mut col_data: Vec<_> = self.instances.borrow_mut().colors.data_mut().take().unwrap_or_default();
-        let mut def_data: Vec<_> = self.instances.borrow_mut().deformations.data_mut().take().unwrap_or_default();
+        let mut pos_data: Vec<_> = self
+            .instances
+            .borrow_mut()
+            .positions
+            .data_mut()
+            .take()
+            .unwrap_or_default();
+        let mut col_data: Vec<_> = self
+            .instances
+            .borrow_mut()
+            .colors
+            .data_mut()
+            .take()
+            .unwrap_or_default();
+        let mut def_data: Vec<_> = self
+            .instances
+            .borrow_mut()
+            .deformations
+            .data_mut()
+            .take()
+            .unwrap_or_default();
 
         pos_data.clear();
         col_data.clear();
@@ -203,8 +239,11 @@ impl Object {
 
         pos_data.extend(instances.iter().map(|i| i.position));
         col_data.extend(instances.iter().map(|i| i.color));
-        def_data.extend(instances.iter().flat_map(|i| i.deformation.column_iter().map(|c| c.into_owned())));
-
+        def_data.extend(
+            instances
+                .iter()
+                .flat_map(|i| i.deformation.column_iter().map(|c| c.into_owned())),
+        );
 
         *self.instances.borrow_mut().positions.data_mut() = Some(pos_data);
         *self.instances.borrow_mut().colors.data_mut() = Some(col_data);

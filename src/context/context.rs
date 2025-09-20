@@ -1,6 +1,6 @@
 #![allow(missing_docs)]
 
-use std::sync::{OnceLock};
+use std::sync::OnceLock;
 
 use crate::resource::GLPrimitive;
 use crate::{context::GLContext as ContextImpl, verify};
@@ -101,7 +101,7 @@ impl Context {
         unsafe {
             CONTEXT_SINGLETON.get_or_init(|| {
                 let ctxt = get_ctxt();
-               Context {
+                Context {
                     ctxt: ContextImpl::new(ctxt),
                 }
             });
@@ -109,10 +109,10 @@ impl Context {
     }
 
     pub fn get() -> Context {
-            CONTEXT_SINGLETON
-                .get()
-                .expect("GL context not initialized.")
-                .clone()
+        CONTEXT_SINGLETON
+            .get()
+            .expect("GL context not initialized.")
+            .clone()
     }
 
     pub fn get_error(&self) -> GLenum {
@@ -468,8 +468,16 @@ impl Context {
         self.ctxt.draw_elements(mode, count, type_, offset)
     }
 
-    pub fn draw_elements_instanced(&self, mode: GLenum, count: i32, type_: GLenum, offset: GLintptr, instance_count: i32) {
-        self.ctxt.draw_elements_instanced(mode, count, type_, offset, instance_count)
+    pub fn draw_elements_instanced(
+        &self,
+        mode: GLenum,
+        count: i32,
+        type_: GLenum,
+        offset: GLintptr,
+        instance_count: i32,
+    ) {
+        self.ctxt
+            .draw_elements_instanced(mode, count, type_, offset, instance_count)
     }
 
     pub fn draw_arrays(&self, mode: GLenum, first: i32, count: i32) {
@@ -677,11 +685,7 @@ pub(crate) trait AbstractContext {
         program: &Self::Program,
         name: &str,
     ) -> Option<Self::UniformLocation>;
-    fn vertex_attrib_divisor(
-        &self,
-        id: u32,
-        divisor: u32
-    );
+    fn vertex_attrib_divisor(&self, id: u32, divisor: u32);
 
     fn viewport(&self, x: i32, y: i32, width: i32, height: i32);
     fn scissor(&self, x: i32, y: i32, width: i32, height: i32);
@@ -753,7 +757,14 @@ pub(crate) trait AbstractContext {
     fn disable(&self, cap: GLenum);
 
     fn draw_elements(&self, mode: GLenum, count: i32, type_: GLenum, offset: GLintptr);
-    fn draw_elements_instanced(&self, mode: GLenum, count: i32, type_: GLenum, offset: GLintptr, instance_count: i32);
+    fn draw_elements_instanced(
+        &self,
+        mode: GLenum,
+        count: i32,
+        type_: GLenum,
+        offset: GLintptr,
+        instance_count: i32,
+    );
     fn draw_arrays(&self, mode: GLenum, first: i32, count: i32);
 
     fn point_size(&self, size: f32);

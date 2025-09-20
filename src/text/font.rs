@@ -2,10 +2,9 @@ use std::borrow::Borrow;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
-use std::sync::{Arc,  OnceLock};
+use std::sync::{Arc, OnceLock};
 
 use rusttype;
-
 
 /// A ttf font.
 pub struct Font {
@@ -32,11 +31,11 @@ impl Font {
         const DATA: &[u8] = include_bytes!("WorkSans-Regular.ttf");
         static DEFAULT_FONT_SINGLETON: OnceLock<Arc<Font>> = OnceLock::new();
 
-        DEFAULT_FONT_SINGLETON.get_or_init(|| {
-            Arc::new(
-                Font::from_bytes(DATA).expect("Default font creation failed.")
-            )
-        }).clone()
+        DEFAULT_FONT_SINGLETON
+            .get_or_init(|| {
+                Arc::new(Font::from_bytes(DATA).expect("Default font creation failed."))
+            })
+            .clone()
     }
 
     /// The underlying rusttype font.

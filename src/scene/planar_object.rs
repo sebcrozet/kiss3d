@@ -2,7 +2,9 @@
 
 use crate::planar_camera::PlanarCamera;
 use crate::resource::vertex_index::VertexIndex;
-use crate::resource::{AllocationType, BufferType, GPUVec, PlanarMaterial, PlanarMesh, Texture, TextureManager};
+use crate::resource::{
+    AllocationType, BufferType, GPUVec, PlanarMaterial, PlanarMesh, Texture, TextureManager,
+};
 use na::{Isometry2, Matrix2, Point2, Point3, Vector2};
 use std::any::Any;
 use std::cell::RefCell;
@@ -99,9 +101,21 @@ pub struct PlanarInstancesBuffers {
 impl Default for PlanarInstancesBuffers {
     fn default() -> Self {
         PlanarInstancesBuffers {
-            positions: GPUVec::new(vec![Point2::origin()], BufferType::Array, AllocationType::StreamDraw),
-            deformations: GPUVec::new(vec![Matrix2::identity()], BufferType::Array, AllocationType::StreamDraw),
-            colors: GPUVec::new(vec![[1.0; 4]], BufferType::Array, AllocationType::StreamDraw),
+            positions: GPUVec::new(
+                vec![Point2::origin()],
+                BufferType::Array,
+                AllocationType::StreamDraw,
+            ),
+            deformations: GPUVec::new(
+                vec![Matrix2::identity()],
+                BufferType::Array,
+                AllocationType::StreamDraw,
+            ),
+            colors: GPUVec::new(
+                vec![[1.0; 4]],
+                BufferType::Array,
+                AllocationType::StreamDraw,
+            ),
         }
     }
 }
@@ -147,7 +161,11 @@ impl PlanarObject {
         };
         let instances = Rc::new(RefCell::new(PlanarInstancesBuffers::default()));
 
-        PlanarObject { data, instances, mesh }
+        PlanarObject {
+            data,
+            instances,
+            mesh,
+        }
     }
 
     #[doc(hidden)]
@@ -186,9 +204,27 @@ impl PlanarObject {
     }
 
     pub fn set_instances(&mut self, instances: &[PlanarInstanceData]) {
-        let mut pos_data: Vec<_> = self.instances.borrow_mut().positions.data_mut().take().unwrap_or_default();
-        let mut col_data: Vec<_> = self.instances.borrow_mut().colors.data_mut().take().unwrap_or_default();
-        let mut def_data: Vec<_> = self.instances.borrow_mut().deformations.data_mut().take().unwrap_or_default();
+        let mut pos_data: Vec<_> = self
+            .instances
+            .borrow_mut()
+            .positions
+            .data_mut()
+            .take()
+            .unwrap_or_default();
+        let mut col_data: Vec<_> = self
+            .instances
+            .borrow_mut()
+            .colors
+            .data_mut()
+            .take()
+            .unwrap_or_default();
+        let mut def_data: Vec<_> = self
+            .instances
+            .borrow_mut()
+            .deformations
+            .data_mut()
+            .take()
+            .unwrap_or_default();
 
         pos_data.clear();
         col_data.clear();
@@ -197,7 +233,6 @@ impl PlanarObject {
         pos_data.extend(instances.iter().map(|i| i.position));
         col_data.extend(instances.iter().map(|i| i.color));
         def_data.extend(instances.iter().map(|i| i.deformation));
-
 
         *self.instances.borrow_mut().positions.data_mut() = Some(pos_data);
         *self.instances.borrow_mut().colors.data_mut() = Some(col_data);
