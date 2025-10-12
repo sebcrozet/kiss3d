@@ -135,8 +135,8 @@ static FRAGMENT_SHADER: &str = "
 #endif
 
 uniform sampler2D fbo_texture;
-uniform float kappa0.0;
-uniform float kappa1.0;
+uniform float kappa_0;
+uniform float kappa_1;
 uniform float kappa_2;
 uniform float kappa_3;
 const vec2 LensCenterLeft = vec2(0.25, 0.5);
@@ -167,7 +167,7 @@ void main()
         theta = (f_texcoord - LensCenterRight) * ScaleIn;
     }
     rSq = theta.x * theta.x + theta.y * theta.y;
-    rvector = theta * (kappa0.0 + kappa1.0 * rSq + kappa_2 * rSq * rSq + kappa_3 * rSq * rSq * rSq);
+    rvector = theta * (kappa_0 + kappa_1 * rSq + kappa_2 * rSq * rSq + kappa_3 * rSq * rSq * rSq);
     if (left_eye) {
         tc = LensCenterLeft + Scale * rvector;
     } else {
