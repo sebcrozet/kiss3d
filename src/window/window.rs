@@ -19,8 +19,8 @@ use crate::light::Light;
 use crate::planar_camera::{PlanarCamera, PlanarFixedView};
 use crate::planar_line_renderer::PlanarLineRenderer;
 use crate::post_processing::PostProcessingEffect;
-#[cfg(feature = "conrod")]
-use crate::renderer::ConrodRenderer;
+#[cfg(feature = "egui")]
+use crate::renderer::EguiRenderer;
 use crate::renderer::{LineRenderer, PointRenderer, Renderer};
 use crate::resource::{
     FramebufferManager, GpuMesh, PlanarMesh, RenderTarget, Texture, TextureManager,
@@ -37,27 +37,29 @@ use parry3d::shape::TriMesh;
 
 use super::window_cache::WindowCache;
 use crate::procedural::RenderMesh;
-#[cfg(feature = "conrod")]
-use std::collections::HashMap;
+#[cfg(feature = "egui")]
+use egui::RawInput;
 use std::sync::Arc;
 
 static DEFAULT_WIDTH: u32 = 800u32;
 static DEFAULT_HEIGHT: u32 = 600u32;
 
-#[cfg(feature = "conrod")]
-struct ConrodContext {
-    renderer: ConrodRenderer,
-    textures: conrod::image::Map<(Rc<Texture>, (u32, u32))>,
-    texture_ids: HashMap<String, conrod::image::Id>,
+#[cfg(feature = "egui")]
+struct EguiContext {
+    renderer: EguiRenderer,
+    raw_input: RawInput,
+    #[cfg(not(target_arch = "wasm32"))]
+    start_time: std::time::Instant,
 }
 
-#[cfg(feature = "conrod")]
-impl ConrodContext {
-    fn new(width: f64, height: f64) -> Self {
+#[cfg(feature = "egui")]
+impl EguiContext {
+    fn new() -> Self {
         Self {
-            renderer: ConrodRenderer::new(width, height),
-            textures: conrod::image::Map::new(),
-            texture_ids: HashMap::new(),
+            renderer: EguiRenderer::new(),
+            raw_input: RawInput::default(),
+            #[cfg(not(target_arch = "wasm32"))]
+            start_time: std::time::Instant::now(),
         }
     }
 }
@@ -84,8 +86,8 @@ pub struct Window {
     planar_camera: Rc<RefCell<PlanarFixedView>>,
     camera: Rc<RefCell<ArcBall>>,
     should_close: bool,
-    #[cfg(feature = "conrod")]
-    conrod_context: ConrodContext,
+    #[cfg(feature = "egui")]
+    egui_context: EguiContext,
     canvas: Canvas,
 }
 
@@ -456,50 +458,202 @@ impl Window {
         self.light_mode = pos;
     }
 
-    /// Retrieve a mutable reference to the UI based on Conrod.
-    #[cfg(feature = "conrod")]
-    pub fn conrod_ui_mut(&mut self) -> &mut conrod::Ui {
-        self.conrod_context.renderer.ui_mut()
+    /// Retrieve a mutable reference to the egui Context.
+    #[cfg(feature = "egui")]
+    pub fn egui_context_mut(&mut self) -> &mut egui::Context {
+        self.egui_context.renderer.context_mut()
     }
 
-    /// Attributes a conrod ID to the given texture and returns it if it exists.
-    #[cfg(feature = "conrod")]
-    pub fn conrod_texture_id(&mut self, name: &str) -> Option<conrod::image::Id> {
-        let tex = TextureManager::get_global_manager(|tm| tm.get_with_size(name))?;
-        let textures = &mut self.conrod_context.textures;
-        Some(
-            *self
-                .conrod_context
-                .texture_ids
-                .entry(name.to_string())
-                .or_insert_with(|| textures.insert(tex)),
-        )
+    /// Retrieve a reference to the egui Context.
+    #[cfg(feature = "egui")]
+    pub fn egui_context(&self) -> &egui::Context {
+        self.egui_context.renderer.context()
     }
 
-    /// Retrieve a reference to the UI based on Conrod.
-    #[cfg(feature = "conrod")]
-    pub fn conrod_ui(&self) -> &conrod::Ui {
-        self.conrod_context.renderer.ui()
+    /// Returns `true` if the mouse is currently interacting with an egui widget.
+    #[cfg(feature = "egui")]
+    pub fn is_egui_capturing_mouse(&self) -> bool {
+        self.egui_context.renderer.wants_pointer_input()
     }
 
-    /// Returns `true` if the mouse is currently interacting with a Conrod widget.
-    #[cfg(feature = "conrod")]
-    pub fn is_conrod_ui_capturing_mouse(&self) -> bool {
-        let ui = self.conrod_ui();
-        let state = &ui.global_input().current;
-        let window_id = Some(ui.window);
-
-        state.widget_capturing_mouse.is_some() && state.widget_capturing_mouse != window_id
+    /// Returns `true` if the keyboard is currently interacting with an egui widget.
+    #[cfg(feature = "egui")]
+    pub fn is_egui_capturing_keyboard(&self) -> bool {
+        self.egui_context.renderer.wants_keyboard_input()
     }
 
-    /// Returns `true` if the keyboard is currently interacting with a Conrod widget.
-    #[cfg(feature = "conrod")]
-    pub fn is_conrod_ui_capturing_keyboard(&self) -> bool {
-        let ui = self.conrod_ui();
-        let state = &ui.global_input().current;
-        let window_id = Some(ui.window);
+    /// Feed a window event to egui for processing.
+    #[cfg(feature = "egui")]
+    fn feed_egui_event(&mut self, event: &WindowEvent) {
+        let scale_factor = self.scale_factor() as f32;
 
-        state.widget_capturing_keyboard.is_some() && state.widget_capturing_keyboard != window_id
+        match *event {
+            WindowEvent::CursorPos(x, y, _) => {
+                // Convert physical pixels to logical coordinates
+                let pos = egui::Pos2::new((x as f32) / scale_factor, (y as f32) / scale_factor);
+                self.egui_context.raw_input.events.push(egui::Event::PointerMoved(pos));
+            }
+            WindowEvent::MouseButton(button, action, _) => {
+                let button = match button {
+                    crate::event::MouseButton::Button1 => egui::PointerButton::Primary,
+                    crate::event::MouseButton::Button2 => egui::PointerButton::Secondary,
+                    crate::event::MouseButton::Button3 => egui::PointerButton::Middle,
+                    _ => return,
+                };
+
+                if let Some(pos) = self.cursor_pos() {
+                    // Convert physical pixels to logical coordinates
+                    let pos = egui::Pos2::new((pos.0 as f32) / scale_factor, (pos.1 as f32) / scale_factor);
+                    let pressed = action == Action::Press;
+
+                    self.egui_context.raw_input.events.push(egui::Event::PointerButton {
+                        pos,
+                        button,
+                        pressed,
+                        modifiers: self.get_egui_modifiers(),
+                    });
+                }
+            }
+            WindowEvent::Scroll(_x, y, _) => {
+                self.egui_context.raw_input.events.push(egui::Event::MouseWheel {
+                    unit: egui::MouseWheelUnit::Line,
+                    delta: egui::Vec2::new(0.0, y as f32),
+                    modifiers: self.get_egui_modifiers(),
+                });
+            }
+            WindowEvent::Char(ch) => {
+                if !ch.is_control() {
+                    self.egui_context.raw_input.events.push(egui::Event::Text(ch.to_string()));
+                }
+            }
+            WindowEvent::Key(key, action, _modifiers) => {
+                if let Some(egui_key) = self.translate_key_to_egui(key) {
+                    self.egui_context.raw_input.events.push(egui::Event::Key {
+                        key: egui_key,
+                        physical_key: None,
+                        pressed: action == Action::Press,
+                        repeat: false,
+                        modifiers: self.get_egui_modifiers(),
+                    });
+                }
+            }
+            _ => {}
+        }
+    }
+
+    #[cfg(feature = "egui")]
+    fn get_egui_modifiers(&self) -> egui::Modifiers {
+        egui::Modifiers {
+            alt: self.get_key(Key::LAlt) == Action::Press || self.get_key(Key::RAlt) == Action::Press,
+            ctrl: self.get_key(Key::LControl) == Action::Press || self.get_key(Key::RControl) == Action::Press,
+            shift: self.get_key(Key::LShift) == Action::Press || self.get_key(Key::RShift) == Action::Press,
+            mac_cmd: false,
+            command: self.get_key(Key::LControl) == Action::Press || self.get_key(Key::RControl) == Action::Press,
+        }
+    }
+
+    #[cfg(feature = "egui")]
+    fn translate_key_to_egui(&self, key: Key) -> Option<egui::Key> {
+        Some(match key {
+            Key::A => egui::Key::A,
+            Key::B => egui::Key::B,
+            Key::C => egui::Key::C,
+            Key::D => egui::Key::D,
+            Key::E => egui::Key::E,
+            Key::F => egui::Key::F,
+            Key::G => egui::Key::G,
+            Key::H => egui::Key::H,
+            Key::I => egui::Key::I,
+            Key::J => egui::Key::J,
+            Key::K => egui::Key::K,
+            Key::L => egui::Key::L,
+            Key::M => egui::Key::M,
+            Key::N => egui::Key::N,
+            Key::O => egui::Key::O,
+            Key::P => egui::Key::P,
+            Key::Q => egui::Key::Q,
+            Key::R => egui::Key::R,
+            Key::S => egui::Key::S,
+            Key::T => egui::Key::T,
+            Key::U => egui::Key::U,
+            Key::V => egui::Key::V,
+            Key::W => egui::Key::W,
+            Key::X => egui::Key::X,
+            Key::Y => egui::Key::Y,
+            Key::Z => egui::Key::Z,
+            Key::Escape => egui::Key::Escape,
+            Key::Tab => egui::Key::Tab,
+            Key::Back => egui::Key::Backspace,
+            Key::Return => egui::Key::Enter,
+            Key::Space => egui::Key::Space,
+            Key::Insert => egui::Key::Insert,
+            Key::Delete => egui::Key::Delete,
+            Key::Home => egui::Key::Home,
+            Key::End => egui::Key::End,
+            Key::PageUp => egui::Key::PageUp,
+            Key::PageDown => egui::Key::PageDown,
+            Key::Left => egui::Key::ArrowLeft,
+            Key::Up => egui::Key::ArrowUp,
+            Key::Right => egui::Key::ArrowRight,
+            Key::Down => egui::Key::ArrowDown,
+            _ => return None,
+        })
+    }
+
+    /// Runs the egui UI code. Call this once per frame after render().await returns true.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// # #[kiss3d::main]
+    /// # async fn main() {
+    /// let mut window = Window::new("egui example");
+    /// while window.render().await {
+    ///     window.draw_ui(|ctx| {
+    ///         egui::Window::new("My Window").show(ctx, |ui| {
+    ///             ui.label("Hello, egui!");
+    ///         });
+    ///     });
+    /// }
+    /// # }
+    /// ```
+    #[cfg(feature = "egui")]
+    pub fn draw_ui<F>(&mut self, ui_fn: F)
+    where
+        F: FnOnce(&egui::Context),
+    {
+        // Get time for animations - use egui context's own start time
+        #[cfg(not(target_arch = "wasm32"))]
+        let time = Some(self.egui_context.start_time.elapsed().as_secs_f64());
+        #[cfg(target_arch = "wasm32")]
+        let time = {
+            // On WASM, use instant which is already configured
+            use instant::Instant;
+            static START: std::sync::OnceLock<Instant> = std::sync::OnceLock::new();
+            let start = START.get_or_init(Instant::now);
+            Some(start.elapsed().as_secs_f64())
+        };
+
+        let scale_factor = self.canvas.scale_factor() as f32;
+
+        // Set pixels_per_point on the context to match our DPI scale
+        self.egui_context.renderer.context().set_pixels_per_point(scale_factor);
+
+        // Build raw input with accumulated events
+        let mut raw_input = std::mem::take(&mut self.egui_context.raw_input);
+        raw_input.screen_rect = Some(egui::Rect::from_min_size(
+            egui::Pos2::ZERO,
+            egui::vec2(self.width() as f32 / scale_factor, self.height() as f32 / scale_factor),
+        ));
+        raw_input.time = time;
+        raw_input.predicted_dt = 1.0 / 60.0;
+
+        self.egui_context.renderer.begin_frame(raw_input);
+        ui_fn(self.egui_context.renderer.context());
+        self.egui_context.renderer.end_frame();
+
+        // Reset raw_input for next frame (but keep it properly initialized)
+        self.egui_context.raw_input = RawInput::default();
     }
 
     /// Opens a window, hide it then calls a user-defined procedure.
@@ -561,8 +715,8 @@ impl Window {
             planar_line_renderer: PlanarLineRenderer::new(),
             point_renderer: PointRenderer::new(),
             text_renderer: TextRenderer::new(),
-            #[cfg(feature = "conrod")]
-            conrod_context: ConrodContext::new(width as f64, height as f64),
+            #[cfg(feature = "egui")]
+            egui_context: EguiContext::new(),
             post_process_render_target: FramebufferManager::new_render_target(
                 width as usize,
                 height as usize,
@@ -703,216 +857,16 @@ impl Window {
             _ => {}
         }
 
-        #[cfg(feature = "conrod")]
-        fn window_event_to_conrod_input(
-            event: WindowEvent,
-            size: Vector2<u32>,
-            scale: f64,
-        ) -> Option<conrod::event::Input> {
-            use conrod::event::Input;
-            use conrod::input::{Button, Key as CKey, Motion, MouseButton};
-
-            let transform_coords = |x: f64, y: f64| {
-                (
-                    (x - size.x as f64 / 2.0) / scale,
-                    -(y - size.y as f64 / 2.0) / scale,
-                )
-            };
-
-            match event {
-                WindowEvent::FramebufferSize(w, h) => {
-                    Some(Input::Resize(w as f64 / scale, h as f64 / scale))
-                }
-                WindowEvent::Focus(focus) => Some(Input::Focus(focus)),
-                WindowEvent::CursorPos(x, y, _) => {
-                    let (x, y) = transform_coords(x, y);
-                    Some(Input::Motion(Motion::MouseCursor { x, y }))
-                }
-                WindowEvent::Scroll(x, y, _) => Some(Input::Motion(Motion::Scroll { x, y: -y })),
-                WindowEvent::MouseButton(button, action, _) => {
-                    let button = match button {
-                        crate::event::MouseButton::Button1 => MouseButton::Left,
-                        crate::event::MouseButton::Button2 => MouseButton::Right,
-                        crate::event::MouseButton::Button3 => MouseButton::Middle,
-                        crate::event::MouseButton::Button4 => MouseButton::X1,
-                        crate::event::MouseButton::Button5 => MouseButton::X2,
-                        crate::event::MouseButton::Button6 => MouseButton::Button6,
-                        crate::event::MouseButton::Button7 => MouseButton::Button7,
-                        crate::event::MouseButton::Button8 => MouseButton::Button8,
-                    };
-
-                    match action {
-                        Action::Press => Some(Input::Press(Button::Mouse(button))),
-                        Action::Release => Some(Input::Release(Button::Mouse(button))),
-                    }
-                }
-                WindowEvent::Key(key, action, _) => {
-                    let key = match key {
-                        Key::Key1 => CKey::D1,
-                        Key::Key2 => CKey::D2,
-                        Key::Key3 => CKey::D3,
-                        Key::Key4 => CKey::D4,
-                        Key::Key5 => CKey::D5,
-                        Key::Key6 => CKey::D6,
-                        Key::Key7 => CKey::D7,
-                        Key::Key8 => CKey::D8,
-                        Key::Key9 => CKey::D9,
-                        Key::Key0 => CKey::D0,
-                        Key::A => CKey::A,
-                        Key::B => CKey::B,
-                        Key::C => CKey::C,
-                        Key::D => CKey::D,
-                        Key::E => CKey::E,
-                        Key::F => CKey::F,
-                        Key::G => CKey::G,
-                        Key::H => CKey::H,
-                        Key::I => CKey::I,
-                        Key::J => CKey::J,
-                        Key::K => CKey::K,
-                        Key::L => CKey::L,
-                        Key::M => CKey::M,
-                        Key::N => CKey::N,
-                        Key::O => CKey::O,
-                        Key::P => CKey::P,
-                        Key::Q => CKey::Q,
-                        Key::R => CKey::R,
-                        Key::S => CKey::S,
-                        Key::T => CKey::T,
-                        Key::U => CKey::U,
-                        Key::V => CKey::V,
-                        Key::W => CKey::W,
-                        Key::X => CKey::X,
-                        Key::Y => CKey::Y,
-                        Key::Z => CKey::Z,
-                        Key::Escape => CKey::Escape,
-                        Key::F1 => CKey::F1,
-                        Key::F2 => CKey::F2,
-                        Key::F3 => CKey::F3,
-                        Key::F4 => CKey::F4,
-                        Key::F5 => CKey::F5,
-                        Key::F6 => CKey::F6,
-                        Key::F7 => CKey::F7,
-                        Key::F8 => CKey::F8,
-                        Key::F9 => CKey::F9,
-                        Key::F10 => CKey::F10,
-                        Key::F11 => CKey::F11,
-                        Key::F12 => CKey::F12,
-                        Key::F13 => CKey::F13,
-                        Key::F14 => CKey::F14,
-                        Key::F15 => CKey::F15,
-                        Key::F16 => CKey::F16,
-                        Key::F17 => CKey::F17,
-                        Key::F18 => CKey::F18,
-                        Key::F19 => CKey::F19,
-                        Key::F20 => CKey::F20,
-                        Key::F21 => CKey::F21,
-                        Key::F22 => CKey::F22,
-                        Key::F23 => CKey::F23,
-                        Key::F24 => CKey::F24,
-                        Key::Pause => CKey::Pause,
-                        Key::Insert => CKey::Insert,
-                        Key::Home => CKey::Home,
-                        Key::Delete => CKey::Delete,
-                        Key::End => CKey::End,
-                        Key::PageDown => CKey::PageDown,
-                        Key::PageUp => CKey::PageUp,
-                        Key::Left => CKey::Left,
-                        Key::Up => CKey::Up,
-                        Key::Right => CKey::Right,
-                        Key::Down => CKey::Down,
-                        Key::Back => CKey::Backspace,
-                        Key::Return => CKey::Return,
-                        Key::Space => CKey::Space,
-                        Key::Caret => CKey::Caret,
-                        Key::Numpad0 => CKey::NumPad0,
-                        Key::Numpad1 => CKey::NumPad1,
-                        Key::Numpad2 => CKey::NumPad2,
-                        Key::Numpad3 => CKey::NumPad3,
-                        Key::Numpad4 => CKey::NumPad4,
-                        Key::Numpad5 => CKey::NumPad5,
-                        Key::Numpad6 => CKey::NumPad6,
-                        Key::Numpad7 => CKey::NumPad7,
-                        Key::Numpad8 => CKey::NumPad8,
-                        Key::Numpad9 => CKey::NumPad9,
-                        Key::Add => CKey::Plus,
-                        Key::At => CKey::At,
-                        Key::Backslash => CKey::Backslash,
-                        Key::Calculator => CKey::Calculator,
-                        Key::Colon => CKey::Colon,
-                        Key::Comma => CKey::Comma,
-                        Key::Equals => CKey::Equals,
-                        Key::LBracket => CKey::LeftBracket,
-                        Key::LControl => CKey::LCtrl,
-                        Key::LShift => CKey::LShift,
-                        Key::Mail => CKey::Mail,
-                        Key::MediaSelect => CKey::MediaSelect,
-                        Key::Minus => CKey::Minus,
-                        Key::Mute => CKey::Mute,
-                        Key::NumpadComma => CKey::NumPadComma,
-                        Key::NumpadEnter => CKey::NumPadEnter,
-                        Key::NumpadEquals => CKey::NumPadEquals,
-                        Key::Period => CKey::Period,
-                        Key::Power => CKey::Power,
-                        Key::RAlt => CKey::RAlt,
-                        Key::RBracket => CKey::RightBracket,
-                        Key::RControl => CKey::RCtrl,
-                        Key::RShift => CKey::RShift,
-                        Key::Semicolon => CKey::Semicolon,
-                        Key::Slash => CKey::Slash,
-                        Key::Sleep => CKey::Sleep,
-                        Key::Stop => CKey::Stop,
-                        Key::Tab => CKey::Tab,
-                        Key::VolumeDown => CKey::VolumeDown,
-                        Key::VolumeUp => CKey::VolumeUp,
-                        Key::Copy => CKey::Copy,
-                        Key::Paste => CKey::Paste,
-                        Key::Cut => CKey::Cut,
-                        _ => CKey::Unknown,
-                    };
-
-                    match action {
-                        Action::Press => Some(Input::Press(Button::Keyboard(key))),
-                        Action::Release => Some(Input::Release(Button::Keyboard(key))),
-                    }
-                }
-                WindowEvent::Char(ch) => {
-                    // Shamelessly taken from kiss3d_conrod/backends/conrod_winit/src/macros.rs:175.
-                    let string = match ch {
-                        // Ignore control characters and return ascii for Text event (like sdl2).
-                        '\u{7f}' | // Delete
-                        '\u{1b}' | // Escape
-                        '\u{8}'  | // Backspace
-                        '\r' | '\n' | '\t' => "".to_string(),
-                        _ => ch.to_string()
-                    };
-                    Some(Input::Text(string))
-                }
-                _ => None,
-            }
-        }
-
-        #[cfg(feature = "conrod")]
+        // Feed events to egui and check if it wants to capture input
+        #[cfg(feature = "egui")]
         {
-            let (size, scale) = (self.size(), self.scale_factor());
-            let conrod_ui = self.conrod_ui_mut();
-            if let Some(input) = window_event_to_conrod_input(*event, size, scale) {
-                conrod_ui.handle_event(input);
-            }
+            self.feed_egui_event(event);
 
-            let state = &conrod_ui.global_input().current;
-            let window_id = Some(conrod_ui.window);
-
-            if event.is_keyboard_event()
-                && state.widget_capturing_keyboard.is_some()
-                && state.widget_capturing_keyboard != window_id
-            {
+            if event.is_keyboard_event() && self.is_egui_capturing_keyboard() {
                 return;
             }
 
-            if event.is_mouse_event()
-                && state.widget_capturing_mouse.is_some()
-                && state.widget_capturing_mouse != window_id
-            {
+            if event.is_mouse_event() && self.is_egui_capturing_mouse() {
                 return;
             }
         }
@@ -1112,12 +1066,11 @@ impl Window {
         }
 
         self.text_renderer.render(w as f32, h as f32);
-        #[cfg(feature = "conrod")]
-        self.conrod_context.renderer.render(
+        #[cfg(feature = "egui")]
+        self.egui_context.renderer.render(
             w as f32,
             h as f32,
             self.canvas.scale_factor() as f32,
-            &self.conrod_context.textures,
         );
 
         // We are done: swap buffers
