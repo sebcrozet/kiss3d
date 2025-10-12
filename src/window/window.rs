@@ -1,3 +1,5 @@
+#![allow(clippy::await_holding_refcell_ref)]
+
 //! The kiss3d window.
 /*
  * FIXME: this file is too big. Some heavy refactoring need to be done here.
@@ -1012,10 +1014,7 @@ impl Window {
         self.handle_events(&mut camera, &mut planar_camera);
 
         let self_cam2 = self.planar_camera.clone(); // FIXME: this is ugly.
-        let mut bself_cam2 = self_cam2.borrow_mut();
-
         let self_cam = self.camera.clone(); // FIXME: this is ugly.
-        let mut bself_cam = self_cam.borrow_mut();
 
         match (camera, planar_camera) {
             (Some(cam), Some(cam2)) => {
@@ -1023,17 +1022,27 @@ impl Window {
                     .await
             }
             (None, Some(cam2)) => {
-                self.render_single_frame(&mut *bself_cam, cam2, renderer, post_processing)
-                    .await
+                self.render_single_frame(
+                    &mut *self_cam.borrow_mut(),
+                    cam2,
+                    renderer,
+                    post_processing,
+                )
+                .await
             }
             (Some(cam), None) => {
-                self.render_single_frame(cam, &mut *bself_cam2, renderer, post_processing)
-                    .await
+                self.render_single_frame(
+                    cam,
+                    &mut *self_cam2.borrow_mut(),
+                    renderer,
+                    post_processing,
+                )
+                .await
             }
             (None, None) => {
                 self.render_single_frame(
-                    &mut *bself_cam,
-                    &mut *bself_cam2,
+                    &mut *self_cam.borrow_mut(),
+                    &mut *self_cam2.borrow_mut(),
                     renderer,
                     post_processing,
                 )
