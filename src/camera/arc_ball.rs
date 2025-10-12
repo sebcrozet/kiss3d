@@ -59,7 +59,7 @@ pub struct ArcBall {
 impl ArcBall {
     /// Create a new arc-ball camera.
     pub fn new(eye: Point3<f32>, at: Point3<f32>) -> ArcBall {
-        ArcBall::new_with_frustum(f32::consts::PI / 4.0, 0.001, 4096.0, eye, at)
+        ArcBall::new_with_frustum(f32::consts::PI / 4.0, 0.1, 1000.0, eye, at)
     }
 
     /// Creates a new arc ball camera with default sensitivity values.
