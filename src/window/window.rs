@@ -937,10 +937,7 @@ impl Window {
     /// Render using a specific post processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    pub async fn render_with_effect(
-        &mut self,
-        effect: &mut dyn PostProcessingEffect,
-    ) -> bool {
+    pub async fn render_with_effect(&mut self, effect: &mut dyn PostProcessingEffect) -> bool {
         self.render_with(None, None, Some(effect), None).await
     }
 

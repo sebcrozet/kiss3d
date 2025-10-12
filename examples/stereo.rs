@@ -24,7 +24,10 @@ async fn main() {
 
     let mut oculus_stereo = OculusStereo::new();
 
-    while window.render_with_camera_and_effect(&mut camera, &mut oculus_stereo).await {
+    while window
+        .render_with_camera_and_effect(&mut camera, &mut oculus_stereo)
+        .await
+    {
         for event in window.events().iter() {
             match event.value {
                 WindowEvent::Key(Key::Numpad1, Action::Release, _) => {

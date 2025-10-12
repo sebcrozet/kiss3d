@@ -10,7 +10,7 @@ use kiss3d::resource::{
     AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform,
 };
 use kiss3d::text::Font;
-use kiss3d::window::{Window};
+use kiss3d::window::Window;
 use na::{Matrix4, Point2, Point3, Vector3};
 
 // Custom renderers are used to allow rendering objects that are not necessarily
@@ -27,15 +27,11 @@ async fn main() {
             // Add some random points to the point cloud.
             for _ in 0..1_000 {
                 let random: Point3<f32> = rand::random();
-                point_cloud_renderer
-                    .push((random - Vector3::repeat(0.5)) * 0.5, rand::random());
+                point_cloud_renderer.push((random - Vector3::repeat(0.5)) * 0.5, rand::random());
             }
         }
 
-        let num_points_text = format!(
-            "Number of points: {}",
-            point_cloud_renderer.num_points()
-        );
+        let num_points_text = format!("Number of points: {}", point_cloud_renderer.num_points());
         window.draw_text(
             &num_points_text,
             &Point2::new(0.0, 20.0),
@@ -44,7 +40,9 @@ async fn main() {
             &Point3::new(1.0, 1.0, 1.0),
         );
 
-        window.render_with(None, None, None, Some(&mut point_cloud_renderer)).await;
+        window
+            .render_with(None, None, None, Some(&mut point_cloud_renderer))
+            .await;
     }
 }
 
