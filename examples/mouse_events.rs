@@ -16,7 +16,10 @@ async fn main() {
     let draw_colour = na::Point3::new(0.5, 1.0, 0.5);
     let mut last_pos = na::Point2::new(0.0f32, 0.0f32);
     let mut sel_pos = na::Point2::new(0.0f32, 0.0f32);
-    while window.render_with(None, Some(&mut camera), None).await {
+    while window
+        .render_with(None, Some(&mut camera), None, None)
+        .await
+    {
         for event in window.events().iter() {
             match event.value {
                 WindowEvent::FramebufferSize(x, y) => {

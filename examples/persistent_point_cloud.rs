@@ -3,8 +3,6 @@ extern crate nalgebra as na;
 
 use kiss3d::camera::Camera;
 use kiss3d::context::Context;
-use kiss3d::planar_camera::PlanarCamera;
-use kiss3d::post_processing::PostProcessingEffect;
 use kiss3d::renderer::Renderer;
 use kiss3d::resource::{
     AllocationType, BufferType, Effect, GPUVec, ShaderAttribute, ShaderUniform,
