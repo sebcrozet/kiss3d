@@ -6,6 +6,12 @@ Procedural macros for the [kiss3d](https://crates.io/crates/kiss3d) crate.
 
 This macro simplifies writing cross-platform kiss3d applications that work on both native platforms and WebAssembly.
 
+### Benefits
+
+- **No additional dependencies**: You don't need to add `pollster` or `wasm_bindgen_futures` to your Cargo.toml - they're automatically available through kiss3d
+- **Cleaner code**: Eliminates platform-specific boilerplate
+- **Less error-prone**: No need to manually maintain dual entry points
+
 ### Problem
 
 When writing kiss3d applications that target both native and WASM, you previously had to write boilerplate code like this:

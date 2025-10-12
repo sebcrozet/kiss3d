@@ -8,8 +8,8 @@ use syn::{parse_macro_input, ItemFn};
 ///
 /// This macro wraps an async main function and generates the appropriate
 /// platform-specific entry points:
-/// - On native platforms: uses `pollster::block_on`
-/// - On WASM: uses `wasm_bindgen_futures::spawn_local`
+/// - On native platforms: uses `pollster::block_on` (re-exported from kiss3d)
+/// - On WASM: uses `wasm_bindgen_futures::spawn_local` (re-exported from kiss3d)
 ///
 /// # Example
 ///
@@ -24,7 +24,8 @@ use syn::{parse_macro_input, ItemFn};
 /// ```
 ///
 /// This expands to platform-specific code that handles the async runtime
-/// appropriately for each target.
+/// appropriately for each target. You don't need to add `pollster` or
+/// `wasm_bindgen_futures` to your dependencies - they are re-exported by kiss3d.
 #[proc_macro_attribute]
 pub fn main(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
@@ -68,13 +69,13 @@ pub fn main(_attr: TokenStream, item: TokenStream) -> TokenStream {
         #[cfg(not(target_arch = "wasm32"))]
         #(#attrs)*
         #vis fn main() {
-            pollster::block_on(__kiss3d_async_main())
+            ::kiss3d::pollster::block_on(__kiss3d_async_main())
         }
 
         #[cfg(target_arch = "wasm32")]
         #(#attrs)*
         #vis fn main() {
-            wasm_bindgen_futures::spawn_local(__kiss3d_async_main())
+            ::kiss3d::wasm_bindgen_futures::spawn_local(__kiss3d_async_main())
         }
 
         async fn __kiss3d_async_main() #body

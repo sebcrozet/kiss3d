@@ -59,6 +59,7 @@ pollster = "0.4.0"
 oneshot = "0.1"
 getrandom = { version = "0.2", features = ["js"] }
 wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4.54"
 web-sys = { version = "0.3", features = [
     "console",
     "KeyEvent",
@@ -83,4 +84,3 @@ env_logger = "0.10"
 nalgebra   = { version = "0.33", features = ["rand"] }
 parry2d    = "0.17"
 rand       = "0.8"
-wasm-bindgen-futures = "0.4.54"

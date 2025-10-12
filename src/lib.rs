@@ -147,8 +147,16 @@ pub use conrod::widget_ids;
 pub use nalgebra;
 pub use parry3d;
 
-// Re-export the procedural macro
+// Re-export the procedural macro and its runtime dependencies
 pub use kiss3d_macro::main;
+
+#[cfg(not(target_arch = "wasm32"))]
+#[doc(hidden)]
+pub use pollster;
+
+#[cfg(target_arch = "wasm32")]
+#[doc(hidden)]
+pub use wasm_bindgen_futures;
 
 #[deprecated(note = "Use the `renderer` module instead.")]
 pub use crate::renderer::line_renderer;
