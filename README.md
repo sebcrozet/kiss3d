@@ -31,54 +31,18 @@ with as little friction as possible.
 * Create basic post-processing effects.
 
 As an example, creating a scene with a red, rotating cube with a light attached
-to the camera is as simple as (NOTE: this will **not** compile when targeting WASM):
+to the camera is as simple as:
 
 ```rust
 extern crate kiss3d;
 
-use kiss3d::nalgebra::{Vector3, UnitQuaternion};
+use kiss3d::light::Light;
 use kiss3d::window::Window;
-use kiss3d::light::Light;
-
-fn main() {
-    let mut window = Window::new("Kiss3d: cube");
-    let mut c      = window.add_cube(1.0, 1.0, 1.0);
-
-    c.set_color(1.0, 0.0, 0.0);
-
-    window.set_light(Light::StickToCamera);
-
-    let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
-
-    while window.render() {
-        c.prepend_to_local_rotation(&rot);
-    }
-}
-```
-
-Making the same example compatible with both WASM and native platforms is slightly more complicated because **kiss3d** must control the render loop:
-
-```rust
-extern crate kiss3d;
-
-use kiss3d::light::Light;
-use kiss3d::scene::SceneNode;
-use kiss3d::window::{State, Window};
 use kiss3d::nalgebra::{UnitQuaternion, Vector3};
 
-struct AppState {
-    c: SceneNode,
-    rot: UnitQuaternion<f32>,
-}
-
-impl State for AppState {
-    fn step(&mut self, _: &mut Window) {
-        self.c.prepend_to_local_rotation(&self.rot)
-    }
-}
-
-fn main() {
-    let mut window = Window::new("Kiss3d: wasm example");
+#[kiss3d::main]
+async fn main() {
+    let mut window = Window::new("Kiss3d: cube");
     let mut c = window.add_cube(1.0, 1.0, 1.0);
 
     c.set_color(1.0, 0.0, 0.0);
@@ -86,11 +50,21 @@ fn main() {
     window.set_light(Light::StickToCamera);
 
     let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
-    let state = AppState { c, rot };
 
-    window.render_loop(state)
+    while window.render().await {
+        c.prepend_to_local_rotation(&rot);
+    }
 }
 ```
+
+This code works on **both native platforms and WASM** without any changes! The `#[kiss3d::main]`
+macro and `async` rendering API handle the platform differences automatically:
+
+* **On native**: The async runtime is managed with `pollster::block_on`
+* **On WASM**: The async function integrates with the browser's event loop via `requestAnimationFrame`
+
+This approach eliminates the need for platform-specific code or managing different entry points,
+making it simple to write truly cross-platform 3D applications.
 
 Some controls are handled by default by the engine (they can be overridden by the user):
 
@@ -108,7 +82,7 @@ Simply add the following to your `Cargo.toml` file:
 
 ```
 [dependencies]
-kiss3d = "0.32"
+kiss3d = "0.36"
 ```
 Note: If your project already uses nalgebra, you'll need the same version used by `kiss3d`, or you may run into compatibility issues.
 
