@@ -11,7 +11,8 @@ use na::{Point2, Point3, Translation3, Vector2, Vector3};
 use parry3d::shape::TriMesh;
 use std::path::Path;
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: procedural");
 
     /*
@@ -176,7 +177,7 @@ fn main() {
      */
     window.set_light(Light::StickToCamera);
 
-    while window.render() {
+    while window.render().await {
         draw_polyline(&mut window, &polyline, points);
     }
 }

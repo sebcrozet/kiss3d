@@ -15,12 +15,14 @@ use kiss3d::window::Window;
 use std::path::Path;
 
 #[cfg(not(feature = "conrod"))]
-fn main() {
+#[kiss3d::main]
+async fn main() {
     panic!("The 'conrod' feature must be enabled for this example to work.")
 }
 
 #[cfg(feature = "conrod")]
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: UI");
     window.set_background_color(1.0, 1.0, 1.0);
     let mut c = window.add_cube(0.1, 0.1, 0.1);
@@ -37,7 +39,7 @@ fn main() {
     let mut app = DemoApp::new(cat_texture);
 
     // Render loop.
-    while window.render() {
+    while window.render().await {
         let mut ui = window.conrod_ui_mut().set_widgets();
         gui(&mut ui, &ids, &mut app)
     }

@@ -3,13 +3,15 @@ extern crate nalgebra as na;
 extern crate rand;
 
 use kiss3d::light::Light;
+#[cfg(not(target_arch = "wasm32"))]
 use kiss3d::post_processing::SobelEdgeHighlight;
 use kiss3d::post_processing::{Grayscales, Waves};
 use kiss3d::window::Window;
 use na::Translation3;
 use rand::random;
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: post_processing");
 
     let mut c = window.add_cube(1.0, 1.0, 1.0);
@@ -30,6 +32,7 @@ fn main() {
     y.set_color(random(), random(), random());
     a.set_color(random(), random(), random());
 
+    #[cfg(not(target_arch = "wasm32"))]
     let mut sobel = SobelEdgeHighlight::new(4.0);
     let mut waves = Waves::new();
     let mut grays = Grayscales::new();
@@ -50,11 +53,12 @@ fn main() {
         time = time + 1;
 
         let _ = match counter {
-            0 => window.render(),
-            1 => window.render_with_effect(&mut grays),
-            2 => window.render_with_effect(&mut waves),
-            3 => window.render_with_effect(&mut sobel),
-            _ => unreachable!(),
+            0 => window.render().await,
+            1 => window.render_with_effect(&mut grays).await,
+            2 => window.render_with_effect(&mut waves).await,
+            #[cfg(not(target_arch = "wasm32"))]
+            3 => window.render_with_effect(&mut sobel).await,
+            _ => true,
         };
     }
 }

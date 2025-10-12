@@ -38,7 +38,7 @@ async fn main() {
     while !window.should_close() {
         rect.prepend_to_local_rotation(&rot_rect);
         window
-            .render_with_cameras_async(&mut camera3d, &mut camera2d)
+            .render_with_cameras(&mut camera3d, &mut camera2d)
             .await;
     }
 }

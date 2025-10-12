@@ -5,11 +5,12 @@ use kiss3d::text::Font;
 use kiss3d::window::Window;
 use na::{Point2, Point3};
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: text");
     let font = Font::default();
 
-    while window.render() {
+    while window.render().await {
         window.draw_text(
             "Hello birds!",
             &Point2::origin(),

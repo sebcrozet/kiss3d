@@ -12,7 +12,8 @@ use na::{Isometry3, Matrix3, Matrix4, Point3, Translation3, UnitQuaternion, Vect
 use std::cell::RefCell;
 use std::rc::Rc;
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: custom_material");
     let mut c = window.add_sphere(1.0);
     let material = Rc::new(RefCell::new(
@@ -24,7 +25,7 @@ fn main() {
 
     let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
 
-    while window.render() {
+    while window.render().await {
         c.prepend_to_local_rotation(&rot);
     }
 }

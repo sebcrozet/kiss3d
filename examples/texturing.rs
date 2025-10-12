@@ -6,7 +6,8 @@ use kiss3d::window::Window;
 use na::{Translation2, UnitComplex, UnitQuaternion, Vector3};
 use std::path::Path;
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: texturing");
 
     let mut c = window.add_cube(1.0, 1.0, 1.0);
@@ -23,7 +24,7 @@ fn main() {
     let rot3d = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
     let rot2d = UnitComplex::new(0.01);
 
-    while window.render() {
+    while window.render().await {
         c.append_rotation(&rot3d);
         r.prepend_to_local_rotation(&rot2d)
     }

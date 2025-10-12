@@ -929,145 +929,69 @@ impl Window {
     /// Renders the scene using the default camera.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
     // TODO: would be good to have a 2D version of this that renders with a 2D side-scroll camera.
-    pub fn render(&mut self) -> bool {
-        self.render_with(None, None, None)
+    pub async fn render(&mut self) -> bool {
+        self.render_with(None, None, None).await
     }
 
     /// Render using a specific post processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub async fn render_with_effect(&mut self, effect: &mut dyn PostProcessingEffect) -> bool {
-        self.render_with(None, None, Some(effect))
+    pub async fn render_with_effect(
+        &mut self,
+        effect: &mut dyn PostProcessingEffect,
+    ) -> bool {
+        self.render_with(None, None, Some(effect)).await
     }
 
     /// Render using a specific camera.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
     pub async fn render_with_camera(&mut self, camera: &mut dyn Camera) -> bool {
-        self.render_with(Some(camera), None, None)
+        self.render_with(Some(camera), None, None).await
     }
 
     /// Render using a specific 2D and 3D camera.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_with_cameras(
+    pub async fn render_with_cameras(
         &mut self,
         camera: &mut dyn Camera,
         planar_camera: &mut dyn PlanarCamera,
     ) -> bool {
         self.render_with(Some(camera), Some(planar_camera), None)
+            .await
     }
 
     /// Render using a specific camera and post processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_with_camera_and_effect(
+    pub async fn render_with_camera_and_effect(
         &mut self,
         camera: &mut dyn Camera,
         effect: &mut dyn PostProcessingEffect,
     ) -> bool {
         self.render_with(Some(camera), None, Some(effect))
+            .await
     }
 
     /// Render using a specific 2D and 3D camera and post processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_with_cameras_and_effect(
+    pub async fn render_with_cameras_and_effect(
         &mut self,
         camera: &mut dyn Camera,
         planar_camera: &mut dyn PlanarCamera,
         effect: &mut dyn PostProcessingEffect,
     ) -> bool {
         self.render_with(Some(camera), Some(planar_camera), Some(effect))
-    }
-
-    /// Draws the scene with the given camera and post-processing effect.
-    ///
-    /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_with(
-        &mut self,
-        camera: Option<&mut dyn Camera>,
-        planar_camera: Option<&mut dyn PlanarCamera>,
-        post_processing: Option<&mut dyn PostProcessingEffect>,
-    ) -> bool {
-        // FIXME: for backward-compatibility, we don't accept any custom renderer here.
-        pollster::block_on(self.do_render_with(camera, planar_camera, None, post_processing))
-    }
-
-    /// Renders the scene using the default camera.
-    ///
-    /// Returns `false` if the window should be closed.
-    // TODO: would be good to have a 2D version of this that renders with a 2D side-scroll camera.
-    pub async fn render_async(&mut self) -> bool {
-        self.render_with_async(None, None, None).await
-    }
-
-    /// Render using a specific post processing effect.
-    ///
-    /// Returns `false` if the window should be closed.
-    pub async fn render_with_effect_async(
-        &mut self,
-        effect: &mut dyn PostProcessingEffect,
-    ) -> bool {
-        self.render_with_async(None, None, Some(effect)).await
-    }
-
-    /// Render using a specific camera.
-    ///
-    /// Returns `false` if the window should be closed.
-    pub async fn render_with_camera_async(&mut self, camera: &mut dyn Camera) -> bool {
-        self.render_with_async(Some(camera), None, None).await
-    }
-
-    /// Render using a specific 2D and 3D camera.
-    ///
-    /// Returns `false` if the window should be closed.
-    pub async fn render_with_cameras_async(
-        &mut self,
-        camera: &mut dyn Camera,
-        planar_camera: &mut dyn PlanarCamera,
-    ) -> bool {
-        self.render_with_async(Some(camera), Some(planar_camera), None)
-            .await
-    }
-
-    /// Render using a specific camera and post processing effect.
-    ///
-    /// Returns `false` if the window should be closed.
-    pub async fn render_with_camera_and_effect_async(
-        &mut self,
-        camera: &mut dyn Camera,
-        effect: &mut dyn PostProcessingEffect,
-    ) -> bool {
-        self.render_with_async(Some(camera), None, Some(effect))
-            .await
-    }
-
-    /// Render using a specific 2D and 3D camera and post processing effect.
-    ///
-    /// Returns `false` if the window should be closed.
-    pub async fn render_with_cameras_and_effect_async(
-        &mut self,
-        camera: &mut dyn Camera,
-        planar_camera: &mut dyn PlanarCamera,
-        effect: &mut dyn PostProcessingEffect,
-    ) -> bool {
-        self.render_with_async(Some(camera), Some(planar_camera), Some(effect))
             .await
     }
 
     /// Draws the scene with the given camera and post-processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    pub async fn render_with_async(
+    pub async fn render_with(
         &mut self,
         camera: Option<&mut dyn Camera>,
         planar_camera: Option<&mut dyn PlanarCamera>,
@@ -1196,14 +1120,13 @@ impl Window {
         {
             use wasm_bindgen::JsCast;
             use web_sys::wasm_bindgen::closure::Closure;
-            
+
             if let Some(window) = web_sys::window() {
                 let (s, r) = oneshot::channel();
 
                 let closure = Closure::once(move || s.send(()).unwrap());
 
-                web_sys::window()
-                    .unwrap()
+                window
                     .request_animation_frame(closure.as_ref().unchecked_ref())
                     .unwrap();
 

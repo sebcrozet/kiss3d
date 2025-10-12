@@ -39,7 +39,7 @@ async fn main() {
 
     let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
 
-    while window.render_async().await {
+    while window.render().await {
         c.prepend_to_local_rotation(&rot);
     }
 }

@@ -18,7 +18,7 @@ use na::{Matrix4, Point2, Point3, Vector3};
 // with a color associated to each point.
 
 // Writing a custom renderer requires the main loop to be
-// handled by the `State` trait instead of a `while window.render()`
+// handled by the `State` trait instead of a `while window.render().await`
 // like other examples.
 
 struct AppState {
@@ -63,7 +63,8 @@ impl State for AppState {
     }
 }
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let window = Window::new("Kiss3d: persistent_point_cloud");
     let app = AppState {
         point_cloud_renderer: PointCloudRenderer::new(4.0),
