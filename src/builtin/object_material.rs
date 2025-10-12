@@ -39,7 +39,6 @@ impl ObjectMaterial {
     pub fn new() -> ObjectMaterial {
         // load the effect
         let mut effect = Effect::new_from_str(OBJECT_VERTEX_SRC, OBJECT_FRAGMENT_SRC);
-
         effect.use_program();
 
         // get the variables locations
@@ -237,13 +236,10 @@ impl Material for ObjectMaterial {
     }
 }
 
-/// Vertex shader of the default object material.
-pub static OBJECT_VERTEX_SRC: &str = A_VERY_LONG_STRING;
-/// Fragment shader of the default object material.
-pub static OBJECT_FRAGMENT_SRC: &str = ANOTHER_VERY_LONG_STRING;
+/// WGSL shader source for the default object material.
+pub static OBJECT_WGSL_SRC: &str = include_str!("default.wgsl");
 
-const A_VERY_LONG_STRING: &str = include_str!("default.vert");
-
-// phong-like lighting (heavily) inspired
-// http://www.mathematik.uni-marburg.de/~thormae/lectures/graphics1/code/WebGLShaderLightMat/ShaderLightMat.html
-const ANOTHER_VERY_LONG_STRING: &str = include_str!("default.frag");
+/// Vertex shader of the default object material (for compatibility).
+pub static OBJECT_VERTEX_SRC: &str = OBJECT_WGSL_SRC;
+/// Fragment shader of the default object material (for compatibility).
+pub static OBJECT_FRAGMENT_SRC: &str = OBJECT_WGSL_SRC;

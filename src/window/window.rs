@@ -1083,6 +1083,9 @@ impl Window {
         mut renderer: Option<&mut dyn Renderer>,
         mut post_processing: Option<&mut dyn PostProcessingEffect>,
     ) -> bool {
+        // Begin wgpu frame - acquire surface texture and start command encoding
+        self.canvas.begin_frame();
+
         // XXX: too bad we have to do this at each frame…
         let w = self.width();
         let h = self.height();
@@ -1145,8 +1148,8 @@ impl Window {
             &self.conrod_context.textures,
         );
 
-        // We are done: swap buffers
-        self.canvas.swap_buffers();
+        // End wgpu frame - submit commands and present surface
+        self.canvas.end_frame();
 
         #[cfg(not(target_arch = "wasm32"))]
         {

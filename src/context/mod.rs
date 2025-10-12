@@ -1,6 +1,6 @@
-//! Abstractions over OpenGL/WebGL contexts.
+//! Abstractions over WebGPU contexts.
 
 pub use self::context::*;
-pub use self::gl_context::GLContext;
+pub use self::wgpu_context::WgpuContext;
 mod context;
-mod gl_context;
+mod wgpu_context;

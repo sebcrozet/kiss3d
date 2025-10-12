@@ -108,37 +108,11 @@ impl Material for NormalsMaterial {
     }
 }
 
+/// WGSL shader for normals visualization
+pub static NORMALS_WGSL_SRC: &str = include_str!("normals.wgsl");
+
 /// A vertex shader for coloring each point of an object depending on its normal.
-pub static NORMAL_VERTEX_SRC: &str = A_VERY_LONG_STRING;
+pub static NORMAL_VERTEX_SRC: &str = NORMALS_WGSL_SRC;
 
 /// A fragment shader for coloring each point of an object depending on its normal.
-pub static NORMAL_FRAGMENT_SRC: &str = ANOTHER_VERY_LONG_STRING;
-
-const A_VERY_LONG_STRING: &str = "#version 100
-attribute vec3 position;
-attribute vec3 normal;
-uniform mat4 proj;
-uniform mat4 view;
-uniform mat4 transform;
-uniform mat3 scale;
-varying vec3 ls_normal;
-
-void main() {
-    ls_normal   = normal;
-    gl_Position = proj * view * transform * mat4(scale) * vec4(position, 1.0);
-}
-";
-
-const ANOTHER_VERY_LONG_STRING: &str = "#version 100
-#ifdef GL_FRAGMENT_PRECISION_HIGH
-   precision highp float;
-#else
-   precision mediump float;
-#endif
-
-varying vec3 ls_normal;
-
-void main() {
-    gl_FragColor = vec4((ls_normal + 1.0) / 2.0, 1.0);
-}
-";
+pub static NORMAL_FRAGMENT_SRC: &str = NORMALS_WGSL_SRC;

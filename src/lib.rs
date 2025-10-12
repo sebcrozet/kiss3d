@@ -138,9 +138,9 @@ extern crate serde;
 
 #[cfg(feature = "conrod")]
 pub extern crate conrod_core as conrod;
-#[cfg(not(target_arch = "wasm32"))]
-extern crate glutin;
 extern crate instant;
+extern crate wgpu;
+extern crate winit;
 #[cfg(feature = "conrod")]
 pub use conrod::widget_ids;
 

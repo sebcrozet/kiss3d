@@ -2,9 +2,9 @@ use std::sync::mpsc::Sender;
 
 use crate::event::{Action, Key, MouseButton, WindowEvent};
 #[cfg(not(target_arch = "wasm32"))]
-use crate::window::GLCanvas as CanvasImpl;
+use crate::window::WgpuCanvas as CanvasImpl;
 #[cfg(target_arch = "wasm32")]
-use crate::window::WebGLCanvas as CanvasImpl;
+use crate::window::WgpuWasmCanvas as CanvasImpl;
 use image::{GenericImage, Pixel};
 
 /// The possible number of samples for multisample anti-aliasing.
@@ -55,7 +55,7 @@ pub struct Canvas {
 }
 
 impl Canvas {
-    /// Open a new window, and initialize the OpenGL/WebGL context.
+    /// Open a new window, and initialize the WebGPU context.
     pub fn open(
         title: &str,
         hide: bool,
@@ -146,6 +146,16 @@ impl Canvas {
     pub fn get_key(&self, key: Key) -> Action {
         self.canvas.get_key(key)
     }
+
+    /// Begin a new rendering frame (wgpu-specific)
+    pub fn begin_frame(&mut self) {
+        self.canvas.begin_frame()
+    }
+
+    /// End the current rendering frame and present (wgpu-specific)
+    pub fn end_frame(&mut self) {
+        self.canvas.end_frame()
+    }
 }
 
 pub(crate) trait AbstractCanvas {
@@ -174,4 +184,8 @@ pub(crate) trait AbstractCanvas {
 
     fn get_mouse_button(&self, button: MouseButton) -> Action;
     fn get_key(&self, key: Key) -> Action;
+
+    // WebGPU-specific methods
+    fn begin_frame(&mut self);
+    fn end_frame(&mut self);
 }

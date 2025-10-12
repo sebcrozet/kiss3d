@@ -109,37 +109,11 @@ impl Material for UvsMaterial {
     }
 }
 
+/// WGSL shader for UVs visualization
+pub static UVS_WGSL_SRC: &str = include_str!("uvs.wgsl");
+
 /// A vertex shader for coloring each point of an object depending on its texture coordinates.
-pub static UVS_VERTEX_SRC: &str = A_VERY_LONG_STRING;
+pub static UVS_VERTEX_SRC: &str = UVS_WGSL_SRC;
 
 /// A fragment shader for coloring each point of an object depending on its texture coordinates.
-pub static UVS_FRAGMENT_SRC: &str = ANOTHER_VERY_LONG_STRING;
-
-const A_VERY_LONG_STRING: &str = "#version 100
-attribute vec3 position;
-attribute vec3 uvs;
-uniform mat4 proj;
-uniform mat4 view;
-uniform mat4 transform;
-uniform mat3 scale;
-varying vec3 uv_as_a_color;
-
-void main() {
-    uv_as_a_color  = vec3(uvs.xy, 0.0);
-    gl_Position = proj * view * transform * mat4(scale) * vec4(position, 1.0);
-}
-";
-
-const ANOTHER_VERY_LONG_STRING: &str = "#version 100
-#ifdef GL_FRAGMENT_PRECISION_HIGH
-   precision highp float;
-#else
-   precision mediump float;
-#endif
-
-varying vec3 uv_as_a_color;
-
-void main() {
-    gl_FragColor = vec4(uv_as_a_color, 1.0);
-}
-";
+pub static UVS_FRAGMENT_SRC: &str = UVS_WGSL_SRC;

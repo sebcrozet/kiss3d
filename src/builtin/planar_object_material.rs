@@ -196,51 +196,10 @@ impl PlanarMaterial for PlanarObjectMaterial {
     }
 }
 
+/// WGSL shader for planar (2D) rendering
+static PLANAR_WGSL_SRC: &str = include_str!("planar.wgsl");
+
 /// Vertex shader of the default object material.
-static OBJECT_VERTEX_SRC: &str = A_VERY_LONG_STRING;
+static OBJECT_VERTEX_SRC: &str = PLANAR_WGSL_SRC;
 /// Fragment shader of the default object material.
-static OBJECT_FRAGMENT_SRC: &str = ANOTHER_VERY_LONG_STRING;
-
-const A_VERY_LONG_STRING: &str = "#version 100
-attribute vec2 position;
-attribute vec2 tex_coord;
-attribute vec2 inst_tra;
-attribute vec4 inst_color;
-attribute vec4 inst_deformation;
-
-uniform mat2 scale;
-uniform mat3 proj, view, model;
-
-varying vec2 tex_coord_v;
-varying vec4 vert_color;
-
-void main(){
-    mat2 def = mat2(
-        vec2(inst_deformation[0], inst_deformation[1]),
-        vec2(inst_deformation[2], inst_deformation[3])
-    );
-    vec3 projected_pos = proj * view * (vec3(inst_tra, 0.0) + model * vec3(def * scale * position, 1.0));
-    projected_pos.z = 0.0;
-
-    gl_Position = vec4(projected_pos, 1.0);
-    tex_coord_v = tex_coord;
-    vert_color = inst_color;
-}";
-
-const ANOTHER_VERY_LONG_STRING: &str = "#version 100
-#ifdef GL_FRAGMENT_PRECISION_HIGH
-   precision highp float;
-#else
-   precision mediump float;
-#endif
-
-varying vec2 tex_coord_v;
-varying vec4 vert_color;
-
-uniform sampler2D tex;
-uniform vec3 color;
-
-void main() {
-  vec4 tex_color = texture2D(tex, tex_coord_v);
-  gl_FragColor = tex_color * (vec4(color, 1.0) * vert_color);
-}";
+static OBJECT_FRAGMENT_SRC: &str = PLANAR_WGSL_SRC;

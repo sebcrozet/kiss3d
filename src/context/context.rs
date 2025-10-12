@@ -3,7 +3,7 @@
 use std::sync::OnceLock;
 
 use crate::resource::GLPrimitive;
-use crate::{context::GLContext as ContextImpl, verify};
+use crate::{context::WgpuContext as ContextImpl, verify};
 use na::{Matrix2, Matrix3, Matrix4};
 
 pub type GLenum = u32;
@@ -43,6 +43,28 @@ unsafe impl Send for Context {}
 unsafe impl Sync for Context {}
 
 impl Context {
+    pub fn device(&self) -> std::sync::Arc<wgpu::Device> {
+        self.ctxt.device()
+    }
+
+    pub fn queue(&self) -> std::sync::Arc<wgpu::Queue> {
+        self.ctxt.queue()
+    }
+
+    pub fn begin_frame(&self, surface_texture: wgpu::SurfaceTexture) {
+        self.ctxt.begin_frame(surface_texture)
+    }
+
+    pub fn end_frame(&self) {
+        self.ctxt.end_frame()
+    }
+
+    pub fn with_render_pass_exec<F>(&self, f: F)
+    where
+        F: for<'a> FnOnce(&mut wgpu::RenderPass<'a>),
+    {
+        self.ctxt.with_render_pass_exec(f)
+    }
     pub const FLOAT: u32 = ContextImpl::FLOAT;
     pub const INT: u32 = ContextImpl::INT;
     pub const UNSIGNED_INT: u32 = ContextImpl::UNSIGNED_INT;
@@ -103,15 +125,10 @@ impl Context {
     pub const ALPHA: u32 = ContextImpl::ALPHA;
     pub const RED: u32 = ContextImpl::RED;
 
-    pub fn init(get_ctxt: impl Fn() -> glow::Context) {
-        unsafe {
-            CONTEXT_SINGLETON.get_or_init(|| {
-                let ctxt = get_ctxt();
-                Context {
-                    ctxt: ContextImpl::new(ctxt),
-                }
-            });
-        }
+    pub fn init(device: wgpu::Device, queue: wgpu::Queue) {
+        CONTEXT_SINGLETON.get_or_init(|| Context {
+            ctxt: ContextImpl::new(device, queue),
+        });
     }
 
     pub fn get() -> Context {
