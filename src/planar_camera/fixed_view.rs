@@ -22,8 +22,8 @@ impl PlanarFixedView {
     /// Create a new static camera.
     pub fn new() -> PlanarFixedView {
         PlanarFixedView {
-            proj: na::one(),
-            inv_proj: na::one(),
+            proj: Matrix3::identity(),
+            inv_proj: Matrix3::identity(),
         }
     }
 }

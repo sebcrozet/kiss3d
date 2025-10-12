@@ -29,8 +29,8 @@ impl FixedView {
     pub fn new_with_frustum(fov: f32, znear: f32, zfar: f32) -> FixedView {
         FixedView {
             projection: Perspective3::new(800.0 / 600.0, fov, znear, zfar),
-            proj: na::one(),
-            inv_proj: na::one(),
+            proj: Matrix4::identity(),
+            inv_proj: Matrix4::identity(),
         }
     }
 

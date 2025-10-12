@@ -3,7 +3,6 @@ use super::{IndexBuffer, RenderMesh};
 use na;
 use na::{Point3, Vector3};
 
-
 /// Generates a cone with a given height and diameter.
 pub fn cone(diameter: f32, height: f32, nsubdiv: u32) -> RenderMesh {
     let mut cone = unit_cone(nsubdiv);
@@ -21,13 +20,7 @@ pub fn unit_cone(nsubdiv: u32) -> RenderMesh {
     let mut indices = Vec::new();
     let mut normals: Vec<Vector3<f32>>;
 
-    utils::push_circle(
-        0.5,
-        nsubdiv,
-        dtheta,
-        -0.5,
-        &mut coords,
-    );
+    utils::push_circle(0.5, nsubdiv, dtheta, -0.5, &mut coords);
 
     normals = coords.iter().map(|p| p.coords).collect();
 
@@ -45,11 +38,11 @@ pub fn unit_cone(nsubdiv: u32) -> RenderMesh {
     let shift = 0.05f32 / 0.475;
     let div = (shift * shift + 0.25).sqrt();
     for n in normals.iter_mut() {
-        n.y = n.y + shift;
+        n.y += shift;
         // FIXME: f32 / div does not work?
-        n.x = n.x / div;
-        n.y = n.y / div;
-        n.z = n.z / div;
+        n.x /= div;
+        n.y /= div;
+        n.z /= div;
     }
 
     // Normal for the basis.

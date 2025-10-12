@@ -3,7 +3,6 @@ use super::{IndexBuffer, RenderMesh};
 use na;
 use na::{Point2, Vector3};
 
-
 /// Generates a cylinder with a given height and diameter.
 pub fn cylinder(diameter: f32, height: f32, nsubdiv: u32) -> RenderMesh {
     let mut cylinder = unit_cylinder(nsubdiv);
@@ -22,23 +21,11 @@ pub fn unit_cylinder(nsubdiv: u32) -> RenderMesh {
     let mut indices = Vec::new();
     let mut normals: Vec<Vector3<f32>>;
 
-    utils::push_circle(
-        0.5,
-        nsubdiv,
-        dtheta,
-        -0.5,
-        &mut coords,
-    );
+    utils::push_circle(0.5, nsubdiv, dtheta, -0.5, &mut coords);
 
     normals = coords.iter().map(|p| p.coords).collect();
 
-    utils::push_circle(
-        0.5,
-        nsubdiv,
-        dtheta,
-        0.5,
-        &mut coords,
-    );
+    utils::push_circle(0.5, nsubdiv, dtheta, 0.5, &mut coords);
 
     utils::push_ring_indices(0, nsubdiv, nsubdiv, &mut indices);
     utils::push_filled_circle_indices(0, nsubdiv, &mut indices);
@@ -58,23 +45,23 @@ pub fn unit_cylinder(nsubdiv: u32) -> RenderMesh {
     let mut curr_u = 0.0;
     for _ in 0..nsubdiv {
         uvs.push(Point2::new(curr_u, na::zero()));
-        curr_u = curr_u + invsubdiv;
+        curr_u += invsubdiv;
     }
 
     // top ring uvs
     curr_u = na::zero();
     for _ in 0..nsubdiv {
         uvs.push(Point2::new(curr_u, 1.0));
-        curr_u = curr_u + invsubdiv;
+        curr_u += invsubdiv;
     }
 
     /*
      * Adjust normals.
      */
     for n in normals.iter_mut() {
-        n.x = n.x * 2.0;
+        n.x *= 2.0;
         n.y = 0.0;
-        n.z = n.z * 2.0;
+        n.z *= 2.0;
     }
 
     normals.push(Vector3::y()); // top cap
@@ -85,13 +72,13 @@ pub fn unit_cylinder(nsubdiv: u32) -> RenderMesh {
 
     for i in indices[..top_start_id].iter_mut() {
         if i.x.y >= nsubdiv {
-            i.x.y = i.x.y - nsubdiv;
+            i.x.y -= nsubdiv;
         }
         if i.y.y >= nsubdiv {
-            i.y.y = i.y.y - nsubdiv;
+            i.y.y -= nsubdiv;
         }
         if i.z.y >= nsubdiv {
-            i.z.y = i.z.y - nsubdiv;
+            i.z.y -= nsubdiv;
         }
     }
 

@@ -2,7 +2,7 @@ extern crate kiss3d;
 extern crate nalgebra as na;
 
 use kiss3d::light::Light;
-use kiss3d::resource::Mesh;
+use kiss3d::resource::GpuMesh;
 use kiss3d::window::Window;
 use na::{Point3, UnitQuaternion, Vector3};
 use std::cell::RefCell;
@@ -18,7 +18,7 @@ fn main() {
     let vertices = vec![a, b, c];
     let indices = vec![Point3::new(0, 1, 2)];
 
-    let mesh = Rc::new(RefCell::new(Mesh::new(
+    let mesh = Rc::new(RefCell::new(GpuMesh::new(
         vertices, indices, None, None, false,
     )));
     let mut c = window.add_mesh(mesh, Vector3::new(1.0, 1.0, 1.0));

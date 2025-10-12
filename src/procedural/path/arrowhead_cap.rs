@@ -2,7 +2,6 @@ use crate::procedural::path::PolylineCompatibleCap;
 use crate::procedural::utils;
 use na::{self, Isometry3, Point3, Vector3};
 
-
 /// A cap that looks like an arrow.
 pub struct ArrowheadCap {
     radius_scale: f32,
@@ -19,9 +18,9 @@ impl ArrowheadCap {
     /// * `back_dist_to_head` - distance from the path endpoint and the cap base.
     pub fn new(radius_scale: f32, front_dist_to_head: f32, back_dist_to_head: f32) -> ArrowheadCap {
         ArrowheadCap {
-            radius_scale: radius_scale,
-            front_dist_to_head: front_dist_to_head,
-            back_dist_to_head: back_dist_to_head,
+            radius_scale,
+            front_dist_to_head,
+            back_dist_to_head,
         }
     }
 
@@ -57,23 +56,21 @@ impl ArrowheadCap {
 
             // NOTE: this is done exactly the same on the PolylinePattern::stroke method.
             // Refactor?
-            let transform;
+
             let back_shift = *dir * back_dist_to_head;
 
-            if dir.x == 0.0 && dir.z == 0.0 {
+            let transform = if dir.x == 0.0 && dir.z == 0.0 {
                 // FIXME: this might not be enough to avoid singularities.
-                transform =
-                    Isometry3::face_towards(&(*pt - back_shift), &(*pt + *dir), &Vector3::x());
+                Isometry3::face_towards(&(*pt - back_shift), &(*pt + *dir), &Vector3::x())
             } else {
-                transform =
-                    Isometry3::face_towards(&(*pt - back_shift), &(*pt + *dir), &Vector3::y());
-            }
+                Isometry3::face_towards(&(*pt - back_shift), &(*pt + *dir), &Vector3::y())
+            };
 
             for p in &mut new_pattern {
-                *p = transform * &*p
+                *p = transform * *p
             }
 
-            coords.extend(new_pattern.into_iter());
+            coords.extend(new_pattern);
 
             if closed {
                 utils::push_ring_indices(attach_id, start_id, npts, indices)

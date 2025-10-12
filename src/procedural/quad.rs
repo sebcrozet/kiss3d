@@ -1,5 +1,5 @@
 use super::{IndexBuffer, RenderMesh};
-use na::{self, Point2, Point3, RealField, Vector3};
+use na::{self, Point2, Point3, Vector3};
 
 /// Adds a double-sided quad to the scene.
 ///
@@ -11,15 +11,10 @@ use na::{self, Point2, Point3, RealField, Vector3};
 /// * `w` - the quad width.
 /// * `h` - the quad height.
 /// * `usubdivs` - number of horizontal subdivisions. This correspond to the number of squares
-/// which will be placed horizontally on each line. Must not be `0`.
+///   which will be placed horizontally on each line. Must not be `0`.
 /// * `vsubdivs` - number of vertical subdivisions. This correspond to the number of squares
-/// which will be placed vertically on each line. Must not be `0`.
-pub fn quad(
-    width: f32,
-    height: f32,
-    usubdivs: usize,
-    vsubdivs: usize,
-) -> RenderMesh {
+///   which will be placed vertically on each line. Must not be `0`.
+pub fn quad(width: f32, height: f32, usubdivs: usize, vsubdivs: usize) -> RenderMesh {
     let mut quad = unit_quad(usubdivs, vsubdivs);
 
     let mut s = Vector3::zeros();
@@ -52,7 +47,7 @@ pub fn quad_with_vertices(
     let mut res = unit_quad(nhpoints - 1, nvpoints - 1);
 
     for (dest, src) in res.coords.iter_mut().zip(vertices.iter()) {
-        *dest = src.clone();
+        *dest = *src;
     }
 
     res
@@ -66,15 +61,14 @@ pub fn quad_with_vertices(
 ///
 /// # Arguments
 /// * `usubdivs` - number of horizontal subdivisions. This correspond to the number of squares
-/// which will be placed horizontally on each line. Must not be `0`.
+///   which will be placed horizontally on each line. Must not be `0`.
 /// * `vsubdivs` - number of vertical subdivisions. This correspond to the number of squares
-/// which will be placed vertically on each line. Must not be `0`.
+///   which will be placed vertically on each line. Must not be `0`.
 pub fn unit_quad(usubdivs: usize, vsubdivs: usize) -> RenderMesh {
     assert!(
         usubdivs > 0 && vsubdivs > 0,
         "The number of subdivisions cannot be zero"
     );
-    assert!(3 >= 2);
 
     let wstep = 1.0 / (usubdivs as f32);
     let hstep = 1.0 / (vsubdivs as f32);
@@ -96,8 +90,7 @@ pub fn unit_quad(usubdivs: usize, vsubdivs: usize) -> RenderMesh {
             v[0] = nj * wstep - cw;
             v[1] = ni * hstep - ch;
             vertices.push(v);
-            let _1 = 1.0;
-            tex_coords.push(Point2::new(_1 - nj * wstep, _1 - ni * hstep))
+            tex_coords.push(Point2::new(1.0 - nj * wstep, 1.0 - ni * hstep))
         }
     }
 

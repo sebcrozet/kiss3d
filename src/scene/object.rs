@@ -4,7 +4,7 @@ use crate::camera::Camera;
 use crate::light::Light;
 use crate::resource::vertex_index::VertexIndex;
 use crate::resource::{
-    AllocationType, BufferType, GPUVec, Material, Mesh, Texture, TextureManager,
+    AllocationType, BufferType, GPUVec, GpuMesh, Material, Texture, TextureManager,
 };
 use na::{Isometry3, Matrix3, Point2, Point3, Vector3};
 use std::any::Any;
@@ -141,13 +141,13 @@ pub struct Object {
     // (thus removing the need of ObjectData at all.)
     data: ObjectData,
     instances: Rc<RefCell<InstancesBuffer>>,
-    mesh: Rc<RefCell<Mesh>>,
+    mesh: Rc<RefCell<GpuMesh>>,
 }
 
 impl Object {
     #[doc(hidden)]
     pub fn new(
-        mesh: Rc<RefCell<Mesh>>,
+        mesh: Rc<RefCell<GpuMesh>>,
         r: f32,
         g: f32,
         b: f32,
@@ -328,7 +328,7 @@ impl Object {
 
     /// This object's mesh.
     #[inline]
-    pub fn mesh(&self) -> &Rc<RefCell<Mesh>> {
+    pub fn mesh(&self) -> &Rc<RefCell<GpuMesh>> {
         &self.mesh
     }
 

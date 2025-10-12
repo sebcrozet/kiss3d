@@ -1,8 +1,7 @@
-use na::{self, Isometry2, Point2, RealField, Rotation2, Translation2, Vector2};
+use na::{self, Isometry2, Point2, Rotation2, Translation2, Vector2};
 
 /// Geometric description of a polyline.
 #[derive(Clone)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct RenderPolyline {
     /// Coordinates of the polyline vertices.
     coords: Vec<Point2<f32>>,
@@ -45,31 +44,31 @@ impl RenderPolyline {
     /// The normals of this polyline vertices.
     #[inline]
     pub fn normals(&self) -> Option<&[Vector2<f32>]> {
-        self.normals.as_ref().map(Vec::as_slice)
+        self.normals.as_deref()
     }
 
     /// The mutable normals of this polyline vertices.
     #[inline]
     pub fn normals_mut(&mut self) -> Option<&mut [Vector2<f32>]> {
-        self.normals.as_mut().map(Vec::as_mut_slice)
+        self.normals.as_deref_mut()
     }
 
     /// Translates each vertex of this polyline.
     pub fn translate_by(&mut self, t: &Translation2<f32>) {
         for c in self.coords.iter_mut() {
-            *c = t * &*c;
+            *c = t * *c;
         }
     }
 
     /// Rotates each vertex and normal of this polyline.
     pub fn rotate_by(&mut self, r: &Rotation2<f32>) {
         for c in self.coords.iter_mut() {
-            *c = r * &*c;
+            *c = r * *c;
         }
 
         for n in self.normals.iter_mut() {
             for n in n.iter_mut() {
-                *n = r * &*n;
+                *n = r * *n;
             }
         }
     }
@@ -77,12 +76,12 @@ impl RenderPolyline {
     /// Transforms each vertex and rotates each normal of this polyline.
     pub fn transform_by(&mut self, t: &Isometry2<f32>) {
         for c in self.coords.iter_mut() {
-            *c = t * &*c;
+            *c = t * *c;
         }
 
         for n in self.normals.iter_mut() {
             for n in n.iter_mut() {
-                *n = t * &*n;
+                *n = t * *n;
             }
         }
     }
@@ -97,7 +96,7 @@ impl RenderPolyline {
     /// Scales each vertex of this polyline.
     pub fn scale_by_scalar(&mut self, s: f32) {
         for c in self.coords.iter_mut() {
-            *c = *c * s
+            *c *= s
         }
         // FIXME: do something for the normals?
     }

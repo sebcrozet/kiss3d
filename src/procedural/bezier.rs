@@ -1,6 +1,5 @@
 use super::RenderMesh;
-use na::{self, Point3, RealField};
-use std::iter;
+use na::{self, Point3};
 use std::ptr;
 
 // De-Casteljau algorithm.
@@ -13,13 +12,12 @@ pub fn bezier_curve_at(
 ) -> Point3<f32> {
     if control_points.len() > cache.len() {
         let diff = control_points.len() - cache.len();
-        cache.extend(iter::repeat(Point3::origin()).take(diff))
+        cache.extend(std::iter::repeat_n(Point3::origin(), diff))
     }
 
     let cache = &mut cache[..];
 
-    let _1: f32 = 1.0;
-    let t_1 = _1 - t;
+    let t_1 = 1.0 - t;
 
     // XXX: f32ot good if the objects are not POD.
     unsafe {
@@ -36,7 +34,7 @@ pub fn bezier_curve_at(
         }
     }
 
-    cache[0].clone()
+    cache[0]
 }
 
 // Evaluates the bezier curve with control points `control_points`.
@@ -49,16 +47,16 @@ pub fn bezier_surface_at(
     v: f32,
     ucache: &mut Vec<Point3<f32>>,
     vcache: &mut Vec<Point3<f32>>,
-) -> Point3<f32>
-{
+) -> Point3<f32> {
     if vcache.len() < nvpoints {
         let diff = nvpoints - vcache.len();
-        vcache.extend(iter::repeat(Point3::origin()).take(diff));
+        vcache.extend(std::iter::repeat_n(Point3::origin(), diff));
     }
 
     // FIXME: start with u or v, depending on which dimension has more control points.
     let vcache = &mut vcache[..];
 
+    #[allow(clippy::needless_range_loop)]
     for i in 0..nvpoints {
         let start = i * nupoints;
         let end = start + nupoints;
@@ -70,10 +68,7 @@ pub fn bezier_surface_at(
 }
 
 /// Given a set of control points, generates a (non-rational) Bezier curve.
-pub fn bezier_curve(
-    control_points: &[Point3<f32>],
-    nsubdivs: usize,
-) -> Vec<Point3<f32>> {
+pub fn bezier_curve(control_points: &[Point3<f32>], nsubdivs: usize) -> Vec<Point3<f32>> {
     let mut coords = Vec::with_capacity(nsubdivs);
     let mut cache = Vec::new();
     let tstep = 1.0 / (nsubdivs as f32);
@@ -81,7 +76,7 @@ pub fn bezier_curve(
 
     while t <= 1.0 {
         coords.push(bezier_curve_at(control_points, t, &mut cache));
-        t = t + tstep;
+        t += tstep;
     }
 
     coords
@@ -94,8 +89,7 @@ pub fn bezier_surface(
     nvpoints: usize,
     usubdivs: usize,
     vsubdivs: usize,
-) -> RenderMesh
-{
+) -> RenderMesh {
     assert!(nupoints * nvpoints == control_points.len());
 
     let mut surface = super::unit_quad(usubdivs, vsubdivs);

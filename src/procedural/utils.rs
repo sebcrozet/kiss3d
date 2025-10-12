@@ -1,44 +1,32 @@
 //! Utilities useful for various generations tasks.
 
 use na;
-use na::{Point2, Point3, RealField, Vector2, Vector3};
+use na::{Point2, Point3, Vector2, Vector3};
 use num::Zero;
+use parry3d::utils::{DeterministicState, HashablePartialEq};
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
-use std::iter;
-use parry3d::utils::{HashablePartialEq, DeterministicState};
 
 // FIXME: remove that in favor of `push_xy_circle` ?
 /// Pushes a discretized counterclockwise circle to a buffer.
 #[inline]
-pub fn push_circle(
-    radius: f32,
-    nsubdiv: u32,
-    dtheta: f32,
-    y: f32,
-    out: &mut Vec<Point3<f32>>,
-) {
+pub fn push_circle(radius: f32, nsubdiv: u32, dtheta: f32, y: f32, out: &mut Vec<Point3<f32>>) {
     let mut curr_theta = 0.0f32;
 
     for _ in 0..nsubdiv {
         out.push(Point3::new(
             curr_theta.cos() * radius,
-            y.clone(),
+            y,
             curr_theta.sin() * radius,
         ));
-        curr_theta = curr_theta + dtheta;
+        curr_theta += dtheta;
     }
 }
 
 /// Pushes a discretized counterclockwise circle to a buffer.
 /// The circle is contained on the plane spanned by the `x` and `y` axis.
 #[inline]
-pub fn push_xy_arc(
-    radius: f32,
-    nsubdiv: u32,
-    dtheta: f32,
-    out: &mut Vec<Point2<f32>>,
-) {
+pub fn push_xy_arc(radius: f32, nsubdiv: u32, dtheta: f32, out: &mut Vec<Point2<f32>>) {
     let mut curr_theta = 0.0f32;
 
     for _ in 0..nsubdiv {
@@ -48,7 +36,7 @@ pub fn push_xy_arc(
         pt_coords[1] = curr_theta.sin() * radius;
         out.push(Point2::from(pt_coords));
 
-        curr_theta = curr_theta + dtheta;
+        curr_theta += dtheta;
     }
 }
 
@@ -136,7 +124,7 @@ pub fn push_filled_circle_indices(base_circle: u32, nsubdiv: u32, out: &mut Vec<
 /// * `ur` - the up-left point.
 #[inline]
 pub fn push_rectangle_indices(ul: u32, ur: u32, dl: u32, dr: u32, out: &mut Vec<Point3<u32>>) {
-    out.push(Point3::new(ul.clone(), dl, dr.clone()));
+    out.push(Point3::new(ul, dl, dr));
     out.push(Point3::new(dr, ur, ul));
 }
 
@@ -182,14 +170,14 @@ pub fn split_index_buffer_and_recover_topology(
         vtx_to_id: &mut HashMap<HashablePartialEq<Point3<f32>>, u32, DeterministicState>,
         new_coords: &mut Vec<Point3<f32>>,
     ) -> u32 {
-        let key = unsafe { HashablePartialEq::new(coord.clone()) };
+        let key = unsafe { HashablePartialEq::new(*coord) };
         let id = match vtx_to_id.entry(key) {
             Entry::Occupied(entry) => entry.into_mut(),
             Entry::Vacant(entry) => entry.insert(new_coords.len() as u32),
         };
 
         if *id == new_coords.len() as u32 {
-            new_coords.push(coord.clone());
+            new_coords.push(*coord);
         }
 
         *id
@@ -225,7 +213,7 @@ pub fn compute_normals(
     faces: &[Point3<u32>],
     normals: &mut Vec<Vector3<f32>>,
 ) {
-    let mut divisor: Vec<f32> = iter::repeat(na::zero()).take(coordinates.len()).collect();
+    let mut divisor: Vec<f32> = vec![0.0; coordinates.len()];
 
     // Shrink the output buffer if it is too big.
     if normals.len() > coordinates.len() {
@@ -234,32 +222,34 @@ pub fn compute_normals(
 
     // Reinit all normals to zero.
     normals.clear();
-    normals.extend(iter::repeat(na::zero::<Vector3<f32>>()).take(coordinates.len()));
+    normals.extend(std::iter::repeat_n(
+        na::zero::<Vector3<f32>>(),
+        coordinates.len(),
+    ));
 
     // Accumulate normals ...
     for f in faces.iter() {
         let edge1 = coordinates[f.y as usize] - coordinates[f.x as usize];
         let edge2 = coordinates[f.z as usize] - coordinates[f.x as usize];
         let cross = edge1.cross(&edge2);
-        let normal;
 
-        if !cross.is_zero() {
-            normal = cross.normalize()
+        let normal = if !cross.is_zero() {
+            cross.normalize()
         } else {
-            normal = cross
-        }
+            cross
+        };
 
-        normals[f.x as usize] = normals[f.x as usize] + normal;
-        normals[f.y as usize] = normals[f.y as usize] + normal;
-        normals[f.z as usize] = normals[f.z as usize] + normal;
+        normals[f.x as usize] += normal;
+        normals[f.y as usize] += normal;
+        normals[f.z as usize] += normal;
 
-        divisor[f.x as usize] = divisor[f.x as usize] + 1.0;
-        divisor[f.y as usize] = divisor[f.y as usize] + 1.0;
-        divisor[f.z as usize] = divisor[f.z as usize] + 1.0;
+        divisor[f.x as usize] += 1.0;
+        divisor[f.y as usize] += 1.0;
+        divisor[f.z as usize] += 1.0;
     }
 
     // ... and compute the mean
     for (n, divisor) in normals.iter_mut().zip(divisor.iter()) {
-        *n = *n / *divisor
+        *n /= *divisor
     }
 }

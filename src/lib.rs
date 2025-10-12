@@ -145,7 +145,7 @@ extern crate instant;
 pub use conrod::widget_ids;
 
 pub use nalgebra;
-pub use ncollide3d;
+pub use parry3d;
 
 #[deprecated(note = "Use the `renderer` module instead.")]
 pub use crate::renderer::line_renderer;
@@ -162,12 +162,12 @@ pub mod loader;
 pub mod planar_camera;
 pub mod planar_line_renderer;
 pub mod post_processing;
+pub mod procedural;
 pub mod renderer;
 pub mod resource;
 pub mod scene;
 pub mod text;
 pub mod window;
-pub mod procedural;
 
 pub mod prelude {
     pub use crate::builtin::*;

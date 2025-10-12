@@ -3,7 +3,7 @@
 use crate::camera::Camera;
 use crate::light::Light;
 use crate::planar_camera::PlanarCamera;
-use crate::resource::{Mesh, PlanarMesh};
+use crate::resource::{GpuMesh, PlanarMesh};
 use crate::scene::{InstancesBuffer, ObjectData, PlanarInstancesBuffers, PlanarObjectData};
 use na::{Isometry2, Isometry3, Vector2, Vector3};
 
@@ -20,7 +20,7 @@ pub trait Material {
         light: &Light,           // a structure with all environment data
         data: &ObjectData,
         instances: &mut InstancesBuffer,
-        mesh: &mut Mesh,
+        mesh: &mut GpuMesh,
     );
 }
 

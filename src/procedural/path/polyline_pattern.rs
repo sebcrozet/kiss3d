@@ -1,7 +1,7 @@
 use crate::procedural::path::{CurveSampler, PathSample, StrokePattern};
 use crate::procedural::render_mesh::{IndexBuffer, RenderMesh};
 use crate::procedural::utils;
-use na::{self, Isometry3, Point2, Point3, RealField, Vector3};
+use na::{self, Isometry3, Point2, Point3, Vector3};
 
 /// A pattern composed of polyline and two caps.
 pub struct PolylinePattern<C1, C2> {
@@ -54,15 +54,15 @@ where
         let mut coords3d = Vec::with_capacity(pattern.len());
 
         for v in pattern.iter() {
-            coords3d.push(Point3::new(v.x.clone(), v.y.clone(), na::zero()));
+            coords3d.push(Point3::new(v.x, v.y, na::zero()));
         }
 
         PolylinePattern {
             pattern: coords3d,
-            closed: closed,
+            closed,
             last_start_id: 0,
-            start_cap: start_cap,
-            end_cap: end_cap,
+            start_cap,
+            end_cap,
         }
     }
 }
@@ -88,22 +88,21 @@ where
                 | PathSample::InnerPoint(ref pt, ref dir)
                 | PathSample::EndPoint(ref pt, ref dir) => {
                     let mut new_polyline = self.pattern.clone();
-                    let transform;
 
-                    if dir.x == 0.0 && dir.z == 0.0 {
+                    let transform = if dir.x == 0.0 && dir.z == 0.0 {
                         // FIXME: this might not be enough to avoid singularities.
-                        transform = Isometry3::face_towards(pt, &(*pt + *dir), &Vector3::x());
+                        Isometry3::face_towards(pt, &(*pt + *dir), &Vector3::x())
                     } else {
-                        transform = Isometry3::face_towards(pt, &(*pt + *dir), &Vector3::y());
-                    }
+                        Isometry3::face_towards(pt, &(*pt + *dir), &Vector3::y())
+                    };
 
                     for p in &mut new_polyline {
-                        *p = transform * &*p;
+                        *p = transform * *p;
                     }
 
                     let new_start_id = vertices.len() as u32;
 
-                    vertices.extend(new_polyline.into_iter());
+                    vertices.extend(new_polyline);
 
                     if new_start_id != 0 {
                         if self.closed {
@@ -126,7 +125,12 @@ where
                     }
                 }
                 PathSample::EndOfSample => {
-                    return RenderMesh::new(vertices, None, None, Some(IndexBuffer::Unified(indices)))
+                    return RenderMesh::new(
+                        vertices,
+                        None,
+                        None,
+                        Some(IndexBuffer::Unified(indices)),
+                    )
                 }
             }
 

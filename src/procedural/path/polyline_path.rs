@@ -1,5 +1,5 @@
 use crate::procedural::path::{CurveSampler, PathSample};
-use na::{Point3, RealField, Vector3};
+use na::{Point3, Vector3};
 
 /// A path with its sample points given by a polyline.
 ///
@@ -27,7 +27,7 @@ impl<'a> PolylinePath<'a> {
             curr_len: len,
             curr_dir: dir,
             curr_pt_id: 0,
-            curr_pt: polyline[0].clone(),
+            curr_pt: polyline[0],
             polyline,
         }
     }
@@ -38,19 +38,19 @@ impl CurveSampler for PolylinePath<'_> {
         let poly_coords = self.polyline;
 
         let result = if self.curr_pt_id == 0 {
-            PathSample::StartPoint(self.curr_pt.clone(), self.curr_dir.clone())
+            PathSample::StartPoint(self.curr_pt, self.curr_dir)
         } else if self.curr_pt_id < poly_coords.len() - 1 {
-            PathSample::InnerPoint(self.curr_pt.clone(), self.curr_dir.clone())
+            PathSample::InnerPoint(self.curr_pt, self.curr_dir)
         } else if self.curr_pt_id == poly_coords.len() - 1 {
-            PathSample::EndPoint(self.curr_pt.clone(), self.curr_dir.clone())
+            PathSample::EndPoint(self.curr_pt, self.curr_dir)
         } else {
             PathSample::EndOfSample
         };
 
-        self.curr_pt_id = self.curr_pt_id + 1;
+        self.curr_pt_id += 1;
 
         if self.curr_pt_id < poly_coords.len() {
-            self.curr_pt = poly_coords[self.curr_pt_id].clone();
+            self.curr_pt = poly_coords[self.curr_pt_id];
 
             if self.curr_pt_id < poly_coords.len() - 1 {
                 let mut curr_diff = poly_coords[self.curr_pt_id + 1] - poly_coords[self.curr_pt_id];

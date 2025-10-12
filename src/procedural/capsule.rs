@@ -1,6 +1,5 @@
 use super::{sphere, utils};
 use super::{IndexBuffer, RenderMesh};
-use na;
 
 /// Generates a capsule.
 pub fn capsule(
@@ -8,8 +7,7 @@ pub fn capsule(
     cylinder_height: f32,
     ntheta_subdiv: u32,
     nphi_subdiv: u32,
-) -> RenderMesh
-{
+) -> RenderMesh {
     let top = sphere::unit_hemisphere(ntheta_subdiv, nphi_subdiv);
     let RenderMesh {
         coords,
@@ -36,16 +34,16 @@ pub fn capsule(
 
     // shift the top
     for coord in top_coords.iter_mut() {
-        coord.x = coord.x * caps_diameter;
+        coord.x *= caps_diameter;
         coord.y = coord.y * caps_diameter + half_height;
-        coord.z = coord.z * caps_diameter;
+        coord.z *= caps_diameter;
     }
 
     // flip + shift the bottom
     for coord in bottom_coords.iter_mut() {
-        coord.x = coord.x * caps_diameter;
+        coord.x *= caps_diameter;
         coord.y = -(coord.y * caps_diameter) - half_height;
-        coord.z = coord.z * caps_diameter;
+        coord.z *= caps_diameter;
     }
 
     // flip the bottom normals
@@ -57,15 +55,15 @@ pub fn capsule(
     let base_top_coords = bottom_coords.len() as u32;
 
     for idx in top_indices.iter_mut() {
-        idx.x = idx.x + base_top_coords;
-        idx.y = idx.y + base_top_coords;
-        idx.z = idx.z + base_top_coords;
+        idx.x += base_top_coords;
+        idx.y += base_top_coords;
+        idx.z += base_top_coords;
     }
 
     // merge all buffers
-    bottom_coords.extend(top_coords.into_iter());
-    bottom_normals.extend(top_normals.into_iter());
-    bottom_indices.extend(top_indices.into_iter());
+    bottom_coords.extend(top_coords);
+    bottom_normals.extend(top_normals);
+    bottom_indices.extend(top_indices);
 
     // attach the two caps
     utils::push_ring_indices(0, base_top_coords, ntheta_subdiv, &mut bottom_indices);

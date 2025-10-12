@@ -2,7 +2,7 @@ use crate::camera::Camera;
 use crate::context::Context;
 use crate::light::Light;
 use crate::resource::Material;
-use crate::resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
+use crate::resource::{Effect, GpuMesh, ShaderAttribute, ShaderUniform};
 use crate::scene::{InstancesBuffer, ObjectData};
 use crate::verify;
 use na::{Isometry3, Matrix3, Matrix4, Point2, Point3, Vector3};
@@ -53,7 +53,7 @@ impl Material for UvsMaterial {
         _: &Light,
         data: &ObjectData,
         _instances: &mut InstancesBuffer,
-        mesh: &mut Mesh,
+        mesh: &mut GpuMesh,
     ) {
         if !data.surface_rendering_active() {
             return;

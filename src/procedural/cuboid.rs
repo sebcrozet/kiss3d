@@ -3,7 +3,6 @@ use super::{IndexBuffer, RenderMesh};
 use na;
 use na::{Point2, Point3, Vector2, Vector3};
 
-
 /**
  * Generates a cuboid shape with a split index buffer.
  *
@@ -28,10 +27,6 @@ pub fn unit_cuboid() -> RenderMesh {
     let mut normals = Vec::with_capacity(6);
     let mut faces = Vec::with_capacity(12);
 
-    let _1 = 1.0;
-    let m1 = -_1;
-    let _0 = 0.0;
-
     coords.push(Point3::new(-0.5, -0.5, 0.5));
     coords.push(Point3::new(-0.5, -0.5, -0.5));
     coords.push(Point3::new(0.5, -0.5, -0.5));
@@ -41,17 +36,17 @@ pub fn unit_cuboid() -> RenderMesh {
     coords.push(Point3::new(0.5, 0.5, -0.5));
     coords.push(Point3::new(0.5, 0.5, 0.5));
 
-    uvs.push(Point2::new(_0, _1));
-    uvs.push(Point2::new(_1, _1));
-    uvs.push(Point2::new(_0, _0));
-    uvs.push(Point2::new(_1, _0));
+    uvs.push(Point2::new(0.0, 1.0));
+    uvs.push(Point2::new(1.0, 1.0));
+    uvs.push(Point2::new(0.0, 0.0));
+    uvs.push(Point2::new(1.0, 0.0));
 
-    normals.push(Vector3::new(m1, _0, _0));
-    normals.push(Vector3::new(_0, _0, m1));
-    normals.push(Vector3::new(_1, _0, _0));
-    normals.push(Vector3::new(_0, _0, _1));
-    normals.push(Vector3::new(_0, m1, _0));
-    normals.push(Vector3::new(_0, _1, _0));
+    normals.push(Vector3::new(-1.0, 0.0, 0.0));
+    normals.push(Vector3::new(0.0, 0.0, -1.0));
+    normals.push(Vector3::new(1.0, 0.0, 0.0));
+    normals.push(Vector3::new(0.0, 0.0, 1.0));
+    normals.push(Vector3::new(0.0, -1.0, 0.0));
+    normals.push(Vector3::new(0.0, 1.0, 0.0));
 
     faces.push(Point3::new(
         Point3::new(4, 0, 0),

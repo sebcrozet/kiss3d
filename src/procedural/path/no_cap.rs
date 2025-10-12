@@ -1,9 +1,14 @@
 use crate::procedural::path::PolylineCompatibleCap;
 use na::{Point3, Vector3};
 
-
 /// A cap that renders nothing.
 pub struct NoCap;
+
+impl Default for NoCap {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl NoCap {
     /// Creates a new `NoCap`.

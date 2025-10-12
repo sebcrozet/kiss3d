@@ -1,4 +1,4 @@
-use na::{Point3, RealField, Vector3};
+use na::{Point3, Vector3};
 
 use crate::procedural::RenderMesh;
 

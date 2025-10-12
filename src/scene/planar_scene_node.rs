@@ -84,7 +84,7 @@ impl PlanarSceneNodeData {
     /// Render the scene graph rooted by this node.
     pub fn render(&mut self, camera: &mut dyn PlanarCamera) {
         if self.visible {
-            self.do_render(&na::one(), &Vector2::from_element(1.0), camera)
+            self.do_render(&na::one(), &Vector2::repeat(1.0), camera)
         }
     }
 

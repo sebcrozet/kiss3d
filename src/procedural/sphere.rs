@@ -4,15 +4,13 @@ use super::{IndexBuffer, RenderMesh};
 use na;
 use na::{Point2, Point3, Vector3};
 
-
 /// Generates a UV sphere.
 pub fn sphere(
     diameter: f32,
     ntheta_subdiv: u32,
     nphi_subdiv: u32,
     generate_uvs: bool,
-) -> RenderMesh
-{
+) -> RenderMesh {
     let mut sphere = unit_sphere(ntheta_subdiv, nphi_subdiv, generate_uvs);
 
     sphere.scale_by_scalar(diameter);
@@ -21,8 +19,7 @@ pub fn sphere(
 }
 
 /// Generates a UV sphere centered at the origin and with a unit diameter.
-pub fn unit_sphere(ntheta_subdiv: u32, nphi_subdiv: u32, generate_uvs: bool) -> RenderMesh
-{
+pub fn unit_sphere(ntheta_subdiv: u32, nphi_subdiv: u32, generate_uvs: bool) -> RenderMesh {
     if generate_uvs {
         unit_sphere_with_uvs(ntheta_subdiv, nphi_subdiv)
     } else {
@@ -31,8 +28,7 @@ pub fn unit_sphere(ntheta_subdiv: u32, nphi_subdiv: u32, generate_uvs: bool) -> 
 }
 
 // FIXME: f32{theta,phi}_subdiv are not the right names.
-fn unit_sphere_without_uvs(ntheta_subdiv: u32, nphi_subdiv: u32) -> RenderMesh
-{
+fn unit_sphere_without_uvs(ntheta_subdiv: u32, nphi_subdiv: u32) -> RenderMesh {
     let pi = std::f32::consts::PI;
     let two_pi = std::f32::consts::TAU;
     let pi_two = std::f32::consts::FRAC_PI_2;
@@ -53,7 +49,7 @@ fn unit_sphere_without_uvs(ntheta_subdiv: u32, nphi_subdiv: u32) -> RenderMesh
             curr_phi.sin(),
             &mut coords,
         );
-        curr_phi = curr_phi + dphi;
+        curr_phi += dphi;
     }
 
     coords.push(Point3::new(na::zero(), 1.0, na::zero()));
@@ -107,7 +103,7 @@ fn unit_sphere_with_uvs(ntheta_subdiv: u32, nphi_subdiv: u32) -> RenderMesh {
             curr_phi.sin(),
             &mut coords,
         );
-        curr_phi = curr_phi + dphi;
+        curr_phi += dphi;
     }
 
     // the normals are the same as the coords
@@ -130,10 +126,10 @@ fn unit_sphere_with_uvs(ntheta_subdiv: u32, nphi_subdiv: u32) -> RenderMesh {
 
         for _ in 0..ntheta_subdiv + 1 {
             uvs.push(Point2::new(curr_uvtheta, curr_uvphi));
-            curr_uvtheta = curr_uvtheta + duvtheta;
+            curr_uvtheta += duvtheta;
         }
 
-        curr_uvphi = curr_uvphi + duvphi;
+        curr_uvphi += duvphi;
     }
 
     let mut res = RenderMesh::new(
@@ -166,7 +162,7 @@ pub fn unit_hemisphere(ntheta_subdiv: u32, nphi_subdiv: u32) -> RenderMesh {
             curr_phi.sin(),
             &mut coords,
         );
-        curr_phi = curr_phi + dphi;
+        curr_phi += dphi;
     }
 
     coords.push(Point3::new(na::zero(), 1.0, na::zero()));

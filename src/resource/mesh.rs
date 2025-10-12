@@ -1,17 +1,17 @@
 //! Data structure of a scene node geometry.
 use std::sync::{Arc, RwLock};
 
+use crate::procedural::{IndexBuffer, RenderMesh};
 use crate::resource::gpu_vector::{AllocationType, BufferType, GPUVec};
 use crate::resource::vertex_index::VertexIndex;
 use crate::resource::ShaderAttribute;
 use na::{self, Point2, Point3, Vector3};
-use ncollide3d::procedural::{IndexBuffer, TriMesh};
 use num::Zero;
 
 /// Aggregation of vertices, indices, normals and texture coordinates.
 ///
 /// It also contains the GPU location of those buffers.
-pub struct Mesh {
+pub struct GpuMesh {
     coords: Arc<RwLock<GPUVec<Point3<f32>>>>,
     faces: Arc<RwLock<GPUVec<Point3<VertexIndex>>>>,
     normals: Arc<RwLock<GPUVec<Vector3<f32>>>>,
@@ -19,7 +19,7 @@ pub struct Mesh {
     edges: Option<Arc<RwLock<GPUVec<Point2<VertexIndex>>>>>,
 }
 
-impl Mesh {
+impl GpuMesh {
     /// Creates a new mesh.
     ///
     /// If the normals and uvs are not given, they are automatically computed.
@@ -29,10 +29,10 @@ impl Mesh {
         normals: Option<Vec<Vector3<f32>>>,
         uvs: Option<Vec<Point2<f32>>>,
         dynamic_draw: bool,
-    ) -> Mesh {
+    ) -> GpuMesh {
         let normals = match normals {
             Some(ns) => ns,
-            None => Mesh::compute_normals_array(&coords[..], &faces[..]),
+            None => GpuMesh::compute_normals_array(&coords[..], &faces[..]),
         };
 
         let uvs = match uvs {
@@ -62,25 +62,25 @@ impl Mesh {
         )));
         let us = Arc::new(RwLock::new(GPUVec::new(uvs, BufferType::Array, location)));
 
-        Mesh::new_with_gpu_vectors(cs, fs, ns, us)
+        GpuMesh::new_with_gpu_vectors(cs, fs, ns, us)
     }
 
     /// Creates a new mesh from a mesh descr.
     ///
     /// In the normals and uvs are not given, they are automatically computed.
-    pub fn from_trimesh(mesh: TriMesh<f32>, dynamic_draw: bool) -> Mesh {
+    pub fn from_render_mesh(mesh: RenderMesh, dynamic_draw: bool) -> GpuMesh {
         let mut mesh = mesh;
 
         mesh.unify_index_buffer();
 
-        let TriMesh {
+        let RenderMesh {
             coords,
             normals,
             uvs,
             indices,
         } = mesh;
 
-        Mesh::new(
+        GpuMesh::new(
             coords,
             indices
                 .unwrap_unified()
@@ -97,7 +97,7 @@ impl Mesh {
     /// Creates a triangle mesh from this mesh.
     ///
     /// Return `None` if the mesh data is not available on the CPU.
-    pub fn to_trimesh(&self) -> Option<TriMesh<f32>> {
+    pub fn to_render_mesh(&self) -> Option<RenderMesh> {
         if !self.coords.read().unwrap().is_on_ram()
             || !self.faces.read().unwrap().is_on_ram()
             || !self.normals.read().unwrap().is_on_ram()
@@ -111,7 +111,7 @@ impl Mesh {
         let normals = self.normals.read().unwrap().to_owned();
         let uvs = self.uvs.read().unwrap().to_owned();
 
-        Some(TriMesh::new(
+        Some(RenderMesh::new(
             coords.unwrap(),
             normals,
             uvs,
@@ -177,8 +177,8 @@ impl Mesh {
         faces: Arc<RwLock<GPUVec<Point3<VertexIndex>>>>,
         normals: Arc<RwLock<GPUVec<Vector3<f32>>>>,
         uvs: Arc<RwLock<GPUVec<Point2<f32>>>>,
-    ) -> Mesh {
-        Mesh {
+    ) -> GpuMesh {
+        GpuMesh {
             coords,
             faces,
             normals,
@@ -252,7 +252,7 @@ impl Mesh {
 
     /// Recompute this mesh normals.
     pub fn recompute_normals(&mut self) {
-        Mesh::compute_normals(
+        GpuMesh::compute_normals(
             &self.coords.read().unwrap().data().as_ref().unwrap()[..],
             &self.faces.read().unwrap().data().as_ref().unwrap()[..],
             self.normals.write().unwrap().data_mut().as_mut().unwrap(),
@@ -286,7 +286,7 @@ impl Mesh {
     ) -> Vec<Vector3<f32>> {
         let mut res = Vec::new();
 
-        Mesh::compute_normals(coordinates, faces, &mut res);
+        GpuMesh::compute_normals(coordinates, faces, &mut res);
 
         res
     }

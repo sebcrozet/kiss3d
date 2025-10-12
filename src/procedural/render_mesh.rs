@@ -1,12 +1,11 @@
 use super::utils;
-use na::{self, Isometry3, Point2, Point3, RealField, Translation3, Vector3};
-use std::collections::HashMap;
+use na::{self, Isometry3, Point2, Point3, Translation3, Vector3};
 use parry3d::shape::TriMesh;
 use parry3d::utils::DeterministicState;
+use std::collections::HashMap;
 
 /// Different representations of the index buffer.
 #[derive(Clone, Debug)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum IndexBuffer {
     /// The vertex, normal, and uvs share the same indices.
     Unified(Vec<Point3<u32>>),
@@ -33,12 +32,11 @@ impl IndexBuffer {
         }
     }
 
-
     /// Returns the unified index buffer data or fails.
     #[inline]
     pub fn as_unified(&self) -> &[Point3<u32>] {
         match self {
-            IndexBuffer::Unified(b) => &b,
+            IndexBuffer::Unified(b) => b,
             _ => panic!("Unable to unwrap to an unified buffer."),
         }
     }
@@ -47,14 +45,13 @@ impl IndexBuffer {
     #[inline]
     pub fn as_split(&self) -> &[Point3<Point3<u32>>] {
         match self {
-            IndexBuffer::Split(b) => &b,
+            IndexBuffer::Split(b) => b,
             _ => panic!("Unable to unwrap to a split buffer."),
         }
     }
 }
 
 #[derive(Clone, Debug)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 /// Geometric description of a mesh.
 pub struct RenderMesh {
     // FIXME: those should *not* be public.
@@ -106,9 +103,9 @@ impl RenderMesh {
         });
 
         RenderMesh {
-            coords: coords,
-            normals: normals,
-            uvs: uvs,
+            coords,
+            normals,
+            uvs,
             indices: idx,
         }
     }
@@ -129,7 +126,7 @@ impl RenderMesh {
     #[inline]
     pub fn translate_by(&mut self, t: &Translation3<f32>) {
         for c in self.coords.iter_mut() {
-            *c = t * &*c;
+            *c = t * *c;
         }
     }
 
@@ -137,12 +134,12 @@ impl RenderMesh {
     #[inline]
     pub fn transform_by(&mut self, t: &Isometry3<f32>) {
         for c in self.coords.iter_mut() {
-            *c = t * &*c;
+            *c = t * *c;
         }
 
         for n in self.normals.iter_mut() {
             for n in n.iter_mut() {
-                *n = t * &*n;
+                *n = t * *n;
             }
         }
     }
@@ -214,7 +211,7 @@ impl RenderMesh {
     pub fn flip_normals(&mut self) {
         if let Some(ref mut normals) = self.normals {
             for n in normals {
-                *n = *n
+                *n = -*n
             }
         }
     }
@@ -253,7 +250,7 @@ impl RenderMesh {
     #[inline]
     pub fn scale_by_scalar(&mut self, s: f32) {
         for c in self.coords.iter_mut() {
-            *c = *c * s
+            *c *= s
         }
     }
 }
@@ -283,14 +280,14 @@ impl RenderMesh {
                             None => {
                                 let idx = resc.len() as u32;
 
-                                resc.push(self.coords[point.x as usize].clone());
+                                resc.push(self.coords[point.x as usize]);
 
                                 let _ = resn.as_mut().map(|l| {
-                                    l.push(self.normals.as_ref().unwrap()[point.y as usize].clone())
+                                    l.push(self.normals.as_ref().unwrap()[point.y as usize])
                                 });
-                                let _ = resu.as_mut().map(|l| {
-                                    l.push(self.uvs.as_ref().unwrap()[point.z as usize].clone())
-                                });
+                                let _ = resu
+                                    .as_mut()
+                                    .map(|l| l.push(self.uvs.as_ref().unwrap()[point.z as usize]));
 
                                 resi.push(idx);
 
@@ -298,7 +295,7 @@ impl RenderMesh {
                             }
                         };
 
-                        let _ = idx.map(|i| vt2id.insert(point.clone(), i));
+                        let _ = idx.map(|i| vt2id.insert(*point, i));
                     }
                 }
 
@@ -335,14 +332,14 @@ impl RenderMesh {
                 for triangle in ids.iter() {
                     for point in triangle.iter() {
                         let idx = resc.len() as u32;
-                        resc.push(self.coords[point.x as usize].clone());
+                        resc.push(self.coords[point.x as usize]);
 
-                        let _ = resn.as_mut().map(|l| {
-                            l.push(self.normals.as_ref().unwrap()[point.y as usize].clone())
-                        });
+                        let _ = resn
+                            .as_mut()
+                            .map(|l| l.push(self.normals.as_ref().unwrap()[point.y as usize]));
                         let _ = resu
                             .as_mut()
-                            .map(|l| l.push(self.uvs.as_ref().unwrap()[point.z as usize].clone()));
+                            .map(|l| l.push(self.uvs.as_ref().unwrap()[point.z as usize]));
 
                         resi.push(idx);
                     }
@@ -352,14 +349,14 @@ impl RenderMesh {
                 for triangle in ids.iter() {
                     for point in triangle.iter() {
                         let idx = resc.len() as u32;
-                        resc.push(self.coords[*point as usize].clone());
+                        resc.push(self.coords[*point as usize]);
 
-                        let _ = resn.as_mut().map(|l| {
-                            l.push(self.normals.as_ref().unwrap()[*point as usize].clone())
-                        });
+                        let _ = resn
+                            .as_mut()
+                            .map(|l| l.push(self.normals.as_ref().unwrap()[*point as usize]));
                         let _ = resu
                             .as_mut()
-                            .map(|l| l.push(self.uvs.as_ref().unwrap()[*point as usize].clone()));
+                            .map(|l| l.push(self.uvs.as_ref().unwrap()[*point as usize]));
 
                         resi.push(idx);
                     }

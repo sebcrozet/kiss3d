@@ -2,9 +2,10 @@
 
 use crate::loader::mtl::MtlMaterial;
 use crate::loader::obj;
-use crate::resource::Mesh;
-use ncollide3d::procedural;
-use ncollide3d::procedural::TriMesh;
+use crate::procedural;
+use crate::procedural::RenderMesh;
+use crate::resource::GpuMesh;
+use parry3d::shape::TriMesh;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::io::Result as IoResult;
@@ -18,7 +19,7 @@ use std::rc::Rc;
 /// It keeps a cache of already-loaded meshes. Note that this is only a cache, nothing more.
 /// Thus, its usage is not required to load meshes.
 pub struct MeshManager {
-    meshes: HashMap<String, Rc<RefCell<Mesh>>>,
+    meshes: HashMap<String, Rc<RefCell<GpuMesh>>>,
 }
 
 impl Default for MeshManager {
@@ -34,10 +35,10 @@ impl MeshManager {
             meshes: HashMap::new(),
         };
 
-        let _ = res.add_trimesh(procedural::unit_sphere(50, 50, true), false, "sphere");
-        let _ = res.add_trimesh(procedural::unit_cuboid(), false, "cube");
-        let _ = res.add_trimesh(procedural::unit_cone(50), false, "cone");
-        let _ = res.add_trimesh(procedural::unit_cylinder(50), false, "cylinder");
+        let _ = res.add_render_mesh(procedural::unit_sphere(50, 50, true), false, "sphere");
+        let _ = res.add_render_mesh(procedural::unit_cuboid(), false, "cube");
+        let _ = res.add_render_mesh(procedural::unit_cone(50), false, "cone");
+        let _ = res.add_render_mesh(procedural::unit_cylinder(50), false, "cylinder");
 
         res
     }
@@ -49,23 +50,38 @@ impl MeshManager {
     }
 
     /// Get a mesh with the specified name. Returns `None` if the mesh is not registered.
-    pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<Mesh>>> {
+    pub fn get(&mut self, name: &str) -> Option<Rc<RefCell<GpuMesh>>> {
         self.meshes.get(name).cloned()
     }
 
     /// Adds a mesh with the specified name to this cache.
-    pub fn add(&mut self, mesh: Rc<RefCell<Mesh>>, name: &str) {
+    pub fn add(&mut self, mesh: Rc<RefCell<GpuMesh>>, name: &str) {
         let _ = self.meshes.insert(name.to_string(), mesh);
+    }
+
+    /// Adds a mesh with the specified mesh descriptor and name.
+    pub fn add_render_mesh(
+        &mut self,
+        mesh: RenderMesh,
+        dynamic_draw: bool,
+        name: &str,
+    ) -> Rc<RefCell<GpuMesh>> {
+        let mesh = GpuMesh::from_render_mesh(mesh, dynamic_draw);
+        let mesh = Rc::new(RefCell::new(mesh));
+
+        self.add(mesh.clone(), name);
+
+        mesh
     }
 
     /// Adds a mesh with the specified mesh descriptor and name.
     pub fn add_trimesh(
         &mut self,
-        descr: TriMesh<f32>,
+        descr: TriMesh,
         dynamic_draw: bool,
         name: &str,
-    ) -> Rc<RefCell<Mesh>> {
-        let mesh = Mesh::from_trimesh(descr, dynamic_draw);
+    ) -> Rc<RefCell<GpuMesh>> {
+        let mesh = GpuMesh::from_render_mesh(descr.into(), dynamic_draw);
         let mesh = Rc::new(RefCell::new(mesh));
 
         self.add(mesh.clone(), name);
@@ -84,7 +100,7 @@ impl MeshManager {
         path: &Path,
         mtl_dir: &Path,
         geometry_name: &str,
-    ) -> IoResult<Vec<(String, Rc<RefCell<Mesh>>, Option<MtlMaterial>)>> {
+    ) -> IoResult<Vec<(String, Rc<RefCell<GpuMesh>>, Option<MtlMaterial>)>> {
         obj::parse_file(path, mtl_dir, geometry_name).map(|ms| {
             let mut res = Vec::new();
 

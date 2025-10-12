@@ -3,7 +3,7 @@ use crate::context::Context;
 use crate::light::Light;
 use crate::resource::vertex_index::VERTEX_INDEX_TYPE;
 use crate::resource::Material;
-use crate::resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
+use crate::resource::{Effect, GpuMesh, ShaderAttribute, ShaderUniform};
 use crate::scene::{InstancesBuffer, ObjectData};
 use crate::{ignore, verify};
 use na::{Isometry3, Matrix3, Matrix4, Point2, Point3, Vector3};
@@ -49,8 +49,8 @@ impl ObjectMaterial {
             tex_coord: effect.get_attrib("tex_coord").unwrap(),
             inst_tra: effect.get_attrib("inst_tra").unwrap(),
             inst_color: effect.get_attrib("inst_color").unwrap(),
-            inst_def0: effect.get_attrib("inst_def_0").unwrap(),
-            inst_def1: effect.get_attrib("inst_def_1").unwrap(),
+            inst_def0: effect.get_attrib("inst_def0.0").unwrap(),
+            inst_def1: effect.get_attrib("inst_def1.0").unwrap(),
             inst_def2: effect.get_attrib("inst_def_2").unwrap(),
             light: effect.get_uniform("light_position").unwrap(),
             color: effect.get_uniform("color").unwrap(),
@@ -97,7 +97,7 @@ impl Material for ObjectMaterial {
         light: &Light,
         data: &ObjectData,
         instances: &mut InstancesBuffer,
-        mesh: &mut Mesh,
+        mesh: &mut GpuMesh,
     ) {
         let ctxt = Context::get();
         self.activate();

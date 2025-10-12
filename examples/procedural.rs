@@ -1,15 +1,14 @@
 extern crate kiss3d;
 extern crate nalgebra as na;
-extern crate ncollide2d;
-extern crate ncollide3d;
 extern crate rand;
 
 use kiss3d::light::Light;
+use kiss3d::procedural::path::StrokePattern;
+use kiss3d::procedural::path::{ArrowheadCap, PolylinePath, PolylinePattern};
+use kiss3d::procedural::RenderMesh;
 use kiss3d::window::Window;
 use na::{Point2, Point3, Translation3, Vector2, Vector3};
-use ncollide2d::procedural::Polyline;
-use ncollide3d::procedural::path::{ArrowheadCap, PolylinePath, PolylinePattern, StrokePattern};
-use ncollide3d::procedural::TriMesh;
+use parry3d::shape::TriMesh;
 use std::path::Path;
 
 fn main() {
@@ -18,23 +17,23 @@ fn main() {
     /*
      * A cube.
      */
-    let cube = ncollide3d::procedural::cuboid(&Vector3::new(0.7f32, 0.2, 0.4));
-    let mut c = window.add_trimesh(cube, Vector3::from_element(1.0));
+    let cube = kiss3d::procedural::cuboid(&Vector3::new(0.7f32, 0.2, 0.4));
+    let mut c = window.add_render_mesh(cube, Vector3::from_element(1.0));
     c.append_translation(&Translation3::new(1.0, 0.0, 0.0));
     c.set_texture_from_file(Path::new("./examples/media/kitten.png"), "kitten");
 
     /*
      * A sphere.
      */
-    let sphere = ncollide3d::procedural::sphere(0.4f32, 20, 20, true);
-    let mut s = window.add_trimesh(sphere, Vector3::from_element(1.0));
+    let sphere = kiss3d::procedural::sphere(0.4f32, 20, 20, true);
+    let mut s = window.add_render_mesh(sphere, Vector3::from_element(1.0));
     s.set_texture_with_name("kitten");
 
     /*
      * A capsule.
      */
-    let capsule = ncollide3d::procedural::capsule(&0.4f32, &0.4f32, 20, 20);
-    let mut c = window.add_trimesh(capsule, Vector3::from_element(1.0));
+    let capsule = kiss3d::procedural::capsule(0.4f32, 0.4f32, 20, 20);
+    let mut c = window.add_render_mesh(capsule, Vector3::from_element(1.0));
     c.append_translation(&Translation3::new(-1.0, 0.0, 0.0));
     c.set_color(0.0, 0.0, 1.0);
 
@@ -85,8 +84,8 @@ fn main() {
         Point3::new(2.0, 3.0, 2.0),
         Point3::new(3.0, 3.0, 0.0),
     ];
-    let bezier = ncollide3d::procedural::bezier_surface(&control_points, 4, 4, 100, 100);
-    let mut b = window.add_trimesh(bezier, Vector3::from_element(1.0));
+    let bezier = kiss3d::procedural::bezier_surface(&control_points, 4, 4, 100, 100);
+    let mut b = window.add_render_mesh(bezier, Vector3::from_element(1.0));
     b.append_translation(&Translation3::new(-1.5, -1.5, 0.0));
     b.enable_backface_culling(false);
 
@@ -123,14 +122,14 @@ fn main() {
         Point3::new(-2.0f32, 1.0, 4.0),
         Point3::new(-2.0f32, 4.0, 2.0),
     ];
-    let bezier = ncollide3d::procedural::bezier_curve(&control_points, 100);
+    let bezier = kiss3d::procedural::bezier_curve(&control_points, 100);
     let mut path = PolylinePath::new(&bezier);
-    let pattern = ncollide2d::procedural::unit_circle(100);
+    let pattern = kiss3d::procedural::unit_circle(100);
     let start_cap = ArrowheadCap::new(1.5f32, 2.0, 0.0);
     let end_cap = ArrowheadCap::new(2.0f32, 2.0, 0.5);
     let mut pattern = PolylinePattern::new(pattern.coords(), true, start_cap, end_cap);
     let mesh = pattern.stroke(&mut path);
-    let mut m = window.add_trimesh(mesh, Vector3::new(0.5f32, 0.5, 0.5));
+    let mut m = window.add_render_mesh(mesh, Vector3::new(0.5f32, 0.5, 0.5));
     m.append_translation(&Translation3::new(4.0, -1.0, 0.0));
     m.set_color(1.0, 1.0, 0.0);
 
@@ -142,10 +141,10 @@ fn main() {
         points.push(rand::random::<Point3<f32>>() * 2.0f32);
     }
 
-    let chull = ncollide3d::transformation::convex_hull(&points[..]);
-    let mut mhull = window.add_trimesh(chull, Vector3::from_element(1.0));
-    let mut mpts = window.add_trimesh(
-        TriMesh::new(points, None, None, None),
+    let chull = parry3d::transformation::convex_hull(&points[..]);
+    let mut mhull = window.add_trimesh(TriMesh::new(chull.0, chull.1), Vector3::from_element(1.0));
+    let mut mpts = window.add_render_mesh(
+        RenderMesh::new(points, None, None, None),
         Vector3::from_element(1.0),
     );
     mhull.append_translation(&Translation3::new(0.0, 2.0, -1.0));
@@ -168,7 +167,7 @@ fn main() {
     }
 
     let points = &points[..];
-    let polyline = ncollide2d::transformation::convex_hull(points);
+    let polyline = parry2d::transformation::convex_hull(points);
 
     /*
      *
@@ -182,8 +181,8 @@ fn main() {
     }
 }
 
-fn draw_polyline(window: &mut Window, polyline: &Polyline<f32>, points: &[Point2<f32>]) {
-    for pt in polyline.coords().windows(2) {
+fn draw_polyline(window: &mut Window, polyline: &[Point2<f32>], points: &[Point2<f32>]) {
+    for pt in polyline.windows(2) {
         window.draw_line(
             &Point3::new(pt[0].x, pt[0].y, 0.0),
             &Point3::new(pt[1].x, pt[1].y, 0.0),
@@ -191,10 +190,10 @@ fn draw_polyline(window: &mut Window, polyline: &Polyline<f32>, points: &[Point2
         );
     }
 
-    let last = polyline.coords().len() - 1;
+    let last = polyline.len() - 1;
     window.draw_line(
-        &Point3::new(polyline.coords()[0].x, polyline.coords()[0].y, 0.0),
-        &Point3::new(polyline.coords()[last].x, polyline.coords()[last].y, 0.0),
+        &Point3::new(polyline[0].x, polyline[0].y, 0.0),
+        &Point3::new(polyline[last].x, polyline[last].y, 0.0),
         &Point3::new(0.0, 1.0, 0.0),
     );
 
@@ -202,7 +201,7 @@ fn draw_polyline(window: &mut Window, polyline: &Polyline<f32>, points: &[Point2
         window.draw_point(&Point3::new(pt.x, pt.y, 0.0), &Point3::new(0.0, 0.0, 1.0));
     }
 
-    for pt in polyline.coords().iter() {
+    for pt in polyline.iter() {
         window.draw_point(&Point3::new(pt.x, pt.y, 0.0), &Point3::new(1.0, 0.0, 0.0));
     }
 }
