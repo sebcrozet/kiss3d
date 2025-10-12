@@ -931,7 +931,7 @@ impl Window {
     /// Returns `false` if the window should be closed.
     // TODO: would be good to have a 2D version of this that renders with a 2D side-scroll camera.
     pub async fn render(&mut self) -> bool {
-        self.render_with(None, None, None).await
+        self.render_with(None, None, None, None).await
     }
 
     /// Render using a specific post processing effect.
@@ -941,14 +941,14 @@ impl Window {
         &mut self,
         effect: &mut dyn PostProcessingEffect,
     ) -> bool {
-        self.render_with(None, None, Some(effect)).await
+        self.render_with(None, None, Some(effect), None).await
     }
 
     /// Render using a specific camera.
     ///
     /// Returns `false` if the window should be closed.
     pub async fn render_with_camera(&mut self, camera: &mut dyn Camera) -> bool {
-        self.render_with(Some(camera), None, None).await
+        self.render_with(Some(camera), None, None, None).await
     }
 
     /// Render using a specific 2D and 3D camera.
@@ -959,7 +959,7 @@ impl Window {
         camera: &mut dyn Camera,
         planar_camera: &mut dyn PlanarCamera,
     ) -> bool {
-        self.render_with(Some(camera), Some(planar_camera), None)
+        self.render_with(Some(camera), Some(planar_camera), None, None)
             .await
     }
 
@@ -971,7 +971,7 @@ impl Window {
         camera: &mut dyn Camera,
         effect: &mut dyn PostProcessingEffect,
     ) -> bool {
-        self.render_with(Some(camera), None, Some(effect))
+        self.render_with(Some(camera), None, Some(effect), None)
             .await
     }
 
@@ -984,11 +984,11 @@ impl Window {
         planar_camera: &mut dyn PlanarCamera,
         effect: &mut dyn PostProcessingEffect,
     ) -> bool {
-        self.render_with(Some(camera), Some(planar_camera), Some(effect))
+        self.render_with(Some(camera), Some(planar_camera), Some(effect), None)
             .await
     }
 
-    /// Draws the scene with the given camera and post-processing effect.
+    /// Draws the scene with the given cameras, post-processing effect, and custom renderer.
     ///
     /// Returns `false` if the window should be closed.
     pub async fn render_with(
@@ -996,9 +996,10 @@ impl Window {
         camera: Option<&mut dyn Camera>,
         planar_camera: Option<&mut dyn PlanarCamera>,
         post_processing: Option<&mut dyn PostProcessingEffect>,
+        renderer: Option<&mut dyn Renderer>,
     ) -> bool {
         // FIXME: for backward-compatibility, we don't accept any custom renderer here.
-        self.do_render_with(camera, planar_camera, None, post_processing)
+        self.do_render_with(camera, planar_camera, renderer, post_processing)
             .await
     }
 
