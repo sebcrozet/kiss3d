@@ -69,11 +69,6 @@ impl Canvas {
         }
     }
 
-    /// Run the platform-specific render loop.
-    pub fn render_loop(data: impl FnMut(f64) -> bool + 'static) {
-        CanvasImpl::render_loop(data)
-    }
-
     /// Poll all events that occurred since the last call to this method.
     pub fn poll_events(&mut self) {
         self.canvas.poll_events()
@@ -157,7 +152,6 @@ pub(crate) trait AbstractCanvas {
         window_setup: Option<CanvasSetup>,
         out_events: Sender<WindowEvent>,
     ) -> Self;
-    fn render_loop(data: impl FnMut(f64) -> bool + 'static);
     fn poll_events(&mut self);
     fn swap_buffers(&mut self);
     fn size(&self) -> (u32, u32);

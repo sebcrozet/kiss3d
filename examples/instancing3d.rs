@@ -6,7 +6,17 @@ use kiss3d::scene::InstanceData;
 use kiss3d::window::Window;
 use na::{Matrix3, Point3, UnitQuaternion, Vector3};
 
+#[cfg(not(target_arch = "wasm32"))]
 fn main() {
+    pollster::block_on(run())
+}
+
+#[cfg(target_arch = "wasm32")]
+fn main() {
+    wasm_bindgen_futures::spawn_local(run())
+}
+
+async fn run() {
     env_logger::init();
     let mut window = Window::new("Kiss3d: instancing 3D");
     let mut c = window.add_cube(1.0, 1.0, 1.0);
@@ -38,7 +48,7 @@ fn main() {
 
     let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
 
-    while window.render() {
+    while window.render_async().await {
         c.prepend_to_local_rotation(&rot);
     }
 }

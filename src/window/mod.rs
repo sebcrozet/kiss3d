@@ -3,7 +3,6 @@
 mod canvas;
 #[cfg(not(target_arch = "wasm32"))]
 mod gl_canvas;
-mod state;
 #[cfg(target_arch = "wasm32")]
 mod webgl_canvas;
 mod window;
@@ -13,7 +12,6 @@ pub(crate) use canvas::AbstractCanvas;
 pub use canvas::{Canvas, CanvasSetup, NumSamples};
 #[cfg(not(target_arch = "wasm32"))]
 pub use gl_canvas::GLCanvas;
-pub use state::State;
 #[cfg(target_arch = "wasm32")]
 pub use webgl_canvas::WebGLCanvas;
 pub use window::Window;

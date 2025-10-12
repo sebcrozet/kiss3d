@@ -450,28 +450,6 @@ impl AbstractCanvas for WebGLCanvas {
         }
     }
 
-    fn render_loop(mut callback: impl FnMut(f64) -> bool + 'static) {
-        // See https://rustwasm.github.io/docs/wasm-bindgen/examples/request-animation-frame.html
-        if let Some(window) = web_sys::window() {
-            let f = Rc::new(RefCell::new(None));
-            let g: Rc<RefCell<Option<Closure<_>>>> = f.clone();
-            *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
-                if callback(0.0) {
-                    let _ = window.request_animation_frame(
-                        f.borrow().as_ref().unwrap().as_ref().unchecked_ref(),
-                    );
-                } else {
-                    // Drop the closure.
-                    f.borrow_mut().take();
-                }
-            }) as Box<dyn FnMut()>));
-
-            let _ = web_sys::window()
-                .unwrap()
-                .request_animation_frame(g.borrow().as_ref().unwrap().as_ref().unchecked_ref());
-        }
-    }
-
     fn scale_factor(&self) -> f64 {
         self.data.borrow().scale_factor
     }
