@@ -5,7 +5,7 @@ use kiss3d::camera::Camera;
 use kiss3d::context::Context;
 use kiss3d::light::Light;
 use kiss3d::resource::vertex_index::VERTEX_INDEX_TYPE;
-use kiss3d::resource::{Effect, Material, Mesh, ShaderAttribute, ShaderUniform};
+use kiss3d::resource::{Effect, GpuMesh, Material, ShaderAttribute, ShaderUniform};
 use kiss3d::scene::{InstancesBuffer, ObjectData};
 use kiss3d::window::Window;
 use na::{Isometry3, Matrix3, Matrix4, Point3, Translation3, UnitQuaternion, Vector3};
@@ -68,7 +68,7 @@ impl Material for NormalMaterial {
         _: &Light,
         _: &ObjectData,
         _: &mut InstancesBuffer,
-        mesh: &mut Mesh,
+        mesh: &mut GpuMesh,
     ) {
         self.shader.use_program();
         self.position.enable();

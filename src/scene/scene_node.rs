@@ -1,12 +1,13 @@
 use crate::camera::Camera;
 use crate::light::Light;
+use crate::procedural;
+use crate::procedural::RenderMesh;
 use crate::resource::vertex_index::VertexIndex;
-use crate::resource::{Material, MaterialManager, Mesh, MeshManager, Texture, TextureManager};
+use crate::resource::{GpuMesh, Material, MaterialManager, MeshManager, Texture, TextureManager};
 use crate::scene::{InstanceData, Object};
 use na;
 use na::{Isometry3, Point2, Point3, Translation3, UnitQuaternion, Vector3};
-use ncollide3d::procedural;
-use ncollide3d::procedural::TriMesh;
+use parry3d::shape::TriMesh;
 use std::cell::{Ref, RefCell, RefMut};
 use std::mem;
 use std::path::{Path, PathBuf};
@@ -734,8 +735,8 @@ impl SceneNode {
     /// * `h` - the capsule height
     /// * `r` - the capsule caps radius
     pub fn add_capsule(&mut self, r: f32, h: f32) -> SceneNode {
-        self.add_trimesh(
-            procedural::capsule(&(r * 2.0), &h, 50, 50),
+        self.add_render_mesh(
+            procedural::capsule(r * 2.0, h, 50, 50),
             Vector3::from_element(1.0),
         )
     }
@@ -753,7 +754,7 @@ impl SceneNode {
     ///   which will be placed vertically on each line. Must not be `0`.
     ///   update.
     pub fn add_quad(&mut self, w: f32, h: f32, usubdivs: usize, vsubdivs: usize) -> SceneNode {
-        let mut node = self.add_trimesh(
+        let mut node = self.add_render_mesh(
             procedural::quad(w, h, usubdivs, vsubdivs),
             Vector3::from_element(1.0),
         );
@@ -771,7 +772,7 @@ impl SceneNode {
     ) -> SceneNode {
         let geom = procedural::quad_with_vertices(vertices, nhpoints, nvpoints);
 
-        let mut node = self.add_trimesh(geom, Vector3::from_element(1.0));
+        let mut node = self.add_render_mesh(geom, Vector3::from_element(1.0));
         node.enable_backface_culling(false);
 
         node
@@ -787,7 +788,7 @@ impl SceneNode {
     }
 
     /// Creates and adds a new object to this node children using a mesh.
-    pub fn add_mesh(&mut self, mesh: Rc<RefCell<Mesh>>, scale: Vector3<f32>) -> SceneNode {
+    pub fn add_mesh(&mut self, mesh: Rc<RefCell<GpuMesh>>, scale: Vector3<f32>) -> SceneNode {
         let tex = TextureManager::get_global_manager(|tm| tm.get_default());
         let mat = MaterialManager::get_global_manager(|mm| mm.get_default());
         let object = Object::new(mesh, 1.0, 1.0, 1.0, tex, mat);
@@ -796,9 +797,17 @@ impl SceneNode {
     }
 
     /// Creates and adds a new object using a mesh descriptor.
-    pub fn add_trimesh(&mut self, descr: TriMesh<f32>, scale: Vector3<f32>) -> SceneNode {
+    pub fn add_render_mesh(&mut self, mesh: RenderMesh, scale: Vector3<f32>) -> SceneNode {
         self.add_mesh(
-            Rc::new(RefCell::new(Mesh::from_trimesh(descr, false))),
+            Rc::new(RefCell::new(GpuMesh::from_render_mesh(mesh, false))),
+            scale,
+        )
+    }
+
+    /// Creates and adds a new object using a mesh descriptor.
+    pub fn add_trimesh(&mut self, mesh: TriMesh, scale: Vector3<f32>) -> SceneNode {
+        self.add_mesh(
+            Rc::new(RefCell::new(GpuMesh::from_render_mesh(mesh.into(), false))),
             scale,
         )
     }

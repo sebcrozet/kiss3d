@@ -4,7 +4,7 @@ use crate::loader::mtl;
 use crate::loader::mtl::MtlMaterial;
 use crate::resource::vertex_index::VertexIndex;
 use crate::resource::GPUVec;
-use crate::resource::{AllocationType, BufferType, Mesh};
+use crate::resource::{AllocationType, BufferType, GpuMesh};
 use na::{Point2, Point3, Vector3};
 use num::Bounded;
 use std::collections::hash_map::Entry;
@@ -57,7 +57,7 @@ pub fn parse_file(
     path: &Path,
     mtl_base_dir: &Path,
     basename: &str,
-) -> IoResult<Vec<(String, Mesh, Option<MtlMaterial>)>> {
+) -> IoResult<Vec<(String, GpuMesh, Option<MtlMaterial>)>> {
     match File::open(path) {
         Ok(mut file) => {
             let mut sfile = String::new();
@@ -73,7 +73,7 @@ pub fn parse(
     string: &str,
     mtl_base_dir: &Path,
     basename: &str,
-) -> Vec<(String, Mesh, Option<MtlMaterial>)> {
+) -> Vec<(String, GpuMesh, Option<MtlMaterial>)> {
     let mut coords: Vec<Coord> = Vec::new();
     let mut normals: Vec<Normal> = Vec::new();
     let mut uvs: Vec<UV> = Vec::new();
@@ -402,7 +402,7 @@ fn reformat(
     groups_ids: Vec<Vec<Point3<VertexIndex>>>,
     groups: HashMap<String, usize>,
     group2mtl: HashMap<usize, MtlMaterial>,
-) -> Vec<(String, Mesh, Option<MtlMaterial>)> {
+) -> Vec<(String, GpuMesh, Option<MtlMaterial>)> {
     let mut vt2id: HashMap<Point3<VertexIndex>, VertexIndex> = HashMap::new();
     let mut vertex_ids: Vec<VertexIndex> = Vec::new();
     let mut resc: Vec<Coord> = Vec::new();
@@ -446,7 +446,7 @@ fn reformat(
 
         let mut resf = Vec::with_capacity(vertex_ids.len() / 3);
 
-        assert!(vertex_ids.len() % 3 == 0);
+        assert!(vertex_ids.len().is_multiple_of(3));
 
         for f in vertex_ids[..].chunks(3) {
             resf.push(Point3::new(f[0], f[1], f[2]));
@@ -457,7 +457,7 @@ fn reformat(
         vertex_ids.clear();
     }
 
-    let resn = resn.unwrap_or_else(|| Mesh::compute_normals_array(&resc[..], &allfs[..]));
+    let resn = resn.unwrap_or_else(|| GpuMesh::compute_normals_array(&resc[..], &allfs[..]));
     let resn = Arc::new(RwLock::new(GPUVec::new(
         resn,
         BufferType::Array,
@@ -487,7 +487,7 @@ fn reformat(
                 BufferType::ElementArray,
                 AllocationType::StaticDraw,
             )));
-            let mesh = Mesh::new_with_gpu_vectors(resc.clone(), fs, resn.clone(), resu.clone());
+            let mesh = GpuMesh::new_with_gpu_vectors(resc.clone(), fs, resn.clone(), resu.clone());
             meshes.push((name, mesh, mtl))
         }
     }

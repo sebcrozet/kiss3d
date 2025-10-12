@@ -3,7 +3,7 @@ use crate::context::Context;
 use crate::light::Light;
 use crate::resource::vertex_index::VERTEX_INDEX_TYPE;
 use crate::resource::Material;
-use crate::resource::{Effect, Mesh, ShaderAttribute, ShaderUniform};
+use crate::resource::{Effect, GpuMesh, ShaderAttribute, ShaderUniform};
 use crate::scene::{InstancesBuffer, ObjectData};
 use crate::{ignore, verify};
 use na::{Isometry3, Matrix3, Matrix4, Point2, Point3, Vector3};
@@ -97,7 +97,7 @@ impl Material for ObjectMaterial {
         light: &Light,
         data: &ObjectData,
         instances: &mut InstancesBuffer,
-        mesh: &mut Mesh,
+        mesh: &mut GpuMesh,
     ) {
         let ctxt = Context::get();
         self.activate();
