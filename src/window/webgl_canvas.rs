@@ -115,22 +115,46 @@ impl AbstractCanvas for WebGLCanvas {
             web_sys::window().unwrap().device_pixel_ratio()
         }
 
-        let window = web_sys::window().unwrap();
-        let document = window.document().unwrap();
+        let window = web_sys::window().expect("Failed to obtain window");
+        let document = window.document().expect("Failed to obtain document");
         let initial_scale_factor = get_scale_factor();
-        let canvas: HtmlCanvasElement = document
-            .get_element_by_id("canvas")
-            .expect("No canvas found.")
-            .dyn_into::<HtmlCanvasElement>()
-            .expect("Canvas element is not an actual canvas.");
+        let canvas: HtmlCanvasElement = match document.get_element_by_id("canvas") {
+            Some(element) => element
+                .dyn_into::<HtmlCanvasElement>()
+                .expect("Canvas element is not an actual canvas."),
+            None => {
+                // Create a new canvas element if it doesn't exist
+                let canvas = document
+                    .create_element("canvas")
+                    .expect("Failed to create canvas element")
+                    .dyn_into::<HtmlCanvasElement>()
+                    .expect("Created element is not a canvas");
+
+                canvas.set_id("canvas");
+
+                // Set default styles to make the canvas fill the viewport
+                canvas
+                    .set_attribute("style", "width: 100vw; height: 100vh; display: block;")
+                    .ok();
+
+                // Append to body
+                document
+                    .body()
+                    .expect("Document has no body")
+                    .append_child(&canvas)
+                    .expect("Failed to append canvas to body");
+
+                canvas
+            }
+        };
 
         Context::init(|| {
             let webgl_context = canvas
                 .get_context("webgl")
-                .unwrap()
-                .unwrap()
+                .expect("webgl context not found")
+                .expect("error opening webgl context")
                 .dyn_into::<web_sys::WebGlRenderingContext>()
-                .unwrap();
+                .expect("error converting webgl context");
             glow::Context::from_webgl1_context(webgl_context)
         });
 
@@ -423,28 +447,6 @@ impl AbstractCanvas for WebGLCanvas {
         WebGLCanvas {
             data,
             event_listeners,
-        }
-    }
-
-    fn render_loop(mut callback: impl FnMut(f64) -> bool + 'static) {
-        // See https://rustwasm.github.io/docs/wasm-bindgen/examples/request-animation-frame.html
-        if let Some(window) = web_sys::window() {
-            let f = Rc::new(RefCell::new(None));
-            let g: Rc<RefCell<Option<Closure<_>>>> = f.clone();
-            *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
-                if callback(0.0) {
-                    let _ = window.request_animation_frame(
-                        f.borrow().as_ref().unwrap().as_ref().unchecked_ref(),
-                    );
-                } else {
-                    // Drop the closure.
-                    f.borrow_mut().take();
-                }
-            }) as Box<dyn FnMut()>));
-
-            let _ = web_sys::window()
-                .unwrap()
-                .request_animation_frame(g.borrow().as_ref().unwrap().as_ref().unchecked_ref());
         }
     }
 

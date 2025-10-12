@@ -1,0 +1,15 @@
+[package]
+name = "kiss3d-macro"
+version = "0.36.0"
+authors = ["Sébastien Crozet <developer@crozet.re>"]
+edition = "2018"
+license = "BSD-3-Clause"
+description = "Procedural macros for the kiss3d crate"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "2.0", features = ["full"] }
+quote = "1.0"
+proc-macro2 = "1.0"

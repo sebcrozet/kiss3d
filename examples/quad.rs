@@ -6,7 +6,8 @@ use kiss3d::light::Light;
 use kiss3d::window::Window;
 use rand::random;
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: quad");
 
     let mut c = window.add_quad(5.0, 4.0, 100, 100);
@@ -17,7 +18,7 @@ fn main() {
 
     window.set_light(Light::StickToCamera);
 
-    while window.render() {
+    while window.render().await {
         c.modify_vertices(&mut |coords| {
             for v in coords.iter_mut() {
                 v.z = time.sin()

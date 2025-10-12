@@ -7,7 +7,8 @@ use kiss3d::window::Window;
 use na::{Translation3, UnitQuaternion, Vector3};
 use rand::random;
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: primitives_scale");
 
     // NOTE: scaling is not possible.
@@ -40,7 +41,7 @@ fn main() {
 
     let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
 
-    while window.render() {
+    while window.render().await {
         // XXX: applying this to each object individually became complicated…
         window.scene_mut().append_rotation_wrt_center(&rot);
     }

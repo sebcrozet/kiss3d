@@ -5,7 +5,8 @@ use kiss3d::light::Light;
 use kiss3d::window::Window;
 use na::UnitComplex;
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: rectangle");
     let mut c = window.add_rectangle(100.0, 150.0);
 
@@ -15,7 +16,7 @@ fn main() {
 
     let rot = UnitComplex::new(0.014);
 
-    while window.render() {
+    while window.render().await {
         c.prepend_to_local_rotation(&rot);
     }
 }

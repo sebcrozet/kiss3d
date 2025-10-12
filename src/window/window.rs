@@ -1,3 +1,5 @@
+#![allow(clippy::await_holding_refcell_ref)]
+
 //! The kiss3d window.
 /*
  * FIXME: this file is too big. Some heavy refactoring need to be done here.
@@ -27,7 +29,7 @@ use crate::scene::{PlanarSceneNode, SceneNode};
 use crate::text::{Font, TextRenderer};
 use crate::verify;
 use crate::window::canvas::CanvasSetup;
-use crate::window::{Canvas, State};
+use crate::window::Canvas;
 use image::imageops;
 use image::{GenericImage, Pixel};
 use image::{ImageBuffer, Rgb};
@@ -926,126 +928,81 @@ impl Window {
         }
     }
 
-    /// Runs the render and event loop until the window is closed.
-    pub fn render_loop<S: State>(self, state: S) {
-        // We have to be really careful here about drop order.
-        //
-        // The State may contain various OpenGL objects (for example, shaders),
-        // that, when dropped, make calls to the OpenGL context.
-        // Since the Window contains the OpenGL context, we must not drop it
-        // until we are done dropping the state.
-        //
-        // Since we can't directly control the drop order of fields in a closure,
-        // we instead put the relevant objects into a struct, for which the
-        // drop order _is_ controllable (top-to-bottom).
-        struct DropControl<S> {
-            state: S,
-            window: Window,
-        }
-
-        let mut dc = DropControl {
-            state,
-            window: self,
-        };
-
-        Canvas::render_loop(move |_| dc.window.do_render_with_state(&mut dc.state));
-    }
-
-    /// Render one frame using the specified state.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_with_state<S: State>(&mut self, state: &mut S) -> bool {
-        self.do_render_with_state(state)
-    }
-
-    fn do_render_with_state<S: State>(&mut self, state: &mut S) -> bool {
-        {
-            let (camera, planar_camera, renderer, effect) = state.cameras_and_effect_and_renderer();
-            self.should_close = !self.do_render_with(camera, planar_camera, renderer, effect);
-        }
-
-        if !self.should_close {
-            state.step(self)
-        }
-
-        !self.should_close
-    }
-
     /// Renders the scene using the default camera.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn render(&mut self) -> bool {
-        self.render_with(None, None, None)
+    // TODO: would be good to have a 2D version of this that renders with a 2D side-scroll camera.
+    pub async fn render(&mut self) -> bool {
+        self.render_with(None, None, None, None).await
     }
 
     /// Render using a specific post processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_with_effect(&mut self, effect: &mut dyn PostProcessingEffect) -> bool {
-        self.render_with(None, None, Some(effect))
+    pub async fn render_with_effect(&mut self, effect: &mut dyn PostProcessingEffect) -> bool {
+        self.render_with(None, None, Some(effect), None).await
     }
 
     /// Render using a specific camera.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_with_camera(&mut self, camera: &mut dyn Camera) -> bool {
-        self.render_with(Some(camera), None, None)
+    pub async fn render_with_camera(&mut self, camera: &mut dyn Camera) -> bool {
+        self.render_with(Some(camera), None, None, None).await
     }
 
     /// Render using a specific 2D and 3D camera.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_with_cameras(
+    pub async fn render_with_cameras(
         &mut self,
         camera: &mut dyn Camera,
         planar_camera: &mut dyn PlanarCamera,
     ) -> bool {
-        self.render_with(Some(camera), Some(planar_camera), None)
+        self.render_with(Some(camera), Some(planar_camera), None, None)
+            .await
     }
 
     /// Render using a specific camera and post processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_with_camera_and_effect(
+    pub async fn render_with_camera_and_effect(
         &mut self,
         camera: &mut dyn Camera,
         effect: &mut dyn PostProcessingEffect,
     ) -> bool {
-        self.render_with(Some(camera), None, Some(effect))
+        self.render_with(Some(camera), None, Some(effect), None)
+            .await
     }
 
     /// Render using a specific 2D and 3D camera and post processing effect.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_with_cameras_and_effect(
+    pub async fn render_with_cameras_and_effect(
         &mut self,
         camera: &mut dyn Camera,
         planar_camera: &mut dyn PlanarCamera,
         effect: &mut dyn PostProcessingEffect,
     ) -> bool {
-        self.render_with(Some(camera), Some(planar_camera), Some(effect))
+        self.render_with(Some(camera), Some(planar_camera), Some(effect), None)
+            .await
     }
 
-    /// Draws the scene with the given camera and post-processing effect.
+    /// Draws the scene with the given cameras, post-processing effect, and custom renderer.
     ///
     /// Returns `false` if the window should be closed.
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_with(
+    pub async fn render_with(
         &mut self,
         camera: Option<&mut dyn Camera>,
         planar_camera: Option<&mut dyn PlanarCamera>,
         post_processing: Option<&mut dyn PostProcessingEffect>,
+        renderer: Option<&mut dyn Renderer>,
     ) -> bool {
         // FIXME: for backward-compatibility, we don't accept any custom renderer here.
-        self.do_render_with(camera, planar_camera, None, post_processing)
+        self.do_render_with(camera, planar_camera, renderer, post_processing)
+            .await
     }
 
-    fn do_render_with(
+    async fn do_render_with(
         &mut self,
         camera: Option<&mut dyn Camera>,
         planar_camera: Option<&mut dyn PlanarCamera>,
@@ -1057,31 +1014,44 @@ impl Window {
         self.handle_events(&mut camera, &mut planar_camera);
 
         let self_cam2 = self.planar_camera.clone(); // FIXME: this is ugly.
-        let mut bself_cam2 = self_cam2.borrow_mut();
-
         let self_cam = self.camera.clone(); // FIXME: this is ugly.
-        let mut bself_cam = self_cam.borrow_mut();
 
         match (camera, planar_camera) {
             (Some(cam), Some(cam2)) => {
                 self.render_single_frame(cam, cam2, renderer, post_processing)
+                    .await
             }
             (None, Some(cam2)) => {
-                self.render_single_frame(&mut *bself_cam, cam2, renderer, post_processing)
+                self.render_single_frame(
+                    &mut *self_cam.borrow_mut(),
+                    cam2,
+                    renderer,
+                    post_processing,
+                )
+                .await
             }
             (Some(cam), None) => {
-                self.render_single_frame(cam, &mut *bself_cam2, renderer, post_processing)
+                self.render_single_frame(
+                    cam,
+                    &mut *self_cam2.borrow_mut(),
+                    renderer,
+                    post_processing,
+                )
+                .await
             }
-            (None, None) => self.render_single_frame(
-                &mut *bself_cam,
-                &mut *bself_cam2,
-                renderer,
-                post_processing,
-            ),
+            (None, None) => {
+                self.render_single_frame(
+                    &mut *self_cam.borrow_mut(),
+                    &mut *self_cam2.borrow_mut(),
+                    renderer,
+                    post_processing,
+                )
+                .await
+            }
         }
     }
 
-    fn render_single_frame(
+    async fn render_single_frame(
         &mut self,
         camera: &mut dyn Camera,
         planar_camera: &mut dyn PlanarCamera,
@@ -1152,6 +1122,24 @@ impl Window {
 
         // We are done: swap buffers
         self.canvas.swap_buffers();
+
+        #[cfg(target_arch = "wasm32")]
+        {
+            use wasm_bindgen::JsCast;
+            use web_sys::wasm_bindgen::closure::Closure;
+
+            if let Some(window) = web_sys::window() {
+                let (s, r) = oneshot::channel();
+
+                let closure = Closure::once(move || s.send(()).unwrap());
+
+                window
+                    .request_animation_frame(closure.as_ref().unchecked_ref())
+                    .unwrap();
+
+                r.await.unwrap();
+            }
+        }
 
         #[cfg(not(target_arch = "wasm32"))]
         {

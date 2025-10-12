@@ -7,7 +7,8 @@ use na::{Translation3, UnitQuaternion, Vector3};
 use std::f32;
 use std::path::Path;
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: obj");
 
     // Teapot
@@ -31,7 +32,7 @@ fn main() {
     let rot_teapot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
     let rot_rust = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), -0.014);
 
-    while window.render() {
+    while window.render().await {
         teapot.prepend_to_local_rotation(&rot_teapot);
         rust.prepend_to_local_rotation(&rot_rust);
     }

@@ -8,7 +8,8 @@ use kiss3d::post_processing::OculusStereo;
 use kiss3d::window::Window;
 use na::Point3;
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new_with_size("Kiss3d: stereo", 1280, 800);
 
     let mut c = window.add_cube(1.0, 1.0, 1.0);
@@ -23,7 +24,10 @@ fn main() {
 
     let mut oculus_stereo = OculusStereo::new();
 
-    while window.render_with_camera_and_effect(&mut camera, &mut oculus_stereo) {
+    while window
+        .render_with_camera_and_effect(&mut camera, &mut oculus_stereo)
+        .await
+    {
         for event in window.events().iter() {
             match event.value {
                 WindowEvent::Key(Key::Numpad1, Action::Release, _) => {

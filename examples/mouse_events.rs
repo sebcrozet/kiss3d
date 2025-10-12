@@ -8,14 +8,18 @@ use kiss3d::planar_camera::*;
 use kiss3d::window::Window;
 
 /// main program
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Generation tile test");
     let mut camera = kiss3d::planar_camera::PlanarFixedView::new();
     window.set_light(Light::StickToCamera);
     let draw_colour = na::Point3::new(0.5, 1.0, 0.5);
     let mut last_pos = na::Point2::new(0.0f32, 0.0f32);
     let mut sel_pos = na::Point2::new(0.0f32, 0.0f32);
-    while window.render_with(None, Some(&mut camera), None) {
+    while window
+        .render_with(None, Some(&mut camera), None, None)
+        .await
+    {
         for event in window.events().iter() {
             match event.value {
                 WindowEvent::FramebufferSize(x, y) => {

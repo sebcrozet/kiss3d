@@ -4,7 +4,8 @@ extern crate nalgebra as na;
 use kiss3d::window::Window;
 use na::{Translation2, UnitComplex};
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: rectangle");
     let mut rect = window.add_rectangle(50.0, 150.0);
     let mut circ = window.add_circle(50.0);
@@ -16,7 +17,7 @@ fn main() {
     let rot_rect = UnitComplex::new(0.014);
     let rot_circ = UnitComplex::new(-0.014);
 
-    while window.render() {
+    while window.render().await {
         rect.prepend_to_local_rotation(&rot_rect);
         circ.append_rotation(&rot_circ);
     }

@@ -25,7 +25,8 @@ fn usage(exe_name: &str) {
     println!("    concavity - the maximum concavity accepted by the decomposition.");
 }
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     /*
      * Parse arguments.
      */
@@ -102,5 +103,5 @@ fn main() {
      */
     window.set_light(Light::StickToCamera);
 
-    while window.render() {}
+    while window.render().await {}
 }

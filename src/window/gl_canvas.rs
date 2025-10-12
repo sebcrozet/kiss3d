@@ -97,14 +97,6 @@ impl AbstractCanvas for GLCanvas {
         }
     }
 
-    fn render_loop(mut callback: impl FnMut(f64) -> bool + 'static) {
-        loop {
-            if !callback(0.0) {
-                break;
-            } // XXX: timestamp
-        }
-    }
-
     #[allow(deprecated)] // todo: refactor to avoid using the deprecated `modifiers` field
     fn poll_events(&mut self) {
         let out_events = &mut self.out_events;

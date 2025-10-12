@@ -5,7 +5,8 @@ use kiss3d::light::Light;
 use kiss3d::window::Window;
 use na::{Translation3, UnitQuaternion, Vector3};
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: cube");
 
     let mut g1 = window.add_group();
@@ -28,7 +29,7 @@ fn main() {
     let rot1 = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
     let rot2 = UnitQuaternion::from_axis_angle(&Vector3::x_axis(), 0.014);
 
-    while window.render() {
+    while window.render().await {
         g1.prepend_to_local_rotation(&rot1);
         g2.prepend_to_local_rotation(&rot2);
     }

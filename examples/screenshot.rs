@@ -8,7 +8,8 @@ use kiss3d::window::Window;
 use na::{UnitQuaternion, Vector3};
 
 // Based on cube example.
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: screenshot");
     let mut c = window.add_cube(0.2, 0.2, 0.2);
 
@@ -21,7 +22,7 @@ fn main() {
 
     window.set_light(Light::StickToCamera);
 
-    while window.render() {
+    while window.render().await {
         let img = window.snap_image();
         let img_path = Path::new("screenshot.png");
         img.save(img_path).unwrap();

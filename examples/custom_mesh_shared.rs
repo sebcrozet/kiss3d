@@ -8,7 +8,8 @@ use na::{Point3, UnitQuaternion, Vector3};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: custom_mesh_shared");
 
     let a = Point3::new(-1.0, -1.0, 0.0);
@@ -43,7 +44,7 @@ fn main() {
     let rot1 = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
     let rot2 = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), -0.014);
 
-    while window.render() {
+    while window.render().await {
         c1.prepend_to_local_rotation(&rot1);
         c2.prepend_to_local_rotation(&rot2);
     }

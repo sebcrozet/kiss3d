@@ -7,7 +7,8 @@ use kiss3d::scene::PlanarInstanceData;
 use kiss3d::window::Window;
 use na::{Matrix2, Point2, UnitComplex};
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: instancing 2D");
     let mut rect = window.add_rectangle(50.0, 150.0);
 
@@ -36,6 +37,8 @@ fn main() {
 
     while !window.should_close() {
         rect.prepend_to_local_rotation(&rot_rect);
-        window.render_with_cameras(&mut camera3d, &mut camera2d);
+        window
+            .render_with_cameras(&mut camera3d, &mut camera2d)
+            .await;
     }
 }

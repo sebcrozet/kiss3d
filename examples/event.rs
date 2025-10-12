@@ -4,10 +4,11 @@ extern crate nalgebra as na;
 use kiss3d::event::{Action, WindowEvent};
 use kiss3d::window::Window;
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: events");
 
-    while window.render() {
+    while window.render().await {
         for mut event in window.events().iter() {
             match event.value {
                 WindowEvent::Key(button, Action::Press, _) => {

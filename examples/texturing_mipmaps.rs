@@ -7,7 +7,8 @@ use na::Translation3;
 use std::path::Path;
 use std::time::Instant;
 
-fn main() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: texturing-mipmaps");
     let tex_path = Path::new("./examples/media/checkerboard.png");
 
@@ -26,7 +27,7 @@ fn main() {
     window.set_light(Light::StickToCamera);
 
     let start = Instant::now();
-    while window.render() {
+    while window.render().await {
         let scale = 0.25 + 0.2 * (Instant::now() - start).as_secs_f32().cos();
         for c in [&mut q1, &mut q2] {
             c.set_local_scale(scale, scale, scale);
