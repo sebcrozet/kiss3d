@@ -147,6 +147,9 @@ pub use conrod::widget_ids;
 pub use nalgebra;
 pub use parry3d;
 
+// Re-export the procedural macro
+pub use kiss3d_macro::main;
+
 #[deprecated(note = "Use the `renderer` module instead.")]
 pub use crate::renderer::line_renderer;
 #[deprecated(note = "Use the `renderer` module instead.")]

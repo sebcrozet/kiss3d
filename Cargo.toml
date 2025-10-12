@@ -40,6 +40,7 @@ either       = "1"
 glow         = "0.12"
 image        = "0.24"
 instant      = { version = "0.1", features = ["wasm-bindgen"] }
+kiss3d-macro = { version = "0.36.0", path = "kiss3d-macro" }
 libc         = "0.2"
 nalgebra     = "0.33"
 parry3d      = "0.17"

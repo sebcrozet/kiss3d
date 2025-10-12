@@ -7,17 +7,8 @@ use kiss3d::scene::PlanarInstanceData;
 use kiss3d::window::Window;
 use na::{Matrix2, Point2, UnitComplex};
 
-#[cfg(not(target_arch = "wasm32"))]
-fn main() {
-    pollster::block_on(run())
-}
-
-#[cfg(target_arch = "wasm32")]
-fn main() {
-    wasm_bindgen_futures::spawn_local(run())
-}
-
-async fn run() {
+#[kiss3d::main]
+async fn main() {
     let mut window = Window::new("Kiss3d: instancing 2D");
     let mut rect = window.add_rectangle(50.0, 150.0);
 
