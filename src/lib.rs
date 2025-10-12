@@ -167,6 +167,7 @@ pub mod resource;
 pub mod scene;
 pub mod text;
 pub mod window;
+pub mod procedural;
 
 pub mod prelude {
     pub use crate::builtin::*;
