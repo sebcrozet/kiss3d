@@ -180,8 +180,8 @@ impl RenderMesh {
 }
 
 impl RenderMesh {
-    /// Recomputes the mesh normals using its vertex coordinates and adjascency informations
-    /// infered from the index buffer.
+    /// Recomputes the mesh normals using its vertex coordinates and adjacency information
+    /// inferred from the index buffer.
     #[inline]
     pub fn recompute_normals(&mut self) {
         let mut new_normals = Vec::new();
@@ -305,7 +305,7 @@ impl RenderMesh {
 
                 let mut batched_indices = Vec::new();
 
-                assert!(resi.len() % 3 == 0);
+                assert!(resi.len().is_multiple_of(3));
                 for f in resi[..].chunks(3) {
                     batched_indices.push(Point3::new(f[0], f[1], f[2]));
                 }
@@ -370,7 +370,7 @@ impl RenderMesh {
 
         let mut batched_indices = Vec::new();
 
-        assert!(resi.len() % 3 == 0);
+        assert!(resi.len().is_multiple_of(3));
         for f in resi[..].chunks(3) {
             batched_indices.push(Point3::new(f[0], f[1], f[2]));
         }

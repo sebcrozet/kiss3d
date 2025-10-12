@@ -71,9 +71,9 @@ pub fn push_open_ring_indices(
     assert!(nsubdiv > 0);
 
     for i in 0..nsubdiv - 1 {
-        let bli = base_lower_circle + i;
-        let bui = base_upper_circle + i;
-        push_rectangle_indices(bui + 1, bui, bli + 1, bli, out);
+        let bl_i = base_lower_circle + i;
+        let bu_i = base_upper_circle + i;
+        push_rectangle_indices(bu_i + 1, bu_i, bl_i + 1, bl_i, out);
     }
 }
 

@@ -19,7 +19,7 @@ pub fn bezier_curve_at(
 
     let t_1 = 1.0 - t;
 
-    // XXX: f32ot good if the objects are not POD.
+    // XXX: not good if the objects are not POD.
     unsafe {
         ptr::copy_nonoverlapping(
             control_points.as_ptr(),

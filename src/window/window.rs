@@ -982,7 +982,7 @@ impl Window {
     ///
     /// Returns `false` if the window should be closed.
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_with_effect(&mut self, effect: &mut (dyn PostProcessingEffect)) -> bool {
+    pub fn render_with_effect(&mut self, effect: &mut dyn PostProcessingEffect) -> bool {
         self.render_with(None, None, Some(effect))
     }
 
@@ -990,7 +990,7 @@ impl Window {
     ///
     /// Returns `false` if the window should be closed.
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn render_with_camera(&mut self, camera: &mut (dyn Camera)) -> bool {
+    pub fn render_with_camera(&mut self, camera: &mut dyn Camera) -> bool {
         self.render_with(Some(camera), None, None)
     }
 

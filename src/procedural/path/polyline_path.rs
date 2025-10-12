@@ -3,7 +3,7 @@ use na::{Point3, Vector3};
 
 /// A path with its sample points given by a polyline.
 ///
-/// This will return sequencially each vertex of the polyline.
+/// This will return sequentially each vertex of the polyline.
 pub struct PolylinePath<'a> {
     curr_len: f32,
     curr_dir: Vector3<f32>,

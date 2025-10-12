@@ -446,7 +446,7 @@ fn reformat(
 
         let mut resf = Vec::with_capacity(vertex_ids.len() / 3);
 
-        assert!(vertex_ids.len() % 3 == 0);
+        assert!(vertex_ids.len().is_multiple_of(3));
 
         for f in vertex_ids[..].chunks(3) {
             resf.push(Point3::new(f[0], f[1], f[2]));
