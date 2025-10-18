@@ -9,12 +9,34 @@ use na::{
 use num::Zero;
 use std::f32;
 
-/// First-person camera mode.
+/// First-person (FPS-style) camera.
 ///
-///   * Left button press + drag - look around
-///   * Right button press + drag - translates the camera position on the plane orthogonal to the
-///     view direction
-///   * Scroll in/out - zoom in/out
+/// A camera that moves through the scene from a first-person perspective,
+/// similar to controls in first-person shooter games.
+///
+/// # Default Controls
+/// - **Left mouse + drag**: Look around (rotate view)
+/// - **Right mouse + drag**: Strafe (move on plane perpendicular to view)
+/// - **Arrow keys**: Move forward/backward/left/right
+/// - **Mouse wheel**: Move forward/backward
+///
+/// All controls can be customized using the rebind methods.
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::camera::FirstPerson;
+/// # use kiss3d::window::Window;
+/// # use nalgebra::Point3;
+/// # #[kiss3d::main]
+/// # async fn main() {
+/// # let mut window = Window::new("Example");
+/// let mut camera = FirstPerson::new(
+///     Point3::new(0.0, 1.0, 5.0),  // Eye position
+///     Point3::origin()              // Looking at origin
+/// );
+/// // Use with window.render_with_camera(&mut camera).await
+/// # }
+/// ```
 #[derive(Debug, Clone)]
 pub struct FirstPerson {
     eye: Point3<f32>,
@@ -41,12 +63,41 @@ pub struct FirstPerson {
 }
 
 impl FirstPerson {
-    /// Creates a first person camera with default sensitivity values.
+    /// Creates a new first-person camera with default settings.
+    ///
+    /// Default frustum: 45° field of view, near plane at 0.1, far plane at 1024.
+    ///
+    /// # Arguments
+    /// * `eye` - Initial camera position
+    /// * `at` - Initial point to look at
+    ///
+    /// # Returns
+    /// A new `FirstPerson` camera instance
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::camera::FirstPerson;
+    /// # use nalgebra::Point3;
+    /// let camera = FirstPerson::new(
+    ///     Point3::new(0.0, 5.0, 10.0),
+    ///     Point3::origin()
+    /// );
+    /// ```
     pub fn new(eye: Point3<f32>, at: Point3<f32>) -> FirstPerson {
         FirstPerson::new_with_frustum(f32::consts::PI / 4.0, 0.1, 1024.0, eye, at)
     }
 
-    /// Creates a new first person camera with default sensitivity values.
+    /// Creates a new first-person camera with custom frustum parameters.
+    ///
+    /// # Arguments
+    /// * `fov` - Field of view in radians
+    /// * `znear` - Near clipping plane distance
+    /// * `zfar` - Far clipping plane distance
+    /// * `eye` - Initial camera position
+    /// * `at` - Initial point to look at
+    ///
+    /// # Returns
+    /// A new `FirstPerson` camera instance
     pub fn new_with_frustum(
         fov: f32,
         znear: f32,

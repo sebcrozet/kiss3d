@@ -172,15 +172,26 @@ impl SceneNodeData {
 
     // FIXME: for all those set_stuff, would it be more per formant to add a special case for when
     // we are on a leaf? (to avoid the call to a closure required by the apply_to_*).
-    /// Sets the material of the objects contained by this node and its children.
+    /// Sets the material for all objects in this node and its children.
+    ///
+    /// The material defines how the object is shaded (shader program and uniforms).
+    ///
+    /// # Arguments
+    /// * `material` - The material to apply
     #[inline]
     pub fn set_material(&mut self, material: Rc<RefCell<Box<dyn Material + 'static>>>) {
         self.apply_to_objects_mut(&mut |o| o.set_material(material.clone()))
     }
 
-    /// Sets the material of the objects contained by this node and its children.
+    /// Sets the material by name for all objects in this node and its children.
     ///
-    /// The material must already have been registered as `name`.
+    /// The material must have been previously registered with the global material manager.
+    ///
+    /// # Arguments
+    /// * `name` - The name of the registered material
+    ///
+    /// # Panics
+    /// Panics if the material with the given name doesn't exist
     #[inline]
     pub fn set_material_with_name(&mut self, name: &str) {
         let material = MaterialManager::get_global_manager(|tm| {
@@ -192,33 +203,50 @@ impl SceneNodeData {
         self.set_material(material)
     }
 
-    /// Sets the width of the lines drawn for the objects contained by this node and its children.
+    /// Sets the line width for wireframe rendering of objects in this node and its children.
+    ///
+    /// # Arguments
+    /// * `width` - The line width in pixels
     #[inline]
     pub fn set_lines_width(&mut self, width: f32) {
         self.apply_to_objects_mut(&mut |o| o.set_lines_width(width))
     }
 
-    /// Sets the color of the lines drawn for the objects contained by this node and its children.
+    /// Sets the line color for wireframe rendering of objects in this node and its children.
+    ///
+    /// # Arguments
+    /// * `color` - The RGB color for lines, or `None` to use the object's default color
     #[inline]
     pub fn set_lines_color(&mut self, color: Option<Point3<f32>>) {
         self.apply_to_objects_mut(&mut |o| o.set_lines_color(color))
     }
 
-    /// Sets the size of the points drawn for the objects contained by this node and its children.
+    /// Sets the point size for point cloud rendering of objects in this node and its children.
+    ///
+    /// # Arguments
+    /// * `size` - The point size in pixels
     #[inline]
     pub fn set_points_size(&mut self, size: f32) {
         self.apply_to_objects_mut(&mut |o| o.set_points_size(size))
     }
 
-    /// Activates or deactivates the rendering of the surfaces of the objects contained by this node and its
-    /// children.
+    /// Enables or disables surface rendering for objects in this node and its children.
+    ///
+    /// When disabled, only wireframe and points are rendered.
+    ///
+    /// # Arguments
+    /// * `active` - `true` to enable surface rendering, `false` to disable it
     #[inline]
     pub fn set_surface_rendering_activation(&mut self, active: bool) {
         self.apply_to_objects_mut(&mut |o| o.set_surface_rendering_activation(active))
     }
 
-    /// Activates or deactivates backface culling for the objects contained by this node and its
-    /// children.
+    /// Enables or disables backface culling for objects in this node and its children.
+    ///
+    /// Backface culling improves performance by not rendering triangles facing away from the camera.
+    ///
+    /// # Arguments
+    /// * `active` - `true` to enable backface culling, `false` to disable it
     #[inline]
     pub fn enable_backface_culling(&mut self, active: bool) {
         self.apply_to_objects_mut(&mut |o| o.enable_backface_culling(active))
@@ -456,94 +484,191 @@ impl SceneNodeData {
         self.local_transform.inverse()
     }
 
-    /// Appends a transformation to this node local transformation.
+    /// Appends a transformation to this node's local transformation.
+    ///
+    /// The transformation is applied before the current local transformation.
+    ///
+    /// # Arguments
+    /// * `t` - The transformation to append (combines rotation and translation)
     #[inline]
     pub fn append_transformation(&mut self, t: &Isometry3<f32>) {
         self.invalidate();
         self.local_transform = t * self.local_transform
     }
 
-    /// Prepends a transformation to this node local transformation.
+    /// Prepends a transformation to this node's local transformation.
+    ///
+    /// The transformation is applied after the current local transformation.
+    ///
+    /// # Arguments
+    /// * `t` - The transformation to prepend (combines rotation and translation)
     #[inline]
     pub fn prepend_to_local_transformation(&mut self, t: &Isometry3<f32>) {
         self.invalidate();
         self.local_transform *= t;
     }
 
-    /// Set this node local transformation.
+    /// Sets this node's local transformation, replacing the current one.
+    ///
+    /// # Arguments
+    /// * `t` - The new local transformation (combines rotation and translation)
     #[inline]
     pub fn set_local_transformation(&mut self, t: Isometry3<f32>) {
         self.invalidate();
         self.local_transform = t
     }
 
-    /// This node local translation.
+    /// Returns this node's local translation component.
+    ///
+    /// # Returns
+    /// The translation relative to the parent node (or world origin if root)
     #[inline]
     pub fn local_translation(&self) -> Translation3<f32> {
         self.local_transform.translation
     }
 
-    /// The inverse of this node local translation.
+    /// Returns the inverse of this node's local translation.
+    ///
+    /// # Returns
+    /// The inverse translation
     #[inline]
     pub fn inverse_local_translation(&self) -> Translation3<f32> {
         self.local_transform.translation.inverse()
     }
 
-    /// Appends a translation to this node local transformation.
+    /// Appends a translation to this node's local transformation.
+    ///
+    /// The translation is applied before the current rotation and translation.
+    ///
+    /// # Arguments
+    /// * `t` - The translation to append
     #[inline]
     pub fn append_translation(&mut self, t: &Translation3<f32>) {
         self.invalidate();
         self.local_transform = t * self.local_transform
     }
 
-    /// Prepends a translation to this node local transformation.
+    /// Prepends a translation to this node's local transformation.
+    ///
+    /// The translation is applied after the current rotation and translation.
+    ///
+    /// # Arguments
+    /// * `t` - The translation to prepend
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// # use nalgebra::Translation3;
+    /// # #[kiss3d::main]
+    /// # async fn main() {
+    /// # let mut window = Window::new("Example");
+    /// # let mut cube = window.add_cube(1.0, 1.0, 1.0);
+    /// // Move the cube 0.1 units along the x-axis each frame
+    /// cube.prepend_to_local_translation(&Translation3::new(0.1, 0.0, 0.0));
+    /// # }
+    /// ```
     #[inline]
     pub fn prepend_to_local_translation(&mut self, t: &Translation3<f32>) {
         self.invalidate();
         self.local_transform *= t
     }
 
-    /// Sets the local translation of this node.
+    /// Sets this node's local translation, replacing the current one.
+    ///
+    /// # Arguments
+    /// * `t` - The new local translation
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// # use nalgebra::Translation3;
+    /// # #[kiss3d::main]
+    /// # async fn main() {
+    /// # let mut window = Window::new("Example");
+    /// # let mut cube = window.add_cube(1.0, 1.0, 1.0);
+    /// // Position the cube at (5, 0, -10)
+    /// cube.set_local_translation(Translation3::new(5.0, 0.0, -10.0));
+    /// # }
+    /// ```
     #[inline]
     pub fn set_local_translation(&mut self, t: Translation3<f32>) {
         self.invalidate();
         self.local_transform.translation = t
     }
 
-    /// This node local rotation.
+    /// Returns this node's local rotation component.
+    ///
+    /// # Returns
+    /// The rotation as a unit quaternion, relative to the parent node
     #[inline]
     pub fn local_rotation(&self) -> UnitQuaternion<f32> {
         self.local_transform.rotation
     }
 
-    /// The inverse of this node local rotation.
+    /// Returns the inverse of this node's local rotation.
+    ///
+    /// # Returns
+    /// The inverse rotation
     #[inline]
     pub fn inverse_local_rotation(&self) -> UnitQuaternion<f32> {
         self.local_transform.rotation.inverse()
     }
 
-    /// Appends a rotation to this node local transformation.
+    /// Appends a rotation to this node's local transformation.
+    ///
+    /// The rotation is applied before the current transformation.
+    ///
+    /// # Arguments
+    /// * `r` - The rotation to append (as a unit quaternion)
     #[inline]
     pub fn append_rotation(&mut self, r: &UnitQuaternion<f32>) {
         self.invalidate();
         self.local_transform = r * self.local_transform
     }
 
-    /// Appends a rotation to this node local transformation.
+    /// Appends a rotation to this node's local transformation, rotating around the object's center.
+    ///
+    /// Unlike [`append_rotation`](Self::append_rotation), this rotates the object in place
+    /// rather than rotating it around the origin.
+    ///
+    /// # Arguments
+    /// * `r` - The rotation to append (as a unit quaternion)
     #[inline]
     pub fn append_rotation_wrt_center(&mut self, r: &UnitQuaternion<f32>) {
         self.invalidate();
         self.local_transform.append_rotation_wrt_center_mut(r)
     }
 
-    /// Prepends a rotation to this node local transformation.
+    /// Prepends a rotation to this node's local transformation.
+    ///
+    /// The rotation is applied after the current transformation.
+    ///
+    /// # Arguments
+    /// * `r` - The rotation to prepend (as a unit quaternion)
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// # use nalgebra::{UnitQuaternion, Vector3};
+    /// # #[kiss3d::main]
+    /// # async fn main() {
+    /// # let mut window = Window::new("Example");
+    /// # let mut cube = window.add_cube(1.0, 1.0, 1.0);
+    /// // Rotate the cube around the Y axis by 0.014 radians each frame
+    /// let rot = UnitQuaternion::from_axis_angle(&Vector3::y_axis(), 0.014);
+    /// cube.prepend_to_local_rotation(&rot);
+    /// # }
+    /// ```
     #[inline]
     pub fn prepend_to_local_rotation(&mut self, r: &UnitQuaternion<f32>) {
         self.invalidate();
         self.local_transform *= r
     }
 
-    /// Sets the local rotation of this node.
+    /// Sets this node's local rotation, replacing the current one.
+    ///
+    /// # Arguments
+    /// * `r` - The new local rotation (as a unit quaternion)
     #[inline]
     pub fn set_local_rotation(&mut self, r: UnitQuaternion<f32>) {
         self.invalidate();
@@ -592,7 +717,15 @@ impl Default for SceneNode {
 }
 
 impl SceneNode {
-    /// Creates a new scene node that is not rooted.
+    /// Creates a new unrooted scene node with the specified properties.
+    ///
+    /// # Arguments
+    /// * `local_scale` - The initial scale factors along each axis
+    /// * `local_transform` - The initial local transformation (rotation + translation)
+    /// * `object` - Optional object to render (None for empty group nodes)
+    ///
+    /// # Returns
+    /// A new `SceneNode` without a parent
     pub fn new(
         local_scale: Vector3<f32>,
         local_transform: Isometry3<f32>,
@@ -615,24 +748,38 @@ impl SceneNode {
         }
     }
 
-    /// Creates a new empty, not rooted, node with identity transformations.
+    /// Creates a new empty scene node with identity transformations.
+    ///
+    /// The node has no parent, no object, unit scale, and identity transformation.
+    ///
+    /// # Returns
+    /// A new empty `SceneNode`
     pub fn new_empty() -> SceneNode {
         SceneNode::new(Vector3::from_element(1.0), na::one(), None)
     }
 
-    /// Removes this node from its parent.
+    /// Removes this node from its parent in the scene graph.
+    ///
+    /// After calling this, the node becomes unrooted and will no longer be rendered
+    /// as part of the scene hierarchy.
     pub fn unlink(&mut self) {
         let self_self = self.clone();
         self.data_mut().remove_from_parent(&self_self);
         self.data_mut().parent = None
     }
 
-    /// The data of this scene node.
+    /// Returns an immutable reference to this node's internal data.
+    ///
+    /// # Returns
+    /// A `Ref` guard to the `SceneNodeData`
     pub fn data(&self) -> Ref<'_, SceneNodeData> {
         self.data.borrow()
     }
 
-    /// The data of this scene node.
+    /// Returns a mutable reference to this node's internal data.
+    ///
+    /// # Returns
+    /// A `RefMut` guard to the `SceneNodeData`
     pub fn data_mut(&mut self) -> RefMut<'_, SceneNodeData> {
         self.data.borrow_mut()
     }
@@ -642,7 +789,12 @@ impl SceneNode {
      * Methods to add objects.
      *
      */
-    /// Adds a node without object to this node children.
+    /// Adds an empty group node as a child of this node.
+    ///
+    /// A group is a node without any renderable object, useful for organizing hierarchies.
+    ///
+    /// # Returns
+    /// The newly created child `SceneNode`
     pub fn add_group(&mut self) -> SceneNode {
         let node = SceneNode::new_empty();
 
@@ -651,10 +803,13 @@ impl SceneNode {
         node
     }
 
-    /// Adds a node as a child of `parent`.
+    /// Adds an existing node as a child of this node.
     ///
-    /// # Failures:
-    /// Fails if `node` already has a parent.
+    /// # Arguments
+    /// * `node` - The node to add as a child
+    ///
+    /// # Panics
+    /// Panics if the node already has a parent
     pub fn add_child(&mut self, node: SceneNode) {
         assert!(
             node.data().is_root(),
@@ -667,7 +822,15 @@ impl SceneNode {
         self.data_mut().children.push(node)
     }
 
-    /// Adds a node containing an object to this node children.
+    /// Adds a new node with a renderable object as a child of this node.
+    ///
+    /// # Arguments
+    /// * `local_scale` - Scale factors for the new node
+    /// * `local_transform` - Local transformation for the new node
+    /// * `object` - The object to render
+    ///
+    /// # Returns
+    /// The newly created child `SceneNode`
     pub fn add_object(
         &mut self,
         local_scale: Vector3<f32>,

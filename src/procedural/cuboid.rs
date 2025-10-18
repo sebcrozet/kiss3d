@@ -3,12 +3,24 @@ use super::{IndexBuffer, RenderMesh};
 use na;
 use na::{Point2, Point3, Vector2, Vector3};
 
-/**
- * Generates a cuboid shape with a split index buffer.
- *
- * # Arguments:
- * * `extents` - the extents of the cuboid.
- */
+/// Generates a cuboid (box) mesh with the specified extents.
+///
+/// Creates a rectangular box mesh centered at the origin with the given dimensions.
+/// The mesh includes normals and UV coordinates.
+///
+/// # Arguments
+/// * `extents` - The full dimensions of the cuboid along each axis (width, height, depth)
+///
+/// # Returns
+/// A `RenderMesh` containing the cuboid geometry with split index buffer
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::cuboid;
+/// # use nalgebra::Vector3;
+/// // Create a 2x3x4 box
+/// let box_mesh = cuboid(&Vector3::new(2.0, 3.0, 4.0));
+/// ```
 pub fn cuboid(extents: &Vector3<f32>) -> RenderMesh {
     let mut cuboid = unit_cuboid();
     cuboid.scale_by(extents);
@@ -16,11 +28,20 @@ pub fn cuboid(extents: &Vector3<f32>) -> RenderMesh {
     cuboid
 }
 
-/**
- * Generates a cuboid shape with a split index buffer.
- *
- * The cuboid is centered at the origin, and has its half extents set to 0.5.
- */
+/// Generates a unit cuboid mesh.
+///
+/// Creates a cube mesh centered at the origin with dimensions 1×1×1 (half-extents of 0.5).
+/// The mesh includes normals and UV coordinates.
+///
+/// # Returns
+/// A `RenderMesh` containing the unit cuboid geometry
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::unit_cuboid;
+/// // Create a unit cube (1x1x1)
+/// let cube_mesh = unit_cuboid();
+/// ```
 pub fn unit_cuboid() -> RenderMesh {
     let mut coords = Vec::with_capacity(8);
     let mut uvs = Vec::with_capacity(4);
@@ -122,7 +143,23 @@ pub fn unit_cuboid() -> RenderMesh {
     )
 }
 
-/// The contour of a cuboid lying on the x-y plane.
+/// Generates a 2D rectangle polyline with the specified extents.
+///
+/// Creates the outline of a rectangle lying on the XY plane, centered at the origin.
+///
+/// # Arguments
+/// * `extents` - The dimensions of the rectangle (width, height)
+///
+/// # Returns
+/// A `RenderPolyline` containing the rectangle's outline
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::rectangle;
+/// # use nalgebra::Vector2;
+/// // Create a 4x2 rectangle outline
+/// let rect_polyline = rectangle(&Vector2::new(4.0, 2.0));
+/// ```
 pub fn rectangle(extents: &Vector2<f32>) -> RenderPolyline {
     let mut rectangle = unit_rectangle();
 
@@ -131,7 +168,19 @@ pub fn rectangle(extents: &Vector2<f32>) -> RenderPolyline {
     rectangle
 }
 
-/// The contour of a unit cuboid lying on the x-y plane.
+/// Generates a unit rectangle polyline on the XY plane.
+///
+/// Creates the outline of a 1×1 rectangle centered at the origin on the XY plane.
+///
+/// # Returns
+/// A `RenderPolyline` containing the unit rectangle's outline
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::unit_rectangle;
+/// // Create a unit square outline (1x1)
+/// let rect_polyline = unit_rectangle();
+/// ```
 pub fn unit_rectangle() -> RenderPolyline {
     let mut p_ul = Point2::origin();
     let mut p_ur = Point2::origin();

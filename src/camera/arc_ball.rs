@@ -63,12 +63,40 @@ impl Default for ArcBall {
 }
 
 impl ArcBall {
-    /// Create a new arc-ball camera.
+    /// Creates a new arc-ball camera with default settings.
+    ///
+    /// The camera will orbit around the `at` point, starting at the `eye` position.
+    /// Default frustum parameters are used: 45° field of view, near plane at 0.1, far plane at 1000.
+    ///
+    /// # Arguments
+    /// * `eye` - Initial camera position
+    /// * `at` - The focus point the camera will look at and orbit around
+    ///
+    /// # Returns
+    /// A new `ArcBall` camera instance
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::camera::ArcBall;
+    /// # use nalgebra::Point3;
+    /// // Camera looking at origin from 5 units away on the Z axis
+    /// let camera = ArcBall::new(Point3::new(0.0, 0.0, 5.0), Point3::origin());
+    /// ```
     pub fn new(eye: Point3<f32>, at: Point3<f32>) -> ArcBall {
         ArcBall::new_with_frustum(f32::consts::PI / 4.0, 0.1, 1000.0, eye, at)
     }
 
-    /// Creates a new arc ball camera with default sensitivity values.
+    /// Creates a new arc-ball camera with custom frustum parameters.
+    ///
+    /// # Arguments
+    /// * `fov` - Field of view in radians (typical value: π/4 for 45°)
+    /// * `znear` - Near clipping plane distance
+    /// * `zfar` - Far clipping plane distance
+    /// * `eye` - Initial camera position
+    /// * `at` - The focus point the camera will look at and orbit around
+    ///
+    /// # Returns
+    /// A new `ArcBall` camera instance with custom frustum
     pub fn new_with_frustum(
         fov: f32,
         znear: f32,
@@ -111,23 +139,41 @@ impl ArcBall {
         res
     }
 
-    /// The point the arc-ball is looking at.
+    /// Returns the focus point the camera is looking at.
+    ///
+    /// # Returns
+    /// The 3D point in world space that the camera orbits around
     pub fn at(&self) -> Point3<f32> {
         self.at
     }
 
-    /// Get a mutable reference to the point the camera is looking at.
+    /// Sets the focus point the camera should look at.
+    ///
+    /// The camera will orbit around this new point.
+    ///
+    /// # Arguments
+    /// * `at` - The new focus point in world space
     pub fn set_at(&mut self, at: Point3<f32>) {
         self.at = at;
         self.update_projviews();
     }
 
-    /// The arc-ball camera `yaw`.
+    /// Returns the camera's yaw angle in radians.
+    ///
+    /// Yaw is the horizontal rotation around the up axis.
+    ///
+    /// # Returns
+    /// The yaw angle in radians
     pub fn yaw(&self) -> f32 {
         self.yaw
     }
 
-    /// Sets the camera `yaw`. Change this to modify the rotation along the `up` axis.
+    /// Sets the camera's yaw angle.
+    ///
+    /// Yaw controls horizontal rotation around the up axis (typically Y).
+    ///
+    /// # Arguments
+    /// * `yaw` - The new yaw angle in radians
     pub fn set_yaw(&mut self, yaw: f32) {
         self.yaw = yaw;
 
@@ -135,12 +181,22 @@ impl ArcBall {
         self.update_projviews();
     }
 
-    /// The arc-ball camera `pitch`.
+    /// Returns the camera's pitch angle in radians.
+    ///
+    /// Pitch is the vertical rotation, controlling how high or low the camera looks.
+    ///
+    /// # Returns
+    /// The pitch angle in radians
     pub fn pitch(&self) -> f32 {
         self.pitch
     }
 
-    /// Sets the camera `pitch`.
+    /// Sets the camera's pitch angle.
+    ///
+    /// Pitch controls vertical rotation (looking up/down).
+    ///
+    /// # Arguments
+    /// * `pitch` - The new pitch angle in radians
     pub fn set_pitch(&mut self, pitch: f32) {
         self.pitch = pitch;
 
@@ -148,32 +204,56 @@ impl ArcBall {
         self.update_projviews();
     }
 
-    /// The minimum pitch of the camera.
+    /// Returns the minimum allowed pitch angle.
+    ///
+    /// # Returns
+    /// The minimum pitch in radians (default: 0.01)
     pub fn min_pitch(&self) -> f32 {
         self.min_pitch
     }
 
-    /// Set the minimum pitch of the camera.
+    /// Sets the minimum allowed pitch angle.
+    ///
+    /// This prevents the camera from rotating too far downward.
+    ///
+    /// # Arguments
+    /// * `min_pitch` - The minimum pitch in radians
     pub fn set_min_pitch(&mut self, min_pitch: f32) {
         self.min_pitch = min_pitch;
     }
 
-    /// The maximum pitch of the camera.
+    /// Returns the maximum allowed pitch angle.
+    ///
+    /// # Returns
+    /// The maximum pitch in radians (default: π - 0.01)
     pub fn max_pitch(&self) -> f32 {
         self.max_pitch
     }
 
-    /// Set the maximum pitch of the camera.
+    /// Sets the maximum allowed pitch angle.
+    ///
+    /// This prevents the camera from rotating too far upward.
+    ///
+    /// # Arguments
+    /// * `max_pitch` - The maximum pitch in radians
     pub fn set_max_pitch(&mut self, max_pitch: f32) {
         self.max_pitch = max_pitch;
     }
 
-    /// The distance from the camera position to its view point.
+    /// Returns the current distance from the camera to the focus point.
+    ///
+    /// # Returns
+    /// The distance in world units
     pub fn dist(&self) -> f32 {
         self.dist
     }
 
-    /// Move the camera such that it is at a given distance from the view point.
+    /// Sets the distance from the camera to the focus point.
+    ///
+    /// The distance is automatically clamped between `min_dist` and `max_dist`.
+    ///
+    /// # Arguments
+    /// * `dist` - The new distance in world units
     pub fn set_dist(&mut self, dist: f32) {
         self.dist = dist;
 
@@ -181,32 +261,61 @@ impl ArcBall {
         self.update_projviews();
     }
 
-    /// The minimum distance from the camera position to its view point.
+    /// Returns the minimum allowed distance from the camera to the focus point.
+    ///
+    /// # Returns
+    /// The minimum distance in world units (default: 0.00001)
     pub fn min_dist(&self) -> f32 {
         self.min_dist
     }
 
-    /// Set the minimum distance from the camera position to its view point.
+    /// Sets the minimum allowed distance from the camera to the focus point.
+    ///
+    /// This prevents the camera from getting too close.
+    ///
+    /// # Arguments
+    /// * `min_dist` - The minimum distance in world units
     pub fn set_min_dist(&mut self, min_dist: f32) {
         self.min_dist = min_dist;
     }
 
-    /// The maximum distance from the camera position to its view point.
+    /// Returns the maximum allowed distance from the camera to the focus point.
+    ///
+    /// # Returns
+    /// The maximum distance in world units (default: 10000)
     pub fn max_dist(&self) -> f32 {
         self.max_dist
     }
 
-    /// Set the maximum distance from the camera position to its view point.
+    /// Sets the maximum allowed distance from the camera to the focus point.
+    ///
+    /// This prevents the camera from zooming out too far.
+    ///
+    /// # Arguments
+    /// * `max_dist` - The maximum distance in world units
     pub fn set_max_dist(&mut self, max_dist: f32) {
         self.max_dist = max_dist;
     }
 
-    /// Set the distance change factor for a unit scroll (default at 1.01).
+    /// Sets the zoom speed factor.
+    ///
+    /// Each mouse wheel scroll multiplies the distance by this factor.
+    /// Values > 1.0 zoom out, values < 1.0 zoom in.
+    ///
+    /// # Arguments
+    /// * `dist_step` - The multiplier per scroll unit (default: 1.01 on most platforms, 1.0001 on macOS)
     pub fn set_dist_step(&mut self, dist_step: f32) {
         self.dist_step = dist_step;
     }
 
-    /// Move and orient the camera such that it looks at a specific point.
+    /// Positions and orients the camera to look at a specific point from a specific position.
+    ///
+    /// This is similar to gluLookAt. The camera will be positioned at `eye`,
+    /// looking at `at`, and will orbit around `at` when the user interacts with it.
+    ///
+    /// # Arguments
+    /// * `eye` - The position to place the camera
+    /// * `at` - The point to look at (becomes the new focus point)
     pub fn look_at(&mut self, eye: Point3<f32>, at: Point3<f32>) {
         let dist = (eye - at).norm();
 

@@ -1,7 +1,27 @@
 use super::{sphere, utils};
 use super::{IndexBuffer, RenderMesh};
 
-/// Generates a capsule.
+/// Generates a capsule mesh.
+///
+/// A capsule is a cylinder with hemispherical caps on both ends.
+/// The capsule is oriented along the Y axis with its center at the origin.
+///
+/// # Arguments
+/// * `caps_diameter` - The diameter of the hemispherical caps (also the cylinder diameter)
+/// * `cylinder_height` - The height of the cylindrical section (not including the caps)
+/// * `ntheta_subdiv` - Number of subdivisions around the capsule (longitude)
+/// * `nphi_subdiv` - Number of subdivisions along each hemisphere (latitude)
+///
+/// # Returns
+/// A `RenderMesh` containing the capsule geometry
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::capsule;
+/// // Create a capsule with cap diameter 1.0, cylinder height 2.0
+/// // Total height will be 3.0 (2.0 cylinder + 1.0 from two caps)
+/// let capsule_mesh = capsule(1.0, 2.0, 32, 16);
+/// ```
 pub fn capsule(
     caps_diameter: f32,
     cylinder_height: f32,

@@ -133,7 +133,20 @@ impl Window {
         })
     }
 
-    /// Set window title
+    /// Sets the window title.
+    ///
+    /// # Arguments
+    /// * `title` - The new title for the window
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// # #[kiss3d::main]
+    /// # async fn main() {
+    /// let mut window = Window::new("Initial Title");
+    /// window.set_title("New Title");
+    /// # }
+    /// ```
     pub fn set_title(&mut self, title: &str) {
         self.canvas.set_title(title)
     }
@@ -155,45 +168,80 @@ impl Window {
         self.canvas.set_icon(icon)
     }
 
-    /// Set the cursor grabbing behaviour.
+    /// Sets the cursor grabbing behaviour.
     ///
-    /// If cursor grabbing is on, the cursor is prevented from leaving the window.
+    /// If cursor grabbing is enabled, the cursor is prevented from leaving the window.
+    ///
+    /// # Arguments
+    /// * `grab` - `true` to enable cursor grabbing, `false` to disable it
+    ///
+    /// # Platform-specific
     /// Does nothing on web platforms.
     pub fn set_cursor_grab(&self, grab: bool) {
         self.canvas.set_cursor_grab(grab);
     }
 
+    /// Sets the cursor position in window coordinates.
+    ///
+    /// # Arguments
+    /// * `x` - The x-coordinate in pixels from the left edge of the window
+    /// * `y` - The y-coordinate in pixels from the top edge of the window
     #[inline]
-    /// Set the cursor position.
     pub fn set_cursor_position(&self, x: f64, y: f64) {
         self.canvas.set_cursor_position(x, y);
     }
 
+    /// Controls the cursor visibility.
+    ///
+    /// # Arguments
+    /// * `hide` - `true` to hide the cursor, `false` to show it
     #[inline]
-    /// Toggle the cursor visibility.
     pub fn hide_cursor(&self, hide: bool) {
         self.canvas.hide_cursor(hide);
     }
 
     /// Closes the window.
+    ///
+    /// After calling this method, [`render()`](Self::render) will return `false` on the next frame,
+    /// allowing the render loop to exit gracefully.
     #[inline]
     pub fn close(&mut self) {
         self.should_close = true;
     }
 
-    /// Hides the window, without closing it. Use `show` to make it visible again.
+    /// Hides the window without closing it.
+    ///
+    /// Use [`show()`](Self::show) to make it visible again.
+    /// The window continues to exist and can be shown again later.
     #[inline]
     pub fn hide(&mut self) {
         self.canvas.hide()
     }
 
-    /// Makes the window visible. Use `hide` to hide it.
+    /// Makes the window visible.
+    ///
+    /// Use [`hide()`](Self::hide) to hide it again.
     #[inline]
     pub fn show(&mut self) {
         self.canvas.show()
     }
 
-    /// Sets the background color.
+    /// Sets the background color for the window.
+    ///
+    /// # Arguments
+    /// * `r` - Red component (0.0 to 1.0)
+    /// * `g` - Green component (0.0 to 1.0)
+    /// * `b` - Blue component (0.0 to 1.0)
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// # #[kiss3d::main]
+    /// # async fn main() {
+    /// let mut window = Window::new("Example");
+    /// window.set_background_color(0.1, 0.2, 0.3); // Dark blue-gray
+    /// # }
+    /// ```
     #[inline]
     pub fn set_background_color(&mut self, r: f32, g: f32, b: f32) {
         self.background.x = r;
@@ -201,46 +249,98 @@ impl Window {
         self.background.z = b;
     }
 
-    /// Set the size of all points that will be rendered.
+    /// Sets the size of all points that will be rendered.
     ///
-    /// Unfortunately, not all point sizes are supported by all graphics drivers.
+    /// # Arguments
+    /// * `pt_size` - The point size in pixels
+    ///
+    /// # Note
+    /// Not all point sizes are supported by all graphics drivers.
+    /// The actual rendered size may be clamped to a driver-specific range.
     #[inline]
     pub fn set_point_size(&mut self, pt_size: f32) {
         self.point_renderer.set_point_size(pt_size);
     }
 
-    /// Set the width of all lines that will be rendered.
+    /// Sets the width of all lines that will be rendered.
+    ///
+    /// This affects both 3D lines (drawn with [`draw_line`](Self::draw_line))
+    /// and 2D lines (drawn with [`draw_planar_line`](Self::draw_planar_line)).
+    ///
+    /// # Arguments
+    /// * `line_width` - The line width in pixels
     #[inline]
     pub fn set_line_width(&mut self, line_width: f32) {
         self.line_renderer.set_line_width(line_width);
         self.planar_line_renderer.set_line_width(line_width);
     }
 
-    /// Adds a 3D line to be drawn during the next render.
+    /// Draws a 3D line for the current frame.
     ///
-    /// The line is being drawn only during the next frame after this call.
-    /// Therefore, this call must be executed at as many frames as you want it to remain visible.
+    /// The line is only drawn during the next frame. To keep a line visible,
+    /// call this method every frame from within your render loop.
+    ///
+    /// # Arguments
+    /// * `a` - The starting point of the line in 3D space
+    /// * `b` - The ending point of the line in 3D space
+    /// * `color` - RGB color (each component from 0.0 to 1.0)
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// # use nalgebra::{Point3};
+    /// # #[kiss3d::main]
+    /// # async fn main() {
+    /// # let mut window = Window::new("Example");
+    /// let start = Point3::new(0.0, 0.0, 0.0);
+    /// let end = Point3::new(1.0, 1.0, 1.0);
+    /// let red = Point3::new(1.0, 0.0, 0.0);
+    /// window.draw_line(&start, &end, &red);
+    /// # }
+    /// ```
     #[inline]
     pub fn draw_line(&mut self, a: &Point3<f32>, b: &Point3<f32>, color: &Point3<f32>) {
         self.line_renderer.draw_line(*a, *b, *color);
     }
 
-    /// Draws a 2D line to be drawn during the next render.
+    /// Draws a 2D line for the current frame.
     ///
-    /// The line is being drawn only during the next frame after this call.
-    /// Therefore, this call must be executed at as many frames as you want it to remain visible.
+    /// The line is only drawn during the next frame. To keep a line visible,
+    /// call this method every frame from within your render loop.
+    ///
+    /// # Arguments
+    /// * `a` - The starting point of the line in 2D screen space
+    /// * `b` - The ending point of the line in 2D screen space
+    /// * `color` - RGB color (each component from 0.0 to 1.0)
     #[inline]
     pub fn draw_planar_line(&mut self, a: &Point2<f32>, b: &Point2<f32>, color: &Point3<f32>) {
         self.planar_line_renderer.draw_line(*a, *b, *color);
     }
 
-    /// Adds a point to be drawn during the next frame.
+    /// Draws a 3D point for the current frame.
+    ///
+    /// The point is only drawn during the next frame. To keep a point visible,
+    /// call this method every frame from within your render loop.
+    ///
+    /// # Arguments
+    /// * `pt` - The position of the point in 3D space
+    /// * `color` - RGB color (each component from 0.0 to 1.0)
     #[inline]
     pub fn draw_point(&mut self, pt: &Point3<f32>, color: &Point3<f32>) {
         self.point_renderer.draw_point(*pt, *color);
     }
 
-    /// Adds a string to be drawn during the next frame.
+    /// Draws text for the current frame.
+    ///
+    /// The text is only drawn during the next frame. To keep text visible,
+    /// call this method every frame from within your render loop.
+    ///
+    /// # Arguments
+    /// * `text` - The string to display
+    /// * `pos` - The position in 2D screen coordinates
+    /// * `scale` - The text scale factor
+    /// * `font` - A reference to the font to use
+    /// * `color` - RGB color (each component from 0.0 to 1.0)
     #[inline]
     pub fn draw_text(
         &mut self,
@@ -253,51 +353,96 @@ impl Window {
         self.text_renderer.draw_text(text, pos, scale, font, color);
     }
 
-    /// Removes an object from the scene.
+    /// Removes a 3D object from the scene.
     #[deprecated(note = "Use `remove_node` instead.")]
     pub fn remove(&mut self, sn: &mut SceneNode) {
         self.remove_node(sn)
     }
 
-    /// Removes an object from the scene.
+    /// Removes a 3D object from the scene.
+    ///
+    /// # Arguments
+    /// * `sn` - The scene node to remove. After this call, the node is unlinked from its parent.
     pub fn remove_node(&mut self, sn: &mut SceneNode) {
         sn.unlink()
     }
 
     /// Removes a 2D object from the scene.
+    ///
+    /// # Arguments
+    /// * `sn` - The planar scene node to remove. After this call, the node is unlinked from its parent.
     pub fn remove_planar_node(&mut self, sn: &mut PlanarSceneNode) {
         sn.unlink()
     }
 
-    /// Adds a group to the scene.
+    /// Adds an empty group node to the 3D scene.
     ///
-    /// A group is a node not containing any object.
+    /// A group is a node without any geometry. It's useful for organizing
+    /// scene hierarchies and applying transformations to multiple objects at once.
+    ///
+    /// # Returns
+    /// A new `SceneNode` representing the group, which can have children added to it.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// # #[kiss3d::main]
+    /// # async fn main() {
+    /// # let mut window = Window::new("Example");
+    /// let mut group = window.add_group();
+    /// let mut cube1 = group.add_cube(1.0, 1.0, 1.0);
+    /// let mut cube2 = group.add_cube(1.0, 1.0, 1.0);
+    /// // Now transforming 'group' will affect both cubes
+    /// # }
+    /// ```
     pub fn add_group(&mut self) -> SceneNode {
         self.scene.add_group()
     }
 
-    /// Adds a 2D group to the scene.
+    /// Adds an empty group node to the 2D scene.
     ///
-    /// A group is a node not containing any object.
+    /// A group is a node without any geometry. It's useful for organizing
+    /// scene hierarchies and applying transformations to multiple objects at once.
+    ///
+    /// # Returns
+    /// A new `PlanarSceneNode` representing the group.
     pub fn add_planar_group(&mut self) -> PlanarSceneNode {
         self.scene2.add_group()
     }
 
-    /// Adds an obj model to the scene.
+    /// Loads and adds an OBJ model to the scene.
     ///
     /// # Arguments
-    /// * `path`  - relative path to the obj file.
-    /// * `scale` - scale to apply to the model.
+    /// * `path` - Path to the .obj file to load
+    /// * `mtl_dir` - Directory path where material (.mtl) files are located
+    /// * `scale` - Scale factor to apply to the model along each axis
+    ///
+    /// # Returns
+    /// A `SceneNode` representing the loaded model
     pub fn add_obj(&mut self, path: &Path, mtl_dir: &Path, scale: Vector3<f32>) -> SceneNode {
         self.scene.add_obj(path, mtl_dir, scale)
     }
 
-    /// Adds an unnamed mesh to the scene.
+    /// Adds a 3D mesh to the scene.
+    ///
+    /// # Arguments
+    /// * `mesh` - A reference-counted GPU mesh to add
+    /// * `scale` - Scale factor to apply to the mesh along each axis
+    ///
+    /// # Returns
+    /// A `SceneNode` representing the mesh in the scene
     pub fn add_mesh(&mut self, mesh: Rc<RefCell<GpuMesh>>, scale: Vector3<f32>) -> SceneNode {
         self.scene.add_mesh(mesh, scale)
     }
 
-    /// Adds an unnamed planar mesh to the scene.
+    /// Adds a 2D mesh to the scene.
+    ///
+    /// # Arguments
+    /// * `mesh` - A reference-counted planar mesh to add
+    /// * `scale` - Scale factor to apply to the mesh along each axis
+    ///
+    /// # Returns
+    /// A `PlanarSceneNode` representing the 2D mesh in the scene
     pub fn add_planar_mesh(
         &mut self,
         mesh: Rc<RefCell<PlanarMesh>>,
@@ -306,17 +451,51 @@ impl Window {
         self.scene2.add_mesh(mesh, scale)
     }
 
-    /// Creates and adds a new object using a mesh descriptor.
+    /// Creates and adds a new 3D object from a triangle mesh.
+    ///
+    /// # Arguments
+    /// * `mesh` - A `parry3d::shape::TriMesh` containing the geometry
+    /// * `scale` - Scale factor to apply to the mesh along each axis
+    ///
+    /// # Returns
+    /// A `SceneNode` representing the mesh in the scene
     pub fn add_trimesh(&mut self, mesh: TriMesh, scale: Vector3<f32>) -> SceneNode {
         self.scene.add_trimesh(mesh, scale)
     }
 
-    /// Creates and adds a new object using the geometry generated by a given procedural generator.
+    /// Creates and adds a new 3D object from procedurally generated geometry.
+    ///
+    /// # Arguments
+    /// * `mesh` - A `RenderMesh` containing the procedurally generated geometry
+    /// * `scale` - Scale factor to apply to the mesh along each axis
+    ///
+    /// # Returns
+    /// A `SceneNode` representing the mesh in the scene
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// # use kiss3d::procedural;
+    /// # use nalgebra::Vector3;
+    /// # #[kiss3d::main]
+    /// # async fn main() {
+    /// # let mut window = Window::new("Example");
+    /// let mesh = procedural::sphere(1.0, 32, 32, true);
+    /// let mut node = window.add_render_mesh(mesh, Vector3::new(1.0, 1.0, 1.0));
+    /// # }
+    /// ```
     pub fn add_render_mesh(&mut self, mesh: RenderMesh, scale: Vector3<f32>) -> SceneNode {
         self.scene.add_render_mesh(mesh, scale)
     }
 
-    /// Creates and adds a new object using the geometry registered as `geometry_name`.
+    /// Creates and adds a new object using a geometry registered with a specific name.
+    ///
+    /// # Arguments
+    /// * `geometry_name` - The name of the registered geometry
+    /// * `scale` - Scale factor to apply to the geometry along each axis
+    ///
+    /// # Returns
+    /// `Some(SceneNode)` if the geometry was found, `None` otherwise
     pub fn add_geom_with_name(
         &mut self,
         geometry_name: &str,
@@ -383,23 +562,36 @@ impl Window {
         self.scene2.add_capsule(r, h)
     }
 
-    /// Adds a double-sided quad to the scene. The quad is initially centered at (0, 0, 0). The
-    /// quad itself is composed of a user-defined number of triangles regularly spaced on a grid.
-    /// This is the main way to draw height maps.
+    /// Adds a double-sided subdivided quad to the scene.
+    ///
+    /// The quad is initially centered at (0, 0, 0) and lies in the XY plane.
+    /// It's composed of a user-defined number of triangles regularly spaced on a grid.
+    /// This is useful for drawing height maps or terrain.
     ///
     /// # Arguments
-    /// * `w` - the quad width.
-    /// * `h` - the quad height.
-    /// * `wsubdivs` - number of horizontal subdivisions. This correspond to the number of squares
-    ///   which will be placed horizontally on each line. Must not be `0`.
-    /// * `hsubdivs` - number of vertical subdivisions. This correspond to the number of squares
-    ///   which will be placed vertically on each line. Must not be `0`.
-    ///   update.
+    /// * `w` - The quad width
+    /// * `h` - The quad height
+    /// * `usubdivs` - Number of horizontal subdivisions (number of squares along width). Must not be `0`.
+    /// * `vsubdivs` - Number of vertical subdivisions (number of squares along height). Must not be `0`.
+    ///
+    /// # Returns
+    /// A `SceneNode` representing the quad
+    ///
+    /// # Panics
+    /// Panics if `usubdivs` or `vsubdivs` is `0`.
     pub fn add_quad(&mut self, w: f32, h: f32, usubdivs: usize, vsubdivs: usize) -> SceneNode {
         self.scene.add_quad(w, h, usubdivs, vsubdivs)
     }
 
-    /// Adds a double-sided quad with the specified vertices.
+    /// Adds a double-sided quad with custom vertex positions.
+    ///
+    /// # Arguments
+    /// * `vertices` - Array of vertex positions defining the quad surface
+    /// * `nhpoints` - Number of points along the horizontal direction
+    /// * `nvpoints` - Number of points along the vertical direction
+    ///
+    /// # Returns
+    /// A `SceneNode` representing the quad
     pub fn add_quad_with_vertices(
         &mut self,
         vertices: &[Point3<f32>],
@@ -410,32 +602,56 @@ impl Window {
             .add_quad_with_vertices(vertices, nhpoints, nvpoints)
     }
 
-    /// Load a texture from a file and return a reference to it.
+    /// Loads a texture from a file and returns a reference to it.
+    ///
+    /// The texture is managed by the global texture manager and will be reused
+    /// if loaded again with the same name.
+    ///
+    /// # Arguments
+    /// * `path` - Path to the texture file
+    /// * `name` - A unique name to identify this texture
+    ///
+    /// # Returns
+    /// A reference-counted texture that can be applied to scene objects
     pub fn add_texture(&mut self, path: &Path, name: &str) -> Rc<Texture> {
         TextureManager::get_global_manager(|tm| tm.add(path, name))
     }
 
-    /// Adds a rectangle to the scene. The rectangle is initially axis-aligned and centered at (0, 0, 0).
+    /// Adds a 2D rectangle to the scene.
+    ///
+    /// The rectangle is initially axis-aligned and centered at (0, 0).
     ///
     /// # Arguments
-    /// * `wx` - the cube extent along the x axis
-    /// * `wy` - the cube extent along the y axis
+    /// * `wx` - The rectangle width (extent along the x-axis)
+    /// * `wy` - The rectangle height (extent along the y-axis)
+    ///
+    /// # Returns
+    /// A `PlanarSceneNode` representing the rectangle
     pub fn add_rectangle(&mut self, wx: f32, wy: f32) -> PlanarSceneNode {
         self.scene2.add_rectangle(wx, wy)
     }
 
-    /// Adds a circle to the scene. The circle is initially centered at (0, 0, 0).
+    /// Adds a 2D circle to the scene.
+    ///
+    /// The circle is initially centered at (0, 0).
     ///
     /// # Arguments
-    /// * `r` - the circle radius
+    /// * `r` - The circle radius
+    ///
+    /// # Returns
+    /// A `PlanarSceneNode` representing the circle
     pub fn add_circle(&mut self, r: f32) -> PlanarSceneNode {
         self.scene2.add_circle(r)
     }
 
-    /// Adds a convex polygon to the scene.
+    /// Adds a 2D convex polygon to the scene.
     ///
     /// # Arguments
-    /// * `r` - the circle radius
+    /// * `polygon` - Vector of points defining the polygon vertices in counter-clockwise order
+    /// * `scale` - Scale factor to apply to the polygon along each axis
+    ///
+    /// # Returns
+    /// A `PlanarSceneNode` representing the polygon
     pub fn add_convex_polygon(
         &mut self,
         polygon: Vec<Point2<f32>>,
@@ -444,40 +660,104 @@ impl Window {
         self.scene2.add_convex_polygon(polygon, scale)
     }
 
-    /// Returns whether this window is closed or not.
+    /// Checks whether this window is closed.
+    ///
+    /// # Returns
+    /// Currently always returns `false`. Use [`should_close()`](Self::should_close) instead.
     pub fn is_closed(&self) -> bool {
         false // FIXME
     }
 
-    /// The scale factor of this screen.
+    /// Returns the DPI scale factor of the screen.
+    ///
+    /// This is the ratio between physical pixels and logical pixels.
+    /// On high-DPI displays (like Retina displays), this will be greater than 1.0.
+    ///
+    /// # Returns
+    /// The scale factor (e.g., 1.0 for standard displays, 2.0 for Retina displays)
     pub fn scale_factor(&self) -> f64 {
         self.canvas.scale_factor()
     }
 
-    /// Sets the light mode. Only one light is supported.
+    /// Sets the light mode for the scene.
+    ///
+    /// Currently, only one light is supported. The light affects how 3D objects are rendered.
+    ///
+    /// # Arguments
+    /// * `pos` - The light configuration (see [`Light`] enum)
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// # use kiss3d::light::Light;
+    /// # use nalgebra::Point3;
+    /// # #[kiss3d::main]
+    /// # async fn main() {
+    /// # let mut window = Window::new("Example");
+    /// // Light attached to the camera
+    /// window.set_light(Light::StickToCamera);
+    ///
+    /// // Fixed position light
+    /// window.set_light(Light::Absolute(Point3::new(5.0, 5.0, 5.0)));
+    /// # }
+    /// ```
     pub fn set_light(&mut self, pos: Light) {
         self.light_mode = pos;
     }
 
-    /// Retrieve a mutable reference to the egui Context.
+    /// Retrieves a mutable reference to the egui context.
+    ///
+    /// Use this to access egui's full API for creating custom UI elements.
+    ///
+    /// # Returns
+    /// A mutable reference to the egui Context
+    ///
+    /// # Note
+    /// Only available when the `egui` feature is enabled.
     #[cfg(feature = "egui")]
     pub fn egui_context_mut(&mut self) -> &mut egui::Context {
         self.egui_context.renderer.context_mut()
     }
 
-    /// Retrieve a reference to the egui Context.
+    /// Retrieves a reference to the egui context.
+    ///
+    /// Use this to access egui's API for reading UI state.
+    ///
+    /// # Returns
+    /// A reference to the egui Context
+    ///
+    /// # Note
+    /// Only available when the `egui` feature is enabled.
     #[cfg(feature = "egui")]
     pub fn egui_context(&self) -> &egui::Context {
         self.egui_context.renderer.context()
     }
 
-    /// Returns `true` if the mouse is currently interacting with an egui widget.
+    /// Checks if egui is currently capturing mouse input.
+    ///
+    /// Returns `true` if the mouse is hovering over or interacting with an egui widget.
+    /// This is useful for preventing 3D camera controls from interfering with UI interaction.
+    ///
+    /// # Returns
+    /// `true` if egui wants mouse input, `false` otherwise
+    ///
+    /// # Note
+    /// Only available when the `egui` feature is enabled.
     #[cfg(feature = "egui")]
     pub fn is_egui_capturing_mouse(&self) -> bool {
         self.egui_context.renderer.wants_pointer_input()
     }
 
-    /// Returns `true` if the keyboard is currently interacting with an egui widget.
+    /// Checks if egui is currently capturing keyboard input.
+    ///
+    /// Returns `true` if an egui text field or other widget has keyboard focus.
+    /// This is useful for preventing keyboard shortcuts from triggering while typing in UI.
+    ///
+    /// # Returns
+    /// `true` if egui wants keyboard input, `false` otherwise
+    ///
+    /// # Note
+    /// Only available when the `egui` feature is enabled.
     #[cfg(feature = "egui")]
     pub fn is_egui_capturing_keyboard(&self) -> bool {
         self.egui_context.renderer.wants_keyboard_input()
@@ -620,23 +900,38 @@ impl Window {
         })
     }
 
-    /// Runs the egui UI code. Call this once per frame after render().await returns true.
+    /// Draws an immediate mode UI using egui.
+    ///
+    /// Call this method from your render loop to create and display UI elements.
+    /// The UI is drawn on top of the 3D scene.
+    ///
+    /// # Arguments
+    /// * `ui_fn` - A closure that receives the egui Context and can create UI elements
     ///
     /// # Example
     /// ```no_run
     /// # use kiss3d::window::Window;
+    /// # #[cfg(feature = "egui")]
     /// # #[kiss3d::main]
     /// # async fn main() {
-    /// let mut window = Window::new("egui example");
+    /// # let mut window = Window::new("Example");
     /// while window.render().await {
     ///     window.draw_ui(|ctx| {
     ///         egui::Window::new("My Window").show(ctx, |ui| {
-    ///             ui.label("Hello, egui!");
+    ///             ui.label("Hello, world!");
+    ///             if ui.button("Click me").clicked() {
+    ///                 println!("Button clicked!");
+    ///             }
     ///         });
     ///     });
     /// }
     /// # }
+    /// # #[cfg(not(feature = "egui"))]
+    /// # fn main() {}
     /// ```
+    ///
+    /// # Note
+    /// Only available when the `egui` feature is enabled.
     #[cfg(feature = "egui")]
     pub fn draw_ui<F>(&mut self, ui_fn: F)
     where
@@ -682,33 +977,71 @@ impl Window {
         self.egui_context.raw_input = RawInput::default();
     }
 
-    /// Opens a window, hide it then calls a user-defined procedure.
+    /// Creates a new hidden window.
+    ///
+    /// The window is created but not displayed. Use [`show()`](Self::show) to make it visible.
+    /// The default size is 800x600 pixels.
     ///
     /// # Arguments
-    /// * `title` - the window title
+    /// * `title` - The window title
+    ///
+    /// # Returns
+    /// A new `Window` instance
     pub fn new_hidden(title: &str) -> Window {
         Window::do_new(title, true, DEFAULT_WIDTH, DEFAULT_HEIGHT, None)
     }
 
-    /// Opens a window then calls a user-defined procedure.
+    /// Creates a new visible window with default settings.
+    ///
+    /// The window is created and immediately visible with a default size of 800x600 pixels.
+    /// Use this in combination with the `#[kiss3d::main]` macro for cross-platform rendering.
     ///
     /// # Arguments
-    /// * `title` - the window title
+    /// * `title` - The window title
+    ///
+    /// # Returns
+    /// A new `Window` instance
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// #[kiss3d::main]
+    /// async fn main() {
+    ///     let mut window = Window::new("My Application");
+    ///     while window.render().await {
+    ///         // Your render loop code here
+    ///     }
+    /// }
+    /// ```
     pub fn new(title: &str) -> Window {
         Window::do_new(title, false, DEFAULT_WIDTH, DEFAULT_HEIGHT, None)
     }
 
-    /// Opens a window with a custom size then calls a user-defined procedure.
+    /// Creates a new window with custom dimensions.
     ///
     /// # Arguments
-    /// * `title` - the window title.
-    /// * `width` - the window width.
-    /// * `height` - the window height.
+    /// * `title` - The window title
+    /// * `width` - The window width in pixels
+    /// * `height` - The window height in pixels
+    ///
+    /// # Returns
+    /// A new `Window` instance
     pub fn new_with_size(title: &str, width: u32, height: u32) -> Window {
         Window::do_new(title, false, width, height, None)
     }
 
-    /// Opens a window with custom options for vsync and AA.
+    /// Creates a new window with custom setup options.
+    ///
+    /// This allows fine-grained control over window creation, including VSync and anti-aliasing settings.
+    ///
+    /// # Arguments
+    /// * `title` - The window title
+    /// * `width` - The window width in pixels
+    /// * `height` - The window height in pixels
+    /// * `setup` - A `CanvasSetup` struct containing the window configuration
+    ///
+    /// # Returns
+    /// A new `Window` instance
     pub fn new_with_setup(title: &str, width: u32, height: u32, setup: CanvasSetup) -> Window {
         Window::do_new(title, false, width, height, Some(setup))
     }
@@ -769,33 +1102,65 @@ impl Window {
         usr_window
     }
 
-    /// Reference to the scene associated with this window.
+    /// Returns an immutable reference to the root 3D scene node.
+    ///
+    /// The scene node forms the root of a hierarchical scene graph.
+    /// You can traverse or query the scene through this node.
+    ///
+    /// # Returns
+    /// An immutable reference to the root `SceneNode`
     #[inline]
     pub fn scene(&self) -> &SceneNode {
         &self.scene
     }
 
-    /// Mutable reference to the scene associated with this window.
+    /// Returns a mutable reference to the root 3D scene node.
+    ///
+    /// Use this to modify the scene graph structure or node properties.
+    ///
+    /// # Returns
+    /// A mutable reference to the root `SceneNode`
     #[inline]
     pub fn scene_mut(&mut self) -> &mut SceneNode {
         &mut self.scene
     }
 
-    // FIXME: give more options for the snap size and offset.
-    /// Read the pixels currently displayed to the screen.
+    /// Captures the current framebuffer as raw RGB pixel data.
     ///
-    /// # Arguments:
-    /// * `out` - the output buffer. It is automatically resized.
+    /// Reads all pixels currently displayed on the screen into a buffer.
+    /// The buffer is automatically resized to fit the screen dimensions.
+    /// Pixels are stored in RGB format (3 bytes per pixel), row by row from bottom to top.
+    ///
+    /// # Arguments
+    /// * `out` - The output buffer. It will be resized to width × height × 3 bytes.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// # #[kiss3d::main]
+    /// # async fn main() {
+    /// # let window = Window::new("Example");
+    /// let mut pixels = Vec::new();
+    /// window.snap(&mut pixels);
+    /// // pixels now contains RGB data
+    /// # }
+    /// ```
     pub fn snap(&self, out: &mut Vec<u8>) {
         let (width, height) = self.canvas.size();
         self.snap_rect(out, 0, 0, width as usize, height as usize)
     }
 
-    /// Read a section of pixels from the screen
+    /// Captures a rectangular region of the framebuffer as raw RGB pixel data.
     ///
-    /// # Arguments:
-    /// * `out` - the output buffer. It is automatically resized
-    /// * `x, y, width, height` - the rectangle to capture
+    /// Reads a specific rectangular region of pixels from the screen.
+    /// Pixels are stored in RGB format (3 bytes per pixel).
+    ///
+    /// # Arguments
+    /// * `out` - The output buffer. It will be resized to width × height × 3 bytes.
+    /// * `x` - The x-coordinate of the rectangle's bottom-left corner
+    /// * `y` - The y-coordinate of the rectangle's bottom-left corner
+    /// * `width` - The width of the rectangle in pixels
+    /// * `height` - The height of the rectangle in pixels
     pub fn snap_rect(&self, out: &mut Vec<u8>, x: usize, y: usize, width: usize, height: usize) {
         let size = width * height * 3;
 
@@ -819,7 +1184,25 @@ impl Window {
         );
     }
 
-    /// Get the current screen as an image
+    /// Captures the current framebuffer as an image.
+    ///
+    /// Returns an `ImageBuffer` containing the current screen content.
+    /// The image is automatically flipped vertically to match the expected orientation
+    /// (OpenGL's bottom-left origin is converted to top-left).
+    ///
+    /// # Returns
+    /// An `ImageBuffer<Rgb<u8>, Vec<u8>>` containing the screen pixels
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// # #[kiss3d::main]
+    /// # async fn main() {
+    /// # let window = Window::new("Example");
+    /// let image = window.snap_image();
+    /// image.save("screenshot.png").unwrap();
+    /// # }
+    /// ```
     pub fn snap_image(&self) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
         let (width, height) = self.canvas.size();
         let mut buf = Vec::new();
@@ -829,24 +1212,66 @@ impl Window {
         imageops::flip_vertical(&img)
     }
 
-    /// Gets the events manager that gives access to an event iterator.
+    /// Returns an event manager for accessing window events.
+    ///
+    /// The event manager provides an iterator over events that occurred since the last frame,
+    /// such as keyboard input, mouse movement, and window resizing.
+    ///
+    /// # Returns
+    /// An `EventManager` that can be iterated to process events
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// # use kiss3d::event::{WindowEvent, Action, Key};
+    /// # #[kiss3d::main]
+    /// # async fn main() {
+    /// # let mut window = Window::new("Example");
+    /// # while window.render().await {
+    /// for event in window.events().iter() {
+    ///     match event.value {
+    ///         WindowEvent::Key(Key::Escape, Action::Release, _) => {
+    ///             println!("Escape pressed!");
+    ///         }
+    ///         _ => {}
+    ///     }
+    /// }
+    /// # }
+    /// # }
+    /// ```
     pub fn events(&self) -> EventManager {
         EventManager::new(self.events.clone(), self.unhandled_events.clone())
     }
 
-    /// Gets the status of a key.
+    /// Gets the current state of a keyboard key.
+    ///
+    /// # Arguments
+    /// * `key` - The key to check
+    ///
+    /// # Returns
+    /// The current `Action` state (e.g., `Action::Press`, `Action::Release`)
     pub fn get_key(&self, key: Key) -> Action {
         self.canvas.get_key(key)
     }
 
-    /// Gets the state of a mouse button.
+    /// Gets the current state of a mouse button.
+    ///
+    /// # Arguments
+    /// * `button` - The mouse button to check
+    ///
+    /// # Returns
+    /// The current `Action` state (e.g., `Action::Press`, `Action::Release`)
     pub fn get_mouse_button(&self, button: MouseButton) -> Action {
         self.canvas.get_mouse_button(button)
     }
 
-    /// Gets the last known position of the mouse.
+    /// Gets the last known position of the mouse cursor.
     ///
-    /// The position of the mouse is automatically updated when the mouse moves over the canvas.
+    /// The position is automatically updated when the mouse moves over the window.
+    /// Coordinates are in pixels, with (0, 0) at the top-left corner.
+    ///
+    /// # Returns
+    /// `Some((x, y))` with the cursor position, or `None` if the cursor position is unknown
     pub fn cursor_pos(&self) -> Option<(f64, f64)> {
         self.canvas.cursor_pos()
     }
@@ -913,31 +1338,63 @@ impl Window {
         }
     }
 
-    /// Renders the scene using the default camera.
+    /// Renders one frame of the scene.
     ///
-    /// Returns `false` if the window should be closed.
-    // TODO: would be good to have a 2D version of this that renders with a 2D side-scroll camera.
+    /// This is the main rendering function that should be called in your render loop.
+    /// It handles events, updates the scene, renders all objects, and swaps buffers.
+    ///
+    /// # Returns
+    /// `true` if rendering should continue, `false` if the window should close
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::window::Window;
+    /// #[kiss3d::main]
+    /// async fn main() {
+    ///     let mut window = Window::new("My Application");
+    ///     while window.render().await {
+    ///         // Your per-frame code here
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// # Platform-specific
+    /// - **Native**: Returns immediately after rendering one frame
+    /// - **WASM**: Yields to the browser's event loop and returns when the next frame is ready
     pub async fn render(&mut self) -> bool {
         self.render_with(None, None, None, None).await
     }
 
-    /// Render using a specific post processing effect.
+    /// Renders one frame with a post-processing effect applied.
     ///
-    /// Returns `false` if the window should be closed.
+    /// # Arguments
+    /// * `effect` - The post-processing effect to apply after rendering the scene
+    ///
+    /// # Returns
+    /// `true` if rendering should continue, `false` if the window should close
     pub async fn render_with_effect(&mut self, effect: &mut dyn PostProcessingEffect) -> bool {
         self.render_with(None, None, Some(effect), None).await
     }
 
-    /// Render using a specific camera.
+    /// Renders one frame using a custom 3D camera.
     ///
-    /// Returns `false` if the window should be closed.
+    /// # Arguments
+    /// * `camera` - The camera to use for 3D rendering instead of the default camera
+    ///
+    /// # Returns
+    /// `true` if rendering should continue, `false` if the window should close
     pub async fn render_with_camera(&mut self, camera: &mut dyn Camera) -> bool {
         self.render_with(Some(camera), None, None, None).await
     }
 
-    /// Render using a specific 2D and 3D camera.
+    /// Renders one frame using custom 2D and 3D cameras.
     ///
-    /// Returns `false` if the window should be closed.
+    /// # Arguments
+    /// * `camera` - The camera to use for 3D rendering
+    /// * `planar_camera` - The camera to use for 2D planar rendering
+    ///
+    /// # Returns
+    /// `true` if rendering should continue, `false` if the window should close
     pub async fn render_with_cameras(
         &mut self,
         camera: &mut dyn Camera,
@@ -947,9 +1404,14 @@ impl Window {
             .await
     }
 
-    /// Render using a specific camera and post processing effect.
+    /// Renders one frame using a custom camera and post-processing effect.
     ///
-    /// Returns `false` if the window should be closed.
+    /// # Arguments
+    /// * `camera` - The camera to use for 3D rendering
+    /// * `effect` - The post-processing effect to apply
+    ///
+    /// # Returns
+    /// `true` if rendering should continue, `false` if the window should close
     pub async fn render_with_camera_and_effect(
         &mut self,
         camera: &mut dyn Camera,
@@ -959,9 +1421,15 @@ impl Window {
             .await
     }
 
-    /// Render using a specific 2D and 3D camera and post processing effect.
+    /// Renders one frame using custom 2D and 3D cameras with a post-processing effect.
     ///
-    /// Returns `false` if the window should be closed.
+    /// # Arguments
+    /// * `camera` - The camera to use for 3D rendering
+    /// * `planar_camera` - The camera to use for 2D planar rendering
+    /// * `effect` - The post-processing effect to apply
+    ///
+    /// # Returns
+    /// `true` if rendering should continue, `false` if the window should close
     pub async fn render_with_cameras_and_effect(
         &mut self,
         camera: &mut dyn Camera,
@@ -972,9 +1440,19 @@ impl Window {
             .await
     }
 
-    /// Draws the scene with the given cameras, post-processing effect, and custom renderer.
+    /// Renders one frame with full customization options.
     ///
-    /// Returns `false` if the window should be closed.
+    /// This is the most flexible rendering method, allowing you to customize
+    /// all aspects of the rendering pipeline.
+    ///
+    /// # Arguments
+    /// * `camera` - Optional custom 3D camera
+    /// * `planar_camera` - Optional custom 2D camera
+    /// * `post_processing` - Optional post-processing effect
+    /// * `renderer` - Optional custom renderer
+    ///
+    /// # Returns
+    /// `true` if rendering should continue, `false` if the window should close
     pub async fn render_with(
         &mut self,
         camera: Option<&mut dyn Camera>,

@@ -4,7 +4,26 @@ use super::{IndexBuffer, RenderMesh};
 use na;
 use na::{Point2, Point3, Vector3};
 
-/// Generates a UV sphere.
+/// Generates a UV sphere with the specified diameter.
+///
+/// Creates a sphere mesh subdivided by latitude (theta) and longitude (phi) lines.
+/// The sphere is generated using a UV-mapping friendly topology.
+///
+/// # Arguments
+/// * `diameter` - The diameter of the sphere
+/// * `ntheta_subdiv` - Number of subdivisions around the sphere (longitude)
+/// * `nphi_subdiv` - Number of subdivisions from top to bottom (latitude)
+/// * `generate_uvs` - Whether to generate UV texture coordinates
+///
+/// # Returns
+/// A `RenderMesh` containing the sphere geometry
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::sphere;
+/// // Create a sphere with diameter 2.0, 32 longitude divisions, 16 latitude divisions
+/// let sphere_mesh = sphere(2.0, 32, 16, true);
+/// ```
 pub fn sphere(
     diameter: f32,
     ntheta_subdiv: u32,
@@ -18,7 +37,25 @@ pub fn sphere(
     sphere
 }
 
-/// Generates a UV sphere centered at the origin and with a unit diameter.
+/// Generates a unit sphere centered at the origin with diameter 1.0.
+///
+/// Creates a sphere mesh with unit diameter (radius 0.5) subdivided by
+/// latitude and longitude lines.
+///
+/// # Arguments
+/// * `ntheta_subdiv` - Number of subdivisions around the sphere (longitude)
+/// * `nphi_subdiv` - Number of subdivisions from top to bottom (latitude)
+/// * `generate_uvs` - Whether to generate UV texture coordinates
+///
+/// # Returns
+/// A `RenderMesh` containing the unit sphere geometry
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::unit_sphere;
+/// // Create a unit sphere with 32x16 subdivisions and UVs
+/// let sphere_mesh = unit_sphere(32, 16, true);
+/// ```
 pub fn unit_sphere(ntheta_subdiv: u32, nphi_subdiv: u32, generate_uvs: bool) -> RenderMesh {
     if generate_uvs {
         unit_sphere_with_uvs(ntheta_subdiv, nphi_subdiv)
@@ -144,7 +181,24 @@ fn unit_sphere_with_uvs(ntheta_subdiv: u32, nphi_subdiv: u32) -> RenderMesh {
     res
 }
 
-/// Creates an hemisphere with a diameter of 1.
+/// Creates a hemisphere with unit diameter.
+///
+/// Generates the upper half of a unit sphere (y ≥ 0), with diameter 1.0 (radius 0.5).
+/// The base of the hemisphere lies on the XZ plane.
+///
+/// # Arguments
+/// * `ntheta_subdiv` - Number of subdivisions around the hemisphere (longitude)
+/// * `nphi_subdiv` - Number of subdivisions from base to top (latitude)
+///
+/// # Returns
+/// A `RenderMesh` containing the hemisphere geometry
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::unit_hemisphere;
+/// // Create a hemisphere with 32 longitude and 16 latitude subdivisions
+/// let hemisphere_mesh = unit_hemisphere(32, 16);
+/// ```
 pub fn unit_hemisphere(ntheta_subdiv: u32, nphi_subdiv: u32) -> RenderMesh {
     let two_pi = std::f32::consts::TAU;
     let pi_two = std::f32::consts::FRAC_PI_2;
@@ -196,7 +250,24 @@ pub fn unit_hemisphere(ntheta_subdiv: u32, nphi_subdiv: u32) -> RenderMesh {
     out
 }
 
-/// Creates a circle lying on the `(x,y)` plane.
+/// Creates a 2D circle polyline lying on the XY plane.
+///
+/// Generates a circle as a polyline (not a filled mesh) with the specified diameter.
+/// The circle lies on the XY plane (z = 0) and is centered at the origin.
+///
+/// # Arguments
+/// * `diameter` - The diameter of the circle
+/// * `nsubdivs` - Number of line segments to approximate the circle
+///
+/// # Returns
+/// A `RenderPolyline` containing the circle's vertices
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::circle;
+/// // Create a circle with diameter 2.0 using 64 segments
+/// let circle_polyline = circle(2.0, 64);
+/// ```
 pub fn circle(diameter: f32, nsubdivs: u32) -> RenderPolyline {
     let two_pi = std::f32::consts::TAU;
     let dtheta = two_pi / nsubdivs as f32;
@@ -205,13 +276,27 @@ pub fn circle(diameter: f32, nsubdivs: u32) -> RenderPolyline {
 
     utils::push_xy_arc(diameter / 2.0, nsubdivs, dtheta, &mut pts);
 
-    // FIXME: f32ormals
+    // FIXME: normals
 
     RenderPolyline::new(pts, None)
 }
 
-/// Creates a circle lying on the `(x,y)` plane.
+/// Creates a 2D unit circle polyline lying on the XY plane.
+///
+/// Generates a circle polyline with diameter 1.0 (radius 0.5) on the XY plane.
+///
+/// # Arguments
+/// * `nsubdivs` - Number of line segments to approximate the circle
+///
+/// # Returns
+/// A `RenderPolyline` containing the circle's vertices
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::unit_circle;
+/// // Create a unit circle using 64 segments
+/// let circle_polyline = unit_circle(64);
+/// ```
 pub fn unit_circle(nsubdivs: u32) -> RenderPolyline {
-    // FIXME: do this the other way round?
     circle(1.0, nsubdivs)
 }

@@ -12,7 +12,10 @@ use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
 
-/// Set of data identifying a scene node.
+/// Rendering properties and state for a scene object.
+///
+/// Contains material, texture, color, and rendering settings for a 3D object.
+/// This data is used by the rendering pipeline to determine how the object should be drawn.
 pub struct ObjectData {
     material: Rc<RefCell<Box<dyn Material + 'static>>>,
     texture: Rc<Texture>,
@@ -26,60 +29,102 @@ pub struct ObjectData {
 }
 
 impl ObjectData {
-    /// The texture of this object.
+    /// Returns a reference to this object's texture.
+    ///
+    /// # Returns
+    /// A reference-counted texture
     #[inline]
     pub fn texture(&self) -> &Rc<Texture> {
         &self.texture
     }
 
-    /// The color of this object.
+    /// Returns the base color of this object.
+    ///
+    /// # Returns
+    /// RGB color with components in range [0.0, 1.0]
     #[inline]
     pub fn color(&self) -> &Point3<f32> {
         &self.color
     }
 
-    /// The width of the lines draw for this object.
+    /// Returns the line width used for wireframe rendering.
+    ///
+    /// # Returns
+    /// Line width in pixels
     #[inline]
     pub fn lines_width(&self) -> f32 {
         self.wlines
     }
 
-    /// The width of the lines draw for this object.
+    /// Returns the color used for wireframe line rendering.
+    ///
+    /// # Returns
+    /// `Some(color)` if a custom line color is set, `None` to use the object's base color
     #[inline]
     pub fn lines_color(&self) -> Option<&Point3<f32>> {
         self.lines_color.as_ref()
     }
 
-    /// The size of the points draw for this object.
+    /// Returns the point size used for point cloud rendering.
+    ///
+    /// # Returns
+    /// Point size in pixels
     #[inline]
     pub fn points_size(&self) -> f32 {
         self.wpoints
     }
 
-    /// Whether this object has its surface rendered or not.
+    /// Checks if surface rendering is enabled for this object.
+    ///
+    /// # Returns
+    /// `true` if surfaces are rendered, `false` if only wireframe/points are rendered
     #[inline]
     pub fn surface_rendering_active(&self) -> bool {
         self.draw_surface
     }
 
-    /// Whether this object uses backface culling or not.
+    /// Checks if backface culling is enabled for this object.
+    ///
+    /// # Returns
+    /// `true` if backface culling is enabled
     #[inline]
     pub fn backface_culling_enabled(&self) -> bool {
         self.cull
     }
 
-    /// An user-defined data.
+    /// Returns a reference to user-defined data attached to this object.
     ///
-    /// Use dynamic typing capabilities of the `Any` type to recover the actual data.
+    /// Use the `Any` trait's downcasting methods to recover the actual data type.
+    ///
+    /// # Returns
+    /// A reference to the user data as `&dyn Any`
     #[inline]
     pub fn user_data(&self) -> &dyn Any {
         &*self.user_data
     }
 }
 
+/// Data for a single instance in instanced rendering.
+///
+/// When rendering multiple copies of the same mesh with different transformations
+/// and colors (instancing), each instance is defined by this data.
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::scene::InstanceData;
+/// # use nalgebra::{Point3, Matrix3};
+/// let instance = InstanceData {
+///     position: Point3::new(1.0, 0.0, 0.0),
+///     deformation: Matrix3::identity(),
+///     color: [1.0, 0.0, 0.0, 1.0],  // Red
+/// };
+/// ```
 pub struct InstanceData {
+    /// The position offset for this instance.
     pub position: Point3<f32>,
+    /// The 3x3 deformation matrix (scale, rotation, shear) for this instance.
     pub deformation: Matrix3<f32>,
+    /// The RGBA color for this instance [r, g, b, a] in range [0.0, 1.0].
     pub color: [f32; 4],
 }
 
@@ -93,12 +138,17 @@ impl Default for InstanceData {
     }
 }
 
+/// GPU buffer for instanced rendering data.
+///
+/// Contains GPU-allocated buffers for positions, deformations, and colors
+/// of all instances to be rendered.
 pub struct InstancesBuffer {
+    /// GPU buffer of instance positions.
     pub positions: GPUVec<Point3<f32>>,
+    /// GPU buffer of instance deformation matrices (stored as 3 column vectors).
     pub deformations: GPUVec<Vector3<f32>>,
+    /// GPU buffer of instance colors.
     pub colors: GPUVec<[f32; 4]>,
-    // TODO: add other properties we want compatible with instancing.
-    //       (like rotations, color, or a full 4x4 matrix).
 }
 
 impl Default for InstancesBuffer {
@@ -124,18 +174,27 @@ impl Default for InstancesBuffer {
 }
 
 impl InstancesBuffer {
+    /// Checks if there are no instances.
+    ///
+    /// # Returns
+    /// `true` if the buffer is empty
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
+    /// Returns the number of instances in the buffer.
+    ///
+    /// # Returns
+    /// The number of instances
     pub fn len(&self) -> usize {
         self.positions.len()
     }
 }
 
-/// A 3d objects on the scene.
+/// A renderable 3D object in the scene.
 ///
-/// This is the only interface to manipulate the object position, color, vertices and texture.
+/// `Object` combines a mesh with rendering properties (material, texture, color).
+/// It's the primary interface for manipulating an object's appearance and geometry.
 pub struct Object {
     // FIXME: should Mesh and Object be merged?
     // (thus removing the need of ObjectData at all.)
