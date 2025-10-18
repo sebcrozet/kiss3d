@@ -6,7 +6,7 @@ use kiss3d::light::Light;
 #[cfg(feature = "egui")]
 use kiss3d::window::Window;
 #[cfg(feature = "egui")]
-use na::{Point2, UnitQuaternion, Vector3};
+use na::{UnitQuaternion, Vector3};
 
 #[cfg(not(feature = "egui"))]
 #[kiss3d::main]
