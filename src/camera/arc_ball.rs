@@ -56,6 +56,12 @@ pub struct ArcBall {
     coord_system: CoordSystemRh,
 }
 
+impl Default for ArcBall {
+    fn default() -> Self {
+        Self::new(Point3::new(0.0f32, 0.0, -1.0), Point3::origin())
+    }
+}
+
 impl ArcBall {
     /// Create a new arc-ball camera.
     pub fn new(eye: Point3<f32>, at: Point3<f32>) -> ArcBall {
