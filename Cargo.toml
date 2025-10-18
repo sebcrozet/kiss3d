@@ -30,34 +30,37 @@ name = "kiss3d"
 path = "src/lib.rs"
 
 [features]
-conrod = ["conrod_core"]
+egui = ["dep:egui", "dep:egui_glow"]
 vertex_index_u32 = []
 
 [dependencies]
-bitflags     = "1.2"
-conrod_core  = { version = "0.71", features = ["wasm-bindgen"], optional = true }
+bitflags     = { version = "2", features = ["serde"] }
+# TODO: widgets are no longer visible if we bump to 0.33. Needs to be investigated.
+egui         = { version = "0.32", optional = true, default-features = true }
+egui_glow    = { version = "0.32", optional = true }
+glow         = "0.16"
 either       = "1"
-glow         = "0.12"
-image        = "0.24"
+image        = "0.25"
 instant      = { version = "0.1", features = ["wasm-bindgen"] }
 kiss3d-macro = { version = "0.36.0", path = "kiss3d-macro" }
-libc         = "0.2"
-nalgebra     = "0.33"
-parry3d      = "0.17"
+nalgebra     = "0.34"
+parry3d      = "0.25"
 num-traits   = "0.2"
-rusttype     = { version = "0.8.3", features = ["gpu_cache"] }
+rusttype     = { version = "0.9", features = ["gpu_cache"] }
 serde        = "1"
 serde_derive = "1"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-glutin = "0.26"
+glutin = "0.32"
+glutin-winit = "0.5"
+winit = "0.30"
 pollster = "0.4.0"
 
 # We repeat all three targets instead of any(target_arch = "wasm32", target_arch = "asmjs")
 # to avoid https://github.com/koute/stdweb/issues/135
 [target.wasm32-unknown-unknown.dependencies]
 oneshot = "0.1"
-getrandom = { version = "0.2", features = ["js"] }
+getrandom = { version = "0.3", features = ["wasm_js"] }
 wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4.54"
 web-sys = { version = "0.3", features = [
@@ -80,7 +83,7 @@ web-sys = { version = "0.3", features = [
 ] }
 
 [dev-dependencies]
-env_logger = "0.10"
-nalgebra   = { version = "0.33", features = ["rand"] }
-parry2d    = "0.17"
-rand       = "0.8"
+env_logger = "0.11"
+nalgebra   = { version = "0.34", features = ["rand"] }
+parry2d    = "0.25"
+rand       = "0.9"

@@ -86,8 +86,10 @@ async fn main() {
                     let g = random();
                     let b = random();
 
-                    let mut m = window.add_trimesh(TriMesh::new(vtx, idx), scale);
-                    m.set_color(r, g, b);
+                    if let Ok(trimesh) = TriMesh::new(vtx, idx) {
+                        let mut m = window.add_trimesh(trimesh, scale);
+                        m.set_color(r, g, b);
+                    }
                 }
             }
             None => {}

@@ -109,13 +109,13 @@ extern crate rusttype;
 extern crate serde_derive;
 extern crate serde;
 
-#[cfg(feature = "conrod")]
-pub extern crate conrod_core as conrod;
+#[cfg(feature = "egui")]
+pub extern crate egui;
+#[cfg(feature = "egui")]
+pub extern crate egui_glow;
 #[cfg(not(target_arch = "wasm32"))]
 extern crate glutin;
 extern crate instant;
-#[cfg(feature = "conrod")]
-pub use conrod::widget_ids;
 
 pub use nalgebra;
 pub use parry3d;

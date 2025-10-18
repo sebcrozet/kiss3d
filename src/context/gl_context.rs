@@ -4,7 +4,7 @@ use std::sync::Arc;
 use crate::context::{AbstractContext, AbstractContextConst, GLenum, GLintptr};
 
 use crate::resource::GLPrimitive;
-use glow::{Context, HasContext};
+use glow::{Context, HasContext, PixelUnpackData};
 use na::{Matrix2, Matrix3, Matrix4};
 
 /// An OpenGL context.
@@ -466,7 +466,7 @@ impl AbstractContext for GLContext {
                 border,
                 format,
                 Self::UNSIGNED_BYTE,
-                pixels,
+                PixelUnpackData::Slice(pixels),
             )
         }
     }
@@ -483,6 +483,11 @@ impl AbstractContext for GLContext {
         pixels: Option<&[i32]>,
     ) {
         unsafe {
+            let pixels = pixels.map(|px| {
+                let len = px.len() * 4;
+                let ptr = px.as_ptr() as *const u8;
+                std::slice::from_raw_parts(ptr, len)
+            });
             self.context.tex_image_2d(
                 target,
                 level,
@@ -492,11 +497,7 @@ impl AbstractContext for GLContext {
                 border,
                 format,
                 Self::INT,
-                pixels.map(|px| {
-                    let len = px.len() * 4;
-                    let ptr = px.as_ptr() as *const u8;
-                    std::slice::from_raw_parts(ptr, len)
-                }),
+                PixelUnpackData::Slice(pixels),
             )
         }
     }
@@ -523,7 +524,7 @@ impl AbstractContext for GLContext {
                     height,
                     format,
                     Self::UNSIGNED_BYTE,
-                    glow::PixelUnpackData::Slice(pixels),
+                    glow::PixelUnpackData::Slice(Some(pixels)),
                 )
             }
         }
@@ -643,7 +644,7 @@ impl AbstractContext for GLContext {
                     height,
                     format,
                     Self::UNSIGNED_BYTE,
-                    glow::PixelPackData::Slice(pixels),
+                    glow::PixelPackData::Slice(Some(pixels)),
                 );
             }
         }
