@@ -35,11 +35,12 @@ vertex_index_u32 = []
 
 [dependencies]
 bitflags     = "1.2"
-egui         = { version = "0.29", optional = true, default-features = true }
-egui_glow    = { version = "0.29", optional = true }
-glow         = "0.14"
+# TODO: widgets are no longer visible if we bump to 0.33. Needs to be investigated.
+egui         = { version = "0.32", optional = true, default-features = true }
+egui_glow    = { version = "0.32", optional = true }
+glow         = "0.16"
 either       = "1"
-image        = "0.24"
+image        = "0.25"
 instant      = { version = "0.1", features = ["wasm-bindgen"] }
 kiss3d-macro = { version = "0.36.0", path = "kiss3d-macro" }
 libc         = "0.2"
@@ -82,6 +83,6 @@ web-sys = { version = "0.3", features = [
 
 [dev-dependencies]
 env_logger = "0.10"
-nalgebra   = { version = "0.33", features = ["rand"] }
-parry2d    = "0.17"
+nalgebra   = { version = "0.34", features = ["rand"] }
+parry2d    = "0.25"
 rand       = "0.8"

@@ -466,7 +466,7 @@ impl AbstractContext for GLContext {
                 border,
                 format,
                 Self::UNSIGNED_BYTE,
-                pixels, // PixelUnpackData::Slice(pixels),
+                PixelUnpackData::Slice(pixels),
             )
         }
     }
@@ -497,7 +497,7 @@ impl AbstractContext for GLContext {
                 border,
                 format,
                 Self::INT,
-                pixels, // PixelUnpackData::Slice(pixels),
+                PixelUnpackData::Slice(pixels),
             )
         }
     }
@@ -524,7 +524,7 @@ impl AbstractContext for GLContext {
                     height,
                     format,
                     Self::UNSIGNED_BYTE,
-                    glow::PixelUnpackData::Slice(pixels),
+                    glow::PixelUnpackData::Slice(Some(pixels)),
                 )
             }
         }
@@ -644,7 +644,7 @@ impl AbstractContext for GLContext {
                     height,
                     format,
                     Self::UNSIGNED_BYTE,
-                    glow::PixelPackData::Slice(pixels),
+                    glow::PixelPackData::Slice(Some(pixels)),
                 );
             }
         }
