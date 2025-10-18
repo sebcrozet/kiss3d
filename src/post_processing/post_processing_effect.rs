@@ -2,18 +2,47 @@
 
 use crate::resource::RenderTarget;
 
-/// Trait of post processing effect.
+/// Trait for implementing custom post-processing effects.
 ///
-/// One post-processing effect can be used at a time. It is executed once the scene has been
-/// rendered on a texture.
+/// Post-processing effects are applied after the 3D scene has been rendered to a texture.
+/// Only one post-processing effect can be active at a time. Implement this trait to create
+/// custom effects like bloom, blur, edge detection, etc.
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::post_processing::PostProcessingEffect;
+/// # use kiss3d::resource::RenderTarget;
+/// struct MyEffect;
+///
+/// impl PostProcessingEffect for MyEffect {
+///     fn update(&mut self, dt: f32, w: f32, h: f32, znear: f32, zfar: f32) {
+///         // Update effect parameters based on time and screen dimensions
+///     }
+///
+///     fn draw(&mut self, target: &RenderTarget) {
+///         // Apply the effect by rendering a full-screen quad with custom shader
+///     }
+/// }
+/// ```
 pub trait PostProcessingEffect {
-    /// Updates the post processing effect.
-    fn update(&mut self, dt: f32, w: f32, h: f32, znear: f32, zfar: f32);
-    /// Render the effect.
+    /// Updates the post-processing effect state.
     ///
-    /// # Arguments:
-    /// * `shader_manager` - manager to switch between the different shaders.
-    /// * `fbo_texture` - id to the texture containing the last scene drawn.
-    /// * `fbo_depth` - the depth buffer as a texture.
+    /// Called once per frame to update effect parameters based on time and viewport settings.
+    ///
+    /// # Arguments
+    /// * `dt` - Delta time since last frame in seconds
+    /// * `w` - Screen width in pixels
+    /// * `h` - Screen height in pixels
+    /// * `znear` - Near clipping plane distance
+    /// * `zfar` - Far clipping plane distance
+    fn update(&mut self, dt: f32, w: f32, h: f32, znear: f32, zfar: f32);
+
+    /// Renders the post-processing effect.
+    ///
+    /// This method is called after the scene has been rendered to a texture.
+    /// The effect should read from the render target and apply its processing.
+    ///
+    /// # Arguments
+    /// * `target` - The render target containing the rendered scene (color and depth textures)
     fn draw(&mut self, target: &RenderTarget);
 }

@@ -1,19 +1,30 @@
 use super::{IndexBuffer, RenderMesh};
 use na::{self, Point2, Point3, Vector3};
 
-/// Adds a double-sided quad to the scene.
+/// Generates a double-sided subdivided quad mesh.
 ///
-/// The quad is initially centered at (0, 0, 0). Its normal is the `z` axis. The quad itself is
-/// composed of a user-defined number of triangles regularly spaced on a grid. This is the main way
-/// to draw height maps.
+/// Creates a rectangular quad lying on the XY plane, centered at the origin, with its
+/// normal pointing along the Z axis. The quad is subdivided into a grid of triangles,
+/// making it suitable for height maps or terrain.
 ///
 /// # Arguments
-/// * `w` - the quad width.
-/// * `h` - the quad height.
-/// * `usubdivs` - number of horizontal subdivisions. This correspond to the number of squares
-///   which will be placed horizontally on each line. Must not be `0`.
-/// * `vsubdivs` - number of vertical subdivisions. This correspond to the number of squares
-///   which will be placed vertically on each line. Must not be `0`.
+/// * `width` - The quad width (extent along X axis)
+/// * `height` - The quad height (extent along Y axis)
+/// * `usubdivs` - Number of horizontal subdivisions (squares along width). Must not be 0.
+/// * `vsubdivs` - Number of vertical subdivisions (squares along height). Must not be 0.
+///
+/// # Returns
+/// A `RenderMesh` containing the subdivided quad geometry with normals and UVs
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::quad;
+/// // Create a 10x10 quad with 100 subdivisions for a terrain
+/// let terrain_mesh = quad(10.0, 10.0, 100, 100);
+/// ```
+///
+/// # Panics
+/// Panics if `usubdivs` or `vsubdivs` is 0.
 pub fn quad(width: f32, height: f32, usubdivs: usize, vsubdivs: usize) -> RenderMesh {
     let mut quad = unit_quad(usubdivs, vsubdivs);
 
@@ -27,13 +38,34 @@ pub fn quad(width: f32, height: f32, usubdivs: usize, vsubdivs: usize) -> Render
     quad
 }
 
-/// Adds a double-sided quad with the specified grid of vertices.
+/// Generates a double-sided quad mesh from a custom grid of vertices.
 ///
-/// Normals are automatically computed.
+/// Creates a quad with custom vertex positions, useful for creating terrain or
+/// deformed surfaces. Normals are automatically computed based on the surface geometry.
 ///
 /// # Arguments
-/// * `nhpoints` - number of columns on the grid.
-/// * `nvpoints` - number of lines on the grid.
+/// * `vertices` - Array of vertex positions defining the surface (must have `nhpoints × nvpoints` elements)
+/// * `nhpoints` - Number of points along the horizontal direction (columns)
+/// * `nvpoints` - Number of points along the vertical direction (rows)
+///
+/// # Returns
+/// A `RenderMesh` containing the quad geometry with computed normals
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::quad_with_vertices;
+/// # use nalgebra::Point3;
+/// // Create a 3x3 grid of vertices for a simple heightmap
+/// let vertices = vec![
+///     Point3::new(0.0, 0.0, 0.0), Point3::new(1.0, 0.0, 0.0), Point3::new(2.0, 0.0, 0.0),
+///     Point3::new(0.0, 0.5, 1.0), Point3::new(1.0, 0.5, 1.0), Point3::new(2.0, 0.5, 1.0),
+///     Point3::new(0.0, 0.0, 2.0), Point3::new(1.0, 0.0, 2.0), Point3::new(2.0, 0.0, 2.0),
+/// ];
+/// let quad_mesh = quad_with_vertices(&vertices, 3, 3);
+/// ```
+///
+/// # Panics
+/// Panics if `nhpoints` or `nvpoints` is less than 2.
 pub fn quad_with_vertices(
     vertices: &[Point3<f32>],
     nhpoints: usize,
@@ -53,17 +85,27 @@ pub fn quad_with_vertices(
     res
 }
 
-/// Adds a double-sided quad with unit size to the scene.
+/// Generates a double-sided unit quad mesh.
 ///
-/// The quad is initially centered at (0, 0, 0). Its normal is the `z` axis. The quad itself is
-/// composed of a user-defined number of triangles regularly spaced on a grid. This is the main way
-/// to draw height maps.
+/// Creates a 1×1 quad centered at the origin on the XY plane with its normal pointing
+/// along the Z axis. The quad is subdivided into a grid of triangles.
 ///
 /// # Arguments
-/// * `usubdivs` - number of horizontal subdivisions. This correspond to the number of squares
-///   which will be placed horizontally on each line. Must not be `0`.
-/// * `vsubdivs` - number of vertical subdivisions. This correspond to the number of squares
-///   which will be placed vertically on each line. Must not be `0`.
+/// * `usubdivs` - Number of horizontal subdivisions (squares along width). Must not be 0.
+/// * `vsubdivs` - Number of vertical subdivisions (squares along height). Must not be 0.
+///
+/// # Returns
+/// A `RenderMesh` containing the unit quad geometry with normals and UVs
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::unit_quad;
+/// // Create a unit quad with 10x10 subdivisions
+/// let quad_mesh = unit_quad(10, 10);
+/// ```
+///
+/// # Panics
+/// Panics if `usubdivs` or `vsubdivs` is 0.
 pub fn unit_quad(usubdivs: usize, vsubdivs: usize) -> RenderMesh {
     assert!(
         usubdivs > 0 && vsubdivs > 0,

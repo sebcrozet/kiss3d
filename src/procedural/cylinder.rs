@@ -3,7 +3,25 @@ use super::{IndexBuffer, RenderMesh};
 use na;
 use na::{Point2, Vector3};
 
-/// Generates a cylinder with a given height and diameter.
+/// Generates a cylinder mesh with the specified dimensions.
+///
+/// Creates a cylinder oriented along the Y axis, with its center at the origin.
+/// Both the top and bottom caps are included.
+///
+/// # Arguments
+/// * `diameter` - The diameter of the cylinder
+/// * `height` - The height of the cylinder
+/// * `nsubdiv` - Number of subdivisions around the cylinder's circumference
+///
+/// # Returns
+/// A `RenderMesh` containing the cylinder geometry with UVs and normals
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::cylinder;
+/// // Create a cylinder with diameter 1.0, height 3.0, using 32 subdivisions
+/// let cylinder_mesh = cylinder(1.0, 3.0, 32);
+/// ```
 pub fn cylinder(diameter: f32, height: f32, nsubdiv: u32) -> RenderMesh {
     let mut cylinder = unit_cylinder(nsubdiv);
 
@@ -12,7 +30,23 @@ pub fn cylinder(diameter: f32, height: f32, nsubdiv: u32) -> RenderMesh {
     cylinder
 }
 
-/// Generates a cylinder with unit height and diameter.
+/// Generates a unit cylinder mesh.
+///
+/// Creates a cylinder with unit height and diameter, oriented along the Y axis.
+/// The cylinder extends from y = -0.5 to y = +0.5.
+///
+/// # Arguments
+/// * `nsubdiv` - Number of subdivisions around the cylinder's circumference
+///
+/// # Returns
+/// A `RenderMesh` containing the unit cylinder geometry
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::unit_cylinder;
+/// // Create a unit cylinder with 32 subdivisions
+/// let cylinder_mesh = unit_cylinder(32);
+/// ```
 pub fn unit_cylinder(nsubdiv: u32) -> RenderMesh {
     let two_pi = std::f32::consts::TAU;
     let invsubdiv = 1.0 / (nsubdiv as f32);

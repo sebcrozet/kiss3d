@@ -3,7 +3,25 @@ use super::{IndexBuffer, RenderMesh};
 use na;
 use na::{Point3, Vector3};
 
-/// Generates a cone with a given height and diameter.
+/// Generates a cone mesh with the specified dimensions.
+///
+/// Creates a cone pointing upward along the positive Y axis, with its base
+/// centered at y = -height/2 and apex at y = +height/2.
+///
+/// # Arguments
+/// * `diameter` - The diameter of the cone's base
+/// * `height` - The height of the cone (distance from base to apex)
+/// * `nsubdiv` - Number of subdivisions around the base circle
+///
+/// # Returns
+/// A `RenderMesh` containing the cone geometry
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::cone;
+/// // Create a cone with base diameter 2.0, height 3.0, using 32 subdivisions
+/// let cone_mesh = cone(2.0, 3.0, 32);
+/// ```
 pub fn cone(diameter: f32, height: f32, nsubdiv: u32) -> RenderMesh {
     let mut cone = unit_cone(nsubdiv);
 
@@ -12,7 +30,23 @@ pub fn cone(diameter: f32, height: f32, nsubdiv: u32) -> RenderMesh {
     cone
 }
 
-/// Generates a cone with unit height and diameter.
+/// Generates a unit cone mesh.
+///
+/// Creates a cone with unit height and unit diameter, pointing upward along the Y axis.
+/// The base is at y = -0.5 and the apex is at y = +0.5.
+///
+/// # Arguments
+/// * `nsubdiv` - Number of subdivisions around the base circle
+///
+/// # Returns
+/// A `RenderMesh` containing the unit cone geometry
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::procedural::unit_cone;
+/// // Create a unit cone with 32 subdivisions
+/// let cone_mesh = unit_cone(32);
+/// ```
 pub fn unit_cone(nsubdiv: u32) -> RenderMesh {
     let two_pi = std::f32::consts::TAU;
     let dtheta = two_pi / (nsubdiv as f32);

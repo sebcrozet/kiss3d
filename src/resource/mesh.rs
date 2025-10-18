@@ -8,9 +8,17 @@ use crate::resource::ShaderAttribute;
 use na::{self, Point2, Point3, Vector3};
 use num::Zero;
 
-/// Aggregation of vertices, indices, normals and texture coordinates.
+/// A 3D mesh stored on the GPU.
 ///
-/// It also contains the GPU location of those buffers.
+/// `GpuMesh` contains vertex data (coordinates, normals, UVs) and face indices
+/// stored in GPU memory buffers for efficient rendering. This is the GPU-side
+/// representation of mesh data.
+///
+/// # Relationship with RenderMesh
+/// - [`RenderMesh`](crate::procedural::RenderMesh) is the CPU-side mesh descriptor
+/// - `GpuMesh` is the GPU-side representation
+/// - Use [`from_render_mesh()`](Self::from_render_mesh) to convert from CPU to GPU
+/// - Use [`to_render_mesh()`](Self::to_render_mesh) to convert from GPU to CPU
 pub struct GpuMesh {
     coords: Arc<RwLock<GPUVec<Point3<f32>>>>,
     faces: Arc<RwLock<GPUVec<Point3<VertexIndex>>>>,
@@ -20,9 +28,20 @@ pub struct GpuMesh {
 }
 
 impl GpuMesh {
-    /// Creates a new mesh.
+    /// Creates a new GPU mesh from vertex and face data.
     ///
-    /// If the normals and uvs are not given, they are automatically computed.
+    /// Uploads the provided mesh data to GPU memory. If normals or UVs are not provided,
+    /// they are automatically computed (normals from face geometry, UVs as zero).
+    ///
+    /// # Arguments
+    /// * `coords` - Vertex positions
+    /// * `faces` - Triangle faces as indices into the coords array (each Point3 contains 3 vertex indices)
+    /// * `normals` - Optional vertex normals (auto-computed if None)
+    /// * `uvs` - Optional texture coordinates (set to origin if None)
+    /// * `dynamic_draw` - If true, use dynamic GPU allocation for data that will be modified frequently
+    ///
+    /// # Returns
+    /// A new `GpuMesh` with data uploaded to the GPU
     pub fn new(
         coords: Vec<Point3<f32>>,
         faces: Vec<Point3<VertexIndex>>,
@@ -65,9 +84,26 @@ impl GpuMesh {
         GpuMesh::new_with_gpu_vectors(cs, fs, ns, us)
     }
 
-    /// Creates a new mesh from a mesh descr.
+    /// Creates a GPU mesh from a procedural mesh descriptor.
     ///
-    /// In the normals and uvs are not given, they are automatically computed.
+    /// Converts a `RenderMesh` (CPU-side mesh descriptor) into a `GpuMesh`
+    /// by uploading its data to GPU memory. If normals or UVs are not provided
+    /// in the RenderMesh, they are automatically computed.
+    ///
+    /// # Arguments
+    /// * `mesh` - The procedural mesh descriptor to convert
+    /// * `dynamic_draw` - If true, use dynamic GPU allocation for data that will be modified frequently
+    ///
+    /// # Returns
+    /// A new `GpuMesh` with data uploaded to the GPU
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::procedural;
+    /// # use kiss3d::resource::GpuMesh;
+    /// let render_mesh = procedural::sphere(1.0, 32, 16, true);
+    /// let gpu_mesh = GpuMesh::from_render_mesh(render_mesh, false);
+    /// ```
     pub fn from_render_mesh(mesh: RenderMesh, dynamic_draw: bool) -> GpuMesh {
         let mut mesh = mesh;
 

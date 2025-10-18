@@ -3,38 +3,102 @@ use crate::resource::ShaderUniform;
 use crate::window::Canvas;
 use na::{Isometry3, Matrix4, Point2, Point3, Point4, Vector2, Vector3};
 
-/// Trait every camera must implement.
+/// Trait that all camera implementations must implement.
+///
+/// Cameras control the viewpoint from which the 3D scene is rendered.
+/// This trait defines the interface for event handling, transformations,
+/// and rendering pipeline integration.
+///
+/// # Implementations
+/// kiss3d provides several built-in camera types:
+/// - [`ArcBall`](crate::camera::ArcBall) - Orbital camera (default)
+/// - [`FirstPerson`](crate::camera::FirstPerson) - FPS-style camera
+/// - [`FixedView`](crate::camera::FixedView) - Static camera with fixed view
+///
+/// # Custom Cameras
+/// You can implement this trait to create custom camera behaviors.
 pub trait Camera {
-    /*
-     * Event handling.
-     */
-    /// Handle a mouse event.
+    // ==================
+    // Event handling
+    // ==================
+
+    /// Handles window events to update camera state.
+    ///
+    /// This is called for each window event (mouse, keyboard, etc.) and allows
+    /// the camera to respond to user input.
+    ///
+    /// # Arguments
+    /// * `canvas` - Reference to the rendering canvas
+    /// * `event` - The window event to handle
     fn handle_event(&mut self, canvas: &Canvas, event: &WindowEvent);
 
-    /*
-     * Transformation-related methods.
-     */
-    /// The camera position.
-    fn eye(&self) -> Point3<f32>; // FIXME: should this be here?
-    /// The camera view transform.
-    fn view_transform(&self) -> Isometry3<f32>;
-    /// The transformation applied by the camera to transform a point in world coordinates to
-    /// a point in device coordinates.
-    fn transformation(&self) -> Matrix4<f32>;
-    /// The transformation applied by the camera to transform point in device coordinates to a
-    /// point in world coordinate.
-    fn inverse_transformation(&self) -> Matrix4<f32>;
-    /// The clipping planes, aka. (`znear`, `zfar`).
-    fn clip_planes(&self) -> (f32, f32); // FIXME: should this be here?
+    // ==================
+    // Transformation-related methods
+    // ==================
 
-    /*
-     * Update & upload
-     */
-    /// Update the camera. This is called once at the beginning of the render loop.
+    /// Returns the camera's position in world space.
+    ///
+    /// # Returns
+    /// The 3D point representing the camera's eye position
+    fn eye(&self) -> Point3<f32>;
+
+    /// Returns the camera's view transformation.
+    ///
+    /// This is the inverse of the camera's world transformation and is used
+    /// to transform world coordinates into camera/view space.
+    ///
+    /// # Returns
+    /// An isometry (rotation + translation) representing the view transform
+    fn view_transform(&self) -> Isometry3<f32>;
+
+    /// Returns the combined projection and view transformation matrix.
+    ///
+    /// This matrix transforms points from world coordinates to normalized device coordinates (NDC).
+    /// It combines both the view transformation (world → camera space) and
+    /// the projection transformation (camera space → NDC).
+    ///
+    /// # Returns
+    /// A 4x4 transformation matrix
+    fn transformation(&self) -> Matrix4<f32>;
+
+    /// Returns the inverse of the combined transformation matrix.
+    ///
+    /// This matrix transforms points from normalized device coordinates back to world coordinates.
+    /// It's the inverse of [`transformation()`](Self::transformation).
+    ///
+    /// # Returns
+    /// A 4x4 inverse transformation matrix
+    fn inverse_transformation(&self) -> Matrix4<f32>;
+
+    /// Returns the near and far clipping plane distances.
+    ///
+    /// Objects closer than `znear` or farther than `zfar` from the camera are not rendered.
+    ///
+    /// # Returns
+    /// A tuple `(znear, zfar)` with the clipping plane distances
+    fn clip_planes(&self) -> (f32, f32);
+
+    // ==================
+    // Update & upload
+    // ==================
+
+    /// Updates the camera state for the current frame.
+    ///
+    /// This is called once at the beginning of each frame, before rendering.
+    /// Use this to update internal camera state based on the canvas size or other factors.
+    ///
+    /// # Arguments
+    /// * `canvas` - Reference to the rendering canvas
     fn update(&mut self, canvas: &Canvas);
 
-    /// Upload the camera view and projection to the gpu. This can be called multiple times on the
-    /// render loop.
+    /// Uploads the camera's view and projection matrices to the GPU.
+    ///
+    /// This can be called multiple times during the render loop for multi-pass rendering.
+    ///
+    /// # Arguments
+    /// * `pass` - The current rendering pass index
+    /// * `proj` - Shader uniform for the projection matrix
+    /// * `view` - Shader uniform for the view matrix
     fn upload(
         &self,
         pass: usize,
@@ -42,21 +106,45 @@ pub trait Camera {
         view: &mut ShaderUniform<Matrix4<f32>>,
     );
 
-    /// The number of passes required by this camera.
+    /// Returns the number of rendering passes required by this camera.
+    ///
+    /// Most cameras require only a single pass. Stereo cameras might require two passes
+    /// (one for each eye).
+    ///
+    /// # Returns
+    /// The number of rendering passes (default: 1)
     #[inline]
     fn num_passes(&self) -> usize {
         1usize
     }
 
-    /// Indicates that a pass will begin.
+    /// Called at the start of each rendering pass.
+    ///
+    /// Override this to perform per-pass setup (e.g., setting viewport for stereo rendering).
+    ///
+    /// # Arguments
+    /// * `pass` - The index of the pass being started
+    /// * `canvas` - Reference to the rendering canvas
     #[inline]
     fn start_pass(&self, _pass: usize, _canvas: &Canvas) {}
 
-    /// Indicates that the scene has been rendered and the post-processing is being run.
+    /// Called after the scene has been rendered, before post-processing.
+    ///
+    /// Override this to perform cleanup or additional rendering steps.
+    ///
+    /// # Arguments
+    /// * `canvas` - Reference to the rendering canvas
     #[inline]
     fn render_complete(&self, _canvas: &Canvas) {}
 
-    /// Converts a 3d point to 2d screen coordinates, assuming the screen has the size `size`.
+    /// Projects a 3D point in world coordinates to 2D screen coordinates.
+    ///
+    /// # Arguments
+    /// * `world_coord` - The 3D point in world space
+    /// * `size` - The size of the screen/viewport in pixels
+    ///
+    /// # Returns
+    /// A 2D vector with screen coordinates (in pixels, origin at top-left)
     fn project(&self, world_coord: &Point3<f32>, size: &Vector2<f32>) -> Vector2<f32> {
         let h_world_coord = world_coord.to_homogeneous();
         let h_normalized_coord = self.transformation() * h_world_coord;
@@ -69,9 +157,32 @@ pub trait Camera {
         )
     }
 
-    /// Converts a point in 2d screen coordinates to a ray (a 3d position and a direction).
+    /// Unprojects a 2D screen point to a 3D ray in world space.
     ///
-    /// The screen is assumed to have a size given by `size`.
+    /// Converts a point on the screen (in pixels) to a ray starting at the camera
+    /// and passing through that screen point. This is useful for mouse picking and
+    /// ray casting.
+    ///
+    /// # Arguments
+    /// * `window_coord` - The 2D point in screen coordinates (origin at top-left)
+    /// * `size` - The size of the screen/viewport in pixels
+    ///
+    /// # Returns
+    /// A tuple `(origin, direction)` where:
+    /// - `origin` is the start point of the ray (typically the camera position)
+    /// - `direction` is the normalized direction vector of the ray
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use kiss3d::camera::Camera;
+    /// # use kiss3d::camera::ArcBall;
+    /// # use nalgebra::{Point2, Point3, Vector2};
+    /// # let camera = ArcBall::new(Point3::new(0.0, 0.0, 3.0), Point3::origin());
+    /// let mouse_pos = Point2::new(400.0, 300.0);
+    /// let screen_size = Vector2::new(800.0, 600.0);
+    /// let (ray_origin, ray_dir) = camera.unproject(&mouse_pos, &screen_size);
+    /// // Now you can use the ray for picking objects in the scene
+    /// ```
     fn unproject(
         &self,
         window_coord: &Point2<f32>,

@@ -52,7 +52,33 @@ fn warn(line: usize, err: &str) {
     println!("At line {}: {}", line, err)
 }
 
-/// Parses an obj file.
+/// Parses an OBJ file and returns the meshes it contains.
+///
+/// Loads a Wavefront OBJ file from disk and parses it into GPU meshes.
+/// Each object group in the OBJ file becomes a separate mesh.
+///
+/// # Arguments
+/// * `path` - Path to the .obj file
+/// * `mtl_base_dir` - Directory containing the .mtl material files
+/// * `basename` - Base name for material lookups
+///
+/// # Returns
+/// `Ok(Vec)` containing tuples of (name, mesh, optional material) for each object in the file,
+/// or `Err` if the file couldn't be read
+///
+/// # Example
+/// ```no_run
+/// # use kiss3d::loader::obj;
+/// # use std::path::Path;
+/// let meshes = obj::parse_file(
+///     Path::new("model.obj"),
+///     Path::new("materials/"),
+///     "model"
+/// ).unwrap();
+/// for (name, mesh, material) in meshes {
+///     println!("Loaded object: {}", name);
+/// }
+/// ```
 pub fn parse_file(
     path: &Path,
     mtl_base_dir: &Path,
@@ -68,7 +94,17 @@ pub fn parse_file(
     }
 }
 
-/// Parses a string representing an obj file.
+/// Parses an OBJ-formatted string and returns the meshes it contains.
+///
+/// Parses the OBJ format from a string in memory rather than from a file.
+///
+/// # Arguments
+/// * `string` - String containing OBJ-formatted data
+/// * `mtl_base_dir` - Directory containing the .mtl material files
+/// * `basename` - Base name for material lookups
+///
+/// # Returns
+/// A vector of tuples containing (object name, GPU mesh, optional material)
 pub fn parse(
     string: &str,
     mtl_base_dir: &Path,
