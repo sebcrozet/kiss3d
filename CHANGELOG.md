@@ -1,4 +1,4 @@
-# Unreleased
+# v0.36.0
 
 This changelog documents the changes between the `master` branch and the `nalgebra-parry` branch.
 
