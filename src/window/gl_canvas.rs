@@ -14,11 +14,11 @@ use glutin::surface::{Surface, SwapInterval, WindowSurface};
 use glutin_winit::{DisplayBuilder, GlWindow};
 
 use winit::application::ApplicationHandler;
-use winit::raw_window_handle::HasWindowHandle;
 use winit::dpi::LogicalSize;
 use winit::event::{ElementState, MouseScrollDelta, TouchPhase, WindowEvent as WinitWindowEvent};
 use winit::event_loop::{ActiveEventLoop, EventLoop};
 use winit::keyboard::{KeyCode, ModifiersState, PhysicalKey};
+use winit::raw_window_handle::HasWindowHandle;
 use winit::window::{Icon, Window, WindowAttributes};
 
 use image::{GenericImage, Pixel};
@@ -130,10 +130,8 @@ impl AbstractCanvas for GLCanvas {
 
         // Set vsync
         if canvas_setup.vsync {
-            let _ = gl_surface.set_swap_interval(
-                &gl_context,
-                SwapInterval::Wait(NonZeroU32::new(1).unwrap()),
-            );
+            let _ = gl_surface
+                .set_swap_interval(&gl_context, SwapInterval::Wait(NonZeroU32::new(1).unwrap()));
         }
 
         let ctxt = Context::get();
@@ -248,7 +246,9 @@ impl AbstractCanvas for GLCanvas {
                         let key = translate_key(event.physical_key);
                         let modifiers = translate_modifiers(*self.modifiers_state);
                         self.key_states[key as usize] = action;
-                        let _ = self.out_events.send(WindowEvent::Key(key, action, modifiers));
+                        let _ = self
+                            .out_events
+                            .send(WindowEvent::Key(key, action, modifiers));
 
                         // Also send character event if available
                         if let winit::keyboard::Key::Character(ref c) = event.logical_key {
