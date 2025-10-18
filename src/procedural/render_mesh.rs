@@ -1,8 +1,7 @@
 use super::utils;
 use na::{self, Isometry3, Point2, Point3, Translation3, Vector3};
 use parry3d::shape::TriMesh;
-use parry3d::utils::DeterministicState;
-use std::collections::HashMap;
+use parry3d::utils::hashmap::HashMap;
 
 /// Different representations of the index buffer.
 #[derive(Clone, Debug)]
@@ -263,8 +262,7 @@ impl RenderMesh {
     pub fn unify_index_buffer(&mut self) {
         let new_indices = match self.indices {
             IndexBuffer::Split(ref ids) => {
-                let mut vt2id: HashMap<Point3<u32>, u32, _> =
-                    HashMap::with_hasher(DeterministicState::new());
+                let mut vt2id: HashMap<Point3<u32>, u32> = HashMap::default();
                 let mut resi: Vec<u32> = Vec::new();
                 let mut resc: Vec<Point3<f32>> = Vec::new();
                 let mut resn: Option<Vec<Vector3<f32>>> = self.normals.as_ref().map(|_| Vec::new());

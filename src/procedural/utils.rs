@@ -3,7 +3,7 @@
 use na;
 use na::{Point2, Point3, Vector2, Vector3};
 use num::Zero;
-use parry3d::utils::{DeterministicState, HashablePartialEq};
+use parry3d::utils::HashablePartialEq;
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 
@@ -161,13 +161,13 @@ pub fn split_index_buffer_and_recover_topology(
     indices: &[Point3<u32>],
     coords: &[Point3<f32>],
 ) -> (Vec<Point3<Point3<u32>>>, Vec<Point3<f32>>) {
-    let mut vtx_to_id = HashMap::with_hasher(DeterministicState::new());
+    let mut vtx_to_id = HashMap::default(); // with_hasher(DeterministicState::new());
     let mut new_coords = Vec::with_capacity(coords.len());
     let mut out = Vec::with_capacity(indices.len());
 
     fn resolve_coord_id(
         coord: &Point3<f32>,
-        vtx_to_id: &mut HashMap<HashablePartialEq<Point3<f32>>, u32, DeterministicState>,
+        vtx_to_id: &mut HashMap<HashablePartialEq<Point3<f32>>, u32>,
         new_coords: &mut Vec<Point3<f32>>,
     ) -> u32 {
         let key = unsafe { HashablePartialEq::new(*coord) };

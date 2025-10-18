@@ -25,16 +25,20 @@ impl EguiRenderer {
         // Add WorkSans font from kiss3d
         fonts.font_data.insert(
             "WorkSans".to_owned(),
-            egui::FontData::from_static(include_bytes!("../text/WorkSans-Regular.ttf")),
+            egui::FontData::from_static(include_bytes!("../text/WorkSans-Regular.ttf")).into(),
         );
 
         // Set it as the proportional font
-        fonts.families.get_mut(&egui::FontFamily::Proportional)
+        fonts
+            .families
+            .get_mut(&egui::FontFamily::Proportional)
             .unwrap()
             .insert(0, "WorkSans".to_owned());
 
         // Set it as the monospace font too
-        fonts.families.get_mut(&egui::FontFamily::Monospace)
+        fonts
+            .families
+            .get_mut(&egui::FontFamily::Monospace)
             .unwrap()
             .insert(0, "WorkSans".to_owned());
 

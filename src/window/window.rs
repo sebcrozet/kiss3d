@@ -491,7 +491,10 @@ impl Window {
             WindowEvent::CursorPos(x, y, _) => {
                 // Convert physical pixels to logical coordinates
                 let pos = egui::Pos2::new((x as f32) / scale_factor, (y as f32) / scale_factor);
-                self.egui_context.raw_input.events.push(egui::Event::PointerMoved(pos));
+                self.egui_context
+                    .raw_input
+                    .events
+                    .push(egui::Event::PointerMoved(pos));
             }
             WindowEvent::MouseButton(button, action, _) => {
                 let button = match button {
@@ -503,27 +506,39 @@ impl Window {
 
                 if let Some(pos) = self.cursor_pos() {
                     // Convert physical pixels to logical coordinates
-                    let pos = egui::Pos2::new((pos.0 as f32) / scale_factor, (pos.1 as f32) / scale_factor);
+                    let pos = egui::Pos2::new(
+                        (pos.0 as f32) / scale_factor,
+                        (pos.1 as f32) / scale_factor,
+                    );
                     let pressed = action == Action::Press;
 
-                    self.egui_context.raw_input.events.push(egui::Event::PointerButton {
-                        pos,
-                        button,
-                        pressed,
-                        modifiers: self.get_egui_modifiers(),
-                    });
+                    self.egui_context
+                        .raw_input
+                        .events
+                        .push(egui::Event::PointerButton {
+                            pos,
+                            button,
+                            pressed,
+                            modifiers: self.get_egui_modifiers(),
+                        });
                 }
             }
             WindowEvent::Scroll(_x, y, _) => {
-                self.egui_context.raw_input.events.push(egui::Event::MouseWheel {
-                    unit: egui::MouseWheelUnit::Line,
-                    delta: egui::Vec2::new(0.0, y as f32),
-                    modifiers: self.get_egui_modifiers(),
-                });
+                self.egui_context
+                    .raw_input
+                    .events
+                    .push(egui::Event::MouseWheel {
+                        unit: egui::MouseWheelUnit::Line,
+                        delta: egui::Vec2::new(0.0, y as f32),
+                        modifiers: self.get_egui_modifiers(),
+                    });
             }
             WindowEvent::Char(ch) => {
                 if !ch.is_control() {
-                    self.egui_context.raw_input.events.push(egui::Event::Text(ch.to_string()));
+                    self.egui_context
+                        .raw_input
+                        .events
+                        .push(egui::Event::Text(ch.to_string()));
                 }
             }
             WindowEvent::Key(key, action, _modifiers) => {
@@ -544,11 +559,15 @@ impl Window {
     #[cfg(feature = "egui")]
     fn get_egui_modifiers(&self) -> egui::Modifiers {
         egui::Modifiers {
-            alt: self.get_key(Key::LAlt) == Action::Press || self.get_key(Key::RAlt) == Action::Press,
-            ctrl: self.get_key(Key::LControl) == Action::Press || self.get_key(Key::RControl) == Action::Press,
-            shift: self.get_key(Key::LShift) == Action::Press || self.get_key(Key::RShift) == Action::Press,
+            alt: self.get_key(Key::LAlt) == Action::Press
+                || self.get_key(Key::RAlt) == Action::Press,
+            ctrl: self.get_key(Key::LControl) == Action::Press
+                || self.get_key(Key::RControl) == Action::Press,
+            shift: self.get_key(Key::LShift) == Action::Press
+                || self.get_key(Key::RShift) == Action::Press,
             mac_cmd: false,
-            command: self.get_key(Key::LControl) == Action::Press || self.get_key(Key::RControl) == Action::Press,
+            command: self.get_key(Key::LControl) == Action::Press
+                || self.get_key(Key::RControl) == Action::Press,
         }
     }
 
@@ -637,13 +656,19 @@ impl Window {
         let scale_factor = self.canvas.scale_factor() as f32;
 
         // Set pixels_per_point on the context to match our DPI scale
-        self.egui_context.renderer.context().set_pixels_per_point(scale_factor);
+        self.egui_context
+            .renderer
+            .context()
+            .set_pixels_per_point(scale_factor);
 
         // Build raw input with accumulated events
         let mut raw_input = std::mem::take(&mut self.egui_context.raw_input);
         raw_input.screen_rect = Some(egui::Rect::from_min_size(
             egui::Pos2::ZERO,
-            egui::vec2(self.width() as f32 / scale_factor, self.height() as f32 / scale_factor),
+            egui::vec2(
+                self.width() as f32 / scale_factor,
+                self.height() as f32 / scale_factor,
+            ),
         ));
         raw_input.time = time;
         raw_input.predicted_dt = 1.0 / 60.0;
@@ -1067,11 +1092,9 @@ impl Window {
 
         self.text_renderer.render(w as f32, h as f32);
         #[cfg(feature = "egui")]
-        self.egui_context.renderer.render(
-            w as f32,
-            h as f32,
-            self.canvas.scale_factor() as f32,
-        );
+        self.egui_context
+            .renderer
+            .render(w as f32, h as f32, self.canvas.scale_factor() as f32);
 
         // We are done: swap buffers
         self.canvas.swap_buffers();
