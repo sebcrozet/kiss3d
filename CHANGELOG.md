@@ -1,3 +1,94 @@
+# v0.37.0
+
+This release introduces async rendering support for better cross-platform compatibility (especially WASM), replaces the deprecated conrod UI library with egui, and updates several key dependencies.
+
+## Breaking Changes
+
+### Async Rendering API
+- **Removed** `State` trait and `render_loop` methods
+- **Introduced** `#[kiss3d::main]` procedural macro for platform-agnostic entry points
+- **Changed** `window.render()` to async `window.render().await`
+- The async API automatically handles platform differences:
+  - **Native**: Uses `pollster::block_on` (re-exported by kiss3d)
+  - **WASM**: Uses `wasm_bindgen_futures::spawn_local` and integrates with browser's `requestAnimationFrame`
+
+**Migration example**:
+```rust
+// Old (v0.36.0)
+fn main() {
+    let mut window = Window::new("Title");
+    while window.render() {
+        // render loop
+    }
+}
+
+// New (v0.37.0)
+#[kiss3d::main]
+async fn main() {
+    let mut window = Window::new("Title");
+    while window.render().await {
+        // render loop
+    }
+}
+```
+
+### UI Library Changes
+- **Replaced** conrod with egui for UI rendering
+- egui is now an optional feature (enabled with `features = ["egui"]`)
+- UI examples require the `egui` feature flag: `cargo run --example ui --features egui`
+
+### Dependency Updates
+- **glutin**: Updated to 0.32 (native only)
+- **glow**: Updated to 0.16
+- **image**: Updated to 0.25
+- **egui**: 0.32 (optional feature)
+- **bitflags**: Updated to 2.x
+- **rusttype**, **env_logger**: Version bumps
+
+## New Features
+
+### Async Rendering Support (#339)
+- Cross-platform async rendering with `#[kiss3d::main]` macro
+- Better WASM integration with browser event loop
+- Automatic platform-specific runtime management
+- No need to manually add `pollster` or `wasm-bindgen-futures` dependencies
+
+### egui Integration (#340)
+- Modern immediate mode GUI library replaces deprecated conrod
+- Optional feature flag for users who don't need UI
+- Updated UI examples demonstrating egui integration
+- Better rendering performance and maintenance
+
+### WASM Improvements
+- Auto-create canvas element if it doesn't exist (WASM targets)
+- Improved instancing examples compatible with WASM
+- Better async integration with browser APIs
+
+### New Examples
+- `instancing2d.rs`: Demonstrates 2D instancing with multiple shapes
+- `instancing3d.rs`: Demonstrates 3D instancing with transformations and colors
+
+## Bug Fixes
+- Fixed obj.rs example file not found error (#327)
+- Adjusted arcball camera near/far clipping planes for better depth precision
+- Fixed various warnings and compatibility issues
+
+## Migration Guide
+
+### Update your main function:
+1. Add `#[kiss3d::main]` attribute
+2. Make the function `async`
+3. Add `.await` to `window.render()`
+
+### If using UI features:
+1. Enable the `egui` feature in Cargo.toml
+2. Update UI code to use egui instead of conrod (if you were using conrod)
+
+### Dependencies:
+No changes needed to your Cargo.toml if you're only using kiss3d's public API. The async runtime dependencies are re-exported by kiss3d.
+
+---
+
 # v0.36.0
 
 This changelog documents the changes between the `master` branch and the `nalgebra-parry` branch.
