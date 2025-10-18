@@ -143,7 +143,7 @@ async fn main() {
     }
 
     let chull = parry3d::transformation::convex_hull(&points[..]);
-    let mut mhull = window.add_trimesh(TriMesh::new(chull.0, chull.1), Vector3::from_element(1.0));
+    let mut mhull = window.add_trimesh(TriMesh::new(chull.0, chull.1).unwrap(), Vector3::from_element(1.0));
     let mut mpts = window.add_render_mesh(
         RenderMesh::new(points, None, None, None),
         Vector3::from_element(1.0),
