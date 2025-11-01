@@ -24,7 +24,7 @@ void main(){
     gl_Position = proj * view * pt;
     vec4 vertPos4 = view * pt;
     vertPos = vec3(vertPos4) / vertPos4.w;
-    normalInterp = mat3(view) * ntransform * normal;
+    normalInterp = mat3(view) * deformation * ntransform * normal;
     tex_coord_v = tex_coord;
     local_light_position = (view * vec4(light_position, 1.0)).xyz;
     vertColor = inst_color;
