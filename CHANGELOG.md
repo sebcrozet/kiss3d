@@ -1,3 +1,9 @@
+# v0.37.1
+
+- Improved documentations.
+- Fix issue where lighting would not behave properly when an object is rotated through the instancing deformation matrix.
+- Implement `Default` for `ArcBall`.
+
 # v0.37.0
 
 This release introduces async rendering support for better cross-platform compatibility (especially WASM), replaces the deprecated conrod UI library with egui, and updates several key dependencies.
