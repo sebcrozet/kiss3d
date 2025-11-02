@@ -45,7 +45,7 @@ impl Font {
     /// `Some(Font)` if the font was successfully parsed, `None` otherwise
     ///
     /// # Example
-    /// ```no_run
+    /// ```ignore
     /// # use kiss3d::text::Font;
     /// const FONT_DATA: &[u8] = include_bytes!("MyFont.ttf");
     /// let font = Font::from_bytes(FONT_DATA).unwrap();
@@ -68,12 +68,12 @@ impl Font {
     /// ```no_run
     /// # use kiss3d::text::Font;
     /// # use kiss3d::window::Window;
-    /// # use nalgebra::Point2;
+    /// # use nalgebra::{Point2, Point3};
     /// # #[kiss3d::main]
     /// # async fn main() {
     /// # let mut window = Window::new("Example");
     /// let font = Font::default();
-    /// window.draw_text("Hello", &Point2::new(10.0, 10.0), 60.0, &font, &Point2::new(1.0, 1.0, 1.0));
+    /// window.draw_text("Hello", &Point2::new(10.0, 10.0), 60.0, &font, &Point3::new(1.0, 1.0, 1.0));
     /// # }
     /// ```
     #[allow(clippy::should_implement_trait)]
