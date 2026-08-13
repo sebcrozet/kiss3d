@@ -97,10 +97,7 @@ enum PendingEvent {
     KeyState(Key, Action),
     CursorPos(f64, f64),
     Modifiers(ModifiersState),
-    Resize {
-        width: u32,
-        height: u32,
-    },
+    Resize { width: u32, height: u32 },
 }
 
 /// A GPU→CPU pixel readback still in flight (see `WgpuCanvas::begin_read_pixels`).
@@ -633,18 +630,16 @@ impl WgpuCanvas {
                     }
                     if event.get_modifier_state("Alt") {
                         modifiers |= Modifiers::Alt;
-                    }   
+                    }
                     // Super is called "Meta" on the web
-                    // In fact, in winit 0.31, winit will deprecate Super 
+                    // In fact, in winit 0.31, winit will deprecate Super
                     // and instead call it Meta
                     if event.get_modifier_state("Meta") {
                         modifiers |= Modifiers::Super;
                     }
-                    pending.borrow_mut().push(WindowEvent::Key(
-                        key,
-                        Action::Press,
-                        modifiers,
-                    ));
+                    pending
+                        .borrow_mut()
+                        .push(WindowEvent::Key(key, Action::Press, modifiers));
                     // Emit a Char event for single-character (printable) keys so
                     // egui text fields receive text input. Skip when a command
                     // modifier is held so shortcuts (e.g. Ctrl+A) don't insert text,
@@ -1151,12 +1146,24 @@ impl WgpuCanvas {
                         let modifiers = translate_modifiers(self.modifiers_state);
                         // apply all the modifiers here
                         let we = match we {
-                            WindowEvent::MouseButton(mouse_button, action, _) => WindowEvent::MouseButton(mouse_button, action, modifiers),
-                            WindowEvent::CursorPos(x, y, _) => WindowEvent::CursorPos(x, y, modifiers),
-                            WindowEvent::Scroll(x_offset, y_offset, _) => WindowEvent::Scroll(x_offset, y_offset, modifiers),
-                            WindowEvent::Key(key, action, _) => WindowEvent::Key(key, action, modifiers),
-                            WindowEvent::CharModifiers(char, _) => WindowEvent::CharModifiers(char, modifiers),
-                            WindowEvent::Touch(id, x, y, touch_action, _) => WindowEvent::Touch(id, x, y, touch_action, modifiers),
+                            WindowEvent::MouseButton(mouse_button, action, _) => {
+                                WindowEvent::MouseButton(mouse_button, action, modifiers)
+                            }
+                            WindowEvent::CursorPos(x, y, _) => {
+                                WindowEvent::CursorPos(x, y, modifiers)
+                            }
+                            WindowEvent::Scroll(x_offset, y_offset, _) => {
+                                WindowEvent::Scroll(x_offset, y_offset, modifiers)
+                            }
+                            WindowEvent::Key(key, action, _) => {
+                                WindowEvent::Key(key, action, modifiers)
+                            }
+                            WindowEvent::CharModifiers(char, _) => {
+                                WindowEvent::CharModifiers(char, modifiers)
+                            }
+                            WindowEvent::Touch(id, x, y, touch_action, _) => {
+                                WindowEvent::Touch(id, x, y, touch_action, modifiers)
+                            }
                             other => other,
                         };
                         let _ = self.out_events.send(we);
