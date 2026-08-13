@@ -62,7 +62,7 @@ async fn main() {
                     ui.add(egui::Slider::new(&mut opacity, 0.0..=1.0));
 
                     // Text Input
-                    ui.add(egui::TextEdit::singleline(&mut text));
+                    ui.add(egui::TextEdit::multiline(&mut text));
 
                     // Color picker
                     ui.label("Cube Color:");
