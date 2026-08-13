@@ -96,7 +96,6 @@ enum PendingEvent {
     ButtonState(MouseButton, Action),
     KeyState(Key, Action),
     CursorPos(f64, f64),
-    #[allow(dead_code)]
     Modifiers(ModifiersState),
     Resize {
         width: u32,
@@ -1131,6 +1130,17 @@ impl WgpuCanvas {
             for event in events {
                 match event {
                     PendingEvent::WindowEvent(we) => {
+                        let modifiers = translate_modifiers(self.modifiers_state);
+                        // apply all the modifiers here
+                        let we = match we {
+                            WindowEvent::MouseButton(mouse_button, action, _) => WindowEvent::MouseButton(mouse_button, action, modifiers),
+                            WindowEvent::CursorPos(x, y, _) => WindowEvent::CursorPos(x, y, modifiers),
+                            WindowEvent::Scroll(x_offset, y_offset, _) => WindowEvent::Scroll(x_offset, y_offset, modifiers),
+                            WindowEvent::Key(key, action, _) => WindowEvent::Key(key, action, modifiers),
+                            WindowEvent::CharModifiers(char, _) => WindowEvent::CharModifiers(char, modifiers),
+                            WindowEvent::Touch(id, x, y, touch_action, _) => WindowEvent::Touch(id, x, y, touch_action, modifiers),
+                            other => other,
+                        };
                         let _ = self.out_events.send(we);
                     }
                     PendingEvent::ButtonState(button, action) => {
@@ -1653,7 +1663,6 @@ fn translate_action(action: winit::event::ElementState) -> Action {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-#[allow(dead_code)]
 fn translate_modifiers(modifiers: ModifiersState) -> Modifiers {
     let mut res = Modifiers::empty();
     if modifiers.shift_key() {

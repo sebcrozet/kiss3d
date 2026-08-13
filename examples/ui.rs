@@ -40,6 +40,12 @@ async fn main() {
             opacity,
         ));
 
+        // print events for testing
+        let mut event_string = String::new();
+        for event in window.events().iter() {
+            event_string.push_str(&format!("{:?}\n", event.value));
+        }
+
         // Draw UI
         window.draw_ui(|ctx| {
             egui::Window::new("Kiss3d egui Example")
@@ -68,6 +74,9 @@ async fn main() {
                             cube_color = [rand::random(), rand::random(), rand::random()];
                         }
                     });
+
+                    // events
+                    ui.add(egui::TextEdit::multiline(&mut event_string).interactive(false));
                 });
         });
     }
