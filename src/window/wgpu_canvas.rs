@@ -622,10 +622,28 @@ impl WgpuCanvas {
                 let pending = pending_events.clone();
                 let closure = Closure::<dyn FnMut(_)>::new(move |event: web_sys::KeyboardEvent| {
                     let key = translate_web_key(&event.code());
+                    // get modifier state (translate from web-sys to kiss3d)
+                    // see: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/getModifierState#modifier_keys_on_firefox
+                    let mut modifiers = Modifiers::empty();
+                    if event.get_modifier_state("Shift") {
+                        modifiers |= Modifiers::Shift;
+                    }
+                    if event.get_modifier_state("Control") {
+                        modifiers |= Modifiers::Control;
+                    }
+                    if event.get_modifier_state("Alt") {
+                        modifiers |= Modifiers::Alt;
+                    }   
+                    // Super is called "Meta" on the web
+                    // In fact, in winit 0.31, winit will deprecate Super 
+                    // and instead call it Meta
+                    if event.get_modifier_state("Meta") {
+                        modifiers |= Modifiers::Super;
+                    }
                     pending.borrow_mut().push(WindowEvent::Key(
                         key,
                         Action::Press,
-                        Modifiers::empty(),
+                        modifiers,
                     ));
                     // Emit a Char event for single-character (printable) keys so
                     // egui text fields receive text input. Skip when a command
