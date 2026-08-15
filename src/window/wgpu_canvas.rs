@@ -413,7 +413,7 @@ impl WgpuCanvas {
                             pending.borrow_mut().push(WindowEvent::CursorPos(
                                 x,
                                 y,
-                                Modifiers::empty(),
+                                event.modifiers(),
                             ));
                         });
                     let _ = canvas.add_event_listener_with_callback(
@@ -434,7 +434,7 @@ impl WgpuCanvas {
                                 pending.borrow_mut().push(WindowEvent::MouseButton(
                                     button,
                                     Action::Press,
-                                    Modifiers::empty(),
+                                    event.modifiers(),
                                 ));
                             }
                         });
@@ -456,7 +456,7 @@ impl WgpuCanvas {
                                 pending.borrow_mut().push(WindowEvent::MouseButton(
                                     button,
                                     Action::Release,
-                                    Modifiers::empty(),
+                                    event.modifiers(),
                                 ));
                             }
                         });
@@ -488,7 +488,7 @@ impl WgpuCanvas {
                             pending.borrow_mut().push(WindowEvent::Scroll(
                                 dx,
                                 dy,
-                                Modifiers::empty(),
+                                event.modifiers(),
                             ));
                         });
                     let _ = canvas.add_event_listener_with_callback(
@@ -517,6 +517,7 @@ impl WgpuCanvas {
                     let closure =
                         Closure::<dyn FnMut(_)>::new(move |event: web_sys::TouchEvent| {
                             event.prevent_default();
+                            let modifiers = event.modifiers();
                             let touches = event.changed_touches();
                             for i in 0..touches.length() {
                                 if let Some(touch) = touches.get(i) {
@@ -525,7 +526,7 @@ impl WgpuCanvas {
                                         touch.client_x() as f64,
                                         touch.client_y() as f64,
                                         TouchAction::Start,
-                                        Modifiers::empty(),
+                                        modifiers,
                                     ));
                                 }
                             }
@@ -542,6 +543,7 @@ impl WgpuCanvas {
                     let closure =
                         Closure::<dyn FnMut(_)>::new(move |event: web_sys::TouchEvent| {
                             event.prevent_default();
+                            let modifiers = event.modifiers();
                             let touches = event.changed_touches();
                             for i in 0..touches.length() {
                                 if let Some(touch) = touches.get(i) {
@@ -550,7 +552,7 @@ impl WgpuCanvas {
                                         touch.client_x() as f64,
                                         touch.client_y() as f64,
                                         TouchAction::Move,
-                                        Modifiers::empty(),
+                                        modifiers,
                                     ));
                                 }
                             }
@@ -567,6 +569,7 @@ impl WgpuCanvas {
                     let closure =
                         Closure::<dyn FnMut(_)>::new(move |event: web_sys::TouchEvent| {
                             event.prevent_default();
+                            let modifiers = event.modifiers();
                             let touches = event.changed_touches();
                             for i in 0..touches.length() {
                                 if let Some(touch) = touches.get(i) {
@@ -575,7 +578,7 @@ impl WgpuCanvas {
                                         touch.client_x() as f64,
                                         touch.client_y() as f64,
                                         TouchAction::End,
-                                        Modifiers::empty(),
+                                        modifiers,
                                     ));
                                 }
                             }
@@ -592,6 +595,7 @@ impl WgpuCanvas {
                     let closure =
                         Closure::<dyn FnMut(_)>::new(move |event: web_sys::TouchEvent| {
                             event.prevent_default();
+                            let modifiers = event.modifiers();
                             let touches = event.changed_touches();
                             for i in 0..touches.length() {
                                 if let Some(touch) = touches.get(i) {
@@ -600,7 +604,7 @@ impl WgpuCanvas {
                                         touch.client_x() as f64,
                                         touch.client_y() as f64,
                                         TouchAction::Cancel,
-                                        Modifiers::empty(),
+                                        modifiers,
                                     ));
                                 }
                             }
@@ -619,24 +623,7 @@ impl WgpuCanvas {
                 let pending = pending_events.clone();
                 let closure = Closure::<dyn FnMut(_)>::new(move |event: web_sys::KeyboardEvent| {
                     let key = translate_web_key(&event.code());
-                    // get modifier state (translate from web-sys to kiss3d)
-                    // see: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/getModifierState#modifier_keys_on_firefox
-                    let mut modifiers = Modifiers::empty();
-                    if event.get_modifier_state("Shift") {
-                        modifiers |= Modifiers::Shift;
-                    }
-                    if event.get_modifier_state("Control") {
-                        modifiers |= Modifiers::Control;
-                    }
-                    if event.get_modifier_state("Alt") {
-                        modifiers |= Modifiers::Alt;
-                    }
-                    // Super is called "Meta" on the web
-                    // In fact, in winit 0.31, winit will deprecate Super
-                    // and instead call it Meta
-                    if event.get_modifier_state("Meta") {
-                        modifiers |= Modifiers::Super;
-                    }
+                    let modifiers = event.modifiers();
                     pending
                         .borrow_mut()
                         .push(WindowEvent::Key(key, Action::Press, modifiers));
@@ -644,8 +631,9 @@ impl WgpuCanvas {
                     // egui text fields receive text input. Skip when a command
                     // modifier is held so shortcuts (e.g. Ctrl+A) don't insert text,
                     // mirroring the native path which relies on winit's `text` field.
+                    let command = Modifiers::Control | Modifiers::Super;
                     let key_string = event.key();
-                    if !event.ctrl_key() && !event.meta_key() && key_string.chars().count() == 1 {
+                    if !modifiers.intersects(command) && key_string.chars().count() == 1 {
                         if let Some(ch) = key_string.chars().next() {
                             pending.borrow_mut().push(WindowEvent::Char(ch));
                         }
@@ -663,7 +651,7 @@ impl WgpuCanvas {
                     pending.borrow_mut().push(WindowEvent::Key(
                         key,
                         Action::Release,
-                        Modifiers::empty(),
+                        event.modifiers(),
                     ));
                 });
                 let _ = web_window
@@ -1014,7 +1002,9 @@ impl WgpuCanvas {
         {
             use winit::platform::pump_events::EventLoopExtPumpEvents;
 
-            // First, pump all events into the shared storage
+            // First, pump all events into the shared storage. The collector has no
+            // access to the canvas, so every `Modifiers::empty()` below is a
+            // placeholder: the real mask is stamped in when the batch is drained.
             struct EventCollector;
 
             impl ApplicationHandler for EventCollector {
@@ -1143,30 +1133,11 @@ impl WgpuCanvas {
             for event in events {
                 match event {
                     PendingEvent::WindowEvent(we) => {
+                        // Winit reports modifiers separately from the events they apply to,
+                        // so the mask is stamped in here, once the preceding
+                        // `PendingEvent::Modifiers` of this batch have been applied.
                         let modifiers = translate_modifiers(self.modifiers_state);
-                        // apply all the modifiers here
-                        let we = match we {
-                            WindowEvent::MouseButton(mouse_button, action, _) => {
-                                WindowEvent::MouseButton(mouse_button, action, modifiers)
-                            }
-                            WindowEvent::CursorPos(x, y, _) => {
-                                WindowEvent::CursorPos(x, y, modifiers)
-                            }
-                            WindowEvent::Scroll(x_offset, y_offset, _) => {
-                                WindowEvent::Scroll(x_offset, y_offset, modifiers)
-                            }
-                            WindowEvent::Key(key, action, _) => {
-                                WindowEvent::Key(key, action, modifiers)
-                            }
-                            WindowEvent::CharModifiers(char, _) => {
-                                WindowEvent::CharModifiers(char, modifiers)
-                            }
-                            WindowEvent::Touch(id, x, y, touch_action, _) => {
-                                WindowEvent::Touch(id, x, y, touch_action, modifiers)
-                            }
-                            other => other,
-                        };
-                        let _ = self.out_events.send(we);
+                        let _ = self.out_events.send(we.with_modifiers(modifiers));
                     }
                     PendingEvent::ButtonState(button, action) => {
                         self.button_states[button as usize] = action;
@@ -1864,6 +1835,65 @@ fn translate_key(physical_key: PhysicalKey) -> Key {
         }
     } else {
         Key::Unknown
+    }
+}
+
+/// Reads the modifier keys held during a DOM event.
+///
+/// The web backend has no equivalent of winit's `ModifiersChanged`; each DOM
+/// input event carries its own modifier state instead.
+#[cfg(target_arch = "wasm32")]
+trait WebModifiers {
+    fn modifiers(&self) -> Modifiers;
+}
+
+/// Builds a mask from a `getModifierState`-style query.
+///
+/// See <https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/getModifierState>.
+#[cfg(target_arch = "wasm32")]
+fn web_modifiers(state: impl Fn(&str) -> bool) -> Modifiers {
+    let mut res = Modifiers::empty();
+    if state("Shift") {
+        res.insert(Modifiers::Shift)
+    }
+    if state("Control") {
+        res.insert(Modifiers::Control)
+    }
+    if state("Alt") {
+        res.insert(Modifiers::Alt)
+    }
+    // The web calls the Super key "Meta" (winit 0.31 renames it to Meta too).
+    if state("Meta") {
+        res.insert(Modifiers::Super)
+    }
+    res
+}
+
+#[cfg(target_arch = "wasm32")]
+impl WebModifiers for web_sys::KeyboardEvent {
+    fn modifiers(&self) -> Modifiers {
+        web_modifiers(|key| self.get_modifier_state(key))
+    }
+}
+
+/// Also covers `PointerEvent` and `WheelEvent`, which deref to `MouseEvent`.
+#[cfg(target_arch = "wasm32")]
+impl WebModifiers for web_sys::MouseEvent {
+    fn modifiers(&self) -> Modifiers {
+        web_modifiers(|key| self.get_modifier_state(key))
+    }
+}
+
+/// `TouchEvent` has no `getModifierState`, so the individual flags are read instead.
+#[cfg(target_arch = "wasm32")]
+impl WebModifiers for web_sys::TouchEvent {
+    fn modifiers(&self) -> Modifiers {
+        web_modifiers(|key| match key {
+            "Shift" => self.shift_key(),
+            "Control" => self.ctrl_key(),
+            "Alt" => self.alt_key(),
+            _ => self.meta_key(),
+        })
     }
 }
 

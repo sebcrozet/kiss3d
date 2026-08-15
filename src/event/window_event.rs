@@ -65,6 +65,78 @@ impl WindowEvent {
     pub fn is_touch_event(&self) -> bool {
         matches!(self, Touch(..))
     }
+
+    /// Returns this event with its modifier mask replaced by `modifiers`.
+    ///
+    /// Variants that don't carry modifiers are returned unchanged. Backends
+    /// build their events before the modifier state is known, then stamp it in
+    /// with this method.
+    pub fn with_modifiers(self, modifiers: Modifiers) -> Self {
+        match self {
+            MouseButton(button, action, _) => MouseButton(button, action, modifiers),
+            CursorPos(x, y, _) => CursorPos(x, y, modifiers),
+            Scroll(x_offset, y_offset, _) => Scroll(x_offset, y_offset, modifiers),
+            Key(key, action, _) => Key(key, action, modifiers),
+            CharModifiers(character, _) => CharModifiers(character, modifiers),
+            Touch(id, x, y, action, _) => Touch(id, x, y, action, modifiers),
+            other => other,
+        }
+    }
+
+    /// The modifier keys held when this event was generated, if it carries them.
+    ///
+    /// # Returns
+    /// `None` for variants that don't carry a modifier mask
+    pub fn modifiers(&self) -> Option<Modifiers> {
+        match *self {
+            MouseButton(_, _, modifiers)
+            | CursorPos(_, _, modifiers)
+            | Scroll(_, _, modifiers)
+            | Key(_, _, modifiers)
+            | CharModifiers(_, modifiers)
+            | Touch(_, _, _, _, modifiers) => Some(modifiers),
+            _ => None,
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent};
+
+    /// Every variant that carries modifiers must be handled by `with_modifiers`;
+    /// the others must be left untouched.
+    #[test]
+    fn with_modifiers_stamps_every_carrying_variant() {
+        let none = Modifiers::empty();
+        let mods = Modifiers::Control | Modifiers::Shift;
+
+        let carrying = [
+            WindowEvent::MouseButton(MouseButton::Button1, Action::Press, none),
+            WindowEvent::CursorPos(1.0, 2.0, none),
+            WindowEvent::Scroll(1.0, 2.0, none),
+            WindowEvent::Key(Key::S, Action::Press, none),
+            WindowEvent::CharModifiers('s', none),
+            WindowEvent::Touch(0, 1.0, 2.0, TouchAction::Start, none),
+        ];
+
+        for event in carrying {
+            assert_eq!(event.modifiers(), Some(none));
+            assert_eq!(event.with_modifiers(mods).modifiers(), Some(mods));
+        }
+
+        let plain = [
+            WindowEvent::Close,
+            WindowEvent::Char('s'),
+            WindowEvent::CursorEnter(true),
+            WindowEvent::Size(1, 2),
+        ];
+
+        for event in plain {
+            assert_eq!(event.modifiers(), None);
+            assert_eq!(event.with_modifiers(mods), event);
+        }
+    }
 }
 
 // NOTE: list of keys inspired from glutin.

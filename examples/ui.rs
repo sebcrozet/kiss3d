@@ -8,6 +8,10 @@ async fn main() {
 #[kiss3d::main]
 async fn main() {
     use kiss3d::prelude::*;
+    use std::collections::VecDeque;
+
+    /// Number of recent events kept in the event log.
+    const EVENT_LOG_LEN: usize = 20;
 
     let mut window = Window::new("Kiss3d: egui UI").await;
     let mut camera = OrbitCamera3d::new(Vec3::new(0.0, 0.5, 1.0), Vec3::ZERO);
@@ -23,8 +27,12 @@ async fn main() {
     // UI state
     let mut rotation_speed = 0.014;
     let mut text = String::from("Edit text here!");
+    let mut multiline_text = String::from("Multiple lines.\nPress Enter for a new one.");
     let mut opacity = 1.0;
     let mut cube_color = [1.0, 0.0, 0.0];
+    // Recent events, kept across frames so a combination like Ctrl+S remains
+    // readable after the keys are released.
+    let mut event_log: VecDeque<String> = VecDeque::new();
 
     // Render loop
     while window.render_3d(&mut scene, &mut camera).await {
@@ -40,11 +48,25 @@ async fn main() {
             opacity,
         ));
 
-        // print events for testing
-        let mut event_string = String::new();
+        // Collect the events, mostly to show the modifiers they carry. Cursor
+        // motion is skipped: it would flood the log.
         for event in window.events().iter() {
-            event_string.push_str(&format!("{:?}\n", event.value));
+            if matches!(event.value, WindowEvent::CursorPos(..)) {
+                continue;
+            }
+
+            event_log.push_back(format!("{:?}", event.value));
+
+            if event_log.len() > EVENT_LOG_LEN {
+                event_log.pop_front();
+            }
         }
+
+        let mut event_string = event_log
+            .iter()
+            .map(String::as_str)
+            .collect::<Vec<_>>()
+            .join("\n");
 
         // Draw UI
         window.draw_ui(|ctx| {
@@ -62,7 +84,15 @@ async fn main() {
                     ui.add(egui::Slider::new(&mut opacity, 0.0..=1.0));
 
                     // Text Input
-                    ui.add(egui::TextEdit::multiline(&mut text));
+                    ui.label("Single-line:");
+                    ui.add(egui::TextEdit::singleline(&mut text));
+
+                    ui.label("Multi-line:");
+                    ui.add(
+                        egui::TextEdit::multiline(&mut multiline_text)
+                            .desired_rows(3)
+                            .desired_width(f32::INFINITY),
+                    );
 
                     // Color picker
                     ui.label("Cube Color:");
@@ -75,8 +105,20 @@ async fn main() {
                         }
                     });
 
-                    // events
-                    ui.add(egui::TextEdit::multiline(&mut event_string).interactive(false));
+                    // Event log: hold a modifier while typing or clicking to see
+                    // it reported (e.g. "Key(S, Press, Modifiers(Control))").
+                    ui.separator();
+                    ui.label("Recent events:");
+                    egui::ScrollArea::vertical()
+                        .max_height(150.0)
+                        .stick_to_bottom(true)
+                        .show(ui, |ui| {
+                            ui.add(
+                                egui::TextEdit::multiline(&mut event_string)
+                                    .interactive(false)
+                                    .desired_width(f32::INFINITY),
+                            );
+                        });
                 });
         });
     }
