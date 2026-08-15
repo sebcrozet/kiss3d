@@ -1,3 +1,23 @@
+# v0.46.0
+
+## Breaking Changes
+
+- Updated to **wgpu 30**, **egui 0.36** (re-exported as `kiss3d::egui`) and **pollster 1** (re-exported as `kiss3d::pollster`); downstream code must move with them.
+- wgpu 30's `VertexState::buffers` is now `&[Option<VertexBufferLayout>]`: custom `Material` implementations must wrap each layout in `Some(...)` (see the `custom_material` example).
+- egui no longer captures the pointer over `SidePanel` / `CentralPanel` drawn in `draw_ui`; those panels now pass clicks through to the camera. Windows, popups, menus and tooltips are unaffected.
+
+## New Features
+
+- Modifier keys are now reported on `MouseButton`, `CursorPos`, `Scroll`, `Key`, `CharModifiers` and `Touch` events, on native and web alike; previously every event carried an empty mask.
+- `WindowEvent::modifiers()` and `WindowEvent::with_modifiers()`.
+- The `ui` example gained a multi-line text field and a live event log.
+
+## Bug Fixes
+
+- Modifier-gated bindings could never match, since events reported no modifiers: `OrbitCamera3d::set_rotate_modifiers` / `set_drag_modifiers`, `Sidescroll2d::rebind_drag_modifier` / `rebind_zoom_modifier` and `Window::rebind_close_modifiers` were dead when set to `Some(..)`.
+- Fixed a shader compilation failure (`redefinition of 'world_v'`) with `wesl` 0.4.3 when parallax mapping combined with a normal map or IBL/reflection probes.
+- On the web, text input for shortcuts is now suppressed based on the full modifier mask, not just Ctrl and Meta.
+
 # v0.45.1
 
 ## New Features
