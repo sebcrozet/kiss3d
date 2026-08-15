@@ -287,6 +287,7 @@ impl WgpuCanvas {
                     power_preference: wgpu::PowerPreference::default(),
                     compatible_surface: Some(&surface),
                     force_fallback_adapter: false,
+                    apply_limit_buckets: false,
                 })
                 .await
                 .expect("Failed to find an appropriate adapter");
@@ -354,6 +355,7 @@ impl WgpuCanvas {
         let surface_config = wgpu::SurfaceConfiguration {
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::COPY_SRC,
             format: surface_format,
+            color_space: wgpu::SurfaceColorSpace::Auto,
             width,
             height,
             present_mode,
@@ -716,6 +718,7 @@ impl WgpuCanvas {
                     power_preference: wgpu::PowerPreference::default(),
                     compatible_surface: None,
                     force_fallback_adapter: false,
+                    apply_limit_buckets: false,
                 })
                 .await
                 .expect("Failed to find an appropriate adapter");
@@ -750,6 +753,7 @@ impl WgpuCanvas {
         let surface_config = wgpu::SurfaceConfiguration {
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::COPY_SRC,
             format: surface_format,
+            color_space: wgpu::SurfaceColorSpace::Auto,
             width,
             height,
             present_mode: wgpu::PresentMode::AutoNoVsync,
@@ -1323,7 +1327,7 @@ impl WgpuCanvas {
 
     /// Presents the current frame.
     pub fn present(&self, frame: wgpu::SurfaceTexture) {
-        frame.present();
+        Context::get().queue.present(frame);
     }
 
     /// Reads pixels from the readback texture into the provided buffer.
@@ -1450,7 +1454,9 @@ impl WgpuCanvas {
 
         // Read the data
         let buffer_slice = staging_buffer.slice(..);
-        let data = buffer_slice.get_mapped_range();
+        let data = buffer_slice
+            .get_mapped_range()
+            .expect("staging buffer is mapped");
 
         // Convert from BGRA/RGBA to RGB and handle row padding
         let rgb_size = width * height * 3;

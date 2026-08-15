@@ -804,7 +804,7 @@ impl ShadowMapper {
         // and the instance deformation columns (2..4).
         let vertex_buffer_layouts = [
             // Buffer 0: vertex positions.
-            wgpu::VertexBufferLayout {
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Vertex,
                 attributes: &[wgpu::VertexAttribute {
@@ -812,9 +812,9 @@ impl ShadowMapper {
                     shader_location: 0,
                     format: wgpu::VertexFormat::Float32x3,
                 }],
-            },
+            }),
             // Buffer 1: instance translations.
-            wgpu::VertexBufferLayout {
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Instance,
                 attributes: &[wgpu::VertexAttribute {
@@ -822,9 +822,9 @@ impl ShadowMapper {
                     shader_location: 1,
                     format: wgpu::VertexFormat::Float32x3,
                 }],
-            },
+            }),
             // Buffer 2: instance deformations (3 vec3 columns).
-            wgpu::VertexBufferLayout {
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 9]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Instance,
                 attributes: &[
@@ -844,7 +844,7 @@ impl ShadowMapper {
                         format: wgpu::VertexFormat::Float32x3,
                     },
                 ],
-            },
+            }),
         ];
 
         ctxt.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
@@ -922,7 +922,7 @@ impl ShadowMapper {
 
         // Same buffers 0..2 as the non-deformed pass (position + instance streams).
         let vertex_buffer_layouts = [
-            wgpu::VertexBufferLayout {
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Vertex,
                 attributes: &[wgpu::VertexAttribute {
@@ -930,8 +930,8 @@ impl ShadowMapper {
                     shader_location: 0,
                     format: wgpu::VertexFormat::Float32x3,
                 }],
-            },
-            wgpu::VertexBufferLayout {
+            }),
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Instance,
                 attributes: &[wgpu::VertexAttribute {
@@ -939,8 +939,8 @@ impl ShadowMapper {
                     shader_location: 1,
                     format: wgpu::VertexFormat::Float32x3,
                 }],
-            },
-            wgpu::VertexBufferLayout {
+            }),
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 9]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Instance,
                 attributes: &[
@@ -960,7 +960,7 @@ impl ShadowMapper {
                         format: wgpu::VertexFormat::Float32x3,
                     },
                 ],
-            },
+            }),
         ];
 
         ctxt.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
@@ -1037,7 +1037,7 @@ impl ShadowMapper {
         // Same buffers 0..2 as the non-deformed pass plus UVs (buffer 3, location 5)
         // for the albedo texture lookup.
         let vertex_buffer_layouts = [
-            wgpu::VertexBufferLayout {
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Vertex,
                 attributes: &[wgpu::VertexAttribute {
@@ -1045,8 +1045,8 @@ impl ShadowMapper {
                     shader_location: 0,
                     format: wgpu::VertexFormat::Float32x3,
                 }],
-            },
-            wgpu::VertexBufferLayout {
+            }),
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Instance,
                 attributes: &[wgpu::VertexAttribute {
@@ -1054,8 +1054,8 @@ impl ShadowMapper {
                     shader_location: 1,
                     format: wgpu::VertexFormat::Float32x3,
                 }],
-            },
-            wgpu::VertexBufferLayout {
+            }),
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 9]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Instance,
                 attributes: &[
@@ -1075,9 +1075,9 @@ impl ShadowMapper {
                         format: wgpu::VertexFormat::Float32x3,
                     },
                 ],
-            },
+            }),
             // Buffer 3: UVs (for the albedo texture lookup).
-            wgpu::VertexBufferLayout {
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 2]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Vertex,
                 attributes: &[wgpu::VertexAttribute {
@@ -1085,7 +1085,7 @@ impl ShadowMapper {
                     shader_location: 5,
                     format: wgpu::VertexFormat::Float32x2,
                 }],
-            },
+            }),
         ];
 
         let mult_blend = wgpu::BlendComponent {
@@ -1179,7 +1179,7 @@ impl ShadowMapper {
         // translation (1), instance deformation columns (2..4), plus UVs (slot 3,
         // location 7) for the albedo texture lookup.
         let vertex_buffer_layouts = [
-            wgpu::VertexBufferLayout {
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Vertex,
                 attributes: &[wgpu::VertexAttribute {
@@ -1187,8 +1187,8 @@ impl ShadowMapper {
                     shader_location: 0,
                     format: wgpu::VertexFormat::Float32x3,
                 }],
-            },
-            wgpu::VertexBufferLayout {
+            }),
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Instance,
                 attributes: &[wgpu::VertexAttribute {
@@ -1196,8 +1196,8 @@ impl ShadowMapper {
                     shader_location: 1,
                     format: wgpu::VertexFormat::Float32x3,
                 }],
-            },
-            wgpu::VertexBufferLayout {
+            }),
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 9]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Instance,
                 attributes: &[
@@ -1217,9 +1217,9 @@ impl ShadowMapper {
                         format: wgpu::VertexFormat::Float32x3,
                     },
                 ],
-            },
+            }),
             // Buffer 3: UVs.
-            wgpu::VertexBufferLayout {
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 2]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Vertex,
                 attributes: &[wgpu::VertexAttribute {
@@ -1227,7 +1227,7 @@ impl ShadowMapper {
                     shader_location: 7,
                     format: wgpu::VertexFormat::Float32x2,
                 }],
-            },
+            }),
         ];
 
         // Multiplicative blend: result = src * dst. The atlas is cleared to white,

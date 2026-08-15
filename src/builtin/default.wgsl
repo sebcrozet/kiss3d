@@ -1115,12 +1115,19 @@ fn shade(in: VertexOutput) -> vec4<f32> {
     var uv = in.tex_coord;
     @if(parallax) {
         let n_geo = normalize(in.world_normal);
-        let tbn = cotangent_frame(n_geo, dpos_dx, dpos_dy, duv_dx, duv_dy);
+        // Prefixed names: `@if` blocks are spliced into the enclosing scope with
+        // their braces stripped, so a plain `tbn`/`world_v` here would collide
+        // with the ones the `normal_map` and `ibl || probes` blocks declare.
+        let parallax_tbn = cotangent_frame(n_geo, dpos_dx, dpos_dy, duv_dx, duv_dy);
         // World-space view direction (inverse of the view rotation applied to the
         // view-space view vector).
         let view_rot = mat3x3<f32>(frame.view[0].xyz, frame.view[1].xyz, frame.view[2].xyz);
-        let world_v = transpose(view_rot) * normalize(-in.view_pos);
-        let ts_view = vec3<f32>(dot(tbn[0], world_v), dot(tbn[1], world_v), dot(tbn[2], world_v));
+        let parallax_world_v = transpose(view_rot) * normalize(-in.view_pos);
+        let ts_view = vec3<f32>(
+            dot(parallax_tbn[0], parallax_world_v),
+            dot(parallax_tbn[1], parallax_world_v),
+            dot(parallax_tbn[2], parallax_world_v)
+        );
         uv = parallax_uv(in.tex_coord, ts_view);
     }
 

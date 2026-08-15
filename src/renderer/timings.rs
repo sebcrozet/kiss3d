@@ -263,7 +263,11 @@ impl GpuTimer {
                 continue;
             }
             {
-                let view = slot.buffer.slice(..).get_mapped_range();
+                let view = slot
+                    .buffer
+                    .slice(..)
+                    .get_mapped_range()
+                    .expect("timestamp buffer is mapped");
                 let ticks: &[u64] = bytemuck::cast_slice(&view);
                 let mut out: Vec<(&'static str, Duration)> = Vec::new();
                 for (i, &name) in slot.names.iter().enumerate() {

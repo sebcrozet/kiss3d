@@ -385,7 +385,7 @@ impl ReflectorOit {
             bind_group_layouts: &[Some(&layout)],
             immediate_size: 0,
         });
-        let vertex_layout = wgpu::VertexBufferLayout {
+        let vertex_layout = Some(wgpu::VertexBufferLayout {
             array_stride: (std::mem::size_of::<f32>() * 2) as wgpu::BufferAddress,
             step_mode: wgpu::VertexStepMode::Vertex,
             attributes: &[wgpu::VertexAttribute {
@@ -393,7 +393,7 @@ impl ReflectorOit {
                 shader_location: 0,
                 format: wgpu::VertexFormat::Float32x2,
             }],
-        };
+        });
         let pipeline = ctxt.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
             label: Some("reflector_oit_composite_pipeline"),
             layout: Some(&pipeline_layout),

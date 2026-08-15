@@ -31,7 +31,7 @@ async fn main() {
     // Record 90 frames (3 seconds at 30fps, or 1.5 seconds with frame_skip=2)
     #[allow(unused_variables)]
     for frame in 0..90 {
-        c.rotate(&rot);
+        c.rotate(rot);
 
         // Demonstrate pause/resume at frame 30-60
         if frame == 30 {

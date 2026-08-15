@@ -163,7 +163,7 @@ impl NormalMaterial {
         // Vertex buffer layouts
         let vertex_buffer_layouts = [
             // Vertex positions
-            wgpu::VertexBufferLayout {
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Vertex,
                 attributes: &[wgpu::VertexAttribute {
@@ -171,9 +171,9 @@ impl NormalMaterial {
                     shader_location: 0,
                     format: wgpu::VertexFormat::Float32x3,
                 }],
-            },
+            }),
             // Normals
-            wgpu::VertexBufferLayout {
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Vertex,
                 attributes: &[wgpu::VertexAttribute {
@@ -181,7 +181,7 @@ impl NormalMaterial {
                     shader_location: 1,
                     format: wgpu::VertexFormat::Float32x3,
                 }],
-            },
+            }),
         ];
 
         let pipeline = PipelineCache::new(move |sample_count| {

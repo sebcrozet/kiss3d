@@ -125,7 +125,7 @@ impl Tonemap {
             vertex: wgpu::VertexState {
                 module: &shader,
                 entry_point: Some("vs_main"),
-                buffers: &[vertex_buffer_layout],
+                buffers: &[Some(vertex_buffer_layout)],
                 compilation_options: Default::default(),
             },
             fragment: Some(wgpu::FragmentState {

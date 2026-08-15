@@ -65,7 +65,7 @@ impl Window {
     /// window.begin_recording();
     /// // Render some frames...
     /// # for _ in 0..60 {
-    /// #     window.render().await;
+    /// #     window.render(None, None, None, None, None, None).await;
     /// # }
     /// window.end_recording("output.mp4", 30).unwrap();
     /// # }
@@ -90,7 +90,7 @@ impl Window {
     ///     .with_frame_skip(2);
     /// window.begin_recording_with_config(config);
     /// # for _ in 0..60 {
-    /// #     window.render().await;
+    /// #     window.render(None, None, None, None, None, None).await;
     /// # }
     /// window.end_recording("output.mp4", 30).unwrap();
     /// # }
@@ -133,13 +133,13 @@ impl Window {
     /// # let mut window = Window::new("Example").await;
     /// window.begin_recording();
     /// // Record some frames...
-    /// # for _ in 0..30 { window.render().await; }
+    /// # for _ in 0..30 { window.render(None, None, None, None, None, None).await; }
     /// window.pause_recording();
     /// // These frames won't be recorded
-    /// # for _ in 0..30 { window.render().await; }
+    /// # for _ in 0..30 { window.render(None, None, None, None, None, None).await; }
     /// window.resume_recording();
     /// // Continue recording...
-    /// # for _ in 0..30 { window.render().await; }
+    /// # for _ in 0..30 { window.render(None, None, None, None, None, None).await; }
     /// window.end_recording("output.mp4", 30).unwrap();
     /// # }
     /// ```
@@ -195,7 +195,7 @@ impl Window {
     /// window.begin_recording();
     /// for _ in 0..120 {
     ///     // Animate your scene...
-    ///     window.render().await;
+    ///     window.render(None, None, None, None, None, None).await;
     /// }
     /// // Save as 30fps video (120 frames = 4 seconds)
     /// window.end_recording("animation.mp4", 30).unwrap();

@@ -142,7 +142,7 @@ impl AovRenderer {
         let shader = ctxt.create_shader_module(Some("aov_shader"), include_str!("aov.wgsl"));
 
         let vertex_buffer_layouts = [
-            wgpu::VertexBufferLayout {
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Vertex,
                 attributes: &[wgpu::VertexAttribute {
@@ -150,8 +150,8 @@ impl AovRenderer {
                     shader_location: 0,
                     format: wgpu::VertexFormat::Float32x3,
                 }],
-            },
-            wgpu::VertexBufferLayout {
+            }),
+            Some(wgpu::VertexBufferLayout {
                 array_stride: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
                 step_mode: wgpu::VertexStepMode::Vertex,
                 attributes: &[wgpu::VertexAttribute {
@@ -159,7 +159,7 @@ impl AovRenderer {
                     shader_location: 1,
                     format: wgpu::VertexFormat::Float32x3,
                 }],
-            },
+            }),
         ];
 
         // All AOV passes share the same vertex stage and depth state; only the

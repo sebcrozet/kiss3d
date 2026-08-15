@@ -379,7 +379,7 @@ impl Gi2d {
             ),
         );
 
-        let vertex_buffer_layout = wgpu::VertexBufferLayout {
+        let vertex_buffer_layout = Some(wgpu::VertexBufferLayout {
             array_stride: std::mem::size_of::<QuadVertex>() as wgpu::BufferAddress,
             step_mode: wgpu::VertexStepMode::Vertex,
             attributes: &[wgpu::VertexAttribute {
@@ -387,7 +387,7 @@ impl Gi2d {
                 shader_location: 0,
                 format: wgpu::VertexFormat::Float32x2,
             }],
-        };
+        });
 
         let make_pipeline = |label: &str,
                              layout: &wgpu::PipelineLayout,

@@ -226,7 +226,7 @@ impl LitMaterial2d {
         let pipeline = PipelineCache::new(move |sample_count| {
             let ctxt = Context::get();
             let vertex_buffer_layouts = [
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 2]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Vertex,
                     attributes: &[wgpu::VertexAttribute {
@@ -234,8 +234,8 @@ impl LitMaterial2d {
                         shader_location: 0,
                         format: wgpu::VertexFormat::Float32x2,
                     }],
-                },
-                wgpu::VertexBufferLayout {
+                }),
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 2]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Vertex,
                     attributes: &[wgpu::VertexAttribute {
@@ -243,8 +243,8 @@ impl LitMaterial2d {
                         shader_location: 1,
                         format: wgpu::VertexFormat::Float32x2,
                     }],
-                },
-                wgpu::VertexBufferLayout {
+                }),
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 2]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[wgpu::VertexAttribute {
@@ -252,8 +252,8 @@ impl LitMaterial2d {
                         shader_location: 2,
                         format: wgpu::VertexFormat::Float32x2,
                     }],
-                },
-                wgpu::VertexBufferLayout {
+                }),
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 4]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[wgpu::VertexAttribute {
@@ -261,8 +261,8 @@ impl LitMaterial2d {
                         shader_location: 3,
                         format: wgpu::VertexFormat::Float32x4,
                     }],
-                },
-                wgpu::VertexBufferLayout {
+                }),
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 4]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[
@@ -277,7 +277,7 @@ impl LitMaterial2d {
                             format: wgpu::VertexFormat::Float32x2,
                         },
                     ],
-                },
+                }),
             ];
 
             ctxt.create_render_pipeline(&wgpu::RenderPipelineDescriptor {

@@ -44,12 +44,12 @@ rt_switcher = []
 [dependencies]
 bitflags     = "2"
 bytemuck     = { version = "1", features = ["derive"] }
-egui         = { version = "0.34", optional = true, default-features = true }
-egui-wgpu    = { version = "0.34", optional = true }
+egui         = { version = "0.36", optional = true, default-features = true }
+egui-wgpu    = { version = "0.36", optional = true }
 gltf         = { version = "1.4", features = ["import", "utils", "names"] }
 image        = { version = "0.25", default-features = false, features = ["default-formats"] }
 log          = "0.4"
-rfd          = { version = "0.15", optional = true }
+rfd          = { version = "0.17", optional = true }
 web-time     = "1"
 kiss3d-macro = { version = "0.36.0", path = "kiss3d-macro" }
 glamx         = { version = "0.3", features = ["bytemuck"] }
@@ -58,12 +58,12 @@ num-traits   = "0.2"
 rgb          = "0.8"
 rusttype     = { version = "0.9", features = ["gpu_cache"] }
 serde        = { version = "1", features = ["derive"], optional = true }
-wgpu         = "29"
+wgpu         = "30"
 winit        = "0.30"
 wesl = "0.4"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-pollster = "0.4"
+pollster = "1"
 
 [target.wasm32-unknown-unknown.dependencies]
 oneshot = { version = "0.2.0", features = ["async"] }

@@ -153,7 +153,7 @@ impl UvsMaterial {
                 // Vertex buffer layouts
                 let vertex_buffer_layouts = [
                     // Vertex positions
-                    wgpu::VertexBufferLayout {
+                    Some(wgpu::VertexBufferLayout {
                         array_stride: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
                         step_mode: wgpu::VertexStepMode::Vertex,
                         attributes: &[wgpu::VertexAttribute {
@@ -161,9 +161,9 @@ impl UvsMaterial {
                             shader_location: 0,
                             format: wgpu::VertexFormat::Float32x3,
                         }],
-                    },
+                    }),
                     // UVs
-                    wgpu::VertexBufferLayout {
+                    Some(wgpu::VertexBufferLayout {
                         array_stride: std::mem::size_of::<[f32; 2]>() as wgpu::BufferAddress,
                         step_mode: wgpu::VertexStepMode::Vertex,
                         attributes: &[wgpu::VertexAttribute {
@@ -171,7 +171,7 @@ impl UvsMaterial {
                             shader_location: 1,
                             format: wgpu::VertexFormat::Float32x2,
                         }],
-                    },
+                    }),
                 ];
 
                 ctxt.create_render_pipeline(&wgpu::RenderPipelineDescriptor {

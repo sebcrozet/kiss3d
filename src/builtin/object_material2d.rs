@@ -536,7 +536,7 @@ impl ObjectMaterial2d {
             // Wireframe instance vertex buffer layouts
             let wireframe_instance_buffer_layouts = [
                 // Buffer 0: positions (Point2<f32>)
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 2]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[wgpu::VertexAttribute {
@@ -544,9 +544,9 @@ impl ObjectMaterial2d {
                         shader_location: 0,
                         format: wgpu::VertexFormat::Float32x2,
                     }],
-                },
+                }),
                 // Buffer 1: colors ([f32; 4]) - not used for wireframe but needed for consistency
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 4]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[wgpu::VertexAttribute {
@@ -554,9 +554,9 @@ impl ObjectMaterial2d {
                         shader_location: 1,
                         format: wgpu::VertexFormat::Float32x4,
                     }],
-                },
+                }),
                 // Buffer 2: deformations - both columns from same buffer with stride = 2*vec2
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 4]>() as wgpu::BufferAddress, // 2 vec2s = 16 bytes
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[
@@ -573,9 +573,9 @@ impl ObjectMaterial2d {
                             format: wgpu::VertexFormat::Float32x2,
                         },
                     ],
-                },
+                }),
                 // Buffer 3: lines_colors ([f32; 4])
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 4]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[wgpu::VertexAttribute {
@@ -583,9 +583,9 @@ impl ObjectMaterial2d {
                         shader_location: 4,
                         format: wgpu::VertexFormat::Float32x4,
                     }],
-                },
+                }),
                 // Buffer 4: lines_widths (f32)
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<f32>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[wgpu::VertexAttribute {
@@ -593,7 +593,7 @@ impl ObjectMaterial2d {
                         shader_location: 5,
                         format: wgpu::VertexFormat::Float32,
                     }],
-                },
+                }),
             ];
 
             ctxt.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
@@ -700,7 +700,7 @@ impl ObjectMaterial2d {
             // Points instance vertex buffer layouts (same as wireframe but with points_colors/sizes)
             let points_instance_buffer_layouts = [
                 // Buffer 0: positions (Point2<f32>)
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 2]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[wgpu::VertexAttribute {
@@ -708,9 +708,9 @@ impl ObjectMaterial2d {
                         shader_location: 0,
                         format: wgpu::VertexFormat::Float32x2,
                     }],
-                },
+                }),
                 // Buffer 1: colors ([f32; 4]) - not used for points but needed for consistency
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 4]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[wgpu::VertexAttribute {
@@ -718,9 +718,9 @@ impl ObjectMaterial2d {
                         shader_location: 1,
                         format: wgpu::VertexFormat::Float32x4,
                     }],
-                },
+                }),
                 // Buffer 2: deformations - both columns from same buffer with stride = 2*vec2
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 4]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[
@@ -737,9 +737,9 @@ impl ObjectMaterial2d {
                             format: wgpu::VertexFormat::Float32x2,
                         },
                     ],
-                },
+                }),
                 // Buffer 3: points_colors ([f32; 4])
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 4]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[wgpu::VertexAttribute {
@@ -747,9 +747,9 @@ impl ObjectMaterial2d {
                         shader_location: 4,
                         format: wgpu::VertexFormat::Float32x4,
                     }],
-                },
+                }),
                 // Buffer 4: points_sizes (f32)
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<f32>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[wgpu::VertexAttribute {
@@ -757,7 +757,7 @@ impl ObjectMaterial2d {
                         shader_location: 5,
                         format: wgpu::VertexFormat::Float32,
                     }],
-                },
+                }),
             ];
 
             ctxt.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
@@ -890,7 +890,7 @@ impl ObjectMaterial2d {
             // instead of interleaving them, to avoid per-frame data conversion overhead.
             let vertex_buffer_layouts = [
                 // Buffer 0: Vertex positions (vec2)
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 2]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Vertex,
                     attributes: &[wgpu::VertexAttribute {
@@ -898,9 +898,9 @@ impl ObjectMaterial2d {
                         shader_location: 0,
                         format: wgpu::VertexFormat::Float32x2,
                     }],
-                },
+                }),
                 // Buffer 1: Texture coordinates (vec2)
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 2]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Vertex,
                     attributes: &[wgpu::VertexAttribute {
@@ -908,9 +908,9 @@ impl ObjectMaterial2d {
                         shader_location: 1,
                         format: wgpu::VertexFormat::Float32x2,
                     }],
-                },
+                }),
                 // Buffer 2: Instance positions (Point2<f32>)
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 2]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[wgpu::VertexAttribute {
@@ -918,9 +918,9 @@ impl ObjectMaterial2d {
                         shader_location: 2, // inst_tra
                         format: wgpu::VertexFormat::Float32x2,
                     }],
-                },
+                }),
                 // Buffer 3: Instance colors ([f32; 4])
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 4]>() as wgpu::BufferAddress,
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[wgpu::VertexAttribute {
@@ -928,9 +928,9 @@ impl ObjectMaterial2d {
                         shader_location: 3, // inst_color
                         format: wgpu::VertexFormat::Float32x4,
                     }],
-                },
+                }),
                 // Buffer 4: Instance deformations (2x Vector2<f32> = 2 columns of 2x2 matrix)
-                wgpu::VertexBufferLayout {
+                Some(wgpu::VertexBufferLayout {
                     array_stride: std::mem::size_of::<[f32; 4]>() as wgpu::BufferAddress, // 2 vec2s
                     step_mode: wgpu::VertexStepMode::Instance,
                     attributes: &[
@@ -947,7 +947,7 @@ impl ObjectMaterial2d {
                             format: wgpu::VertexFormat::Float32x2,
                         },
                     ],
-                },
+                }),
             ];
 
             let pipeline = Rc::new(

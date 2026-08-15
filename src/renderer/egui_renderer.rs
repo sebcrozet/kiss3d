@@ -51,7 +51,7 @@ impl EguiRenderer {
         // Run a dummy frame to initialize fonts with correct DPI
         let dummy_input = RawInput::default();
         egui_ctx.begin_pass(dummy_input);
-        let dummy_output = egui_ctx.end_pass();
+        let mut dummy_output = egui_ctx.end_pass();
 
         let ctxt = Context::get();
 
@@ -67,9 +67,13 @@ impl EguiRenderer {
         );
 
         // Apply textures from the dummy pass (font textures, etc.)
-        for (id, image_delta) in &dummy_output.textures_delta.set {
-            renderer.update_texture(&ctxt.device, &ctxt.queue, *id, image_delta);
+        for (id, image_deltas) in &dummy_output.textures_delta.set {
+            for image_delta in image_deltas {
+                renderer.update_texture(&ctxt.device, &ctxt.queue, *id, image_delta);
+            }
         }
+        // `TexturesDelta` asserts on drop that every delta was handled.
+        dummy_output.textures_delta.clear();
 
         EguiRenderer {
             egui_ctx,
@@ -125,8 +129,17 @@ impl EguiRenderer {
     }
 
     /// Returns true if egui wants to capture the mouse (e.g., hovering over a widget).
+    ///
+    /// This deliberately does not use egui's own `egui_wants_pointer_input`. That
+    /// one treats the whole background layer as egui's whenever
+    /// `root_ui_available_rect` is unset, and egui only fills that rect in from
+    /// its closure-based `Context::run_ui`; a `begin_pass`/`end_pass` integration
+    /// like ours always leaves it unset. Up to egui 0.35 a legacy fallback still
+    /// gave the right answer, but 0.36 dropped it, so egui started claiming every
+    /// hover and scroll over the empty 3D viewport and the camera stopped seeing
+    /// them.
     pub fn wants_pointer_input(&self) -> bool {
-        self.egui_ctx.egui_wants_pointer_input()
+        egui_captures_pointer(&self.egui_ctx)
     }
 
     /// Returns true if egui wants to capture keyboard input (e.g., text input focused).
@@ -146,9 +159,11 @@ impl EguiRenderer {
         let ctxt = Context::get();
 
         // Update textures
-        for (id, image_delta) in &self.textures_delta.set {
-            self.renderer
-                .update_texture(&ctxt.device, &ctxt.queue, *id, image_delta);
+        for (id, image_deltas) in &self.textures_delta.set {
+            for image_delta in image_deltas {
+                self.renderer
+                    .update_texture(&ctxt.device, &ctxt.queue, *id, image_delta);
+            }
         }
 
         // Prepare clipped primitives
@@ -217,5 +232,99 @@ impl EguiRenderer {
 impl Default for EguiRenderer {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl Drop for EguiRenderer {
+    fn drop(&mut self) {
+        // `TexturesDelta` asserts on drop that every delta was handled. Deltas can
+        // still be pending here if the last frame ended without being rendered.
+        self.textures_delta.clear();
+    }
+}
+
+/// Whether egui should consume pointer events, given the current state of `ctx`.
+fn egui_captures_pointer(ctx: &EguiContext) -> bool {
+    // Actively driving a widget (dragging a slider, holding a button down): egui
+    // owns the pointer wherever it goes.
+    if ctx.egui_is_using_pointer() {
+        return true;
+    }
+
+    // A drag that began outside egui stays with the app for its whole duration,
+    // even if it wanders over a window.
+    if ctx.input(|i| i.pointer.any_down()) {
+        return false;
+    }
+
+    // Merely hovering: capture only over an actual egui area. Everything egui
+    // draws on its own layers (windows, popups, menus, tooltips) sits above
+    // `Order::Background`, which is the catch-all covering the whole viewport.
+    ctx.input(|i| i.pointer.interact_pos())
+        .and_then(|pos| ctx.layer_id_at(pos))
+        .is_some_and(|layer| layer.order != egui::Order::Background)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const SCREEN: egui::Vec2 = egui::vec2(800.0, 600.0);
+    const WINDOW_POS: egui::Pos2 = egui::pos2(10.0, 10.0);
+    const OVER_WINDOW: egui::Pos2 = egui::pos2(60.0, 60.0);
+    const OVER_VIEWPORT: egui::Pos2 = egui::pos2(600.0, 500.0);
+
+    /// Drives a context the way `EguiRenderer` does (manual `begin_pass` /
+    /// `end_pass`, UI drawn as an `egui::Window`) and reports whether egui would
+    /// swallow the pointer.
+    fn captures_at(pointer: egui::Pos2, button_down: bool) -> bool {
+        let ctx = EguiContext::default();
+        ctx.set_pixels_per_point(1.0);
+
+        // A few passes, so the layer rects from an earlier pass are available.
+        for _ in 0..3 {
+            let mut events = vec![egui::Event::PointerMoved(pointer)];
+            if button_down {
+                events.push(egui::Event::PointerButton {
+                    pos: pointer,
+                    button: egui::PointerButton::Primary,
+                    pressed: true,
+                    modifiers: Default::default(),
+                });
+            }
+
+            ctx.begin_pass(RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, SCREEN)),
+                events,
+                ..Default::default()
+            });
+            egui::Window::new("panel")
+                .fixed_pos(WINDOW_POS)
+                .fixed_size(egui::vec2(200.0, 120.0))
+                .show(&ctx, |ui| {
+                    ui.label("hello");
+                    let _ = ui.button("click me");
+                });
+            ctx.end_pass().textures_delta.clear();
+        }
+
+        egui_captures_pointer(&ctx)
+    }
+
+    // egui 0.36 dropped the legacy fallback in `egui_wants_pointer_input`, which
+    // made it claim the pointer anywhere over the background layer. That starved
+    // the cameras of every hover and scroll event over the 3D viewport: zoom went
+    // dead and `last_cursor_pos` only advanced during drags, so each new click
+    // teleported the camera.
+    #[test]
+    fn viewport_pointer_is_left_to_the_camera() {
+        assert!(!captures_at(OVER_VIEWPORT, false));
+        assert!(!captures_at(OVER_VIEWPORT, true));
+    }
+
+    #[test]
+    fn pointer_over_a_widget_goes_to_egui() {
+        assert!(captures_at(OVER_WINDOW, false));
+        assert!(captures_at(OVER_WINDOW, true));
     }
 }

@@ -398,7 +398,7 @@ fn read_texture<T: bytemuck::Pod + Default>(
     let _ = ctxt.device.poll(wgpu::PollType::wait_indefinitely());
     rx.recv().unwrap().unwrap();
 
-    let mapped = slice.get_mapped_range();
+    let mapped = slice.get_mapped_range().expect("staging buffer is mapped");
     let mut data: Vec<T> = vec![T::default(); width as usize * height as usize * channels];
     // wgpu uses a top-left origin, which matches the row-major layout we return.
     for row in 0..height as usize {
