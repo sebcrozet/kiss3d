@@ -512,12 +512,18 @@ impl ObjectData3d {
     /// Refreshes this object's GPU deform state for the current frame: writes the
     /// control uniform (skin flag + current morph weights) and (re)builds the deform
     /// bind group over the palette + skin/morph storage buffers. A no-op when the
-    /// object isn't deformable. Called once per frame from
+    /// object isn't deformable, or when the device cannot bind the deform group at
+    /// all (`Context::supports_deform`) — building the bind group would create the
+    /// over-limit layout, and no pipeline exists to consume it there anyway.
+    /// Called once per frame from
     /// [`SceneNode3d::update_deformations`](crate::scene::SceneNode3d::update_deformations)
-    /// after the joint palette has been uploaded. Runs on all targets (the deform
-    /// group is group 3, within WebGPU's 4-bind-group cap).
+    /// after the joint palette has been uploaded.
     pub(crate) fn update_deform(&mut self, mesh: &GpuMesh3d) {
         use crate::builtin::deform::{DeformControl, DeformGpu};
+
+        if !crate::context::Context::get().supports_deform() {
+            return;
+        }
 
         // Skinning applies only once the palette has been uploaded this frame.
         let has_skin = mesh.has_skin_vertices()

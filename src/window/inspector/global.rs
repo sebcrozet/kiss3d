@@ -141,8 +141,8 @@ impl Inspector {
                 ui.text_edit_singleline(&mut self.skybox_path);
             });
             ui.horizontal(|ui| {
-                // Native file-open dialog (wasm: type a path instead).
-                #[cfg(not(target_arch = "wasm32"))]
+                // Native file-open dialog (wasm and mobile: type a path instead).
+                #[cfg(not(any(target_arch = "wasm32", target_os = "ios", target_os = "android")))]
                 if ui.button("Open…").clicked() {
                     if let Some(p) = pick_image_path() {
                         self.skybox_path = p;

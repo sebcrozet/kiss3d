@@ -332,6 +332,34 @@ impl Window {
         self.canvas.set_cursor_grab(grab);
     }
 
+    /// Enters or leaves borderless fullscreen on the current monitor.
+    pub fn set_fullscreen(&self, fullscreen: bool) {
+        self.canvas.set_fullscreen(fullscreen);
+    }
+
+    /// Shows or hides the platform's on-screen keyboard.
+    ///
+    /// # Platform-specific
+    /// Android and iOS summon the system keyboard; typed text then arrives as
+    /// ordinary `Char`/`Key` events. Desktop and web are no-ops.
+    pub fn set_keyboard_visible(&self, visible: bool) {
+        self.canvas.set_keyboard_visible(visible);
+    }
+
+    /// Whether the window is currently fullscreen.
+    pub fn is_fullscreen(&self) -> bool {
+        self.canvas.is_fullscreen()
+    }
+
+    /// Files dropped onto the window since the last call, in drop order.
+    ///
+    /// # Platform-specific
+    /// Always empty on the web: browsers deliver file drops to the page, not
+    /// the canvas.
+    pub fn dropped_files(&self) -> Vec<std::path::PathBuf> {
+        self.canvas.take_dropped_files()
+    }
+
     /// Sets the cursor position in window coordinates.
     ///
     /// # Arguments

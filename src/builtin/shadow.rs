@@ -431,13 +431,17 @@ impl ShadowMapper {
 
         // Deformed depth/transmittance pipelines: the deform data is bound as a 3rd
         // bind group (4th for transmittance, which also needs the albedo texture), so
-        // these stay within WebGPU's 4-bind-group cap and run on every target —
-        // including web, where the color pass already deforms skinned/morphed meshes.
-        // Gating these off on web would leave the shadow map in the rest pose while the
-        // lit geometry is animated, self-shadowing the moved surfaces (acne). The
-        // deform bind-group layout is the shared one from `builtin::deform`, so each
+        // these stay within WebGPU's 4-bind-group cap and run on every target where
+        // deform runs at all — including WebGPU browsers, where the color pass
+        // deforms skinned/morphed meshes. Gating these off where the color pass
+        // deforms would leave the shadow map in the rest pose while the lit geometry
+        // is animated, self-shadowing the moved surfaces (acne). The deform
+        // bind-group layout is the shared one from `builtin::deform`, so each
         // object's deform bind group works in both the color and shadow passes.
-        let (deform_depth_pipeline, deform_transmittance_pipeline) = {
+        // Where the device cannot bind the deform group (WebGL2, Android GLES; see
+        // `Context::supports_deform`) the color pass draws rest poses too, so a
+        // rest-pose shadow map is consistent rather than acne-prone.
+        let (deform_depth_pipeline, deform_transmittance_pipeline) = if ctxt.supports_deform() {
             let deform_layout = crate::builtin::deform::deform_bind_group_layout();
             let depth = Self::create_depth_pipeline_deform(
                 &ctxt,
@@ -453,6 +457,8 @@ impl ShadowMapper {
                 &transmittance_tex_bgl,
             );
             (Some(depth), Some(transmittance))
+        } else {
+            (None, None)
         };
 
         let view_capacity = MAX_SHADOW_VIEWS as u64;

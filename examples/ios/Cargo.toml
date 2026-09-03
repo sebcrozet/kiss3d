@@ -1,0 +1,16 @@
+# The iOS twin of examples/android: a spinning cube plus an egui tap counter,
+# proving the inverted main loop (window::ios), rendering, and touch on
+# device. A plain bin crate: build_app.sh wraps the executable in a minimal
+# .app bundle, which the simulator runs unsigned — no Xcode project needed.
+[package]
+name = "kiss3d-ios-example"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+kiss3d = { path = "../..", features = ["egui"] }
+log = "0.4"
+env_logger = "0.11"
+
+[workspace]

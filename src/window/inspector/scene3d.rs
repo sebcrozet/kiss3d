@@ -559,8 +559,8 @@ fn maps_ui(
     });
     let tgt = *target;
     ui.horizontal(|ui| {
-        // Native file-open dialog (wasm has no synchronous picker; type a path).
-        #[cfg(not(target_arch = "wasm32"))]
+        // Native file-open dialog (wasm and mobile have none; type a path).
+        #[cfg(not(any(target_arch = "wasm32", target_os = "ios", target_os = "android")))]
         if ui.button("Open…").clicked() {
             if let Some(p) = pick_image_path() {
                 *status = load_map_status(apply_map(node, recursive, tgt, &p), &p, tgt);

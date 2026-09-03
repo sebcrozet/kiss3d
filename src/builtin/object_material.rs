@@ -1470,8 +1470,11 @@ impl ObjectMaterial {
         // `(features, sample_count)` by `surface_pipeline`, using this layout and the
         // `deform`-featured module. The deform bind-group layout is the shared one
         // from `builtin::deform`, so the per-object bind group also works in the
-        // shadow pipelines (which place it at their own group index).
-        let deform_pipeline_layout = {
+        // shadow pipelines (which place it at their own group index). None on
+        // devices whose vertex stage cannot bind the five deform storage buffers
+        // (WebGL2, Android GLES) — even creating the bind-group layout is a
+        // validation error there.
+        let deform_pipeline_layout = if ctxt.supports_deform() {
             let deform_bind_group_layout = crate::builtin::deform::deform_bind_group_layout();
             Some(
                 ctxt.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
@@ -1485,6 +1488,8 @@ impl ObjectMaterial {
                     immediate_size: 0,
                 }),
             )
+        } else {
+            None
         };
 
         // Create wireframe shader and pipelines for lines/points

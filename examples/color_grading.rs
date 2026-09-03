@@ -59,7 +59,13 @@ async fn main() {
                     );
                     ui.add(egui::Slider::new(&mut grading.contrast, 0.1..=3.0).text("contrast"));
                     ui.add(egui::Slider::new(&mut grading.gamma, 0.1..=3.0).text("gamma"));
-                    ui.add(egui::Slider::new(&mut grading.hue, -3.1416..=3.1416).text("hue (rad)"));
+                    ui.add(
+                        egui::Slider::new(
+                            &mut grading.hue,
+                            -std::f32::consts::PI..=std::f32::consts::PI,
+                        )
+                        .text("hue (rad)"),
+                    );
                     ui.separator();
                     if ui.button("Reset").clicked() {
                         grading = ColorGrading::default();

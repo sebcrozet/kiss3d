@@ -52,6 +52,39 @@ jobs:
       - run: rustup target add wasm32-unknown-unknown
       - name: build kiss3d
         run: cargo build --verbose --target wasm32-unknown-unknown;
+  # Android and iOS have no runner that can execute the result, so CI compiles and
+  # links the on-device examples (examples/android, examples/ios). Those are
+  # separate workspaces, hence the --manifest-path. Linking, not just checking,
+  # is what catches the platform-specific breakages: missing NDK symbols, the
+  # objc2 bindings behind the iOS on-screen keyboard, winit's mobile backends.
+  build-android:
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: -D warnings
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup target add aarch64-linux-android
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk --locked
+      # The runners preinstall the NDK; pin cargo-ndk to the newest one they
+      # export rather than to whichever version happens to be the default.
+      - name: Locate the Android NDK
+        run: echo "ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME" >> "$GITHUB_ENV"
+      # cargo-ndk points the linker at the NDK toolchain; a bare cargo build
+      # compiles fine but fails to link.
+      - name: Build the Android example
+        run: cargo ndk --manifest-path examples/android/Cargo.toml --platform 26 -t arm64-v8a build
+  build-ios:
+    runs-on: macos-latest
+    env:
+      RUSTFLAGS: -D warnings
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup target add aarch64-apple-ios aarch64-apple-ios-sim
+      - name: Build the iOS example (device)
+        run: cargo build --manifest-path examples/ios/Cargo.toml --target aarch64-apple-ios
+      - name: Build the iOS example (simulator)
+        run: cargo build --manifest-path examples/ios/Cargo.toml --target aarch64-apple-ios-sim
   # Instantiate every shader variant on a real (software) GPU backend, so any
   # variant that fails to compile on the device is caught. `mesa-vulkan-drivers`
   # provides lavapipe, a software Vulkan device, so the GPU-less runner can create a

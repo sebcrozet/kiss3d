@@ -1,0 +1,21 @@
+# A minimal on-device harness: a spinning cube plus an egui tap counter, so a
+# build proves the whole Android path — lifecycle, surface, rendering, touch.
+# Built as a cdylib because android-activity loads the game as a library and
+# calls its android_main; see build_apk.sh for the packaging.
+[package]
+name = "kiss3d-android-example"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+kiss3d = { path = "../..", features = ["egui"] }
+log = "0.4"
+
+[target.'cfg(target_os = "android")'.dependencies]
+android_logger = "0.14"
+
+[workspace]

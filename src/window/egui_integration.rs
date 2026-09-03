@@ -16,6 +16,10 @@ pub(crate) struct EguiContext {
     /// single pass instead of each starting its own (which would overwrite the
     /// previous one's shapes).
     pub(crate) pass_active: bool,
+    /// The touch currently driving the egui pointer. Touch screens have no
+    /// cursor, so the first finger down plays that role until it lifts;
+    /// other fingers are ignored rather than fighting over the pointer.
+    pub(crate) pointer_touch_id: Option<u64>,
     #[cfg(not(target_arch = "wasm32"))]
     pub(crate) start_time: std::time::Instant,
 }
@@ -26,6 +30,7 @@ impl EguiContext {
             renderer: EguiRenderer::new(),
             raw_input: RawInput::default(),
             pass_active: false,
+            pointer_touch_id: None,
             #[cfg(not(target_arch = "wasm32"))]
             start_time: std::time::Instant::now(),
         }
@@ -169,6 +174,69 @@ impl Window {
                         modifiers: self.get_egui_modifiers(),
                     });
             }
+            WindowEvent::Touch(id, x, y, action, _) => {
+                use crate::event::TouchAction;
+
+                let pos = egui::Pos2::new((x as f32) / scale_factor, (y as f32) / scale_factor);
+                let events = &mut self.egui_context.raw_input.events;
+
+                // Every touch is reported as a raw touch first: egui derives
+                // pinch-zoom and rotate from the full set (MultiTouchInfo), the
+                // same way egui-winit feeds it.
+                events.push(egui::Event::Touch {
+                    device_id: egui::TouchDeviceId(0),
+                    id: egui::TouchId(id),
+                    phase: match action {
+                        TouchAction::Start => egui::TouchPhase::Start,
+                        TouchAction::Move => egui::TouchPhase::Move,
+                        TouchAction::End => egui::TouchPhase::End,
+                        TouchAction::Cancel => egui::TouchPhase::Cancel,
+                    },
+                    pos,
+                    force: None,
+                });
+
+                // The first finger down additionally becomes the egui pointer:
+                // moved-then-pressed on Start, released-then-gone on End, so
+                // widgets see the same sequence a mouse would produce.
+                match action {
+                    TouchAction::Start => {
+                        if self.egui_context.pointer_touch_id.is_none() {
+                            self.egui_context.pointer_touch_id = Some(id);
+                            events.push(egui::Event::PointerMoved(pos));
+                            events.push(egui::Event::PointerButton {
+                                pos,
+                                button: egui::PointerButton::Primary,
+                                pressed: true,
+                                modifiers: egui::Modifiers::default(),
+                            });
+                        }
+                    }
+                    TouchAction::Move => {
+                        if self.egui_context.pointer_touch_id == Some(id) {
+                            events.push(egui::Event::PointerMoved(pos));
+                        }
+                    }
+                    TouchAction::End => {
+                        if self.egui_context.pointer_touch_id == Some(id) {
+                            self.egui_context.pointer_touch_id = None;
+                            events.push(egui::Event::PointerButton {
+                                pos,
+                                button: egui::PointerButton::Primary,
+                                pressed: false,
+                                modifiers: egui::Modifiers::default(),
+                            });
+                            events.push(egui::Event::PointerGone);
+                        }
+                    }
+                    TouchAction::Cancel => {
+                        if self.egui_context.pointer_touch_id == Some(id) {
+                            self.egui_context.pointer_touch_id = None;
+                            events.push(egui::Event::PointerGone);
+                        }
+                    }
+                }
+            }
             WindowEvent::Char(ch) if !ch.is_control() => {
                 self.egui_context
                     .raw_input
@@ -195,8 +263,8 @@ impl Window {
             || self.get_key(Key::RControl) == Action::Press;
         // On macOS the platform command modifier is the ⌘ (Super) key, which
         // arrives as LWin/RWin; everywhere else it is Ctrl.
-        let super_down = self.get_key(Key::LWin) == Action::Press
-            || self.get_key(Key::RWin) == Action::Press;
+        let super_down =
+            self.get_key(Key::LWin) == Action::Press || self.get_key(Key::RWin) == Action::Press;
         let mac_cmd = cfg!(target_os = "macos") && super_down;
         egui::Modifiers {
             alt: self.get_key(Key::LAlt) == Action::Press
@@ -205,7 +273,11 @@ impl Window {
             shift: self.get_key(Key::LShift) == Action::Press
                 || self.get_key(Key::RShift) == Action::Press,
             mac_cmd,
-            command: if cfg!(target_os = "macos") { mac_cmd } else { ctrl },
+            command: if cfg!(target_os = "macos") {
+                mac_cmd
+            } else {
+                ctrl
+            },
         }
     }
 

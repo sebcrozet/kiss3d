@@ -178,9 +178,10 @@ pub(super) fn bsdf_combo(ui: &mut egui::Ui, bsdf: &mut Bsdf) -> bool {
 }
 
 /// Opens a native file-open dialog filtered to image files and returns the chosen
-/// path. On wasm there is no synchronous dialog, so this is absent and the
-/// inspector falls back to its path text field.
-#[cfg(not(target_arch = "wasm32"))]
+/// path. On wasm there is no synchronous dialog, and on iOS/Android `rfd` has no
+/// backend at all, so this is absent and the inspector falls back to its path
+/// text field.
+#[cfg(not(any(target_arch = "wasm32", target_os = "ios", target_os = "android")))]
 pub(super) fn pick_image_path() -> Option<String> {
     rfd::FileDialog::new()
         .add_filter(

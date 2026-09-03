@@ -66,16 +66,36 @@ pub fn main(_attr: TokenStream, item: TokenStream) -> TokenStream {
 
     // Generate the expanded code
     let result = quote! {
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(any(target_arch = "wasm32", target_os = "ios")))]
         #(#attrs)*
         #vis fn main() {
             ::kiss3d::pollster::block_on(__kiss3d_async_main())
+        }
+
+        // iOS cannot block_on: winit's run_app calls UIApplicationMain, which
+        // owns the main thread and never returns, so the loop drives the
+        // future instead (see kiss3d::window::run_ios).
+        #[cfg(target_os = "ios")]
+        #(#attrs)*
+        #vis fn main() {
+            ::kiss3d::window::run_ios(__kiss3d_async_main())
         }
 
         #[cfg(target_arch = "wasm32")]
         #(#attrs)*
         #vis fn main() {
             ::kiss3d::wasm_bindgen_futures::spawn_local(__kiss3d_async_main())
+        }
+
+        // Android never calls fn main: android-activity invokes the
+        // `android_main` symbol on its own thread with the activity handle,
+        // which window creation needs (see kiss3d::window::init_android).
+        // Build the crate as a cdylib for this to be reachable.
+        #[cfg(target_os = "android")]
+        #[no_mangle]
+        fn android_main(app: ::kiss3d::winit::platform::android::activity::AndroidApp) {
+            ::kiss3d::window::init_android(app);
+            ::kiss3d::pollster::block_on(__kiss3d_async_main())
         }
 
         async fn __kiss3d_async_main() #body

@@ -322,11 +322,27 @@ impl Context {
     /// compile-time `cfg(target_arch = "wasm32")` gate would wrongly disable clustering on
     /// WebGPU.
     pub fn supports_clustered_lighting(&self) -> bool {
-        self.adapter
-            .get_downlevel_capabilities()
-            .flags
-            .contains(wgpu::DownlevelFlags::COMPUTE_SHADERS)
+        let downlevel = self.adapter.get_downlevel_capabilities().flags;
+        downlevel.contains(wgpu::DownlevelFlags::COMPUTE_SHADERS)
+            // The cluster light grid is an array<vec2<u32>> — an 8-byte stride.
+            // Downlevel GL (Android GLES; WebGL2 fails the compute check first)
+            // requires buffer bindings sized in multiples of 16 bytes, so a
+            // device without this flag cannot bind the grid at all.
+            && downlevel.contains(wgpu::DownlevelFlags::BUFFER_BINDINGS_NOT_16_BYTE_ALIGNED)
             && self.device.limits().max_storage_buffers_per_shader_stage >= 3
+    }
+
+    /// Whether this device can run GPU skinning and morph targets.
+    ///
+    /// The deform bind group is five read-only storage buffers in the vertex
+    /// stage (palette, joints, weights, morph positions, morph normals).
+    /// WebGL2 has no vertex storage buffers at all and Android's GLES tops out
+    /// at four, so on those targets the deform pipelines are never built and
+    /// skinned/morphed meshes draw in their rest pose. A runtime check for the
+    /// same reason as clustered lighting: the capable and incapable backends
+    /// share compile targets.
+    pub fn supports_deform(&self) -> bool {
+        self.device.limits().max_storage_buffers_per_shader_stage >= 5
     }
 
     /// The internal floating-point color format the rasterizer renders into.

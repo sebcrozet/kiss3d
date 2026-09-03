@@ -8,12 +8,13 @@ use crate::context::Context;
 use crate::event::{Action, Key, Modifiers, MouseButton, TouchAction, WindowEvent};
 use crate::window::canvas::CanvasSetup;
 use image::{GenericImage, Pixel};
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(any(target_arch = "wasm32", target_os = "ios")))]
 use winit::application::ApplicationHandler;
 #[cfg(not(target_arch = "wasm32"))]
 use winit::event::{MouseScrollDelta, TouchPhase, WindowEvent as WinitWindowEvent};
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(any(target_arch = "wasm32", target_os = "ios")))]
 use winit::event_loop::ActiveEventLoop;
+#[cfg(not(target_os = "ios"))]
 use winit::event_loop::EventLoop;
 use winit::keyboard::ModifiersState;
 #[cfg(not(target_arch = "wasm32"))]
@@ -76,16 +77,55 @@ fn device_features(adapter: &wgpu::Adapter, extra: wgpu::Features) -> wgpu::Feat
     raytracing_features(adapter) | (extra & adapter.features())
 }
 
-// Thread-local EventLoop singleton for native platforms.
-// winit only allows one EventLoop per program, so we store it in thread-local
-// storage and reuse it across window recreations. EventLoop is not Send/Sync,
-// so we use thread_local! instead of a static Mutex.
-#[cfg(not(target_arch = "wasm32"))]
+// Thread-local EventLoop singleton for the platforms where kiss3d owns and
+// pumps the loop. winit only allows one EventLoop per program, so we store it
+// in thread-local storage and reuse it across window recreations. EventLoop
+// is not Send/Sync, so we use thread_local! instead of a static Mutex.
+// Absent on iOS, where winit owns the loop instead (see `window::ios`).
+#[cfg(not(any(target_arch = "wasm32", target_os = "ios")))]
 thread_local! {
     static EVENT_LOOP: RefCell<Option<EventLoop<()>>> = const { RefCell::new(None) };
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+thread_local! {
     // Shared event storage for multi-window support. Events are stored per window_id
-    // so each window can retrieve only its own events after pump_app_events runs.
+    // so each window can retrieve only its own events after pump_app_events runs
+    // (or, on iOS, after winit's own loop delivers them).
     static PENDING_WINDOW_EVENTS: RefCell<std::collections::HashMap<winit::window::WindowId, Vec<PendingEvent>>> = RefCell::new(std::collections::HashMap::new());
+    // Files dropped onto a window, kept out of PendingEvent because WindowEvent
+    // is Copy and a PathBuf is not. Drained by `take_dropped_files`.
+    static DROPPED_FILES: RefCell<Vec<(winit::window::WindowId, std::path::PathBuf)>> =
+        const { RefCell::new(Vec::new()) };
+}
+
+// Android lifecycle plumbing. winit can only build an EventLoop from the
+// `AndroidApp` that `android_main` receives, so it is stashed here first
+// (see `init_android`). Resumed/Suspended arrive without a window id, so they
+// are queued here rather than through PENDING_WINDOW_EVENTS; `poll_events`
+// drains them to drop and recreate the surface, whose native window only
+// exists between Resumed and Suspended.
+#[cfg(target_os = "android")]
+thread_local! {
+    static ANDROID_APP: RefCell<Option<winit::platform::android::activity::AndroidApp>> =
+        const { RefCell::new(None) };
+    static LIFECYCLE_EVENTS: RefCell<Vec<LifecycleEvent>> = const { RefCell::new(Vec::new()) };
+}
+
+#[cfg(target_os = "android")]
+#[derive(Clone, Copy, Debug)]
+enum LifecycleEvent {
+    Resumed,
+    Suspended,
+}
+
+/// Stores the `AndroidApp` handle that `android_main` received, so opening a
+/// window can build winit's event loop from it (a bare `EventLoop::new`
+/// panics on Android by design). Must run on the `android_main` thread before
+/// the first window opens; `#[kiss3d::main]` generates exactly that call.
+#[cfg(target_os = "android")]
+pub fn init_android(app: winit::platform::android::activity::AndroidApp) {
+    ANDROID_APP.with(|cell| *cell.borrow_mut() = Some(app));
 }
 
 /// Internal event type that stores both the event data and state updates needed.
@@ -98,6 +138,109 @@ enum PendingEvent {
     CursorPos(f64, f64),
     Modifiers(ModifiersState),
     Resize { width: u32, height: u32 },
+}
+
+/// Translates one winit window event into the shared pending-event storage,
+/// which `poll_events` drains per window. Shared by the pump collector in
+/// `poll_events` (desktop, Android) and the iOS application handler
+/// (`window::ios`), which receives events from winit's own loop instead of a
+/// pump. Neither caller has access to the canvas, so every
+/// `Modifiers::empty()` below is a placeholder: the real mask is stamped in
+/// when the batch is drained.
+#[cfg(not(target_arch = "wasm32"))]
+pub(crate) fn collect_window_event(window_id: winit::window::WindowId, event: WinitWindowEvent) {
+    let pending_events: Vec<PendingEvent> = match event {
+        WinitWindowEvent::CloseRequested => {
+            vec![PendingEvent::WindowEvent(WindowEvent::Close)]
+        }
+        WinitWindowEvent::Resized(physical_size) => {
+            if physical_size.width > 0 && physical_size.height > 0 {
+                vec![
+                    PendingEvent::Resize {
+                        width: physical_size.width,
+                        height: physical_size.height,
+                    },
+                    PendingEvent::WindowEvent(WindowEvent::FramebufferSize(
+                        physical_size.width,
+                        physical_size.height,
+                    )),
+                ]
+            } else {
+                vec![]
+            }
+        }
+        WinitWindowEvent::CursorMoved { position, .. } => {
+            vec![
+                PendingEvent::CursorPos(position.x, position.y),
+                PendingEvent::WindowEvent(WindowEvent::CursorPos(
+                    position.x,
+                    position.y,
+                    Modifiers::empty(), // Will be filled in when processing
+                )),
+            ]
+        }
+        WinitWindowEvent::MouseInput { state, button, .. } => {
+            let action = translate_action(state);
+            let button = translate_mouse_button(button);
+            vec![
+                PendingEvent::ButtonState(button, action),
+                PendingEvent::WindowEvent(WindowEvent::MouseButton(
+                    button,
+                    action,
+                    Modifiers::empty(),
+                )),
+            ]
+        }
+        WinitWindowEvent::Touch(touch) => {
+            let action = match touch.phase {
+                TouchPhase::Started => TouchAction::Start,
+                TouchPhase::Ended => TouchAction::End,
+                TouchPhase::Moved => TouchAction::Move,
+                TouchPhase::Cancelled => TouchAction::Cancel,
+            };
+            vec![PendingEvent::WindowEvent(WindowEvent::Touch(
+                touch.id,
+                touch.location.x,
+                touch.location.y,
+                action,
+                Modifiers::empty(),
+            ))]
+        }
+        WinitWindowEvent::MouseWheel { delta, .. } => {
+            let (x, y) = match delta {
+                MouseScrollDelta::LineDelta(dx, dy) => (dx as f64 * 10.0, dy as f64 * 10.0),
+                MouseScrollDelta::PixelDelta(delta) => (delta.x, delta.y),
+            };
+            vec![PendingEvent::WindowEvent(WindowEvent::Scroll(
+                x,
+                y,
+                Modifiers::empty(),
+            ))]
+        }
+        WinitWindowEvent::KeyboardInput { event, .. } => {
+            let action = translate_action(event.state);
+            let key = translate_key(event.physical_key);
+            translate_keyboard_input(key, action, &event.logical_key, event.text.as_deref())
+        }
+        WinitWindowEvent::ModifiersChanged(new_modifiers) => {
+            vec![PendingEvent::Modifiers(new_modifiers.state())]
+        }
+        WinitWindowEvent::DroppedFile(path) => {
+            DROPPED_FILES.with(|dropped| dropped.borrow_mut().push((window_id, path)));
+            vec![]
+        }
+        _ => vec![],
+    };
+
+    if !pending_events.is_empty() {
+        PENDING_WINDOW_EVENTS.with(|storage| {
+            storage
+                .borrow_mut()
+                .entry(window_id)
+                .or_default()
+                .extend(pending_events);
+        });
+    }
 }
 
 /// A GPU→CPU pixel readback still in flight (see `WgpuCanvas::begin_read_pixels`).
@@ -154,15 +297,76 @@ impl WgpuCanvas {
     ) -> Self {
         let canvas_setup = canvas_setup.unwrap_or_default();
 
-        // Create the window
-        #[cfg(not(target_arch = "wasm32"))]
+        // Create the window.
+        //
+        // iOS first: winit's loop owns the thread there (see `window::ios`),
+        // so the window comes from the callback-scoped ActiveEventLoop rather
+        // than from a pumpable EventLoop of our own.
+        #[cfg(target_os = "ios")]
+        let window = super::ios::create_window(window_attrs);
+
+        #[cfg(not(any(target_arch = "wasm32", target_os = "ios")))]
         let window = {
             // Get or create the thread-local EventLoop (winit only allows one per program)
             EVENT_LOOP.with(|event_loop_cell| {
                 let mut event_loop_opt = event_loop_cell.borrow_mut();
                 if event_loop_opt.is_none() {
-                    *event_loop_opt = Some(EventLoop::new().expect("Failed to create event loop"));
+                    // Android refuses a bare EventLoop::new: the loop must be
+                    // built from android_main's AndroidApp handle.
+                    #[cfg(target_os = "android")]
+                    {
+                        use winit::platform::android::EventLoopBuilderExtAndroid;
+                        let app = ANDROID_APP.with(|cell| cell.borrow().clone()).expect(
+                            "call kiss3d::window::init_android(app) from android_main \
+                             before opening a window (#[kiss3d::main] does this)",
+                        );
+                        *event_loop_opt = Some(
+                            EventLoop::builder()
+                                .with_android_app(app)
+                                .build()
+                                .expect("Failed to create event loop"),
+                        );
+                    }
+                    #[cfg(not(target_os = "android"))]
+                    {
+                        *event_loop_opt =
+                            Some(EventLoop::new().expect("Failed to create event loop"));
+                    }
                 }
+
+                // Android's native window only exists once the activity is
+                // resumed; a window created before that has no handle wgpu can
+                // make a surface from. Pump until the first Resumed arrives.
+                #[cfg(target_os = "android")]
+                {
+                    use winit::platform::pump_events::EventLoopExtPumpEvents;
+
+                    struct WaitForResume(bool);
+
+                    impl ApplicationHandler for WaitForResume {
+                        fn resumed(&mut self, _event_loop: &ActiveEventLoop) {
+                            self.0 = true;
+                        }
+
+                        fn window_event(
+                            &mut self,
+                            _event_loop: &ActiveEventLoop,
+                            _window_id: winit::window::WindowId,
+                            _event: WinitWindowEvent,
+                        ) {
+                        }
+                    }
+
+                    let event_loop = event_loop_opt.as_mut().unwrap();
+                    let mut waiter = WaitForResume(false);
+                    while !waiter.0 {
+                        let _ = event_loop.pump_app_events(
+                            Some(std::time::Duration::from_millis(16)),
+                            &mut waiter,
+                        );
+                    }
+                }
+
                 let event_loop = event_loop_opt.as_ref().unwrap();
                 #[allow(deprecated)]
                 event_loop
@@ -266,27 +470,49 @@ impl WgpuCanvas {
 
             (surface, surface_format)
         } else {
-            // First window - create the full wgpu context
-            let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
-                backends: wgpu::Backends::all(),
-                ..wgpu::InstanceDescriptor::new_without_display_handle()
-            });
+            // First window - create the full wgpu context.
+            //
+            // Instance, surface and adapter are requested together because on
+            // Android the backends are tried one at a time: an all-backends
+            // instance creates a Vulkan and a GL surface for the same
+            // ANativeWindow, and vkCreateAndroidSurfaceKHR connects the
+            // window's buffer queue even when the Vulkan adapter turns out
+            // unusable (emulators without GPU passthrough), after which the
+            // GL fallback's eglCreateWindowSurface fails with "already
+            // connected to another API". Separate instances mean the failed
+            // candidate's surface is dropped — and the window disconnected —
+            // before the next backend touches it.
+            let request = |backends| {
+                let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
+                    backends,
+                    ..wgpu::InstanceDescriptor::new_without_display_handle()
+                });
+                let window = window.clone();
+                async move {
+                    let surface = instance.create_surface(window).ok()?;
+                    let adapter = instance
+                        .request_adapter(&wgpu::RequestAdapterOptions {
+                            power_preference: wgpu::PowerPreference::default(),
+                            compatible_surface: Some(&surface),
+                            force_fallback_adapter: false,
+                            apply_limit_buckets: false,
+                        })
+                        .await
+                        .ok()?;
+                    Some((instance, surface, adapter))
+                }
+            };
 
-            // Create surface
-            let surface = instance
-                .create_surface(window.clone())
-                .expect("Failed to create surface");
+            #[cfg(target_os = "android")]
+            let picked = match request(wgpu::Backends::VULKAN).await {
+                Some(picked) => Some(picked),
+                None => request(wgpu::Backends::GL).await,
+            };
+            #[cfg(not(target_os = "android"))]
+            let picked = request(wgpu::Backends::all()).await;
 
-            // Request adapter (async on all platforms)
-            let adapter = instance
-                .request_adapter(&wgpu::RequestAdapterOptions {
-                    power_preference: wgpu::PowerPreference::default(),
-                    compatible_surface: Some(&surface),
-                    force_fallback_adapter: false,
-                    apply_limit_buckets: false,
-                })
-                .await
-                .expect("Failed to find an appropriate adapter");
+            let (instance, surface, adapter) =
+                picked.expect("Failed to create a surface and find an adapter for it");
 
             // Request the adapter's full limits on every platform. The path tracer,
             // the shadow-mapped material, and the storage-backed point/wireframe
@@ -348,8 +574,17 @@ impl WgpuCanvas {
             wgpu::PresentMode::AutoNoVsync
         };
 
+        // COPY_SRC powers surface screenshots, but downlevel surfaces (GLES on
+        // Android) only offer RENDER_ATTACHMENT, and asking for more is a
+        // validation error. Request it only where the surface supports it;
+        // reading the surface back is simply unavailable elsewhere.
+        let mut surface_usage = wgpu::TextureUsages::RENDER_ATTACHMENT;
+        if surface_caps.usages.contains(wgpu::TextureUsages::COPY_SRC) {
+            surface_usage |= wgpu::TextureUsages::COPY_SRC;
+        }
+
         let surface_config = wgpu::SurfaceConfiguration {
-            usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::COPY_SRC,
+            usage: surface_usage,
             format: surface_format,
             color_space: wgpu::SurfaceColorSpace::Auto,
             width,
@@ -1000,127 +1235,108 @@ impl WgpuCanvas {
 
         #[cfg(not(target_arch = "wasm32"))]
         {
-            use winit::platform::pump_events::EventLoopExtPumpEvents;
+            // iOS never pumps: winit owns the loop there (see `window::ios`)
+            // and feeds `collect_window_event` itself, so only the drain below
+            // runs. Everywhere else, pump all events into the shared storage
+            // first.
+            #[cfg(not(target_os = "ios"))]
+            {
+                use winit::platform::pump_events::EventLoopExtPumpEvents;
 
-            // First, pump all events into the shared storage. The collector has no
-            // access to the canvas, so every `Modifiers::empty()` below is a
-            // placeholder: the real mask is stamped in when the batch is drained.
-            struct EventCollector;
+                struct EventCollector;
 
-            impl ApplicationHandler for EventCollector {
-                fn resumed(&mut self, _event_loop: &ActiveEventLoop) {}
+                impl ApplicationHandler for EventCollector {
+                    fn resumed(&mut self, _event_loop: &ActiveEventLoop) {
+                        // Only Android acts on these: its surface dies with the
+                        // activity. Desktop delivers a Resumed at startup and
+                        // nothing on minimize, so there is nothing to do there.
+                        #[cfg(target_os = "android")]
+                        LIFECYCLE_EVENTS.with(|events| {
+                            events.borrow_mut().push(LifecycleEvent::Resumed);
+                        });
+                    }
 
-                fn window_event(
-                    &mut self,
-                    _event_loop: &ActiveEventLoop,
-                    window_id: winit::window::WindowId,
-                    event: WinitWindowEvent,
-                ) {
-                    let pending_events: Vec<PendingEvent> = match event {
-                        WinitWindowEvent::CloseRequested => {
-                            vec![PendingEvent::WindowEvent(WindowEvent::Close)]
+                    #[cfg(target_os = "android")]
+                    fn suspended(&mut self, _event_loop: &ActiveEventLoop) {
+                        LIFECYCLE_EVENTS.with(|events| {
+                            events.borrow_mut().push(LifecycleEvent::Suspended);
+                        });
+                    }
+
+                    fn window_event(
+                        &mut self,
+                        _event_loop: &ActiveEventLoop,
+                        window_id: winit::window::WindowId,
+                        event: WinitWindowEvent,
+                    ) {
+                        collect_window_event(window_id, event);
+                    }
+                }
+
+                let timeout = Some(std::time::Duration::ZERO);
+                EVENT_LOOP.with(|event_loop_cell| {
+                    if let Some(ref mut event_loop) = *event_loop_cell.borrow_mut() {
+                        let mut collector = EventCollector;
+                        let _ = event_loop.pump_app_events(timeout, &mut collector);
+                    }
+                });
+            }
+
+            // Android: the native window lives only between Resumed and
+            // Suspended, so the surface must die and be reborn with it. While
+            // it is gone `get_current_texture` returns None and frames skip.
+            #[cfg(target_os = "android")]
+            {
+                let lifecycle: Vec<LifecycleEvent> =
+                    LIFECYCLE_EVENTS.with(|events| events.borrow_mut().drain(..).collect());
+                for event in lifecycle {
+                    match event {
+                        LifecycleEvent::Suspended => {
+                            self.surface = None;
                         }
-                        WinitWindowEvent::Resized(physical_size) => {
-                            if physical_size.width > 0 && physical_size.height > 0 {
-                                vec![
-                                    PendingEvent::Resize {
-                                        width: physical_size.width,
-                                        height: physical_size.height,
-                                    },
-                                    PendingEvent::WindowEvent(WindowEvent::FramebufferSize(
-                                        physical_size.width,
-                                        physical_size.height,
-                                    )),
-                                ]
-                            } else {
-                                vec![]
+                        LifecycleEvent::Resumed => {
+                            if self.surface.is_none() {
+                                if let Some(window) = &self.window {
+                                    let ctxt = Context::get();
+                                    let surface = ctxt
+                                        .instance
+                                        .create_surface(window.clone())
+                                        .expect("Failed to recreate surface after resume");
+                                    let size = window.inner_size();
+                                    self.surface_config.width = size.width.max(1);
+                                    self.surface_config.height = size.height.max(1);
+                                    surface.configure(&ctxt.device, &self.surface_config);
+                                    self.surface = Some(surface);
+                                }
                             }
                         }
-                        WinitWindowEvent::CursorMoved { position, .. } => {
-                            vec![
-                                PendingEvent::CursorPos(position.x, position.y),
-                                PendingEvent::WindowEvent(WindowEvent::CursorPos(
-                                    position.x,
-                                    position.y,
-                                    Modifiers::empty(), // Will be filled in when processing
-                                )),
-                            ]
-                        }
-                        WinitWindowEvent::MouseInput { state, button, .. } => {
-                            let action = translate_action(state);
-                            let button = translate_mouse_button(button);
-                            vec![
-                                PendingEvent::ButtonState(button, action),
-                                PendingEvent::WindowEvent(WindowEvent::MouseButton(
-                                    button,
-                                    action,
-                                    Modifiers::empty(),
-                                )),
-                            ]
-                        }
-                        WinitWindowEvent::Touch(touch) => {
-                            let action = match touch.phase {
-                                TouchPhase::Started => TouchAction::Start,
-                                TouchPhase::Ended => TouchAction::End,
-                                TouchPhase::Moved => TouchAction::Move,
-                                TouchPhase::Cancelled => TouchAction::Cancel,
-                            };
-                            vec![PendingEvent::WindowEvent(WindowEvent::Touch(
-                                touch.id,
-                                touch.location.x,
-                                touch.location.y,
-                                action,
-                                Modifiers::empty(),
-                            ))]
-                        }
-                        WinitWindowEvent::MouseWheel { delta, .. } => {
-                            let (x, y) = match delta {
-                                MouseScrollDelta::LineDelta(dx, dy) => {
-                                    (dx as f64 * 10.0, dy as f64 * 10.0)
-                                }
-                                MouseScrollDelta::PixelDelta(delta) => (delta.x, delta.y),
-                            };
-                            vec![PendingEvent::WindowEvent(WindowEvent::Scroll(
-                                x,
-                                y,
-                                Modifiers::empty(),
-                            ))]
-                        }
-                        WinitWindowEvent::KeyboardInput { event, .. } => {
-                            let action = translate_action(event.state);
-                            let key = translate_key(event.physical_key);
-                            translate_keyboard_input(
-                                key,
-                                action,
-                                &event.logical_key,
-                                event.text.as_deref(),
-                            )
-                        }
-                        WinitWindowEvent::ModifiersChanged(new_modifiers) => {
-                            vec![PendingEvent::Modifiers(new_modifiers.state())]
-                        }
-                        _ => vec![],
-                    };
-
-                    if !pending_events.is_empty() {
-                        PENDING_WINDOW_EVENTS.with(|storage| {
-                            storage
-                                .borrow_mut()
-                                .entry(window_id)
-                                .or_default()
-                                .extend(pending_events);
-                        });
                     }
                 }
             }
 
-            let timeout = Some(std::time::Duration::ZERO);
-            EVENT_LOOP.with(|event_loop_cell| {
-                if let Some(ref mut event_loop) = *event_loop_cell.borrow_mut() {
-                    let mut collector = EventCollector;
-                    let _ = event_loop.pump_app_events(timeout, &mut collector);
+            // iOS: text the system keyboard produced (window::ios) joins the
+            // stream as ordinary typing, so text fields cannot tell a soft
+            // keyboard from a hardware one.
+            #[cfg(target_os = "ios")]
+            for text_event in super::ios::take_text_events() {
+                match text_event {
+                    super::ios::TextEvent::Char(c) => {
+                        let _ = self.out_events.send(WindowEvent::Char(c));
+                    }
+                    super::ios::TextEvent::Backspace => {
+                        let _ = self.out_events.send(WindowEvent::Key(
+                            Key::Back,
+                            Action::Press,
+                            Modifiers::empty(),
+                        ));
+                        let _ = self.out_events.send(WindowEvent::Key(
+                            Key::Back,
+                            Action::Release,
+                            Modifiers::empty(),
+                        ));
+                    }
                 }
-            });
+            }
 
             // Now process only this window's events
             let events = PENDING_WINDOW_EVENTS.with(|storage| {
@@ -1292,8 +1508,18 @@ impl WgpuCanvas {
     }
 
     /// Copies the surface frame texture into the readback texture for later
-    /// reading via [`read_pixels`](Self::read_pixels).
+    /// reading via [`read_pixels`](Self::read_pixels). A no-op when the
+    /// surface has no `COPY_SRC` usage (downlevel GL; see the surface
+    /// configuration in `open`) — snapshots of on-screen frames are simply
+    /// unavailable there, and attempting the copy is a validation error.
     pub fn copy_frame_to_readback(&self, frame: &wgpu::SurfaceTexture) {
+        if !self
+            .surface_config
+            .usage
+            .contains(wgpu::TextureUsages::COPY_SRC)
+        {
+            return;
+        }
         self.copy_texture_to_readback(&frame.texture);
     }
 
@@ -1560,6 +1786,76 @@ impl WgpuCanvas {
         if let Some(window) = &self.window {
             window.set_window_icon(Some(icon));
         }
+    }
+
+    /// Show or hide the platform's on-screen keyboard.
+    ///
+    /// Android asks the activity (`show_soft_input`, working since
+    /// android-activity 0.6.1); iOS goes through the hidden UIKeyInput view in
+    /// `window::ios`, since winit has no IME support there. Desktop and web
+    /// no-op: hardware keyboards need no summoning and the browser manages
+    /// its own.
+    pub fn set_keyboard_visible(&self, visible: bool) {
+        #[cfg(target_os = "android")]
+        {
+            ANDROID_APP.with(|app| {
+                if let Some(app) = &*app.borrow() {
+                    if visible {
+                        app.show_soft_input(true);
+                    } else {
+                        app.hide_soft_input(false);
+                    }
+                }
+            });
+        }
+        #[cfg(target_os = "ios")]
+        if let Some(window) = &self.window {
+            super::ios::set_keyboard_visible(window, visible);
+        }
+        #[cfg(not(any(target_os = "android", target_os = "ios")))]
+        let _ = visible;
+    }
+
+    /// Enter or leave borderless fullscreen on the current monitor.
+    pub fn set_fullscreen(&self, fullscreen: bool) {
+        if let Some(window) = &self.window {
+            let mode = fullscreen.then(|| winit::window::Fullscreen::Borderless(None));
+            window.set_fullscreen(mode);
+        }
+    }
+
+    /// Whether the window is currently fullscreen.
+    pub fn is_fullscreen(&self) -> bool {
+        self.window
+            .as_ref()
+            .is_some_and(|window| window.fullscreen().is_some())
+    }
+
+    /// Files dropped onto the window since the last call, in drop order.
+    /// Always empty on the web: browsers deliver file drops to the page, not
+    /// the canvas, so a web build wanting them needs DOM listeners instead.
+    pub fn take_dropped_files(&self) -> Vec<std::path::PathBuf> {
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let Some(window_id) = self.window_id else {
+                return Vec::new();
+            };
+            DROPPED_FILES.with(|dropped| {
+                let mut dropped = dropped.borrow_mut();
+                let mut taken = Vec::new();
+                dropped.retain(|(id, path)| {
+                    if *id == window_id {
+                        taken.push(path.clone());
+                        false
+                    } else {
+                        true
+                    }
+                });
+                taken
+            })
+        }
+        #[cfg(target_arch = "wasm32")]
+        Vec::new()
     }
 
     /// Set the cursor grabbing behaviour.

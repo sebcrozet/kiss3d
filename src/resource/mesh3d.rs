@@ -426,25 +426,29 @@ impl GpuMesh3d {
     }
 
     /// Returns the vertex coordinates buffer if loaded to GPU.
-    pub fn coords_buffer(&self) -> Option<&wgpu::Buffer> {
-        // This is tricky because we need to return a reference from inside RwLock
-        // For now, callers should use ensure_on_gpu() or access via coords()
-        None
+    ///
+    /// A `wgpu::Buffer` is a reference-counted handle, so these hand back a
+    /// clone rather than a reference into the lock. Returning the reference
+    /// is what could not be done, and why these used to answer `None` for
+    /// every caller — silently, since a material that drew nothing looked
+    /// exactly like a material with nothing to draw.
+    pub fn coords_buffer(&self) -> Option<wgpu::Buffer> {
+        self.coords.read().ok()?.buffer().cloned()
     }
 
     /// Returns the index buffer if loaded to GPU.
-    pub fn faces_buffer(&self) -> Option<&wgpu::Buffer> {
-        None
+    pub fn faces_buffer(&self) -> Option<wgpu::Buffer> {
+        self.faces.read().ok()?.buffer().cloned()
     }
 
     /// Returns the normals buffer if loaded to GPU.
-    pub fn normals_buffer(&self) -> Option<&wgpu::Buffer> {
-        None
+    pub fn normals_buffer(&self) -> Option<wgpu::Buffer> {
+        self.normals.read().ok()?.buffer().cloned()
     }
 
     /// Returns the UVs buffer if loaded to GPU.
-    pub fn uvs_buffer(&self) -> Option<&wgpu::Buffer> {
-        None
+    pub fn uvs_buffer(&self) -> Option<wgpu::Buffer> {
+        self.uvs.read().ok()?.buffer().cloned()
     }
 
     /// Ensures edge data is created (but not necessarily uploaded to GPU).

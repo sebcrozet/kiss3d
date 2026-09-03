@@ -376,16 +376,14 @@ impl RenderMesh {
     pub fn split_index_buffer(&mut self, recover_topology: bool) {
         let new_indices = match self.indices {
             IndexBuffer::Unified(ref ids) => {
-                let resi;
-
-                if recover_topology {
+                let resi = if recover_topology {
                     let (idx, coords) =
                         utils::split_index_buffer_and_recover_topology(&ids[..], &self.coords[..]);
                     self.coords = coords;
-                    resi = idx;
+                    idx
                 } else {
-                    resi = utils::split_index_buffer(&ids[..]);
-                }
+                    utils::split_index_buffer(&ids[..])
+                };
 
                 Some(IndexBuffer::Split(resi))
             }

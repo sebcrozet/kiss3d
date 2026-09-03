@@ -186,14 +186,14 @@ fn build_primitive(prim: &gltf::Primitive, buffers: &[gltf::buffer::Data]) -> Op
         Some(indices) => indices
             .into_u32()
             .collect::<Vec<u32>>()
-            .chunks_exact(3)
-            .map(|c| [c[0], c[1], c[2]])
-            .collect(),
+            .as_chunks::<3>()
+            .0
+            .to_vec(),
         None => (0..positions.len() as u32)
             .collect::<Vec<u32>>()
-            .chunks_exact(3)
-            .map(|c| [c[0], c[1], c[2]])
-            .collect(),
+            .as_chunks::<3>()
+            .0
+            .to_vec(),
     };
 
     let normals: Option<Vec<Vec3>> = reader

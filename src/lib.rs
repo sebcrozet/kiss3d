@@ -118,6 +118,12 @@ pub use pollster;
 #[doc(hidden)]
 pub use wasm_bindgen_futures;
 
+// The android_main entry that #[kiss3d::main] generates takes winit's
+// AndroidApp, so the macro needs a path to winit through this crate.
+#[cfg(target_os = "android")]
+#[doc(hidden)]
+pub use winit;
+
 #[deprecated(note = "Use the `renderer` module instead.")]
 pub use crate::renderer::point_renderer3d;
 

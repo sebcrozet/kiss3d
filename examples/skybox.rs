@@ -66,7 +66,10 @@ async fn main() {
                 .default_width(240.0)
                 .show(ctx, |ui| {
                     ui.checkbox(&mut enabled, "Enabled");
-                    ui.add(egui::Slider::new(&mut rotation, 0.0..=6.2832).text("rotation (rad)"));
+                    ui.add(
+                        egui::Slider::new(&mut rotation, 0.0..=std::f32::consts::TAU)
+                            .text("rotation (rad)"),
+                    );
                     ui.add(egui::Slider::new(&mut intensity, 0.0..=4.0).text("intensity"));
                 });
         });

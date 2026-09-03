@@ -89,6 +89,18 @@ impl MaterialManager3d {
         }
     }
 
+    /// Runs `f` over every registered material.
+    ///
+    /// The per-frame capabilities the window supplies — environment lighting,
+    /// reflection probes, SSAO, the transmission background, the clustered
+    /// light buffers — reach every material through this rather than only the
+    /// default one, so a material a game registers can take them too.
+    pub fn for_each<F: FnMut(&mut (dyn Material3d + 'static))>(&mut self, mut f: F) {
+        for material in self.materials.values() {
+            f(&mut **material.borrow_mut());
+        }
+    }
+
     /// Flushes all accumulated uniform data to the GPU.
     ///
     /// This should be called after all objects have been prepared (via

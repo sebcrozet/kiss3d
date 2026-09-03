@@ -254,7 +254,7 @@ fn texture_ui_2d(
         ui.text_edit_singleline(path);
     });
     ui.horizontal(|ui| {
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(any(target_arch = "wasm32", target_os = "ios", target_os = "android")))]
         if ui.button("Open…").clicked() {
             if let Some(p) = pick_image_path() {
                 *status = if apply_texture_2d(node, recursive, &p) {
