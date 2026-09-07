@@ -219,9 +219,61 @@ impl Window {
             camera,
             camera_2d,
             renderer,
+            &mut [],
             post_processing,
         )
         .await
+    }
+
+    /// [`render_chain`](Self::render_chain) with a second chain that runs on the
+    /// HDR film, before bloom and the tonemap.
+    ///
+    /// A `film` pass works in linear light and what it writes is what blooms and
+    /// what is tonemapped; a `post` pass works on the LDR image after them. That is
+    /// the whole difference, and it is why an effect belongs in one or the other:
+    /// a fog or a colour operation wants the film, a scanline or a vignette wants
+    /// the finished picture.
+    pub async fn render_chains(
+        &mut self,
+        scene: Option<&mut SceneNode3d>,
+        scene_2d: Option<&mut SceneNode2d>,
+        camera: Option<&mut dyn Camera3d>,
+        camera_2d: Option<&mut dyn Camera2d>,
+        renderer: Option<&mut dyn Renderer3d>,
+        film: &mut [&mut dyn PostProcessingEffect],
+        post: &mut [&mut dyn PostProcessingEffect],
+    ) -> bool {
+        let mut default_cam2 = FixedView2d::default();
+        let mut default_cam = FixedView3d::default();
+        let camera = camera.unwrap_or(&mut default_cam);
+        let camera_2d = camera_2d.unwrap_or(&mut default_cam2);
+        self.handle_events(camera, camera_2d);
+        self.render_single_frame(scene, scene_2d, camera, camera_2d, renderer, film, post)
+            .await
+    }
+
+    /// Seed a film-stage chain: the HDR film into the target the first effect
+    /// reads. An effect takes a `RenderTarget` and the film is not one, so this is
+    /// the one copy the stage costs, and only when a chain is passed.
+    fn seed_film(
+        encoder: &mut wgpu::CommandEncoder,
+        film: &wgpu::Texture,
+        into: &RenderTarget,
+        w: u32,
+        h: u32,
+    ) {
+        let RenderTarget::Offscreen(o) = into else {
+            return;
+        };
+        encoder.copy_texture_to_texture(
+            film.as_image_copy(),
+            o.color_texture.as_image_copy(),
+            wgpu::Extent3d {
+                width: w.min(o.width).max(1),
+                height: h.min(o.height).max(1),
+                depth_or_array_layers: 1,
+            },
+        );
     }
 
     async fn render_single_frame(
@@ -231,6 +283,7 @@ impl Window {
         camera: &mut dyn Camera3d,
         camera_2d: &mut dyn Camera2d,
         mut renderer: Option<&mut dyn Renderer3d>,
+        film_processing: &mut [&mut dyn PostProcessingEffect],
         post_processing: &mut [&mut dyn PostProcessingEffect],
     ) -> bool {
         // Frame timing: CPU wall-clock for the whole frame (and submit/present
@@ -300,6 +353,12 @@ impl Window {
             .resize(w, h, self.canvas.surface_format());
         self.post_process_render_target_b
             .resize(w, h, self.canvas.surface_format());
+        if !film_processing.is_empty() {
+            self.film_render_target
+                .resize(w, h, crate::post_processing::HDR_FORMAT);
+            self.film_render_target_b
+                .resize(w, h, crate::post_processing::HDR_FORMAT);
+        }
         if offscreen {
             if self.offscreen_output_target.is_none() {
                 self.offscreen_output_target =
@@ -1282,17 +1341,82 @@ impl Window {
         // page, so force an opaque alpha there; a hidden/offscreen target keeps the
         // scene alpha for snapshots and host-app embedding.
         let force_opaque = !offscreen;
+
+        // The film-stage chain, before bloom and the tonemap: a pass listed there
+        // works in linear light, and what it writes is what blooms. The film is
+        // copied into A because an effect reads a `RenderTarget` and the film is
+        // not one; from there the pair ping-pongs as the LDR chain does.
+        let film_view = if film_processing.is_empty() {
+            None
+        } else {
+            let film = self.hdr.scene_resolved_view().clone();
+            Self::seed_film(
+                &mut encoder,
+                self.hdr.scene_texture(),
+                &self.film_render_target,
+                w,
+                h,
+            );
+            let mut input_is_a = true;
+            for pp in film_processing.iter_mut() {
+                let (input, output) = if input_is_a {
+                    (&self.film_render_target, &self.film_render_target_b)
+                } else {
+                    (&self.film_render_target_b, &self.film_render_target)
+                };
+                let output_view = match output {
+                    RenderTarget::Offscreen(o) => &o.color_view,
+                    RenderTarget::Screen => &frame_view,
+                };
+                pp.update(0.016, w as f32, h as f32, znear, zfar);
+                let mut pp_context = PostProcessingContext {
+                    encoder: &mut encoder,
+                    output_view,
+                };
+                pp.draw(input, &mut pp_context);
+                input_is_a = !input_is_a;
+            }
+            // Whichever half the last effect wrote is what the tonemap reads.
+            let landed = if input_is_a {
+                &self.film_render_target
+            } else {
+                &self.film_render_target_b
+            };
+            match landed {
+                RenderTarget::Offscreen(o) => Some(o.color_view.clone()),
+                RenderTarget::Screen => Some(film),
+            }
+        };
+        let resolve_input = film_view;
+        let resolve = |hdr: &mut crate::post_processing::HdrPipeline,
+                       encoder: &mut wgpu::CommandEncoder,
+                       out: &wgpu::TextureView,
+                       gpu: &mut crate::renderer::timings::GpuTimer| {
+            match &resolve_input {
+                Some(view) => hdr.resolve_from(encoder, view, out, force_opaque, gpu),
+                None => hdr.resolve(encoder, out, force_opaque, gpu),
+            }
+        };
+
         if post_processing.is_empty() {
-            self.hdr
-                .resolve(&mut encoder, &frame_view, force_opaque, &mut self.gpu_timer);
+            resolve(
+                &mut self.hdr,
+                &mut encoder,
+                &frame_view,
+                &mut self.gpu_timer,
+            );
         } else {
             // Tonemap into the first ping-pong target (A).
             let first_view = match &self.post_process_render_target {
                 RenderTarget::Offscreen(o) => o.color_view.clone(),
                 RenderTarget::Screen => frame_view.clone(),
             };
-            self.hdr
-                .resolve(&mut encoder, &first_view, force_opaque, &mut self.gpu_timer);
+            resolve(
+                &mut self.hdr,
+                &mut encoder,
+                &first_view,
+                &mut self.gpu_timer,
+            );
 
             let n = post_processing.len();
             for (i, pp) in post_processing.iter_mut().enumerate() {

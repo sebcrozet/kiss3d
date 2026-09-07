@@ -235,7 +235,7 @@ pub struct HdrPipeline {
     // and `scene` is its single-sample resolve destination; otherwise only
     // `scene` exists and is rendered into directly.
     // Single-sample HDR scene texture, kept alive alongside its view.
-    _scene_texture: wgpu::Texture,
+    scene_texture: wgpu::Texture,
     scene_view: wgpu::TextureView,
     // MSAA HDR attachment, kept alive alongside its view.
     _scene_msaa_texture: Option<wgpu::Texture>,
@@ -818,7 +818,7 @@ impl HdrPipeline {
             width,
             height,
             sample_count,
-            _scene_texture: targets.scene_texture,
+            scene_texture: targets.scene_texture,
             scene_view: targets.scene_view,
             _scene_msaa_texture: targets.scene_msaa_texture,
             scene_msaa_view: targets.scene_msaa_view,
@@ -1142,7 +1142,7 @@ impl HdrPipeline {
                 Self::create_oit_composite_pipeline(&self.oit_layout, sample_count);
         }
         let targets = Self::create_targets(width, height, sample_count);
-        self._scene_texture = targets.scene_texture;
+        self.scene_texture = targets.scene_texture;
         self.scene_view = targets.scene_view;
         self._scene_msaa_texture = targets.scene_msaa_texture;
         self.scene_msaa_view = targets.scene_msaa_view;
@@ -1171,6 +1171,12 @@ impl HdrPipeline {
     /// used by SSR to read and additively composite reflections before tonemapping.
     pub fn scene_resolved_view(&self) -> &wgpu::TextureView {
         &self.scene_view
+    }
+
+    /// The texture behind [`scene_resolved_view`](Self::scene_resolved_view), for a
+    /// film-stage post chain that has to copy it before it may write over it.
+    pub fn scene_texture(&self) -> &wgpu::Texture {
+        &self.scene_texture
     }
 
     /// The MSAA resolve target (the single-sample HDR texture), or `None` when
@@ -1319,13 +1325,14 @@ impl HdrPipeline {
     fn run_bloom(
         &self,
         encoder: &mut wgpu::CommandEncoder,
+        input: &wgpu::TextureView,
         gpu: &mut crate::renderer::timings::GpuTimer,
     ) {
         let ctxt = Context::get();
 
         // Prefilter the full-res scene into the first (half-res) mip.
         {
-            let bg = self.bloom_bind_group(&ctxt, &self.scene_view, self.width, self.height);
+            let bg = self.bloom_bind_group(&ctxt, input, self.width, self.height);
             let bloom_ts = gpu.render_scope("bloom");
             let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("hdr_bloom_prefilter_pass"),
@@ -1548,11 +1555,26 @@ impl HdrPipeline {
         force_opaque: bool,
         gpu: &mut crate::renderer::timings::GpuTimer,
     ) {
+        let film = self.scene_view.clone();
+        self.resolve_from(encoder, &film, output_view, force_opaque, gpu);
+    }
+
+    /// [`resolve`](Self::resolve) reading `input` rather than the film itself, so a
+    /// pass that ran over the film feeds bloom and the tonemap instead of being
+    /// thrown away by them.
+    pub(crate) fn resolve_from(
+        &mut self,
+        encoder: &mut wgpu::CommandEncoder,
+        input: &wgpu::TextureView,
+        output_view: &wgpu::TextureView,
+        force_opaque: bool,
+        gpu: &mut crate::renderer::timings::GpuTimer,
+    ) {
         let ctxt = Context::get();
 
         let bloom_enabled = self.settings.bloom_enabled && self.settings.bloom_intensity > 0.0;
         if bloom_enabled {
-            self.run_bloom(encoder, gpu);
+            self.run_bloom(encoder, input, gpu);
         }
 
         // Auto-exposure: meter + adapt before tonemapping. The resulting 1x1
@@ -1600,7 +1622,7 @@ impl HdrPipeline {
             entries: &[
                 wgpu::BindGroupEntry {
                     binding: 0,
-                    resource: wgpu::BindingResource::TextureView(&self.scene_view),
+                    resource: wgpu::BindingResource::TextureView(input),
                 },
                 wgpu::BindGroupEntry {
                     binding: 1,

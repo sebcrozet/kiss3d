@@ -118,6 +118,11 @@ pub struct Window {
     /// buffers when chaining more than one post-processing effect: each effect reads
     /// one and writes the other, and the last writes the final frame.
     pub(super) post_process_render_target_b: RenderTarget,
+    /// The same pair at [`HDR_FORMAT`](crate::post_processing::HDR_FORMAT), for a
+    /// chain that runs on the film before bloom and the tonemap rather than on the
+    /// LDR image after them. Only resized when such a chain is passed.
+    pub(super) film_render_target: RenderTarget,
+    pub(super) film_render_target_b: RenderTarget,
     /// Offscreen render target used when the window is hidden, so `snap` and
     /// recording work without a presentable surface. Created on first use.
     pub(super) offscreen_output_target: Option<RenderTarget>,
@@ -1089,6 +1094,8 @@ impl Window {
             post_process_render_target: framebuffer_manager.new_render_target(width, height, true),
             post_process_render_target_b: framebuffer_manager
                 .new_render_target(width, height, false),
+            film_render_target: framebuffer_manager.new_render_target(width, height, false),
+            film_render_target_b: framebuffer_manager.new_render_target(width, height, false),
             offscreen_output_target: None,
             aov_renderer: None,
             hidden: hide,
@@ -1178,6 +1185,8 @@ impl Window {
             post_process_render_target: framebuffer_manager.new_render_target(width, height, true),
             post_process_render_target_b: framebuffer_manager
                 .new_render_target(width, height, false),
+            film_render_target: framebuffer_manager.new_render_target(width, height, false),
+            film_render_target_b: framebuffer_manager.new_render_target(width, height, false),
             offscreen_output_target: None,
             aov_renderer: None,
             // A headless window has no surface; always render off-screen.
