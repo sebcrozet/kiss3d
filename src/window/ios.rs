@@ -17,7 +17,9 @@ use std::task::{Context as TaskContext, Poll, Waker};
 
 use objc2::rc::Retained;
 use objc2::{define_class, msg_send, MainThreadMarker, MainThreadOnly};
-use objc2_foundation::{NSDictionary, NSNotification, NSNotificationCenter, NSObject, NSObjectProtocol, NSString, NSURL};
+use objc2_foundation::{
+    NSDictionary, NSNotification, NSNotificationCenter, NSObject, NSObjectProtocol, NSString, NSURL,
+};
 use objc2_ui_kit::{
     UIApplicationDidFinishLaunchingNotification, UIKeyInput, UITextInputTraits, UIView,
 };
@@ -270,8 +272,7 @@ define_class!(
 /// none. Adopting scenes to read a URL would mean taking over the window
 /// lifecycle winit owns.
 fn observe_launch_url(mtm: MainThreadMarker) {
-    let observer: Retained<LaunchObserver> =
-        unsafe { msg_send![LaunchObserver::alloc(mtm), init] };
+    let observer: Retained<LaunchObserver> = unsafe { msg_send![LaunchObserver::alloc(mtm), init] };
     unsafe {
         NSNotificationCenter::defaultCenter().addObserver_selector_name_object(
             &observer,
