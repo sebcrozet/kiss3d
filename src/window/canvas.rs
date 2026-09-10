@@ -229,6 +229,11 @@ impl Canvas {
         self.canvas.hide_cursor(hide);
     }
 
+    /// Set the shape the pointer takes over this window.
+    pub fn set_cursor_icon(&self, icon: winit::window::CursorIcon) {
+        self.canvas.set_cursor_icon(icon);
+    }
+
     /// Hide the window.
     pub fn hide(&mut self) {
         self.canvas.hide()

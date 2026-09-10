@@ -10,6 +10,7 @@ pub struct EguiRenderer {
     renderer: egui_wgpu::Renderer,
     shapes: Vec<egui::epaint::ClippedShape>,
     textures_delta: egui::TexturesDelta,
+    cursor: egui::CursorIcon,
 }
 
 impl EguiRenderer {
@@ -80,6 +81,7 @@ impl EguiRenderer {
             renderer,
             shapes: Vec::new(),
             textures_delta: Default::default(),
+            cursor: egui::CursorIcon::Default,
         }
     }
 
@@ -102,9 +104,16 @@ impl EguiRenderer {
         self.egui_ctx.begin_pass(raw_input);
     }
 
+    /// What the last pass asked the pointer to look like over the widget it
+    /// was on. `Default` whenever nothing under it asked for anything else.
+    pub fn cursor(&self) -> egui::CursorIcon {
+        self.cursor
+    }
+
     /// End the current frame and prepare for rendering.
     pub fn end_frame(&mut self) {
         let output = self.egui_ctx.end_pass();
+        self.cursor = output.platform_output.cursor_icon;
         self.shapes = output.shapes;
         // Append rather than replace: if a previous frame's render was skipped
         // (e.g. failed to acquire surface texture), we must not lose its texture

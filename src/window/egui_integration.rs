@@ -23,6 +23,9 @@ pub(crate) struct EguiContext {
     /// What a rerun of the open pass begins with: the pass's input less its
     /// events, as `Context::run` hands the later passes of a frame.
     pub(crate) rerun_input: RawInput,
+    /// The shape the pointer was last set to. Setting one is a hop to the
+    /// main thread, so only a change is worth making.
+    pub(crate) cursor: egui::CursorIcon,
     #[cfg(not(target_arch = "wasm32"))]
     pub(crate) start_time: std::time::Instant,
 }
@@ -35,6 +38,7 @@ impl EguiContext {
             pass_active: false,
             pointer_touch_id: None,
             rerun_input: RawInput::default(),
+            cursor: egui::CursorIcon::Default,
             #[cfg(not(target_arch = "wasm32"))]
             start_time: std::time::Instant::now(),
         }
@@ -465,11 +469,64 @@ impl Window {
         if self.egui_context.pass_active {
             self.egui_context.renderer.end_frame();
             self.egui_context.pass_active = false;
+            // What the pass asked for, applied where the window is: egui says
+            // which shape a widget wants and only the host can set one.
+            let want = self.egui_context.renderer.cursor();
+            if want != self.egui_context.cursor {
+                self.egui_context.cursor = want;
+                self.canvas.set_cursor_icon(winit_cursor(want));
+            }
         }
         // Note: `raw_input` is *not* reset here. It is drained by
         // `begin_egui_pass` (via `std::mem::take`) when the next pass opens, and
         // events fed by `handle_events` between this point and that next pass
         // must be preserved — resetting here would discard them and the UI would
         // stop responding to input.
+    }
+}
+
+/// egui's cursor names as winit's. The two lists are the same set under
+/// different names, and neither crate knows about the other.
+fn winit_cursor(icon: egui::CursorIcon) -> winit::window::CursorIcon {
+    use egui::CursorIcon as E;
+    use winit::window::CursorIcon as W;
+    match icon {
+        E::Default => W::Default,
+        // Hiding the pointer is `hide_cursor`, not a shape; nothing in a
+        // widget's own paint should take it off the screen.
+        E::None => W::Default,
+        E::ContextMenu => W::ContextMenu,
+        E::Help => W::Help,
+        E::PointingHand => W::Pointer,
+        E::Progress => W::Progress,
+        E::Wait => W::Wait,
+        E::Cell => W::Cell,
+        E::Crosshair => W::Crosshair,
+        E::Text => W::Text,
+        E::VerticalText => W::VerticalText,
+        E::Alias => W::Alias,
+        E::Copy => W::Copy,
+        E::Move => W::Move,
+        E::NoDrop => W::NoDrop,
+        E::NotAllowed => W::NotAllowed,
+        E::Grab => W::Grab,
+        E::Grabbing => W::Grabbing,
+        E::AllScroll => W::AllScroll,
+        E::ResizeHorizontal => W::EwResize,
+        E::ResizeNeSw => W::NeswResize,
+        E::ResizeNwSe => W::NwseResize,
+        E::ResizeVertical => W::NsResize,
+        E::ResizeEast => W::EResize,
+        E::ResizeSouthEast => W::SeResize,
+        E::ResizeSouth => W::SResize,
+        E::ResizeSouthWest => W::SwResize,
+        E::ResizeWest => W::WResize,
+        E::ResizeNorthWest => W::NwResize,
+        E::ResizeNorth => W::NResize,
+        E::ResizeNorthEast => W::NeResize,
+        E::ResizeColumn => W::ColResize,
+        E::ResizeRow => W::RowResize,
+        E::ZoomIn => W::ZoomIn,
+        E::ZoomOut => W::ZoomOut,
     }
 }
