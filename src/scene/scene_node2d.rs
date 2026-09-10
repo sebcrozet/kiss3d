@@ -172,6 +172,97 @@ impl SceneNodeData2d {
         }
     }
 
+    /// Whether any visible object under this node reads the screen.
+    pub fn has_screen_reader(&self) -> bool {
+        if !self.visible {
+            return false;
+        }
+        if let Some(o) = &self.object {
+            if o.material().borrow().reads_screen() {
+                return true;
+            }
+        }
+        self.children.iter().any(|c| c.data().has_screen_reader())
+    }
+
+    /// [`Self::render`], with the pass closed, `copy_screen` run and a pass
+    /// from `begin_pass` opened before every object whose material reads the screen.
+    pub fn render_with_screen(
+        &mut self,
+        camera: &mut dyn Camera2d,
+        encoder: &mut wgpu::CommandEncoder,
+        context: &RenderContext2d,
+        begin_pass: &mut dyn FnMut(&mut wgpu::CommandEncoder) -> wgpu::RenderPass<'static>,
+        copy_screen: &mut dyn FnMut(&mut wgpu::CommandEncoder),
+    ) {
+        if !self.visible {
+            return;
+        }
+        let mut pass = Some(begin_pass(encoder));
+        self.do_render_with_screen(
+            Pose2::IDENTITY,
+            Vec2::ONE,
+            camera,
+            encoder,
+            &mut pass,
+            context,
+            begin_pass,
+            copy_screen,
+        );
+        drop(pass);
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn do_render_with_screen(
+        &mut self,
+        transform: Pose2,
+        scale: Vec2,
+        camera: &mut dyn Camera2d,
+        encoder: &mut wgpu::CommandEncoder,
+        pass: &mut Option<wgpu::RenderPass<'static>>,
+        context: &RenderContext2d,
+        begin_pass: &mut dyn FnMut(&mut wgpu::CommandEncoder) -> wgpu::RenderPass<'static>,
+        copy_screen: &mut dyn FnMut(&mut wgpu::CommandEncoder),
+    ) {
+        if !self.up_to_date {
+            self.up_to_date = true;
+            self.world_transform = transform * self.local_transform;
+            self.world_scale = scale * self.local_scale;
+        }
+
+        if let Some(ref mut o) = self.object {
+            if o.material().borrow().reads_screen() {
+                drop(pass.take());
+                copy_screen(encoder);
+                *pass = Some(begin_pass(encoder));
+            }
+            let render_pass = pass.as_mut().expect("a pass is open between splits");
+            o.render(
+                self.world_transform,
+                self.world_scale,
+                camera,
+                render_pass,
+                context,
+            )
+        }
+
+        for c in self.children.iter_mut() {
+            let mut bc = c.data_mut();
+            if bc.visible {
+                bc.do_render_with_screen(
+                    self.world_transform,
+                    self.world_scale,
+                    camera,
+                    encoder,
+                    pass,
+                    context,
+                    begin_pass,
+                    copy_screen,
+                )
+            }
+        }
+    }
+
     /// A reference to the object possibly contained by this node.
     #[inline]
     pub fn object(&self) -> Option<&Object2d> {

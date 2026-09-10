@@ -10,6 +10,7 @@ pub struct EguiRenderer {
     renderer: egui_wgpu::Renderer,
     shapes: Vec<egui::epaint::ClippedShape>,
     textures_delta: egui::TexturesDelta,
+    cursor: egui::CursorIcon,
 }
 
 impl EguiRenderer {
@@ -80,6 +81,7 @@ impl EguiRenderer {
             renderer,
             shapes: Vec::new(),
             textures_delta: Default::default(),
+            cursor: egui::CursorIcon::Default,
         }
     }
 
@@ -95,12 +97,23 @@ impl EguiRenderer {
 
     /// Begin a new frame with the given raw input.
     pub fn begin_frame(&mut self, raw_input: RawInput) {
+        // The pass about to run replaces last pass's shapes, so this is where
+        // they are dropped. Not after rendering them: a host that skips a pass
+        // shows the last one again rather than nothing (`Window::draw_ui`).
+        self.shapes.clear();
         self.egui_ctx.begin_pass(raw_input);
+    }
+
+    /// What the last pass asked the pointer to look like over the widget it
+    /// was on. `Default` whenever nothing under it asked for anything else.
+    pub fn cursor(&self) -> egui::CursorIcon {
+        self.cursor
     }
 
     /// End the current frame and prepare for rendering.
     pub fn end_frame(&mut self) {
         let output = self.egui_ctx.end_pass();
+        self.cursor = output.platform_output.cursor_icon;
         self.shapes = output.shapes;
         // Append rather than replace: if a previous frame's render was skipped
         // (e.g. failed to acquire surface texture), we must not lose its texture
@@ -112,6 +125,21 @@ impl EguiRenderer {
     /// [`egui::TextureId`] that `ui.image((id, size))` can draw — no CPU copy
     /// involved. The texture stays registered until
     /// [`Self::unregister_native_texture`].
+    /// Throw the open pass away and begin it again with `raw_input`, as
+    /// `Context::run` does when a pass asks to be discarded: its shapes are
+    /// dropped, its texture uploads kept (the font atlas may have grown), and
+    /// its pass count carried over so egui knows how many it has run.
+    pub fn rerun_frame(&mut self, raw_input: RawInput) {
+        let output = self.egui_ctx.end_pass();
+        self.textures_delta.append(output.textures_delta);
+        let passes = output.platform_output.num_completed_passes;
+        // `end_pass` took the viewport's output; `will_discard` reads the
+        // count back off the fresh one.
+        self.egui_ctx
+            .output_mut(|output| output.num_completed_passes = passes);
+        self.egui_ctx.begin_pass(raw_input);
+    }
+
     pub fn register_native_texture(
         &mut self,
         view: &wgpu::TextureView,
@@ -225,7 +253,6 @@ impl EguiRenderer {
         }
 
         self.textures_delta.clear();
-        self.shapes.clear();
     }
 }
 

@@ -372,7 +372,7 @@ impl OffscreenSurface {
     #[cfg(feature = "egui")]
     pub fn draw_ui<F>(&mut self, ui_fn: F)
     where
-        F: FnOnce(&egui::Context),
+        F: FnMut(&egui::Context),
     {
         self.window.draw_ui(ui_fn);
     }

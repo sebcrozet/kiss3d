@@ -48,9 +48,20 @@ pub(super) static DEFAULT_SHADOW_RESOLUTION: u32 = 2048u32;
 /// Structure representing a window and a 3D scene.
 ///
 /// This is the main interface with the 3d engine.
+/// The single-sample film copy a screen-reading 2D material samples.
+pub(super) struct ScreenCopy2d {
+    pub(super) view: wgpu::TextureView,
+    pub(super) width: u32,
+    pub(super) height: u32,
+    pub(super) generation: u64,
+}
+
 pub struct Window {
     pub(super) events: Rc<Receiver<WindowEvent>>,
     pub(super) unhandled_events: Rc<RefCell<Vec<WindowEvent>>>,
+    pub(super) ime_events: Rc<RefCell<Vec<crate::event::ImeEvent>>>,
+    /// Made on the first frame a material asks; remade when the film resizes.
+    pub(super) screen_2d: Option<ScreenCopy2d>,
     pub(super) ambient_intensity: f32,
     pub(super) ambient_color: Color,
     pub(super) fog: crate::light::Fog,
@@ -107,6 +118,11 @@ pub struct Window {
     /// buffers when chaining more than one post-processing effect: each effect reads
     /// one and writes the other, and the last writes the final frame.
     pub(super) post_process_render_target_b: RenderTarget,
+    /// The same pair at [`HDR_FORMAT`](crate::post_processing::HDR_FORMAT), for a
+    /// chain that runs on the film before bloom and the tonemap rather than on the
+    /// LDR image after them. Only resized when such a chain is passed.
+    pub(super) film_render_target: RenderTarget,
+    pub(super) film_render_target_b: RenderTarget,
     /// Offscreen render target used when the window is hidden, so `snap` and
     /// recording work without a presentable surface. Created on first use.
     pub(super) offscreen_output_target: Option<RenderTarget>,
@@ -358,6 +374,22 @@ impl Window {
     /// the canvas.
     pub fn dropped_files(&self) -> Vec<std::path::PathBuf> {
         self.canvas.take_dropped_files()
+    }
+
+    /// This frame's composed text, preedits and commits in order; empty until
+    /// [`Self::set_ime_allowed`]. egui's fields hear the same events on their own.
+    pub fn ime_events(&self) -> Vec<crate::event::ImeEvent> {
+        self.ime_events.borrow().clone()
+    }
+
+    /// Let the platform compose text through its input method.
+    pub fn set_ime_allowed(&self, allowed: bool) {
+        self.canvas.set_ime_allowed(allowed);
+    }
+
+    /// `[left, top, right, bottom]` insets in pixels; zero everywhere but iOS.
+    pub fn safe_area(&self) -> [f32; 4] {
+        self.canvas.safe_area()
     }
 
     /// Sets the cursor position in window coordinates.
@@ -1030,6 +1062,8 @@ impl Window {
             canvas,
             events: Rc::new(event_receive),
             unhandled_events: Rc::new(RefCell::new(Vec::new())),
+            ime_events: Rc::new(RefCell::new(Vec::new())),
+            screen_2d: None,
             ambient_intensity: 0.2,
             ambient_color: crate::color::WHITE,
             fog: crate::light::Fog::default(),
@@ -1060,6 +1094,8 @@ impl Window {
             post_process_render_target: framebuffer_manager.new_render_target(width, height, true),
             post_process_render_target_b: framebuffer_manager
                 .new_render_target(width, height, false),
+            film_render_target: framebuffer_manager.new_render_target(width, height, false),
+            film_render_target_b: framebuffer_manager.new_render_target(width, height, false),
             offscreen_output_target: None,
             aov_renderer: None,
             hidden: hide,
@@ -1116,6 +1152,8 @@ impl Window {
             canvas,
             events: Rc::new(event_receive),
             unhandled_events: Rc::new(RefCell::new(Vec::new())),
+            ime_events: Rc::new(RefCell::new(Vec::new())),
+            screen_2d: None,
             ambient_intensity: 0.2,
             ambient_color: crate::color::WHITE,
             fog: crate::light::Fog::default(),
@@ -1147,6 +1185,8 @@ impl Window {
             post_process_render_target: framebuffer_manager.new_render_target(width, height, true),
             post_process_render_target_b: framebuffer_manager
                 .new_render_target(width, height, false),
+            film_render_target: framebuffer_manager.new_render_target(width, height, false),
+            film_render_target_b: framebuffer_manager.new_render_target(width, height, false),
             offscreen_output_target: None,
             aov_renderer: None,
             // A headless window has no surface; always render off-screen.

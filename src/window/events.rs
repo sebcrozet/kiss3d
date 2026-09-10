@@ -94,6 +94,28 @@ impl Window {
 
         unhandled_events.borrow_mut().clear();
         self.canvas.poll_events();
+        let ime = self.canvas.take_ime_events();
+        #[cfg(feature = "egui")]
+        for event in &ime {
+            use crate::event::ImeEvent;
+            // egui counts the caret in characters where winit counts bytes.
+            let event = match event {
+                ImeEvent::Preedit { text, cursor } => egui::ImeEvent::Preedit {
+                    text: text.clone(),
+                    active_range_chars: cursor.map(|(start, end)| {
+                        let chars = |byte: usize| text[..byte.min(text.len())].chars().count();
+                        chars(start)..chars(end)
+                    }),
+                },
+                ImeEvent::Commit(text) => egui::ImeEvent::Commit(text.clone()),
+                ImeEvent::Enabled | ImeEvent::Disabled => continue,
+            };
+            self.egui_context
+                .raw_input
+                .events
+                .push(egui::Event::Ime(event));
+        }
+        *self.ime_events.borrow_mut() = ime;
     }
 
     pub(crate) fn handle_event(

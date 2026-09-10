@@ -204,6 +204,21 @@ impl Canvas {
         self.canvas.take_dropped_files()
     }
 
+    /// Composed text the input method reported since the last call.
+    pub fn take_ime_events(&self) -> Vec<crate::event::ImeEvent> {
+        self.canvas.take_ime_events()
+    }
+
+    /// Let the platform compose text through its input method.
+    pub fn set_ime_allowed(&self, allowed: bool) {
+        self.canvas.set_ime_allowed(allowed);
+    }
+
+    /// The display's insets in pixels as `[left, top, right, bottom]`.
+    pub fn safe_area(&self) -> [f32; 4] {
+        self.canvas.safe_area()
+    }
+
     /// Set the cursor position.
     pub fn set_cursor_position(&self, x: f64, y: f64) {
         self.canvas.set_cursor_position(x, y);
@@ -212,6 +227,11 @@ impl Canvas {
     /// Toggle the cursor visibility.
     pub fn hide_cursor(&self, hide: bool) {
         self.canvas.hide_cursor(hide);
+    }
+
+    /// Set the shape the pointer takes over this window.
+    pub fn set_cursor_icon(&self, icon: winit::window::CursorIcon) {
+        self.canvas.set_cursor_icon(icon);
     }
 
     /// Hide the window.

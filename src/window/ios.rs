@@ -17,8 +17,12 @@ use std::task::{Context as TaskContext, Poll, Waker};
 
 use objc2::rc::Retained;
 use objc2::{define_class, msg_send, MainThreadMarker, MainThreadOnly};
-use objc2_foundation::{NSObjectProtocol, NSString};
-use objc2_ui_kit::{UIKeyInput, UITextInputTraits, UIView};
+use objc2_foundation::{
+    NSDictionary, NSNotification, NSNotificationCenter, NSObject, NSObjectProtocol, NSString, NSURL,
+};
+use objc2_ui_kit::{
+    UIApplicationDidFinishLaunchingNotification, UIKeyInput, UITextInputTraits, UIView,
+};
 use winit::application::ApplicationHandler;
 use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
 use winit::window::{Window, WindowAttributes, WindowId};
@@ -134,6 +138,9 @@ impl ApplicationHandler for IosApp {
 /// `UIApplicationMain` owns the process.
 pub fn run_ios(fut: impl Future<Output = ()> + 'static) {
     let event_loop = EventLoop::new().expect("Failed to create event loop");
+    if let Some(mtm) = MainThreadMarker::new() {
+        observe_launch_url(mtm);
+    }
     let mut app = IosApp {
         fut: Some(Box::pin(fut)),
         started: false,
@@ -208,6 +215,101 @@ define_class!(
         }
     }
 );
+
+thread_local! {
+    /// The URL the app was launched with, if it was launched from one.
+    static LAUNCH_URL: std::cell::RefCell<Option<String>> =
+        const { std::cell::RefCell::new(None) };
+    /// The observer is kept alive for the life of the process: the
+    /// notification centre does not retain it, and a dropped observer is a
+    /// dangling pointer the next notification would follow.
+    static LAUNCH_OBSERVER: std::cell::RefCell<Option<Retained<LaunchObserver>>> =
+        const { std::cell::RefCell::new(None) };
+}
+
+// UIKit hands the launch URL to the application delegate, and winit owns the
+// delegate. Rather than take it over, this listens for the notification the
+// same launch posts: its `userInfo` carries the very dictionary the delegate
+// is given, so the URL is read without owning anything.
+define_class!(
+    #[unsafe(super(NSObject))]
+    #[thread_kind = MainThreadOnly]
+    #[name = "Kiss3dLaunchObserver"]
+    struct LaunchObserver;
+
+    unsafe impl NSObjectProtocol for LaunchObserver {}
+
+    impl LaunchObserver {
+        #[unsafe(method(didFinishLaunching:))]
+        #[expect(
+            deprecated,
+            reason = "the scene lifecycle it defers to is not one a kiss3d app adopts"
+        )]
+        fn did_finish_launching(&self, notification: &NSNotification) {
+            let Some(info): Option<Retained<NSDictionary>> = notification.userInfo() else {
+                return;
+            };
+            let key: &NSString = unsafe { objc2_ui_kit::UIApplicationLaunchOptionsURLKey };
+            let Some(object) = info.objectForKey(key) else {
+                return;
+            };
+            // The value under that key is documented as an NSURL.
+            let url: &NSURL = unsafe { &*ptr::from_ref(&*object).cast::<NSURL>() };
+            if let Some(text) = unsafe { url.absoluteString() } {
+                LAUNCH_URL.with(|cell| *cell.borrow_mut() = Some(text.to_string()));
+            }
+        }
+    }
+);
+
+/// Start listening for the launch URL. Called before `UIApplicationMain`
+/// takes the thread, which is the only moment early enough to hear the
+/// notification it posts.
+///
+/// `UIApplicationLaunchOptionsURLKey` is deprecated in favour of the UIScene
+/// lifecycle, and deliberately used anyway: the key is empty only for an app
+/// that declares a `UIApplicationSceneManifest`, and a kiss3d app declares
+/// none. Adopting scenes to read a URL would mean taking over the window
+/// lifecycle winit owns.
+fn observe_launch_url(mtm: MainThreadMarker) {
+    let observer: Retained<LaunchObserver> = unsafe { msg_send![LaunchObserver::alloc(mtm), init] };
+    unsafe {
+        NSNotificationCenter::defaultCenter().addObserver_selector_name_object(
+            &observer,
+            objc2::sel!(didFinishLaunching:),
+            Some(UIApplicationDidFinishLaunchingNotification),
+            None,
+        );
+    }
+    LAUNCH_OBSERVER.with(|cell| *cell.borrow_mut() = Some(observer));
+}
+
+/// The URL this app was launched with, taken once.
+///
+/// Empty unless the app was opened from a link. It is taken rather than read
+/// so a game that asks twice does not act on the same launch twice.
+pub fn take_launch_url() -> Option<String> {
+    LAUNCH_URL.with(|cell| cell.borrow_mut().take())
+}
+
+/// `[left, top, right, bottom]` in points; zeros before the view is laid out.
+pub(crate) fn safe_area(window: &Window) -> [f64; 4] {
+    use wgpu::rwh::{HasWindowHandle, RawWindowHandle};
+
+    if MainThreadMarker::new().is_none() {
+        return [0.0; 4];
+    }
+    let Ok(handle) = window.window_handle() else {
+        return [0.0; 4];
+    };
+    let RawWindowHandle::UiKit(ui_kit) = handle.as_raw() else {
+        return [0.0; 4];
+    };
+    // Valid while `window` is alive, which the borrow guarantees.
+    let view: &UIView = unsafe { ui_kit.ui_view.cast().as_ref() };
+    let insets = view.safeAreaInsets();
+    [insets.left, insets.top, insets.right, insets.bottom]
+}
 
 /// Show or hide the system keyboard for `window`.
 pub(crate) fn set_keyboard_visible(window: &Window, visible: bool) {

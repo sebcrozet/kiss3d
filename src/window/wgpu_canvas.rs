@@ -97,6 +97,9 @@ thread_local! {
     // is Copy and a PathBuf is not. Drained by `take_dropped_files`.
     static DROPPED_FILES: RefCell<Vec<(winit::window::WindowId, std::path::PathBuf)>> =
         const { RefCell::new(Vec::new()) };
+    /// Composed text per window, drained by `take_ime_events` like dropped files.
+    static IME_EVENTS: RefCell<Vec<(winit::window::WindowId, crate::event::ImeEvent)>> =
+        const { RefCell::new(Vec::new()) };
 }
 
 // Android lifecycle plumbing. winit can only build an EventLoop from the
@@ -229,6 +232,11 @@ pub(crate) fn collect_window_event(window_id: winit::window::WindowId, event: Wi
             DROPPED_FILES.with(|dropped| dropped.borrow_mut().push((window_id, path)));
             vec![]
         }
+        WinitWindowEvent::Ime(ime) => {
+            let event = crate::event::ImeEvent::from_winit(ime);
+            IME_EVENTS.with(|events| events.borrow_mut().push((window_id, event)));
+            vec![]
+        }
         _ => vec![],
     };
 
@@ -273,8 +281,11 @@ pub struct WgpuCanvas {
     msaa_view: Option<wgpu::TextureView>,
     /// Number of samples for MSAA
     sample_count: u32,
-    /// Texture for reading back pixels (for screenshots)
-    readback_texture: wgpu::Texture,
+    /// Texture for reading back pixels (for screenshots), made on the first
+    /// capture. It is as large as the surface, and a run that never takes a
+    /// shot never pays for it; a resize drops it rather than rebuilding one
+    /// nothing has asked for.
+    readback_texture: std::cell::RefCell<Option<wgpu::Texture>>,
     /// Staging buffer reused across `read_pixels` calls, grown on demand, so
     /// per-frame capture doesn't allocate (and free) a GPU buffer every call.
     screenshot_staging: RefCell<Option<wgpu::Buffer>>,
@@ -387,44 +398,49 @@ impl WgpuCanvas {
             let document = web_window.document().expect("Failed to get document");
 
             // Try to find an existing canvas with the configured id, or create one
-            let canvas = document
+            let page_canvas = document
                 .get_element_by_id(&canvas_setup.canvas_id)
-                .and_then(|elem| elem.dyn_into::<web_sys::HtmlCanvasElement>().ok())
-                .unwrap_or_else(|| {
-                    // Create a new canvas element
-                    let canvas = document
-                        .create_element("canvas")
-                        .expect("Failed to create canvas element")
-                        .dyn_into::<web_sys::HtmlCanvasElement>()
-                        .expect("Failed to cast to HtmlCanvasElement");
-                    canvas.set_id(&canvas_setup.canvas_id);
+                .and_then(|elem| elem.dyn_into::<web_sys::HtmlCanvasElement>().ok());
+            let created = page_canvas.is_none();
+            let canvas = page_canvas.unwrap_or_else(|| {
+                // Create a new canvas element
+                let canvas = document
+                    .create_element("canvas")
+                    .expect("Failed to create canvas element")
+                    .dyn_into::<web_sys::HtmlCanvasElement>()
+                    .expect("Failed to cast to HtmlCanvasElement");
+                canvas.set_id(&canvas_setup.canvas_id);
 
-                    // Append to body
-                    if let Some(body) = document.body() {
-                        body.append_child(&canvas)
-                            .expect("Failed to append canvas to body");
+                // Append to body
+                if let Some(body) = document.body() {
+                    body.append_child(&canvas)
+                        .expect("Failed to append canvas to body");
+                }
+
+                canvas
+            });
+
+            // A canvas kiss3d had to create is the whole page: size the
+            // document around it. One the page supplied sits in a layout the
+            // page owns, which keeps its margins and its scrolling.
+            if created {
+                if let Some(html) = document.document_element() {
+                    if let Some(html) = html.dyn_ref::<web_sys::HtmlElement>() {
+                        let style = html.style();
+                        let _ = style.set_property("margin", "0");
+                        let _ = style.set_property("padding", "0");
+                        let _ = style.set_property("width", "100%");
+                        let _ = style.set_property("height", "100%");
                     }
-
-                    canvas
-                });
-
-            // Style html and body to fill 100%
-            if let Some(html) = document.document_element() {
-                if let Some(html) = html.dyn_ref::<web_sys::HtmlElement>() {
-                    let style = html.style();
+                }
+                if let Some(body) = document.body() {
+                    let style = body.style();
                     let _ = style.set_property("margin", "0");
                     let _ = style.set_property("padding", "0");
                     let _ = style.set_property("width", "100%");
                     let _ = style.set_property("height", "100%");
+                    let _ = style.set_property("overflow", "hidden");
                 }
-            }
-            if let Some(body) = document.body() {
-                let style = body.style();
-                let _ = style.set_property("margin", "0");
-                let _ = style.set_property("padding", "0");
-                let _ = style.set_property("width", "100%");
-                let _ = style.set_property("height", "100%");
-                let _ = style.set_property("overflow", "hidden");
             }
 
             let window_attrs = window_attrs.with_canvas(Some(canvas));
@@ -590,7 +606,16 @@ impl WgpuCanvas {
             width,
             height,
             present_mode,
-            alpha_mode: surface_caps.alpha_modes[0],
+            // Opaque where offered: a WebGPU canvas lists premultiplied first,
+            // and the page would show through every pixel left at alpha 0.
+            alpha_mode: if surface_caps
+                .alpha_modes
+                .contains(&wgpu::CompositeAlphaMode::Opaque)
+            {
+                wgpu::CompositeAlphaMode::Opaque
+            } else {
+                surface_caps.alpha_modes[0]
+            },
             view_formats: vec![],
             desired_maximum_frame_latency: 2,
         };
@@ -615,9 +640,8 @@ impl WgpuCanvas {
             (None, None)
         };
 
-        // Create readback texture for screenshots
-        let readback_texture =
-            Self::create_readback_texture(&ctxt.device, width, height, surface_format);
+        // The readback texture is built on the first capture, not here.
+        let readback_texture = std::cell::RefCell::new(None);
 
         // Set up WASM event listeners
         #[cfg(target_arch = "wasm32")]
@@ -862,6 +886,18 @@ impl WgpuCanvas {
                     pending
                         .borrow_mut()
                         .push(WindowEvent::Key(key, Action::Press, modifiers));
+                    // macOS sends no keyup for a key released while ⌘ is held,
+                    // which would leave it pressed for good: release it now.
+                    if modifiers.contains(Modifiers::Super)
+                        && apple_platform()
+                        && !is_modifier_key(key)
+                    {
+                        pending.borrow_mut().push(WindowEvent::Key(
+                            key,
+                            Action::Release,
+                            modifiers,
+                        ));
+                    }
                     // Emit a Char event for single-character (printable) keys so
                     // egui text fields receive text input. Skip when a command
                     // modifier is held so shortcuts (e.g. Ctrl+A) don't insert text,
@@ -1011,8 +1047,7 @@ impl WgpuCanvas {
         } else {
             (None, None)
         };
-        let readback_texture =
-            Self::create_readback_texture(&ctxt.device, width, height, surface_format);
+        let readback_texture = std::cell::RefCell::new(None);
 
         WgpuCanvas {
             window: None,
@@ -1101,8 +1136,8 @@ impl WgpuCanvas {
             self.msaa_view = Some(msaa_view);
         }
 
-        self.readback_texture =
-            Self::create_readback_texture(&ctxt.device, width, height, self.surface_config.format);
+        // Dropped, not rebuilt: the next capture makes one at the new size.
+        self.readback_texture.replace(None);
     }
 
     /// Changes the MSAA sample count, recreating the size-dependent attachments
@@ -1199,6 +1234,22 @@ impl WgpuCanvas {
         });
         let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
         (texture, view)
+    }
+
+    /// The readback texture, built at the surface's current size the first
+    /// time a capture asks for it. Cloning is cheap: a `wgpu::Texture` is a
+    /// handle.
+    fn readback_texture(&self) -> wgpu::Texture {
+        let mut slot = self.readback_texture.borrow_mut();
+        if slot.is_none() {
+            *slot = Some(Self::create_readback_texture(
+                &Context::get().device,
+                self.surface_config.width,
+                self.surface_config.height,
+                self.surface_config.format,
+            ));
+        }
+        slot.as_ref().expect("just built").clone()
     }
 
     fn create_readback_texture(
@@ -1400,13 +1451,9 @@ impl WgpuCanvas {
                             self.msaa_view = Some(new_msaa_view);
                         }
 
-                        // Recreate readback texture
-                        self.readback_texture = Self::create_readback_texture(
-                            &ctxt.device,
-                            width,
-                            height,
-                            self.surface_config.format,
-                        );
+                        // Dropped, not rebuilt: the next capture makes one
+                        // at the new size.
+                        self.readback_texture.replace(None);
                     }
                 }
             }
@@ -1453,13 +1500,9 @@ impl WgpuCanvas {
                     self.msaa_view = Some(new_msaa_view);
                 }
 
-                // Recreate readback texture
-                self.readback_texture = Self::create_readback_texture(
-                    &ctxt.device,
-                    current_size.width,
-                    current_size.height,
-                    self.surface_config.format,
-                );
+                // Dropped, not rebuilt: the next capture makes one at the
+                // new size.
+                self.readback_texture.replace(None);
 
                 let _ = self.out_events.send(WindowEvent::FramebufferSize(
                     current_size.width,
@@ -1542,7 +1585,7 @@ impl WgpuCanvas {
                 aspect: wgpu::TextureAspect::All,
             },
             wgpu::TexelCopyTextureInfo {
-                texture: &self.readback_texture,
+                texture: &self.readback_texture(),
                 mip_level: 0,
                 origin: wgpu::Origin3d::ZERO,
                 aspect: wgpu::TextureAspect::All,
@@ -1613,7 +1656,7 @@ impl WgpuCanvas {
 
         encoder.copy_texture_to_buffer(
             wgpu::TexelCopyTextureInfo {
-                texture: &self.readback_texture,
+                texture: &self.readback_texture(),
                 mip_level: 0,
                 origin: wgpu::Origin3d {
                     x: x as u32,
@@ -1858,6 +1901,51 @@ impl WgpuCanvas {
         Vec::new()
     }
 
+    /// Composed text since the last call; empty until `set_ime_allowed(true)`.
+    pub fn take_ime_events(&self) -> Vec<crate::event::ImeEvent> {
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let Some(window) = &self.window else {
+                return Vec::new();
+            };
+            let id = window.id();
+            IME_EVENTS.with(|events| {
+                let mut events = events.borrow_mut();
+                let (mine, others): (Vec<_>, Vec<_>) =
+                    events.drain(..).partition(|(window, _)| *window == id);
+                *events = others;
+                mine.into_iter().map(|(_, event)| event).collect()
+            })
+        }
+        #[cfg(target_arch = "wasm32")]
+        {
+            Vec::new()
+        }
+    }
+
+    /// Let the platform compose text through its input method.
+    pub fn set_ime_allowed(&self, allowed: bool) {
+        if let Some(window) = &self.window {
+            window.set_ime_allowed(allowed);
+        }
+    }
+
+    /// `[left, top, right, bottom]` insets in pixels; zero everywhere but iOS.
+    pub fn safe_area(&self) -> [f32; 4] {
+        #[cfg(target_os = "ios")]
+        {
+            let Some(window) = &self.window else {
+                return [0.0; 4];
+            };
+            let scale = window.scale_factor();
+            super::ios::safe_area(window).map(|points| (points * scale) as f32)
+        }
+        #[cfg(not(target_os = "ios"))]
+        {
+            [0.0; 4]
+        }
+    }
+
     /// Set the cursor grabbing behaviour.
     pub fn set_cursor_grab(&self, grab: bool) {
         use winit::window::CursorGrabMode;
@@ -1882,6 +1970,13 @@ impl WgpuCanvas {
     pub fn hide_cursor(&self, hide: bool) {
         if let Some(window) = &self.window {
             window.set_cursor_visible(!hide);
+        }
+    }
+
+    /// Set the shape the pointer takes over this window.
+    pub fn set_cursor_icon(&self, icon: winit::window::CursorIcon) {
+        if let Some(window) = &self.window {
+            window.set_cursor(icon);
         }
     }
 
@@ -2203,6 +2298,34 @@ fn translate_web_mouse_button(button: i16) -> MouseButton {
         4 => MouseButton::Button5,
         _ => MouseButton::Button1,
     }
+}
+
+/// Whether the browser runs on an Apple platform, where ⌘ is the command
+/// key. A page can only tell from the user agent; iPadOS reports itself as a
+/// Mac, which is right, since its keyboards carry ⌘ too.
+#[cfg(target_arch = "wasm32")]
+pub(crate) fn apple_platform() -> bool {
+    thread_local! {
+        static APPLE: bool = web_sys::window()
+            .and_then(|w| w.navigator().user_agent().ok())
+            .is_some_and(|ua| ua.contains("Mac"));
+    }
+    APPLE.with(|apple| *apple)
+}
+
+#[cfg(target_arch = "wasm32")]
+fn is_modifier_key(key: Key) -> bool {
+    matches!(
+        key,
+        Key::LShift
+            | Key::RShift
+            | Key::LControl
+            | Key::RControl
+            | Key::LAlt
+            | Key::RAlt
+            | Key::LWin
+            | Key::RWin
+    )
 }
 
 #[cfg(target_arch = "wasm32")]
